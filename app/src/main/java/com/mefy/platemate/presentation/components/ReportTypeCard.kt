@@ -69,6 +69,10 @@ internal fun parseColorHexOrNull(rawHex: String): Color? {
             }
         }
 
-    val argb = normalized.toULongOrNull(16) ?: return null
-    return Color(argb)
+    val argb = normalized.toLongOrNull(16) ?: return null
+    val alpha = ((argb shr 24) and 0xFF).toInt()
+    val red = ((argb shr 16) and 0xFF).toInt()
+    val green = ((argb shr 8) and 0xFF).toInt()
+    val blue = (argb and 0xFF).toInt()
+    return Color(red = red, green = green, blue = blue, alpha = alpha)
 }

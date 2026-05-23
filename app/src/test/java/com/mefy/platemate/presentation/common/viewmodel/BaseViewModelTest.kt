@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.common.viewmodel
 
 import com.mefy.platemate.core.error.AppError
+import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.event.CommonDialogModel
 import com.mefy.platemate.presentation.common.event.CommonUiEvent
 import com.mefy.platemate.presentation.common.text.UiText
@@ -65,7 +66,7 @@ class BaseViewModelTest {
         advanceUntilIdle()
 
         assertEquals(
-            CommonUiEvent.ShowSnackbar(UiText.Dynamic("Something went wrong")),
+            CommonUiEvent.ShowSnackbar(UiText.Resource(R.string.common_error_unknown)),
             eventDeferred.await()
         )
     }
