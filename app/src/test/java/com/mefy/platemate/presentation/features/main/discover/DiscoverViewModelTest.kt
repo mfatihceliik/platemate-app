@@ -12,6 +12,7 @@ import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.repository.DiscoveryRepository
 import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryHomeUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.features.main.discover.mapper.DefaultDiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
 import com.mefy.platemate.testutil.MainDispatcherRule
@@ -111,7 +112,9 @@ class DiscoverViewModelTest {
     ): DiscoverViewModel {
         return DiscoverViewModel(
             getDiscoveryHomeUseCase = GetDiscoveryHomeUseCase(repository),
-            discoverUiMapper = DefaultDiscoverUiMapper(),
+            discoverUiMapper = DefaultDiscoverUiMapper(
+                formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase()
+            ),
             discoverStateReducer = DiscoverStateReducer()
         )
     }

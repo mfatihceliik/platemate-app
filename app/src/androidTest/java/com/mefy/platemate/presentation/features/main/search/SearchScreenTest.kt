@@ -1,7 +1,10 @@
 package com.mefy.platemate.presentation.features.main.search
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -22,11 +25,28 @@ class SearchScreenTest {
     val composeRule = createComposeRule()
 
     @Test
+    fun shimmerVisible_whenInitialLoadingAndContentHidden() {
+        composeRule.setContent {
+            PlateMateTheme(darkTheme = true, dynamicColor = false) {
+                SearchScreen(
+                    state = SearchUiState(isInitialLoading = true),
+                    onAction = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("search_shimmer_root").assertIsDisplayed()
+        composeRule
+            .onAllNodesWithText(getString(R.string.search_header_title))
+            .assertCountEquals(0)
+    }
+
+    @Test
     fun searchScreen_displaysCoreSections() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
-                    state = SearchUiState(),
+                    state = SearchUiState(isInitialLoading = false),
                     onAction = {}
                 )
             }
@@ -44,6 +64,7 @@ class SearchScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
                     state = SearchUiState(
+                        isInitialLoading = false,
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
                     onAction = { action -> lastAction = action }
@@ -55,6 +76,32 @@ class SearchScreenTest {
 
         assertEquals(
             SearchUiAction.RecentBookmarkClicked(normalizedPlateCode = "34ABC123"),
+            lastAction
+        )
+    }
+
+    @Test
+    fun closeClick_dispatchesRecentDismissClickedAction() {
+        var lastAction: SearchUiAction? = null
+
+        composeRule.setContent {
+            PlateMateTheme(darkTheme = true, dynamicColor = false) {
+                SearchScreen(
+                    state = SearchUiState(
+                        isInitialLoading = false,
+                        recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
+                    ),
+                    onAction = { action -> lastAction = action }
+                )
+            }
+        }
+
+        composeRule
+            .onNodeWithContentDescription(getString(R.string.search_recent_remove))
+            .performClick()
+
+        assertEquals(
+            SearchUiAction.RecentDismissClicked(normalizedPlateCode = "34ABC123"),
             lastAction
         )
     }

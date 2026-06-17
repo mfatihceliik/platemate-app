@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">PlateMate</string>
     <string name="common_back">Back</string>
+    <string name="common_save">Save</string>
     <string name="common_show">Show</string>
     <string name="common_hide">Hide</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_loading">Loading…</string>
     <string name="common_error_unauthorized">Your session has expired. Please sign in again.</string>
     <string name="common_error_server_unavailable">Unable to reach the server. Please try again later.</string>
     <string name="common_error_network">Please check your internet connection.</string>
@@ -10,6 +13,7 @@
     <string name="common_error_http">Something went wrong on the server. Please try again.</string>
     <string name="common_error_unknown">Something went wrong. Please try again.</string>
 
+    <!-- Auth — Register -->
     <string name="auth_register_title">Create Account</string>
     <string name="auth_register_subtitle">Join PlateMate to connect with safer drivers and build trusted road reputation.</string>
     <string name="auth_register_hero_badge">PM</string>
@@ -26,15 +30,20 @@
     <string name="auth_register_password_strength_weak">Weak</string>
     <string name="auth_register_password_strength_medium">Medium</string>
     <string name="auth_register_password_strength_strong">Strong</string>
+    <string name="auth_register_password_strength_weak_hint">Weak — a stronger password is recommended</string>
     <string name="auth_register_email_invalid">Please enter a valid email address.</string>
     <string name="auth_register_password_min_length">Password must be at least %1$d characters.</string>
     <string name="auth_register_form_invalid">Please review the highlighted fields.</string>
-    <string name="auth_register_terms_info">By creating an account, you accept the terms of use and privacy policy.</string>
+    <string name="auth_register_terms_info">I have read and agree to the Terms of Use and Privacy Policy</string>
+    <string name="auth_register_terms_link1">Terms of Use</string>
+    <string name="auth_register_terms_link2">Privacy Policy</string>
     <string name="auth_register_submit">Sign Up</string>
     <string name="auth_register_have_account">Already have an account?</string>
     <string name="auth_register_sign_in_link">Sign In</string>
     <string name="auth_register_sign_in">Already have an account? Sign in</string>
+    <string name="auth_register_username_available">Username is available</string>
 
+    <!-- Auth — Login -->
     <string name="auth_login_title">Welcome back</string>
     <string name="auth_login_subtitle">Sign in to continue with trusted road interactions on PlateMate.</string>
     <string name="auth_login_screen_title">Sign In</string>
@@ -52,7 +61,32 @@
     <string name="auth_login_no_account">Don\'t have an account?</string>
     <string name="auth_login_register_link">Create Account</string>
     <string name="auth_login_register">Don\'t have an account? Create one</string>
+    <string name="auth_login_forgot_password">Forgot password</string>
+    <string name="auth_login_or">or</string>
+    <string name="auth_login_apple_continue">Continue with Apple</string>
+    <string name="auth_login_error_banner">Invalid email or password. Please try again.</string>
 
+    <!-- Onboarding — Illustrations -->
+    <string name="illustration_plate_1">34 EK 0682</string>
+    <string name="illustration_plate_2">06 AB 1234</string>
+    <string name="illustration_plate_3">35 MK 7777</string>
+    <string name="illustration_careful_driver">Careful Driver</string>
+    <string name="illustration_fast">Fast</string>
+    <string name="illustration_no_lane_change">No Lane Change</string>
+    <string name="illustration_trend_this_week">Trending this week</string>
+    <string name="illustration_stats_1">4.9 · 218 votes</string>
+    <string name="illustration_stats_2">4.7 · 145 votes</string>
+    <string name="illustration_stats_3">4.5 · 98 votes</string>
+    <string name="illustration_users_count">8.4K</string>
+    <string name="illustration_users_label">Users</string>
+    <string name="illustration_reviews_count">52K</string>
+    <string name="illustration_reviews_label">Reviews</string>
+    <string name="illustration_plates_count">31K</string>
+    <string name="illustration_plates_label">Plates</string>
+    <string name="illustration_comment_name">Ayşe Y.</string>
+    <string name="illustration_comment_text">\"Always uses signals, a very polite driver!\"</string>
+
+    <!-- Welcome -->
     <string name="welcome_title">PlateMate</string>
     <string name="welcome_subtitle">Know the drivers you see in traffic through the community perspective.</string>
     <string name="welcome_plate_badge">06 XYZ 789</string>
@@ -68,6 +102,30 @@
     <string name="welcome_sign_in">Sign In</string>
     <string name="welcome_terms">By continuing, you accept the Terms of Use and Privacy Policy.</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_splash_desc">Review the drivers you meet on the road,\nconnect with the community.</string>
+    <string name="onboarding_splash_start">Let\'s Start</string>
+    <string name="onboarding_splash_login">I already have an account</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_f1_title">Rate\nPlates</string>
+    <string name="onboarding_f1_desc">Rate and tag the plates of drivers you meet on the road, and share your experience with the community.</string>
+    <string name="onboarding_f2_title">Discover\nTrend Plates</string>
+    <string name="onboarding_f2_desc">See the most talked about plates right now, discover the best and worst drivers in the city.</string>
+    <string name="onboarding_f3_title">Join the\nCommunity</string>
+    <string name="onboarding_f3_desc">Shape the road culture together with thousands of users. Every review makes a difference.</string>
+    <string name="onboarding_notif_title">Push Notifications</string>
+    <string name="onboarding_notif_desc">Let us notify you when someone reviews your plate or when trending content is shared.</string>
+    <string name="onboarding_notif_item1_title">New reviews</string>
+    <string name="onboarding_notif_item1_desc">Find out instantly when someone rates your plate</string>
+    <string name="onboarding_notif_item2_title">Trending content</string>
+    <string name="onboarding_notif_item2_desc">Get notified of the week\'s most popular plates</string>
+    <string name="onboarding_notif_item3_title">New messages</string>
+    <string name="onboarding_notif_item3_desc">Don\'t miss community messages</string>
+    <string name="onboarding_notif_allow">Allow Notifications</string>
+    <string name="onboarding_notif_skip">Not now</string>
+
+    <!-- Main Navigation -->
     <string name="main_tab_search">Search</string>
     <string name="main_tab_discover">Discover</string>
     <string name="main_tab_messages">Messages</string>
@@ -80,19 +138,260 @@
     <string name="main_chat_placeholder_title">Chat screen is coming soon.</string>
     <string name="main_edit_profile_placeholder_title">Edit profile screen is coming soon.</string>
 
+    <!-- Profile -->
+    <string name="profile_trustworthy_driver">TRUSTED DRIVER</string>
+    <string name="profile_stat_notifications">notifications</string>
+    <string name="profile_stat_comments">comments</string>
+    <string name="profile_stat_score">score</string>
+    <string name="profile_stat_reviews">reviews</string>
+    <string name="profile_stat_average_rating">avg rating</string>
+    <string name="profile_stat_friends">friends</string>
+    <string name="profile_stat_premium">premium</string>
+    <string name="profile_section_recent_notifications">My Notifications</string>
+    <string name="profile_section_history">History</string>
+    <string name="profile_section_status_summary">Status Summary</string>
+    <string name="profile_section_social_links">Social Media</string>
+    <string name="profile_section_settings_snapshot">Settings Snapshot</string>
+    <string name="profile_section_account_settings">Account Settings</string>
+    <string name="profile_summary_email">Email</string>
+    <string name="profile_email_not_specified">Not specified</string>
+    <string name="profile_summary_joined_at">Joined</string>
+    <string name="profile_summary_premium">Premium</string>
+    <string name="profile_premium_active">Active</string>
+    <string name="profile_premium_until_format">Until %1$s</string>
+    <string name="profile_premium_inactive">Inactive</string>
+    <string name="profile_status_approved">Approved</string>
+    <string name="profile_status_pending_review">Pending</string>
+    <string name="profile_status_rejected">Rejected</string>
+    <string name="profile_review_status_approved">Approved</string>
+    <string name="profile_review_status_pending_review">Pending Review</string>
+    <string name="profile_review_status_rejected">Rejected</string>
+    <string name="profile_review_status_removed_by_user">Removed by User</string>
+    <string name="profile_review_status_removed_by_moderator">Removed by Moderator</string>
+    <string name="profile_review_status_removed_by_legal_request">Removed by Legal</string>
+    <string name="profile_review_status_unknown">Unknown</string>
+    <string name="profile_setting_personal_info">Personal Information</string>
+    <string name="profile_setting_notification_preferences">Notification Preferences</string>
+    <string name="profile_setting_update_email">Update Email</string>
+    <string name="profile_setting_change_password">Change Password</string>
+    <string name="profile_setting_member_since">Member since: %1$s</string>
+    <string name="profile_settings_title">Settings</string>
+    <string name="profile_setting_premium_info">Premium Information</string>
+    <string name="profile_setting_become_premium">Become Premium</string>
+    <string name="profile_setting_theme">Theme</string>
+    <string name="profile_setting_theme_system">System default</string>
+    <string name="profile_setting_theme_light">Light theme</string>
+    <string name="profile_setting_theme_dark">Dark theme</string>
+    <string name="profile_setting_language">Language</string>
+    <string name="profile_setting_language_tr">Turkish</string>
+    <string name="profile_setting_language_en">English</string>
+    <string name="profile_setting_theme_desc">Choose app appearance</string>
+    <string name="profile_setting_language_desc">Choose app language</string>
+    <string name="profile_setting_social_links">Social Media Links</string>
+    <string name="profile_setting_security_password">Security &amp; Password</string>
+    <string name="profile_setting_sign_out">Sign Out</string>
+    <string name="profile_setting_messaging_enabled">Messaging Enabled</string>
+    <string name="profile_setting_messaging_enabled_description">Enable this to receive and respond to direct messages from other users.</string>
+    <string name="profile_setting_location_sharing_enabled">Location Sharing</string>
+    <string name="profile_setting_location_sharing_enabled_description">Enable this to share your location context for more relevant activity and alerts.</string>
+    <string name="profile_setting_message_notifications_enabled">Message Notifications</string>
+    <string name="profile_setting_message_notifications_enabled_description">Enable this to get notified when someone sends you a new message.</string>
+    <string name="profile_setting_friend_notifications_enabled">Friend Notifications</string>
+    <string name="profile_setting_friend_notifications_enabled_description">Enable this to receive updates about friend requests and friend activity.</string>
+    <string name="profile_history_title">Notification History</string>
+    <string name="profile_history_empty">No notifications yet.</string>
+    <string name="profile_recent_empty">No recent notifications.</string>
+    <string name="profile_history_loading_more">Loading more...</string>
+    <string name="profile_history_removed_totals_title">Removed Totals</string>
+    <string name="profile_history_removed_totals_format">User: %1$d  Moderator: %2$d  Legal: %3$d</string>
+    <string name="profile_level_format">LVL %1$d</string>
+    <string name="profile_settings_coming_soon">This section is coming soon.</string>
+    <string name="profile_settings_section_account">ACCOUNT</string>
+    <string name="profile_settings_section_app">APPLICATION</string>
+    <string name="profile_settings_section_profile">PROFILE</string>
+    <string name="profile_settings_premium_go">Go Premium</string>
+    <string name="profile_settings_theme_color">Theme Color</string>
+    <string name="profile_settings_social_accounts">Social Media Accounts</string>
+    <string name="profile_settings_social_count">%1$d connected</string>
+    <string name="profile_settings_version">PlateMate v2.4.1</string>
+    <string name="profile_settings_edit_profile">Edit Profile</string>
+    <string name="profile_change_password_title">Change Password</string>
+    <string name="profile_change_password_desc">Choose a strong and unique password to keep your account safe.</string>
+    <string name="profile_change_password_current">CURRENT PASSWORD</string>
+    <string name="profile_change_password_new">NEW PASSWORD</string>
+    <string name="profile_change_password_confirm">NEW PASSWORD (REPEAT)</string>
+    <string name="profile_change_password_confirm_placeholder">Re-enter new password</string>
+    <string name="profile_change_password_submit">Update Password</string>
+    <string name="profile_change_password_rule_length">At least 8 characters</string>
+    <string name="profile_change_password_rule_uppercase">Contains an uppercase letter</string>
+    <string name="profile_change_password_rule_digit">Contains a digit</string>
+    <string name="profile_change_password_error_mismatch">Passwords do not match</string>
+    <string name="profile_theme_color_title">Theme Color</string>
+    <string name="profile_theme_preview">PREVIEW</string>
+    <string name="profile_theme_accent_color">ACCENT COLOR</string>
+    <string name="profile_theme_appearance">APPEARANCE</string>
+    <string name="profile_theme_light">Light</string>
+    <string name="profile_theme_dark">Dark</string>
+    <string name="profile_theme_system">System</string>
+    <string name="profile_language_title">Language</string>
+    <string name="profile_language_search">Search language</string>
+    <string name="profile_premium_title">Premium</string>
+    <string name="profile_premium_headline">PlateMate Pro</string>
+    <string name="profile_premium_subtitle">Unlock all features, ad-free experience.</string>
+    <string name="profile_premium_monthly">Monthly</string>
+    <string name="profile_premium_yearly">Yearly</string>
+    <string name="profile_premium_monthly_price">₺49/mo</string>
+    <string name="profile_premium_yearly_price">₺399/yr</string>
+    <string name="profile_premium_discount">32% OFF</string>
+    <string name="profile_premium_upgrade">Upgrade to Pro</string>
+    <string name="profile_premium_feature_1">Unlimited plate reviews</string>
+    <string name="profile_premium_feature_2">Ad-free experience</string>
+    <string name="profile_premium_feature_3">Advanced search filters</string>
+    <string name="profile_premium_feature_4">Featured profile badge</string>
+    <string name="profile_premium_feature_5">Instant alerts for followed plates</string>
+    <string name="profile_premium_feature_6">Detailed profile statistics</string>
+    <string name="profile_notif_section_messaging">MESSAGING</string>
+    <string name="profile_notif_section_social">SOCIAL</string>
+    <string name="profile_notif_section_review">REVIEW</string>
+    <string name="profile_notif_messaging_open">Enable Messaging</string>
+    <string name="profile_notif_messaging_open_desc">Other users can send you messages</string>
+    <string name="profile_notif_message_alerts">Message Notifications</string>
+    <string name="profile_notif_message_alerts_desc">Notify when a new message arrives</string>
+    <string name="profile_notif_friend_add">Friend Request</string>
+    <string name="profile_notif_friend_add_desc">Notify when someone adds you</string>
+    <string name="profile_notif_new_follower">New Follower</string>
+    <string name="profile_notif_new_follower_desc">When someone follows you</string>
+    <string name="profile_notif_plate_review">Plate Review</string>
+    <string name="profile_notif_plate_review_desc">When your vehicle is reviewed</string>
+    <string name="profile_notif_review_reply">Review Replies</string>
+    <string name="profile_notif_review_reply_desc">When your review gets a reply</string>
+    <string name="profile_content_description_settings">Profile settings</string>
+    <string name="profile_content_description_close_history">Close history</string>
+    <string name="profile_content_description_close_preferences">Close</string>
+    <string name="profile_notification_preferences_title">Notification Preferences</string>
+    <string name="profile_settings_save_changes">Save Changes</string>
+    <string name="profile_settings_saved">Settings updated.</string>
+    <string name="profile_friend_request_title">%1$s sent you a friend request</string>
+    <string name="profile_social_add_title">Add social media link</string>
+    <string name="profile_social_url_label">Profile URL</string>
+    <string name="profile_social_add_button">Add link</string>
+    <string name="profile_social_update_button">Update</string>
+    <string name="profile_social_delete_button">Delete</string>
+    <string name="profile_social_empty">No social links yet.</string>
+    <string name="profile_social_link_added">Social link added.</string>
+    <string name="profile_social_link_deleted">Social link deleted.</string>
+    <string name="profile_social_description">Connect your accounts and let social media links appear on your profile.</string>
+    <string name="profile_social_connected_section">CONNECTED ACCOUNTS</string>
+    <string name="profile_social_add_section">ADD NEW LINK</string>
+    <string name="profile_social_add_button_short">Add</string>
+    <string name="profile_friends_title">Friends</string>
+    <string name="profile_friends_empty">No friends yet.</string>
+
+    <!-- User Profile -->
+    <string name="user_profile_title">Profile</string>
+    <string name="user_profile_more_options">More options</string>
+    <string name="user_profile_approved_reviews">Approved Reviews</string>
+    <string name="user_profile_stat_reviews">Reviews</string>
+    <string name="user_profile_stat_followers">Followers</string>
+    <string name="user_profile_stat_following">Following</string>
+    <string name="user_profile_follow">Follow</string>
+    <string name="user_profile_following_label">Following</string>
+    <string name="user_profile_message">Message</string>
+    <string name="user_profile_share">Share</string>
+
+    <!-- Report User -->
+    <string name="report_user_title">Report User</string>
+    <string name="report_user_submit">Submit Report</string>
+    <string name="report_reason_inappropriate_content">Inappropriate Content</string>
+    <string name="report_reason_inappropriate_content_desc">Shares disturbing or objectionable content</string>
+    <string name="report_reason_spam">Spam or Fake Account</string>
+    <string name="report_reason_spam_desc">Spreads misinformation or spam behavior</string>
+    <string name="report_reason_harassment">Harassment or Abuse</string>
+    <string name="report_reason_harassment_desc">Threatening, abusive or harassing behavior</string>
+    <string name="report_reason_other">Other</string>
+    <string name="report_reason_other_desc">Has another reason</string>
+
+    <!-- Edit Profile -->
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="edit_profile_save">Save</string>
+    <string name="edit_profile_change_photo">Change Photo</string>
+    <string name="edit_profile_delete_account">Delete Account</string>
+    <string name="edit_profile_field_display_name">DISPLAY NAME</string>
+    <string name="edit_profile_field_username">USERNAME</string>
+    <string name="edit_profile_field_bio">BIO</string>
+    <string name="edit_profile_field_social">SOCIAL MEDIA</string>
+    <string name="edit_profile_username_hint">platemate.app/@%1$s</string>
+    <string name="edit_profile_social_add_hint">Add %1$s…</string>
+
+    <!-- Messages -->
+    <string name="messages_empty_title">No messages yet</string>
+    <string name="messages_empty_subtitle">Send a message to a user to start a conversation</string>
+
+    <!-- Chat Detail -->
+    <string name="chatdetail_title">Chat Info</string>
+    <string name="chatdetail_notifications">Notifications</string>
+    <string name="chatdetail_media_files">Media &amp; Files</string>
+    <string name="chatdetail_delete_chat">Delete Chat</string>
+    <string name="chatdetail_report">Report</string>
+
+    <!-- Plate Detail -->
+    <string name="platedetail_title">Plate Detail</string>
+    <string name="platedetail_bookmark">Save</string>
+    <string name="platedetail_first_review">Be the First to Review</string>
+    <string name="platedetail_review">Review</string>
+    <string name="platedetail_tags_title">TAGS</string>
+    <string name="platedetail_reviews_title">REVIEWS</string>
+    <string name="platedetail_empty_reviews_title">No reviews yet</string>
+    <string name="platedetail_empty_reviews_subtitle">Be the first to review this plate!</string>
+    <string name="platedetail_rate_driving">Rate the driving experience</string>
+    <string name="platedetail_tag_driver">Tag the driver with labels</string>
+    <string name="platedetail_share_comment">Share your experience as a comment</string>
+    <string name="platedetail_review_count">%1$d reviews</string>
+    <string name="platedetail_city_review_count">%1$s · %2$d reviews</string>
+    <string name="platedetail_no_rating">No rating yet</string>
+
+    <!-- Review -->
+    <string name="review_title">Review</string>
+    <string name="review_anonymous_checkbox">Review anonymously</string>
+    <string name="review_submit_button">Share Review</string>
+    <string name="review_section_overall">OVERALL RATING</string>
+    <string name="review_section_detailed">DETAILED RATING</string>
+    <string name="review_section_tags">TAGS</string>
+    <string name="review_section_experience">YOUR EXPERIENCE</string>
+    <string name="review_comment_placeholder">Share your experience…</string>
+    <string name="review_city_review_count">%1$s · %2$d reviews</string>
+    <string name="review_count_format">%1$d reviews</string>
+
+    <!-- Search -->
     <string name="search_header_title">PlateMate</string>
     <string name="search_header_subtitle">Learn what the community says about drivers around you</string>
     <string name="search_plate_placeholder">34 ABC 123</string>
     <string name="search_submit">Search Plate</string>
     <string name="search_plate_invalid_format">Invalid plate format. Example: 34 ABC 123</string>
     <string name="search_recent_title">Recent Searches</string>
+    <string name="search_section_recent">RECENT SEARCHES</string>
+    <string name="search_section_saved">SAVED PLATES</string>
+    <string name="search_saved_title">Saved Plates</string>
+    <string name="search_saved_see_all">All</string>
     <string name="search_recent_clear">Clear All</string>
     <string name="search_recent_empty">No recent searches yet.</string>
+    <string name="search_recent_remove">Remove recent search</string>
     <string name="search_score_format">• %1$s</string>
     <string name="search_safety_banner">Reporting drivers helps make traffic safer for everyone.</string>
     <string name="search_detected_city_plate">%1$s plate</string>
+    <string name="search_empty_title">No searches yet</string>
+    <string name="search_empty_subtitle">Start by searching a plate</string>
+    <string name="search_no_results_title">No results found</string>
+    <string name="search_no_results_subtitle">Try a different plate</string>
+    <string name="search_no_results_clear">Clear search</string>
+    <string name="search_error_title">An error occurred</string>
+    <string name="search_error_retry">Retry</string>
+
+    <!-- Discover -->
     <string name="discover_header_title">Discover</string>
     <string name="discover_header_subtitle">Community activities and statistics</string>
+    <string name="discover_section_trending">Trending Now</string>
+    <string name="discover_section_categories">CATEGORIES</string>
     <string name="discover_metric_search_label">searches</string>
     <string name="discover_metric_comment_label">comments</string>
     <string name="discover_metric_alert_label">active</string>
@@ -101,7 +400,7 @@
     <string name="discover_metric_week_period">This week</string>
     <string name="discover_metric_active_alert_period">Reports</string>
     <string name="discover_filter_trend">Trend</string>
-    <string name="discover_filter_attention">Attention</string>
+    <string name="discover_filter_careless">Careless</string>
     <string name="discover_filter_good_driver">Good Driver</string>
     <string name="discover_filter_new">New</string>
     <string name="discover_section_trend_plates">Trend Plates</string>
@@ -112,6 +411,15 @@
     <string name="discover_section_recent_activity">Recent Activity</string>
     <string name="discover_rank_format">#%1$d</string>
     <string name="discover_comment_count_format">%1$d comments</string>
+    <string name="discover_comment_count">%1$d comments</string>
+    <string name="discover_category_kindest">Kindest</string>
+    <string name="discover_category_kindest_count">214 plates</string>
+    <string name="discover_category_quickrespond">Quick Response</string>
+    <string name="discover_category_quickrespond_count">176 plates</string>
+    <string name="discover_category_careful">Careful</string>
+    <string name="discover_category_careful_count">189 plates</string>
+    <string name="discover_category_helpful">Helpful</string>
+    <string name="discover_category_helpful_count">142 plates</string>
 
     <string name="discover_city_istanbul">Istanbul</string>
     <string name="discover_city_ankara">Ankara</string>

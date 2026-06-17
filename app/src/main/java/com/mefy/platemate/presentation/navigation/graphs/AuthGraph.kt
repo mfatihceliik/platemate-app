@@ -12,7 +12,7 @@ import com.mefy.platemate.presentation.features.auth.login.LoginRoute
 import com.mefy.platemate.presentation.features.auth.login.LoginViewModel
 import com.mefy.platemate.presentation.features.auth.register.RegisterRoute
 import com.mefy.platemate.presentation.features.auth.register.RegisterViewModel
-import com.mefy.platemate.presentation.features.auth.welcome.WelcomeRoute
+import com.mefy.platemate.presentation.features.auth.onboarding.OnboardingRoute
 
 internal fun NavGraphBuilder.authGraph(
     onNavigateAfterLogin: () -> Unit,
@@ -24,9 +24,9 @@ internal fun NavGraphBuilder.authGraph(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    navigation<AuthGraphDestination>(startDestination = WelcomeDestination) {
-        composable<WelcomeDestination> {
-            WelcomeRoute(
+    navigation<AuthGraphDestination>(startDestination = OnboardingDestination) {
+        composable<OnboardingDestination> {
+            OnboardingRoute(
                 onNavigateToRegister = { onNavigateToRegister(null) },
                 onNavigateToLogin = { onNavigateToLogin(null) },
                 modifier = modifier

@@ -3,6 +3,10 @@ package com.mefy.platemate.presentation.features.main.discover
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryHomeUseCase
+import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
+import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
@@ -14,11 +18,16 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(
     private val getDiscoveryHomeUseCase: GetDiscoveryHomeUseCase,
+    private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
+    private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
+    private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase,
     private val discoverUiMapper: DiscoverUiMapper,
     private val discoverStateReducer: DiscoverStateReducer
 ) : BaseViewModel() {
@@ -33,9 +42,33 @@ class DiscoverViewModel @Inject constructor(
     val uiEffects: SharedFlow<DiscoverUiEffect> = _uiEffects.asSharedFlow()
 
     private var currentTabs: DiscoveryTabs? = null
+    private var latestBookmarkedCodes: Set<String> = emptySet()
 
     init {
+        observeBookmarks()
         loadDiscoveryHome(forceRefresh = false)
+    }
+
+    private fun observeBookmarks() {
+        launch {
+            observeSavedPlateCodesUseCase().collectLatest { codes ->
+                latestBookmarkedCodes = codes
+                if (currentTabs != null) {
+                    val plateDetails = discoverUiMapper.mapTabPlates(
+                        tabs = currentTabs!!,
+                        filter = _uiState.value.selectedFilter,
+                        bookmarkedCodes = codes
+                    )
+                    _uiState.update { current ->
+                        discoverStateReducer.onFilterSelected(
+                            state = current,
+                            filter = current.selectedFilter,
+                            plateDetails = plateDetails
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun loadDiscoveryHome(forceRefresh: Boolean) {
@@ -53,7 +86,8 @@ class DiscoverViewModel @Inject constructor(
                     currentTabs = mappedHome.tabs
                     val plateDetails = discoverUiMapper.mapTabPlates(
                         tabs = mappedHome.tabs,
-                        filter = _uiState.value.selectedFilter
+                        filter = _uiState.value.selectedFilter,
+                        bookmarkedCodes = latestBookmarkedCodes
                     )
                     _uiState.update { current ->
                         discoverStateReducer.onContentLoaded(
@@ -74,13 +108,14 @@ class DiscoverViewModel @Inject constructor(
         when (action) {
             is DiscoverUiAction.FilterSelected -> onFilterSelected(action.filter)
             is DiscoverUiAction.TrendPlateClicked -> onTrendPlateClicked(action.trendId)
+            is DiscoverUiAction.TrendPlateBookmarkClicked -> onTrendPlateBookmarkClicked(action.trendId)
             DiscoverUiAction.RefreshRequested -> onRefreshRequested()
         }
     }
 
     private fun onFilterSelected(filter: DiscoverFilterUi) {
         val tabs = currentTabs ?: return
-        val plateDetails = discoverUiMapper.mapTabPlates(tabs = tabs, filter = filter)
+        val plateDetails = discoverUiMapper.mapTabPlates(tabs = tabs, filter = filter, bookmarkedCodes = latestBookmarkedCodes)
         _uiState.update { current ->
             discoverStateReducer.onFilterSelected(
                 state = current,
@@ -93,6 +128,33 @@ class DiscoverViewModel @Inject constructor(
     private fun onTrendPlateClicked(trendId: String) {
         launch {
             _uiEffects.emit(DiscoverUiEffect.NavigateToTrendDetail(trendId))
+        }
+    }
+
+    private fun onTrendPlateBookmarkClicked(trendId: String) {
+        launch {
+            val tabs = currentTabs ?: return@launch
+            val plateCode = trendId.substringBefore("_")
+            val allPlates = tabs.trendPlates + tabs.attentionPlates + tabs.goodDriverPlates + tabs.newPlates
+            val plateDetail = allPlates.firstOrNull { it.plateCode == plateCode } ?: return@launch
+            
+            val formattedCode = formatTurkishPlateInputUseCase(plateDetail.plateCode)
+            val normalizedCode = validateTurkishPlateUseCase.normalize(plateDetail.plateCode)
+            
+            val savedPlate = com.mefy.platemate.domain.model.search.SavedPlate(
+                normalizedPlateCode = normalizedCode,
+                formattedPlateCode = formattedCode,
+                cityName = com.mefy.platemate.presentation.common.text.CityNameResolver.resolveCityName(
+                    cityName = plateDetail.cityName,
+                    plateCode = plateDetail.plateCode
+                ),
+                ratingAverage = plateDetail.ratingAverage,
+                commentCount = plateDetail.reviewCount,
+                reportTypes = plateDetail.topReportType,
+                savedAt = System.currentTimeMillis()
+            )
+            
+            toggleSavedPlateUseCase(savedPlate)
         }
     }
 

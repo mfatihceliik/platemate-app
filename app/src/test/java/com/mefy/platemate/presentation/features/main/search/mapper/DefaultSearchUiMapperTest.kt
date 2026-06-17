@@ -25,6 +25,13 @@ class DefaultSearchUiMapperTest {
     }
 
     @Test
+    fun resolveCityName_fallsBackToPlateCodeWhenInputIsBlank() {
+        val result = mapper.resolveCityName("   ", "34ABC123")
+
+        assertEquals("İstanbul", result)
+    }
+
+    @Test
     fun mapRecentSearch_mapsExpectedDomainFields() {
         val item = mapper.mapRecentSearch(
             result = sampleResult(),
@@ -105,30 +112,17 @@ class DefaultSearchUiMapperTest {
     }
 
     private fun sampleResult(): PlateSearchResult = PlateSearchResult(
-        id = 10L,
         plateCode = "34ABC123",
         cityName = "Istanbul",
         ratingAverage = 4.3,
-        totalRatingSum = 52L,
-        totalSearchCount = 10L,
-        totalReviewCount = 12L,
-        totalReportCount = 0L,
-        totalWeightedReportScore = 0L,
-        score = 0,
+        reviewCount = 12L,
+        todaySearchCount = 10L,
+        todayReviewCount = 0L,
+        todayReportCount = 0L,
+        todayWeightedReportScore = 0.0,
+        score = 0.0,
         lastActivityAt = "2026-05-19T00:00:00Z",
-        recentReviews = listOf(
-            Review(
-                id = 1L,
-                plateCode = "34ABC123",
-                rating = 5,
-                comment = "great",
-                userId = 2L,
-                reviewerUsername = "user",
-                createdAt = null,
-                updatedAt = null
-            )
-        ),
-        recentReportTypes = listOf(
+        topReportTypes = listOf(
             ReportType(
                 code = "SAFE",
                 label = "Safe",

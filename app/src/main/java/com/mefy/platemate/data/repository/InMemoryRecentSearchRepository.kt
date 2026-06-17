@@ -29,6 +29,12 @@ class InMemoryRecentSearchRepository @Inject constructor() : RecentSearchReposit
         }
     }
 
+    override suspend fun deleteRecent(normalizedPlateCode: String) {
+        recent.update { current ->
+            current.filterNot { item -> item.normalizedPlateCode == normalizedPlateCode }
+        }
+    }
+
     override suspend fun clearRecent() {
         recent.value = emptyList()
     }
@@ -37,4 +43,3 @@ class InMemoryRecentSearchRepository @Inject constructor() : RecentSearchReposit
         const val MAX_RECENT_ITEMS = 10
     }
 }
-

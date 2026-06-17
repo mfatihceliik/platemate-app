@@ -231,7 +231,7 @@ class AppNavigationFlowTest {
                 onShowDialog = {},
                 onBackClick = { navController.popBackStack() }
             )
-            mainGraph()
+            mainGraph(navController = navController)
         }
     }
 

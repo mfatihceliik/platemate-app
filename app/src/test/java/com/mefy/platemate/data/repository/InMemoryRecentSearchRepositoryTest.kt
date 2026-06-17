@@ -51,6 +51,20 @@ class InMemoryRecentSearchRepositoryTest {
         assertTrue(repository.observeRecent().first().isEmpty())
     }
 
+    @Test
+    fun deleteRecent_removesOnlyTargetItem() = runTest {
+        val repository = InMemoryRecentSearchRepository()
+
+        repository.upsertRecent(sampleRecent(normalized = "34ABC123", formatted = "34 ABC 123"))
+        repository.upsertRecent(sampleRecent(normalized = "06XYZ987", formatted = "06 XYZ 987"))
+
+        repository.deleteRecent(normalizedPlateCode = "34ABC123")
+
+        val recent = repository.observeRecent().first()
+        assertEquals(1, recent.size)
+        assertEquals("06XYZ987", recent.first().normalizedPlateCode)
+    }
+
     private fun sampleRecent(normalized: String, formatted: String): RecentSearch = RecentSearch(
         normalizedPlateCode = normalized,
         formattedPlateCode = formatted,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -22,6 +23,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -92,28 +95,67 @@ fun PlateMateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    accentColor: Color? = null,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val pmColors = if (darkTheme) PMColorsDark else PMColorsLight
+    val baseScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val colorScheme = if (accentColor != null) {
+        baseScheme.withAccentColor(accentColor, darkTheme)
+    } else {
+        baseScheme
+    }
 
-    CompositionLocalProvider(LocalPMDimensions provides DefaultPMDimensions) {
+    CompositionLocalProvider(
+        LocalPMDimensions provides DefaultPMDimensions,
+        LocalPMColors provides pmColors,
+        LocalPMIconColors provides pmColors.icon
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
+            shapes = PMShapes,
             content = content
         )
     }
 }
 
-@Preview(name = "PlateMate Theme Light", showBackground = true, backgroundColor = 0xFFF3F6FF)
+private fun ColorScheme.withAccentColor(accent: Color, isDark: Boolean): ColorScheme {
+    val onAccent = if (accent.luminance() > 0.179f) Color(0xFF1E293B) else Color.White
+    val container = if (isDark) {
+        lerpColor(accent, Color(0xFF0F172A), 0.65f)
+    } else {
+        lerpColor(accent, Color.White, 0.82f)
+    }
+    val onContainer = if (isDark) {
+        lerpColor(accent, Color.White, 0.65f)
+    } else {
+        lerpColor(accent, Color(0xFF0F172A), 0.45f)
+    }
+    return copy(
+        primary = accent,
+        onPrimary = onAccent,
+        primaryContainer = container,
+        onPrimaryContainer = onContainer,
+        surfaceTint = accent
+    )
+}
+
+private fun lerpColor(a: Color, b: Color, t: Float) = Color(
+    red = a.red + (b.red - a.red) * t,
+    green = a.green + (b.green - a.green) * t,
+    blue = a.blue + (b.blue - a.blue) * t,
+    alpha = 1f
+)
+
+@Preview(name = "PlateMate Theme Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun PlateMateThemeLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
@@ -121,7 +163,7 @@ private fun PlateMateThemeLightPreview() {
     }
 }
 
-@Preview(name = "PlateMate Theme Dark", showBackground = true, backgroundColor = 0xFF07153A)
+@Preview(name = "PlateMate Theme Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun PlateMateThemeDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {

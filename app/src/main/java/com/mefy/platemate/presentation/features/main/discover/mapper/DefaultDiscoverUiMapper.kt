@@ -6,6 +6,8 @@ import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.presentation.common.text.CityNameResolver
 import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
 import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
@@ -16,8 +18,13 @@ import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
+
 @Singleton
-class DefaultDiscoverUiMapper @Inject constructor() :
+class DefaultDiscoverUiMapper @Inject constructor(
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
+    private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase
+) :
     DiscoverUiMapper,
     Mapper<DiscoveryHome, DiscoverHomeUiData> {
 
@@ -80,7 +87,8 @@ class DefaultDiscoverUiMapper @Inject constructor() :
 
     override fun mapTabPlates(
         tabs: DiscoveryTabs,
-        filter: DiscoverFilterUi
+        filter: DiscoverFilterUi,
+        bookmarkedCodes: Set<String>
     ): List<PlateDetailUiModel> {
         val plates = when (filter) {
             DiscoverFilterUi.Trend -> tabs.trendPlates
@@ -90,7 +98,9 @@ class DefaultDiscoverUiMapper @Inject constructor() :
         }
 
         return plates.mapIndexed { index, plate ->
-            mapTabPlateToUiModel(plate = plate, rank = index + 1, filter = filter)
+            val normalizedCode = validateTurkishPlateUseCase.normalize(plate.plateCode)
+            val isBookmarked = bookmarkedCodes.contains(normalizedCode)
+            mapTabPlateToUiModel(plate = plate, rank = index + 1, filter = filter, isBookmarked = isBookmarked)
         }
     }
 
@@ -107,14 +117,16 @@ class DefaultDiscoverUiMapper @Inject constructor() :
     private fun mapTabPlateToUiModel(
         plate: PlateDetail,
         rank: Int,
-        filter: DiscoverFilterUi
+        filter: DiscoverFilterUi,
+        isBookmarked: Boolean
     ): PlateDetailUiModel = PlateDetailUiModel(
         id = "${plate.plateCode}_${filter.name}",
         rank = rank,
-        plateCode = plate.plateCode,
+        plateCode = formatTurkishPlateInputUseCase(plate.plateCode),
         reportTags = mapReportTags(plate.topReportType),
-        cityName = plate.cityName?.trim()?.takeIf { it.isNotBlank() },
+        cityName = CityNameResolver.resolveCityName(cityName = plate.cityName, plateCode = plate.plateCode),
         ratingAverage = plate.ratingAverage,
-        commentCount = plate.reviewCount
+        commentCount = plate.reviewCount,
+        isBookmarked = isBookmarked
     )
 }

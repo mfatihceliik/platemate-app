@@ -27,6 +27,15 @@ interface RecentSearchDao {
         """
         DELETE FROM recent_searches
         WHERE user_id = :userId
+          AND normalized_plate_code = :normalizedPlateCode
+        """
+    )
+    suspend fun deleteRecent(userId: Long, normalizedPlateCode: String)
+
+    @Query(
+        """
+        DELETE FROM recent_searches
+        WHERE user_id = :userId
           AND id NOT IN (
             SELECT id
             FROM recent_searches

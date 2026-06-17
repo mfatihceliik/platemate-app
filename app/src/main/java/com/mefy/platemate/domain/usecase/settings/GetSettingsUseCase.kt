@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetSettingsUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke() = repository.getMySettings()
+    suspend operator fun invoke() = repository.getSettingsOverview()
 }

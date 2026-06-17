@@ -1,14 +1,19 @@
 package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
+import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.data.local.SessionStore
+import com.mefy.platemate.data.mapper.SettingsOverviewMapper
+import com.mefy.platemate.data.mapper.SocialMediaLinkMapper
 import com.mefy.platemate.data.mapper.UserSettingsMapper
-import com.mefy.platemate.data.remote.dto.user.UserSettingsDto
+import com.mefy.platemate.data.remote.dto.settings.SettingsOverviewDto
 import com.mefy.platemate.data.remote.dto.settings.UpdateSettingsRequest
+import com.mefy.platemate.data.remote.dto.social.SocialMediaLinkDto
+import com.mefy.platemate.data.remote.dto.social.SocialPlatformDto
+import com.mefy.platemate.data.remote.dto.user.UserSettingsDto
 import com.mefy.platemate.data.remote.rest.service.SettingsApiService
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.model.settings.UserSettings
@@ -29,71 +34,86 @@ class SettingsRepositoryImplTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun getMySettings_returnsUnauthorized_whenSessionMissing() = runTest {
+    fun getSettingsOverview_returnsUnauthorized_whenSessionMissing() = runTest {
         val api = FakeSettingsApiService()
-        val repository = SettingsRepositoryImpl(
-            api = api,
-            sessionStore = FakeSessionStore(initialSession = null),
-            userSettingsMapper = UserSettingsMapper(),
-            appDispatchers = testDispatchers()
-        )
+        val repository = createRepository(api, initialSession = null)
 
-        val result = repository.getMySettings()
+        val result = repository.getSettingsOverview()
 
         assertEquals(AppResult.Error(AppError.Unauthorized), result)
-        assertEquals(0, api.getMySettingsCallCount)
     }
 
     @Test
-    fun getMySettings_usesSessionUserId_whenSessionExists() = runTest {
+    fun getSettingsOverview_mapsPayload() = runTest {
         val api = FakeSettingsApiService()
-        val repository = SettingsRepositoryImpl(
+        val repository = createRepository(
             api = api,
-            sessionStore = FakeSessionStore(
-                initialSession = AuthSession(
-                    userId = 88L,
-                    username = "fatih",
-                    token = "token"
-                )
-            ),
-            userSettingsMapper = UserSettingsMapper(),
-            appDispatchers = testDispatchers()
+            initialSession = AuthSession(userId = 88L, username = "fatih", token = "token")
         )
 
-        val result = repository.getMySettings()
+        val result = repository.getSettingsOverview()
 
         assertTrue(result is AppResult.Success)
         result as AppResult.Success
-        assertEquals(
-            UserSettings(
-                messagingEnabled = true,
-                locationSharingEnabled = false,
-                messageNotificationsEnabled = true,
-                friendNotificationsEnabled = false
-            ),
-            result.data
-        )
+        assertEquals("mail@platemate.com", result.data.email)
+        assertEquals(true, result.data.premiumActive)
+        assertEquals(1, result.data.socialMediaLinks.size)
         assertEquals(88L, api.lastRequestedUserId)
     }
 
-    private fun testDispatchers(): AppDispatchers = AppDispatchers(
-        main = mainDispatcherRule.dispatcher,
-        io = mainDispatcherRule.dispatcher,
-        default = mainDispatcherRule.dispatcher
+    @Test
+    fun updateSettings_sendsThreeFlags() = runTest {
+        val api = FakeSettingsApiService()
+        val repository = createRepository(
+            api = api,
+            initialSession = AuthSession(userId = 88L, username = "fatih", token = "token")
+        )
+
+        val result = repository.updateSettings(
+            UserSettings(
+                messagingEnabled = true,
+                messageNotificationsEnabled = false,
+                friendNotificationsEnabled = true
+            )
+        )
+
+        assertTrue(result is AppResult.Success)
+        assertEquals(
+            UpdateSettingsRequest(
+                messagingEnabled = true,
+                messageNotificationsEnabled = false,
+                friendNotificationsEnabled = true
+            ),
+            api.lastUpdateRequest
+        )
+    }
+
+    private fun createRepository(
+        api: FakeSettingsApiService,
+        initialSession: AuthSession?
+    ): SettingsRepositoryImpl = SettingsRepositoryImpl(
+        api = api,
+        sessionStore = FakeSessionStore(initialSession),
+        settingsOverviewMapper = SettingsOverviewMapper(
+            userSettingsMapper = UserSettingsMapper(),
+            socialMediaLinkMapper = SocialMediaLinkMapper()
+        ),
+        appDispatchers = AppDispatchers(
+            main = mainDispatcherRule.dispatcher,
+            io = mainDispatcherRule.dispatcher,
+            default = mainDispatcherRule.dispatcher
+        )
     )
 
     private class FakeSessionStore(initialSession: AuthSession?) : SessionStore {
         private val state = MutableStateFlow(initialSession)
         override val session: Flow<AuthSession?> = state
-
         override suspend fun saveSession(session: AuthSession) {
             state.value = session
         }
-
         override suspend fun clearSession() {
             state.value = null
         }
-
         override suspend fun getToken(): String? = state.value?.token
         override fun peekToken(): String? = state.value?.token
         override suspend fun getRefreshToken(): String? = state.value?.refreshToken
@@ -101,28 +121,37 @@ class SettingsRepositoryImplTest {
     }
 
     private class FakeSettingsApiService : SettingsApiService {
-        var getMySettingsCallCount: Int = 0
         var lastRequestedUserId: Long? = null
+        var lastUpdateRequest: UpdateSettingsRequest? = null
 
-        override suspend fun getMySettings(userId: Long): DataResultResponse<UserSettingsDto> {
-            getMySettingsCallCount++
+        override suspend fun getSettingsOverview(userId: Long): DataResultResponse<SettingsOverviewDto> {
             lastRequestedUserId = userId
             return DataResultResponse(
-                success = true,
                 message = null,
-                data = UserSettingsDto(
-                    messagingEnabled = true,
-                    locationSharingEnabled = false,
-                    messageNotificationsEnabled = true,
-                    friendNotificationsEnabled = false
+                success = true,
+                data = SettingsOverviewDto(
+                    email = "mail@platemate.com",
+                    premiumActive = true,
+                    premiumUntil = "2026-06-30T00:00:00Z",
+                    userSettings = UserSettingsDto(
+                        messagingEnabled = true,
+                        messageNotificationsEnabled = true,
+                        friendNotificationsEnabled = false
+                    ),
+                    socialMediaLinks = listOf(
+                        SocialMediaLinkDto(
+                            id = 9L,
+                            platformCode = "INSTAGRAM",
+                            url = "https://instagram.com/test"
+                        )
+                    )
                 )
             )
         }
 
-        override suspend fun updateSettings(
-            userId: Long,
-            request: UpdateSettingsRequest
-        ): ResultResponse = ResultResponse(success = true, message = null)
+        override suspend fun updateSettings(userId: Long, request: UpdateSettingsRequest): ResultResponse {
+            lastUpdateRequest = request
+            return ResultResponse(message = null, success = true)
+        }
     }
 }
-

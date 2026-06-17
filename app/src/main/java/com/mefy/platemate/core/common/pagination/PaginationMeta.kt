@@ -8,5 +8,6 @@ data class PaginationMeta(
     @SerializedName("totalElements") val totalElements: Long,
     @SerializedName("totalPages") val totalPages: Int,
     @SerializedName("hasNext") val hasNext: Boolean,
-    @SerializedName("hasPrevious") val hasPrevious: Boolean
+    @SerializedName("hasPrevious") val hasPrevious: Boolean,
+    @SerializedName("evaluationTotals") val evaluationTotals: ReviewStatusTotals? = null
 )

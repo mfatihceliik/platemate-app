@@ -2,21 +2,7 @@ package com.mefy.platemate.presentation.components
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-
-enum class PMTextStyle {
-    Display,
-    Headline,
-    Title,
-    Body,
-    Label,
-    Caption
-}
-
-enum class PMButtonStyle {
-    Filled,
-    Outlined,
-    Text
-}
+import com.mefy.platemate.presentation.components.model.PMTextStyle
 
 internal fun PMTextStyle.resolve(typography: Typography): TextStyle = when (this) {
     PMTextStyle.Display -> typography.displaySmall
@@ -25,4 +11,6 @@ internal fun PMTextStyle.resolve(typography: Typography): TextStyle = when (this
     PMTextStyle.Body -> typography.bodyLarge
     PMTextStyle.Label -> typography.labelLarge
     PMTextStyle.Caption -> typography.bodySmall
+    PMTextStyle.Note -> typography.labelSmall
+    PMTextStyle.SectionLabel -> typography.labelMedium
 }

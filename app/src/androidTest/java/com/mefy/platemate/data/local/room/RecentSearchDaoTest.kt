@@ -79,6 +79,20 @@ class RecentSearchDaoTest {
     }
 
     @Test
+    fun deleteRecent_removesOnlyMatchingPlateForUser() = runBlocking {
+        dao.upsert(sampleEntity(userId = 1L, normalized = "34ABC123", searchedAt = 100L))
+        dao.upsert(sampleEntity(userId = 1L, normalized = "06XYZ987", searchedAt = 200L))
+        dao.upsert(sampleEntity(userId = 2L, normalized = "34ABC123", searchedAt = 300L))
+
+        dao.deleteRecent(userId = 1L, normalizedPlateCode = "34ABC123")
+
+        val user1Items = dao.observeRecent(userId = 1L, limit = 20).first()
+        val user2Items = dao.observeRecent(userId = 2L, limit = 20).first()
+        assertEquals(listOf("06XYZ987"), user1Items.map { it.normalizedPlateCode })
+        assertEquals(listOf("34ABC123"), user2Items.map { it.normalizedPlateCode })
+    }
+
+    @Test
     fun clearRecent_clearsOnlyTargetUser() = runBlocking {
         dao.upsert(sampleEntity(userId = 1L, normalized = "34ABC123", searchedAt = 100L))
         dao.upsert(sampleEntity(userId = 2L, normalized = "06XYZ987", searchedAt = 200L))

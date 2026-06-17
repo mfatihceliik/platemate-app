@@ -4,7 +4,7 @@ import com.mefy.platemate.data.local.datastore.DataStoreSessionStore
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.repository.AuthRepositoryImpl
 import com.mefy.platemate.data.repository.ChatRepositoryImpl
-import com.mefy.platemate.data.repository.LocationRepositoryImpl
+
 import com.mefy.platemate.data.repository.ProfileRepositoryImpl
 import com.mefy.platemate.data.repository.PlateRepositoryImpl
 import com.mefy.platemate.data.repository.PlateReviewRepositoryImpl
@@ -13,11 +13,12 @@ import com.mefy.platemate.data.repository.RoomRecentSearchRepository
 import com.mefy.platemate.data.repository.RoomSavedPlateRepository
 import com.mefy.platemate.data.repository.SettingsRepositoryImpl
 import com.mefy.platemate.data.repository.SocialRepositoryImpl
+import com.mefy.platemate.data.repository.SocialLinkRepositoryImpl
 import com.mefy.platemate.data.repository.UserRepositoryImpl
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.repository.ChatRepository
 import com.mefy.platemate.domain.repository.DiscoveryRepository
-import com.mefy.platemate.domain.repository.LocationRepository
+
 import com.mefy.platemate.domain.repository.PlateRepository
 import com.mefy.platemate.domain.repository.ProfileRepository
 import com.mefy.platemate.domain.repository.PlateReviewRepository
@@ -25,6 +26,7 @@ import com.mefy.platemate.domain.repository.RecentSearchRepository
 import com.mefy.platemate.domain.repository.SavedPlateRepository
 import com.mefy.platemate.domain.repository.SettingsRepository
 import com.mefy.platemate.domain.repository.SocialRepository
+import com.mefy.platemate.domain.repository.SocialLinkRepository
 import com.mefy.platemate.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -66,11 +68,12 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindChatRepository(impl: ChatRepositoryImpl): ChatRepository
+    abstract fun bindSocialLinkRepository(impl: SocialLinkRepositoryImpl): SocialLinkRepository
 
     @Binds
     @Singleton
-    abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
+    abstract fun bindChatRepository(impl: ChatRepositoryImpl): ChatRepository
+
 
     @Binds
     @Singleton

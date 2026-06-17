@@ -12,6 +12,7 @@ import com.mefy.platemate.domain.repository.SavedPlateRepository
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.ClearRecentSearchesUseCase
+import com.mefy.platemate.domain.usecase.search.DeleteRecentSearchUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ObserveRecentSearchesUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
@@ -50,10 +51,18 @@ class SearchViewModelTest {
         runCurrent()
         val state = viewModel.uiState.value
 
+        assertFalse(state.isInitialLoading)
         assertEquals("", state.plateInput)
         assertFalse(state.isPlateValid)
         assertFalse(state.isSearchEnabled)
         assertTrue(state.recentSearches.isEmpty())
+    }
+
+    @Test
+    fun initialState_isInitialLoadingBeforeFirstRecentEmission() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+        val viewModel = createViewModel()
+
+        assertTrue(viewModel.uiState.value.isInitialLoading)
     }
 
     @Test
@@ -209,6 +218,40 @@ class SearchViewModelTest {
         assertTrue(viewModel.uiState.value.recentSearches.isEmpty())
     }
 
+    @Test
+    fun recentDismissClicked_removesOnlyTargetRecentItem() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+        val repository = FakePlateRepository(result = AppResult.Success(samplePlateSearchResult()))
+        val recentSearchRepository = InMemoryRecentSearchRepository()
+        val viewModel = createViewModel(
+            repository = repository,
+            recentSearchRepository = recentSearchRepository
+        )
+
+        viewModel.onAction(SearchUiAction.PlateInputChanged("34abc123"))
+        viewModel.onAction(SearchUiAction.SearchClicked)
+        advanceUntilIdle()
+
+        recentSearchRepository.upsertRecent(
+            com.mefy.platemate.domain.model.search.RecentSearch(
+                normalizedPlateCode = "06XYZ987",
+                formattedPlateCode = "06 XYZ 987",
+                cityName = "Ankara",
+                ratingAverage = 3.9,
+                commentCount = 7L,
+                reportTypes = emptyList()
+            )
+        )
+        advanceUntilIdle()
+
+        assertEquals(2, viewModel.uiState.value.recentSearches.size)
+        viewModel.onAction(SearchUiAction.RecentDismissClicked("06XYZ987"))
+        advanceUntilIdle()
+
+        val recent = viewModel.uiState.value.recentSearches
+        assertEquals(1, recent.size)
+        assertEquals("34ABC123", recent.first().normalizedPlateCode)
+    }
+
     private fun createViewModel(
         repository: FakePlateRepository = FakePlateRepository(),
         recentSearchRepository: InMemoryRecentSearchRepository = InMemoryRecentSearchRepository(),
@@ -219,6 +262,7 @@ class SearchViewModelTest {
         observeSavedPlateCodesUseCase = ObserveSavedPlateCodesUseCase(savedPlateRepository),
         upsertRecentSearchUseCase = UpsertRecentSearchUseCase(recentSearchRepository),
         toggleSavedPlateUseCase = ToggleSavedPlateUseCase(savedPlateRepository),
+        deleteRecentSearchUseCase = DeleteRecentSearchUseCase(recentSearchRepository),
         clearRecentSearchesUseCase = ClearRecentSearchesUseCase(recentSearchRepository),
         formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
         validateTurkishPlateUseCase = ValidateTurkishPlateUseCase(),
@@ -228,37 +272,22 @@ class SearchViewModelTest {
     )
 
     private fun samplePlateSearchResult(
-        id: Long = 1L,
         plateCode: String = "34ABC123",
         cityName: String = "Istanbul",
         ratingAverage: Double = 4.2,
-        totalReviewCount: Long = 3L,
-        totalRatingSum: Long = 12L
+        reviewCount: Long = 3L
     ): PlateSearchResult = PlateSearchResult(
-        id = id,
         plateCode = plateCode,
         cityName = cityName,
         ratingAverage = ratingAverage,
-        totalRatingSum = totalRatingSum,
-        totalSearchCount = 0L,
-        totalReviewCount = totalReviewCount,
-        totalReportCount = 0L,
-        totalWeightedReportScore = 0L,
-        score = 0,
+        reviewCount = reviewCount,
+        todaySearchCount = 0L,
+        todayReviewCount = 0L,
+        todayReportCount = 0L,
+        todayWeightedReportScore = 0.0,
+        score = 0.0,
         lastActivityAt = "2026-05-19T00:00:00Z",
-        recentReviews = listOf(
-            Review(
-                id = 1L,
-                plateCode = plateCode,
-                rating = 5,
-                comment = "great",
-                userId = 2L,
-                reviewerUsername = "user",
-                createdAt = null,
-                updatedAt = null
-            )
-        ),
-        recentReportTypes = listOf(
+        topReportTypes = listOf(
             ReportType(
                 code = "SAFE",
                 label = "Safe",
@@ -301,29 +330,16 @@ class SearchViewModelTest {
     private class FakePlateRepository(
         private val result: AppResult<PlateSearchResult> = AppResult.Success(
             PlateSearchResult(
-                id = 1L,
                 plateCode = "34ABC123",
                 cityName = "Istanbul",
-                ratingAverage = 4.2,
-                totalRatingSum = 12L,
-                totalSearchCount = 0L,
-                totalReviewCount = 3L,
-                totalReportCount = 0L,
-                totalWeightedReportScore = 0L,
-                score = 0,
+                ratingAverage = 4.5,
+                reviewCount = 15,
+                todaySearchCount = 5,
+                todayReviewCount = 2,
+                todayReportCount = 1,
+                todayWeightedReportScore = 3.0,
+                score = 0.0,
                 lastActivityAt = "2026-05-19T00:00:00Z",
-                recentReviews = listOf(
-                    Review(
-                        id = 1L,
-                        plateCode = "34ABC123",
-                        rating = 5,
-                        comment = "great",
-                        userId = 2L,
-                        reviewerUsername = "user",
-                        createdAt = null,
-                        updatedAt = null
-                    )
-                ),
                 recentReportTypes = listOf(
                     ReportType(
                         code = "SAFE",

@@ -36,6 +36,11 @@ class RoomRecentSearchRepository @Inject constructor(
         recentSearchDao.trimToLimit(userId = userId, limit = MAX_RECENT_ITEMS)
     }
 
+    override suspend fun deleteRecent(normalizedPlateCode: String) {
+        val userId = sessionStore.session.first()?.userId ?: return
+        recentSearchDao.deleteRecent(userId = userId, normalizedPlateCode = normalizedPlateCode)
+    }
+
     override suspend fun clearRecent() {
         val userId = sessionStore.session.first()?.userId ?: return
         recentSearchDao.clearRecent(userId = userId)

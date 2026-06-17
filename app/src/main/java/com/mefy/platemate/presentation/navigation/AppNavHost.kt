@@ -104,6 +104,7 @@ fun AppNavHost(
                 navController = appState.navController,
                 onNavigateToSearchDetail = appState.navController::navigateToSearchDetail,
                 onNavigateToDiscoverDetail = appState.navController::navigateToDiscoverDetail,
+                onShowSnackbar = { message -> appState.showSnackbar(message) },
                 modifier = Modifier.fillMaxSize()
             )
         }

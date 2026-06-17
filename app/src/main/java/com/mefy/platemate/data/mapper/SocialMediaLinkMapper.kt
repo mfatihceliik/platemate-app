@@ -7,8 +7,8 @@ import javax.inject.Inject
 
 class SocialMediaLinkMapper @Inject constructor() : Mapper<SocialMediaLinkDto, SocialMediaLink> {
     override fun map(input: SocialMediaLinkDto): SocialMediaLink = SocialMediaLink(
-        platform = input.platform.name,
+        id = input.id,
+        platform = input.platformCode ?: "UNKNOWN",
         url = input.url
     )
 }
-

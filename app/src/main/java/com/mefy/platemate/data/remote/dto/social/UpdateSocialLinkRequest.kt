@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class UpdateSocialLinkRequest(
     @SerializedName("id") val id: Long,
-    @SerializedName("platform") val platform: SocialPlatformDto,
+    @SerializedName("platformCode") val platformCode: String,
     @SerializedName("url") val url: String
 )

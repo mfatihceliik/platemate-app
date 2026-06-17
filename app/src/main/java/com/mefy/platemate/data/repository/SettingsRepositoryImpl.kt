@@ -7,12 +7,13 @@ import com.mefy.platemate.core.common.map
 import com.mefy.platemate.core.common.toResultOr
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.local.SessionStore
-import com.mefy.platemate.data.mapper.UserSettingsMapper
+import com.mefy.platemate.data.mapper.SettingsOverviewMapper
 import com.mefy.platemate.data.remote.rest.service.SettingsApiService
 import com.mefy.platemate.data.remote.dto.settings.UpdateSettingsRequest
 import com.mefy.platemate.data.remote.safeApiCall
 import com.mefy.platemate.data.remote.safeMessageCall
 import com.mefy.platemate.domain.model.settings.UserSettings
+import com.mefy.platemate.domain.model.settings.SettingsOverview
 import com.mefy.platemate.domain.repository.SettingsRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
@@ -21,14 +22,14 @@ import kotlinx.coroutines.withContext
 class SettingsRepositoryImpl @Inject constructor(
     private val api: SettingsApiService,
     private val sessionStore: SessionStore,
-    private val userSettingsMapper: UserSettingsMapper,
+    private val settingsOverviewMapper: SettingsOverviewMapper,
     private val appDispatchers: AppDispatchers
 ) : SettingsRepository {
 
-    override suspend fun getMySettings(): AppResult<UserSettings> =
+    override suspend fun getSettingsOverview(): AppResult<SettingsOverview> =
         withContext(appDispatchers.io) {
             currentUserIdResult().flatMapSuspend { userId ->
-                safeApiCall { api.getMySettings(userId) }.map(userSettingsMapper::map)
+                safeApiCall { api.getSettingsOverview(userId) }.map(settingsOverviewMapper::map)
             }
         }
 
@@ -40,7 +41,6 @@ class SettingsRepositoryImpl @Inject constructor(
                         userId,
                         UpdateSettingsRequest(
                             messagingEnabled = settings.messagingEnabled,
-                            locationSharingEnabled = settings.locationSharingEnabled,
                             messageNotificationsEnabled = settings.messageNotificationsEnabled,
                             friendNotificationsEnabled = settings.friendNotificationsEnabled
                         )

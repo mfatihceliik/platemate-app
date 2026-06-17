@@ -10,5 +10,6 @@ data class PlateDetailUiModel(
     val cityName: String?,
     val reportTags: List<PlateReportTagUiModel> = emptyList(),
     val ratingAverage: Double,
-    val commentCount: Long
+    val commentCount: Long,
+    val isBookmarked: Boolean = false
 )

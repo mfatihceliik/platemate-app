@@ -7,18 +7,26 @@ import com.mefy.platemate.domain.model.profile.UserProfile
 import javax.inject.Inject
 
 class UserProfileMapper @Inject constructor(
+    private val userSettingsMapper: UserSettingsMapper,
     private val socialMediaLinkMapper: SocialMediaLinkMapper,
-    private val plateReviewPageMapper: PlateReviewPageMapper
+    private val plateReviewMapper: PlateReviewMapper,
+    private val profileFriendRequestMapper: ProfileFriendRequestMapper
 ) : Mapper<UserProfileDto, UserProfile> {
     override fun map(input: UserProfileDto): UserProfile = UserProfile(
         id = input.id,
+        email = input.email,
         username = input.username,
-        driverRating = input.driverRating,
+        totalFriendCounts = input.totalFriendCounts,
+        averageGivenRating = input.averageGivenRating,
         reviewCount = input.reviewCount,
-        totalRatingSum = input.totalRatingSum,
+        joinedAt = input.joinedAt,
+        premiumActive = input.premiumActive,
+        premiumUntil = input.premiumUntil,
+        userSettings = userSettingsMapper.map(input.userSettings),
+        reviewStatusCounts = input.reviewStatusCounts,
+        evaluationTotals = input.evaluationTotals,
         socialMediaLinks = socialMediaLinkMapper.mapList(input.socialMediaLinks),
-        plateReviews = plateReviewPageMapper.map(input.plateReviews)
+        plateReviews = plateReviewMapper.mapList(input.plateReviews),
+        friendRequests = profileFriendRequestMapper.mapList(input.friendRequests)
     )
 }
-
-

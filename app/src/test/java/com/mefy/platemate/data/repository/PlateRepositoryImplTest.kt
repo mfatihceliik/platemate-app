@@ -5,10 +5,8 @@ import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.PlateSearchResultMapper
-import com.mefy.platemate.data.remote.dto.plate.PlateDto
-import com.mefy.platemate.data.remote.dto.plate.PlateSearchRequest
+import com.mefy.platemate.data.remote.dto.plate.PlateDetailDto
 import com.mefy.platemate.data.remote.dto.report.ReportTypeDto
-import com.mefy.platemate.data.remote.dto.review.ReviewDto
 import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import com.mefy.platemate.testutil.MainDispatcherRule
 import java.io.IOException
@@ -37,20 +35,18 @@ class PlateRepositoryImplTest {
                 response = DataResultResponse(
                     success = true,
                     message = null,
-                    data = PlateSearchRequest(
-                        id = 12L,
+                    data = PlateDetailDto(
                         plateCode = "34ABC123",
                         cityName = "Istanbul",
                         ratingAverage = 4.2,
-                        totalRatingSum = 30L,
-                        totalSearchCount = 12L,
-                        totalReviewCount = 7L,
-                        totalReportCount = 1L,
-                        totalWeightedReportScore = 2L,
-                        score = 80,
+                        reviewCount = 7L,
+                        todaySearchCount = 12L,
+                        todayReviewCount = 2L,
+                        todayReportCount = 1L,
+                        todayWeightedReportScore = 2.0,
+                        score = 80.0,
                         lastActivityAt = "2026-05-19T00:00:00Z",
-                        recentReviews = listOf(sampleReviewDto(plateCode = "34ABC123")),
-                        recentReportTypes = listOf(sampleReportTypeDto())
+                        reportTypeDto = listOf(sampleReportTypeDto())
                     )
                 )
             )
@@ -60,12 +56,10 @@ class PlateRepositoryImplTest {
 
         assertTrue(result is AppResult.Success)
         val data = (result as AppResult.Success).data
-        assertEquals(12L, data.id)
         assertEquals("34ABC123", data.plateCode)
         assertEquals("Istanbul", data.cityName)
         assertEquals(4.2, data.ratingAverage, 0.0)
-        assertEquals(7L, data.totalReviewCount)
-        assertEquals(30L, data.totalRatingSum)
+        assertEquals(7L, data.reviewCount)
     }
 
     @Test
@@ -141,31 +135,16 @@ class PlateRepositoryImplTest {
     )
 
     private class FakePlateApiService(
-        private val response: DataResultResponse<PlateSearchRequest>? = null,
+        private val response: DataResultResponse<PlateDetailDto>? = null,
         private val throwable: Throwable? = null
     ) : PlateApiService {
-        override suspend fun searchPlate(plate: String): DataResultResponse<PlateSearchRequest> {
+        override suspend fun searchPlate(plate: String): DataResultResponse<PlateDetailDto> {
             throwable?.let { throw it }
             return response ?: error("Response must be provided for this test case.")
-        }
-
-        override suspend fun searchPlateByPath(plate: String): DataResultResponse<PlateDto> {
-            throw UnsupportedOperationException("Not used in this test")
         }
     }
 
     private companion object {
-        fun sampleReviewDto(plateCode: String): ReviewDto = ReviewDto(
-            id = 1L,
-            plateCode = plateCode,
-            rating = 4,
-            comment = "safe",
-            userId = 2L,
-            reviewerUsername = "user",
-            createdAt = null,
-            updatedAt = null
-        )
-
         fun sampleReportTypeDto(): ReportTypeDto = ReportTypeDto(
             code = "SAFE",
             label = "Safe",

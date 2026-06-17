@@ -16,5 +16,6 @@ interface SearchUiMapper {
     ): RecentSearch
     fun mapRecentSearchItem(item: RecentSearch, isBookmarked: Boolean): SearchRecentUiModel
     fun mapRecentSearches(items: List<RecentSearch>, bookmarkedCodes: Set<String>): List<SearchRecentUiModel>
+    fun mapSavedPlates(items: List<SavedPlate>): List<SearchRecentUiModel>
     fun mapSavedPlate(item: RecentSearch): SavedPlate
 }

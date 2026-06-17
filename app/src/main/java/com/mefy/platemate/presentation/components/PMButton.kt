@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.util.debouncedClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -30,17 +35,29 @@ fun PMButton(
     style: PMButtonStyle = PMButtonStyle.Filled,
     enabled: Boolean = true,
     loading: Boolean = false,
+    debounceClick: Boolean = true,
+    debounceMillis: Long = 600L,
+    colors: ButtonColors? = null,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
     val resolvedEnabled = enabled && !loading
-    val buttonModifier = modifier.heightIn(min = 48.dp)
+    val buttonModifier = modifier.heightIn(min = MaterialTheme.pmDimensions.sizing.ctaHeight)
+    val shape = MaterialTheme.shapes
+    
+    val safeOnClick = if (debounceClick) {
+        debouncedClick(debounceMillis = debounceMillis, onClick = onClick)
+    } else {
+        onClick
+    }
 
     when (style) {
         PMButtonStyle.Filled -> {
             Button(
-                onClick = onClick,
+                onClick = safeOnClick,
                 modifier = buttonModifier,
-                enabled = resolvedEnabled
+                enabled = resolvedEnabled,
+                shape = shape.medium,
+                colors = colors ?: ButtonDefaults.buttonColors()
             ) {
                 PMButtonContent(
                     text = text,
@@ -51,9 +68,10 @@ fun PMButton(
         }
         PMButtonStyle.Outlined -> {
             OutlinedButton(
-                onClick = onClick,
+                onClick = safeOnClick,
                 modifier = buttonModifier,
-                enabled = resolvedEnabled
+                enabled = resolvedEnabled,
+                shape = shape.medium
             ) {
                 PMButtonContent(
                     text = text,
@@ -64,9 +82,10 @@ fun PMButton(
         }
         PMButtonStyle.Text -> {
             TextButton(
-                onClick = onClick,
+                onClick = safeOnClick,
                 modifier = buttonModifier,
-                enabled = resolvedEnabled
+                enabled = resolvedEnabled,
+                shape =shape.medium
             ) {
                 PMButtonContent(
                     text = text,
@@ -84,25 +103,27 @@ private fun PMButtonContent(
     loading: Boolean,
     leadingIcon: @Composable (() -> Unit)?
 ) {
+    val dims = MaterialTheme.pmDimensions
+
     if (loading) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(18.dp),
-            strokeWidth = MaterialTheme.pmDimensions.stroke.st2,
-            color = LocalContentColor.current
-        )
+        PMCircularProgressIndicator()
         return
     }
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s8),
+        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
         verticalAlignment = Alignment.CenterVertically
     ) {
         leadingIcon?.invoke()
-        PMText(text = text, style = PMTextStyle.Label, color = LocalContentColor.current)
+        PMText(
+            text = text,
+            style = PMTextStyle.Label,
+            color = LocalContentColor.current
+        )
     }
 }
 
-@Preview(name = "PMButton Light", showBackground = true, backgroundColor = 0xFFF6FAFB)
+@Preview(name = "PMButton Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun PMButtonLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
@@ -110,7 +131,7 @@ private fun PMButtonLightPreview() {
     }
 }
 
-@Preview(name = "PMButton Dark", showBackground = true, backgroundColor = 0xFF101618)
+@Preview(name = "PMButton Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun PMButtonDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -125,7 +146,7 @@ private fun PMButtonPreviewContent() {
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .padding(MaterialTheme.pmDimensions.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s10)
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s12)
     ) {
         PMButton(
             text = "Filled",

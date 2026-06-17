@@ -1,0 +1,37 @@
+package com.mefy.platemate.presentation.features.main.messages
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun MessagesRoute(
+    viewModel: MessagesViewModel,
+    onNavigateToChat: (conversationId: String, participantName: String, initials: String, avatarBgArgb: Long, avatarFgArgb: Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.uiEffect.collectLatest { effect ->
+            when (effect) {
+                is MessagesUiEffect.NavigateToChat -> onNavigateToChat(
+                    effect.conversationId,
+                    effect.participantName,
+                    effect.initials,
+                    effect.avatarBgArgb,
+                    effect.avatarFgArgb
+                )
+            }
+        }
+    }
+
+    MessagesScreen(
+        state = state,
+        onAction = viewModel::onAction,
+        modifier = modifier
+    )
+}

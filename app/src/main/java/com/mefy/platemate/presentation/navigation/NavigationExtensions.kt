@@ -33,19 +33,97 @@ fun NavHostController.navigateToAuthAndClearBackStack() {
 
 
 fun NavHostController.navigateToLogin(prefillIdentifier: String? = null) {
-    navigate(LoginDestination(prefillIdentifier = prefillIdentifier))
+    if (currentDestination?.route != LoginDestination(prefillIdentifier).toString()) {
+        navigate(LoginDestination(prefillIdentifier = prefillIdentifier)) {
+            launchSingleTop = true
+        }
+    }
 }
 
 fun NavHostController.navigateToRegister(prefillIdentifier: String? = null) {
-    navigate(RegisterDestination(prefillIdentifier = prefillIdentifier))
+    if (currentDestination?.route != RegisterDestination(prefillIdentifier).toString()) {
+        navigate(RegisterDestination(prefillIdentifier = prefillIdentifier)) {
+            launchSingleTop = true
+        }
+    }
 }
 
 fun NavHostController.navigateToDiscoverDetail(id: String) {
-    navigate(DiscoverDetailDestination(id = id))
+    navigate(DiscoverDetailDestination(id = id)) {
+        launchSingleTop = true
+    }
 }
 
 fun NavHostController.navigateToSearchDetail(id: String) {
-    navigate(SearchDetailDestination(id = id))
+    navigate(SearchDetailDestination(id = id)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToReview(plateCode: String) {
+    navigate(ReviewDestination(plateCode = plateCode)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToEditProfile() {
+    navigate(EditProfileDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileSettings() {
+    navigate(ProfileSettingsHomeDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileFriends() {
+    navigate(ProfileFriendsDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileNotificationPreferences() {
+    navigate(ProfileNotificationPreferencesDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfilePremiumInfo() {
+    navigate(ProfilePremiumInfoDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileSocialLinks() {
+    navigate(ProfileSocialLinksDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileChangePassword() {
+    navigate(ProfileChangePasswordDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileThemeColor() {
+    navigate(ProfileThemeColorDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileLanguage() {
+    navigate(ProfileLanguageDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToUserProfile(userId: String) {
+    navigate(UserProfileDestination(userId = userId)) {
+        launchSingleTop = true
+    }
 }
 
 fun NavHostController.navigateToTopLevelDestination(destination: TopLevelDestination) {

@@ -91,6 +91,7 @@ class DefaultUiErrorResolver @Inject constructor() : UiErrorResolver {
         is ErrorContext.Login -> setOf("identifier", "username", "email", "password")
         is ErrorContext.Register -> setOf("username", "email", "password")
         is ErrorContext.Generic,
+        is ErrorContext.Profile,
         is ErrorContext.Search,
         is ErrorContext.SessionGate -> emptySet()
     }

@@ -5,5 +5,6 @@ sealed class ErrorContext {
     object Login : ErrorContext()
     object Register : ErrorContext()
     object Search : ErrorContext()
+    object Profile : ErrorContext()
     object SessionGate : ErrorContext()
 }

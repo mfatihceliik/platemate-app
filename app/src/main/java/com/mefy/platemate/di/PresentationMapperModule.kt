@@ -2,6 +2,8 @@ package com.mefy.platemate.di
 
 import com.mefy.platemate.presentation.features.main.discover.mapper.DefaultDiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverUiMapper
+import com.mefy.platemate.presentation.features.main.profile.mapper.DefaultProfileUiMapper
+import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiMapper
 import com.mefy.platemate.presentation.features.main.search.mapper.DefaultSearchUiMapper
 import com.mefy.platemate.presentation.features.main.search.mapper.SearchUiMapper
 import dagger.Binds
@@ -21,4 +23,8 @@ abstract class PresentationMapperModule {
     @Binds
     @Singleton
     abstract fun bindSearchUiMapper(impl: DefaultSearchUiMapper): SearchUiMapper
+
+    @Binds
+    @Singleton
+    abstract fun bindProfileUiMapper(impl: DefaultProfileUiMapper): ProfileUiMapper
 }

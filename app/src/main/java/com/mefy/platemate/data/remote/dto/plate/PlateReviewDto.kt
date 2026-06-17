@@ -7,6 +7,8 @@ data class PlateReviewDto(
     @SerializedName("plateCode") val plateCode: String,
     @SerializedName("rating") val rating: Int,
     @SerializedName("comment") val comment: String,
+    @SerializedName("reviewStatusId") val reviewStatusId: Long? = null,
+    @SerializedName(value = "reviewStatusCode", alternate = ["reviewStatus"]) val reviewStatusCode: String,
     @SerializedName("userId") val userId: Long,
     @SerializedName("username") val username: String,
     @SerializedName("createdAt") val createdAt: String, // ISO 8601

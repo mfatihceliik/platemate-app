@@ -9,6 +9,7 @@ internal fun NavGraphBuilder.mainGraph(
     navController: NavHostController,
     onNavigateToSearchDetail: (String) -> Unit = {},
     onNavigateToDiscoverDetail: (String) -> Unit = {},
+    onShowSnackbar: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     navigation<MainGraphDestination>(startDestination = SearchGraphDestination) {
@@ -22,7 +23,12 @@ internal fun NavGraphBuilder.mainGraph(
             onNavigateToDiscoverDetail = onNavigateToDiscoverDetail,
             modifier = modifier
         )
-        messagesGraph(modifier = modifier)
-        profileGraph(modifier = modifier)
+        messagesGraph(navController = navController, modifier = modifier)
+        profileGraph(
+            navController = navController,
+            onNavigateToSearchDetail = onNavigateToSearchDetail,
+            onShowSnackbar = onShowSnackbar,
+            modifier = modifier
+        )
     }
 }

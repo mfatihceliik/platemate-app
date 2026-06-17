@@ -32,28 +32,26 @@ class SearchPlateUseCaseTest {
             return AppResult.Success(
                 PlateSearchResult(
                     id = 1L,
-                    plateCode = plateCode,
-                    cityName = "Istanbul",
-                    ratingAverage = 0.0,
-                    totalRatingSum = 0L,
-                    totalSearchCount = 0L,
-                    totalReviewCount = 0L,
-                    totalReportCount = 0L,
-                    totalWeightedReportScore = 0L,
-                    score = 0,
-                    lastActivityAt = "2026-05-19T00:00:00Z",
+                    plateCode = "34ABC123",
+                    ratingAverage = 4.5,
+                    reviewCount = 15,
+                    todaySearchCount = 5,
+                    todayReviewCount = 2,
+                    todayReportCount = 1,
+                    todayWeightedReportScore = 3.0,
+                    topReportTypes = emptyList(),
                     recentReviews = listOf(
                         Review(
                             id = 1L,
                             plateCode = plateCode,
                             rating = 0,
                             comment = "",
+                            reviewStatus = "APPROVED",
                             userId = 1L,
                             reviewerUsername = "user",
                             createdAt = null,
                             updatedAt = null
                         )
-                    ),
                     recentReportTypes = listOf(
                         ReportType(
                             code = "SAFE",

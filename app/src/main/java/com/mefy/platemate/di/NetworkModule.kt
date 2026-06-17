@@ -9,7 +9,7 @@ import com.mefy.platemate.data.remote.rest.service.AuthTokenApiService
 import com.mefy.platemate.data.remote.rest.service.ChatApiService
 import com.mefy.platemate.data.remote.rest.service.DiscoveryApiService
 import com.mefy.platemate.data.remote.rest.service.FcmTokenApiService
-import com.mefy.platemate.data.remote.rest.service.LocationApiService
+
 import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import com.mefy.platemate.data.remote.rest.service.ProfileApiService
 import com.mefy.platemate.data.remote.rest.service.ReviewApiService
@@ -158,10 +158,6 @@ object NetworkModule {
     fun provideSocialLinkApiService(retrofit: Retrofit): SocialLinkApiService =
         retrofit.create(SocialLinkApiService::class.java)
 
-    @Provides
-    @Singleton
-    fun provideLocationApiService(retrofit: Retrofit): LocationApiService =
-        retrofit.create(LocationApiService::class.java)
 
     @Provides
     @Singleton

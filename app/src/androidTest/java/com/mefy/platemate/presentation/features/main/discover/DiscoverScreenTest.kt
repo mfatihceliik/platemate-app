@@ -1,16 +1,25 @@
 package com.mefy.platemate.presentation.features.main.discover
 
+import android.content.Context
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
+import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
+import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
+import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
+import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiType
+import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
+import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -25,7 +34,7 @@ class DiscoverScreenTest {
 
     @Test
     fun discoverScreen_loadingState_showsShimmerAndHidesContent() {
-        val state = sampleState(isLoading = true)
+        val state = sampleState(isInitialLoading = true)
 
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -43,7 +52,7 @@ class DiscoverScreenTest {
 
     @Test
     fun discoverScreen_displaysCoreSections_whenLoaded() {
-        val state = sampleState(isLoading = false)
+        val state = sampleState(isInitialLoading = false)
 
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -64,7 +73,7 @@ class DiscoverScreenTest {
     @Test
     fun filterChipSelection_emitsFilterAction() {
         val emittedActions = mutableListOf<DiscoverUiAction>()
-        val state = sampleState(isLoading = false)
+        val state = sampleState(isInitialLoading = false)
 
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -75,11 +84,11 @@ class DiscoverScreenTest {
             }
         }
 
-        composeRule.onNodeWithText(getString(R.string.discover_filter_dangerous)).performClick()
+        composeRule.onNodeWithText(getString(R.string.discover_filter_careless)).performClick()
 
         composeRule.runOnIdle {
             assertEquals(
-                DiscoverUiAction.FilterSelected(DiscoverTrendFilter.Dangerous),
+                DiscoverUiAction.FilterSelected(DiscoverFilterUi.Attention),
                 emittedActions.lastOrNull()
             )
         }
@@ -87,7 +96,7 @@ class DiscoverScreenTest {
 
     @Test
     fun trendPlateClick_triggersAction_whenLoaded() {
-        val state = sampleState(isLoading = false)
+        val state = sampleState(isInitialLoading = false)
         var clickedAction: DiscoverUiAction? = null
 
         composeRule.setContent {
@@ -115,7 +124,7 @@ class DiscoverScreenTest {
 
     @Test
     fun loadingState_doesNotEmitTrendClickAction() {
-        val state = sampleState(isLoading = true)
+        val state = sampleState(isInitialLoading = true)
         var clickedAction: DiscoverUiAction? = null
 
         composeRule.setContent {
@@ -138,50 +147,60 @@ class DiscoverScreenTest {
     }
 
     private fun getString(resId: Int): String =
-        androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
-            .getString(resId)
+        ApplicationProvider.getApplicationContext<Context>().getString(resId)
 
-    private fun sampleState(isLoading: Boolean): DiscoverUiState {
+    private fun sampleState(isInitialLoading: Boolean): DiscoverUiState {
         return DiscoverUiState(
-            isLoading = isLoading,
-            selectedFilter = DiscoverTrendFilter.Trend,
+            isInitialLoading = isInitialLoading,
+            selectedFilter = DiscoverFilterUi.Trend,
             metrics = listOf(
                 DiscoverMetricUiModel(
-                    type = DiscoverMetricType.Search,
+                    type = DiscoverMetricUiType.Search,
                     valueText = "142",
                     labelResId = R.string.discover_metric_search_label,
                     periodResId = R.string.discover_metric_today_period
                 ),
                 DiscoverMetricUiModel(
-                    type = DiscoverMetricType.Comment,
+                    type = DiscoverMetricUiType.Comment,
                     valueText = "1.2K",
                     labelResId = R.string.discover_metric_comment_label,
                     periodResId = R.string.discover_metric_week_period
                 ),
                 DiscoverMetricUiModel(
-                    type = DiscoverMetricType.Alert,
+                    type = DiscoverMetricUiType.Alert,
                     valueText = "38",
-                    labelResId = R.string.discover_metric_alert_label,
+                    labelResId = R.string.discover_metric_report_label,
                     periodResId = R.string.discover_metric_active_alert_period
                 )
             ),
-            trendPlates = listOf(
-                DiscoverTrendPlateUiModel(
+            plateDetail = listOf(
+                PlateDetailUiModel(
                     id = "trend_34_abc_123",
                     rank = 1,
                     plateCode = "34 ABC 123",
-                    cityResId = R.string.discover_city_istanbul,
-                    primaryTagResId = R.string.discover_tag_scissor_driver,
-                    secondaryTagResId = R.string.discover_tag_speeding,
-                    scoreText = "2.3",
-                    commentCount = 3,
-                    category = DiscoverTrendCategory.Dangerous
+                    cityName = "Istanbul",
+                    reportTags = listOf(
+                        PlateReportTagUiModel(
+                            code = "CUTS",
+                            label = "Cuts lanes",
+                            severity = "HIGH",
+                            colorHex = "#FF6A3D"
+                        ),
+                        PlateReportTagUiModel(
+                            code = "SPEEDING",
+                            label = "Speeding",
+                            severity = "MEDIUM",
+                            colorHex = "#FFB300"
+                        )
+                    ),
+                    ratingAverage = 2.3,
+                    commentCount = 3
                 )
             ),
             cityStats = listOf(
                 DiscoverCityStatUiModel(
                     rank = 1,
-                    cityResId = R.string.discover_city_istanbul,
+                    cityName = "Istanbul",
                     count = 312,
                     progress = 1f
                 )
@@ -189,13 +208,14 @@ class DiscoverScreenTest {
             recentActivities = listOf(
                 DiscoverRecentActivityUiModel(
                     id = "activity_ahmet_comment",
-                    type = DiscoverActivityType.Comment,
-                    actorResId = R.string.discover_activity_actor_ahmet,
-                    actionResId = R.string.discover_activity_action_commented,
+                    type = RecentActivityActionType.REVIEW_ADDED,
+                    actorName = "Ahmet",
+                    actionText = "commented on",
                     plateCode = "34 ABC 123",
-                    timeAgoResId = R.string.discover_time_2_min_ago
+                    timeAgoText = "2 min ago"
                 )
             )
         )
     }
 }
+

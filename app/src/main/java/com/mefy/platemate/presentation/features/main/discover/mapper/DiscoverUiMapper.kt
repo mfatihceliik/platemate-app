@@ -7,5 +7,5 @@ import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 
 interface DiscoverUiMapper {
     fun mapHome(input: DiscoveryHome): DiscoverHomeUiData
-    fun mapTabPlates(tabs: DiscoveryTabs, filter: DiscoverFilterUi): List<PlateDetailUiModel>
+    fun mapTabPlates(tabs: DiscoveryTabs, filter: DiscoverFilterUi, bookmarkedCodes: Set<String>): List<PlateDetailUiModel>
 }

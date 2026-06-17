@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.discover
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Explore
@@ -28,7 +29,7 @@ internal fun DiscoverMetricUiType.toMetricIcon(): ImageVector {
 internal fun DiscoverFilterUi.toLabelResId(): Int {
     return when (this) {
         DiscoverFilterUi.Trend -> R.string.discover_filter_trend
-        DiscoverFilterUi.Attention -> R.string.discover_filter_attention
+        DiscoverFilterUi.Attention -> R.string.discover_filter_careless
         DiscoverFilterUi.GoodDriver -> R.string.discover_filter_good_driver
         DiscoverFilterUi.Newest -> R.string.discover_filter_new
     }
@@ -47,6 +48,15 @@ internal fun DiscoverFilterUi.toSectionTitleResId(): Int {
 internal fun DiscoverFilterUi.toSectionIcon(): ImageVector {
     return when (this) {
         DiscoverFilterUi.Trend -> Icons.Filled.Explore
+        DiscoverFilterUi.Attention -> Icons.Filled.Warning
+        DiscoverFilterUi.GoodDriver -> Icons.Filled.ThumbUp
+        DiscoverFilterUi.Newest -> Icons.Filled.NewReleases
+    }
+}
+
+internal fun DiscoverFilterUi.toFilterChipIcon(): ImageVector {
+    return when (this) {
+        DiscoverFilterUi.Trend -> Icons.AutoMirrored.Filled.TrendingUp
         DiscoverFilterUi.Attention -> Icons.Filled.Warning
         DiscoverFilterUi.GoodDriver -> Icons.Filled.ThumbUp
         DiscoverFilterUi.Newest -> Icons.Filled.NewReleases

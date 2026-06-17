@@ -38,6 +38,7 @@ fun PMPasswordField(
     leadingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     errorText: String? = null,
+    showToggle: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -52,27 +53,30 @@ fun PMPasswordField(
         errorText = errorText,
         leadingIcon = leadingIcon,
         singleLine = true,
-        trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(
-                    imageVector = if (passwordVisible) {
-                        Icons.Filled.VisibilityOff
-                    } else {
-                        Icons.Filled.Visibility
-                    },
-                    contentDescription = if (passwordVisible) {
-                        stringResource(R.string.common_hide)
-                    } else {
-                        stringResource(R.string.common_show)
-                    }
-                )
+        trailingIcon = if (showToggle) {
+            {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) {
+                            Icons.Filled.VisibilityOff
+                        } else {
+                            Icons.Filled.Visibility
+                        },
+                        contentDescription = if (passwordVisible) {
+                            stringResource(R.string.common_hide)
+                        } else {
+                            stringResource(R.string.common_show)
+                        },
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-        },
+        } else null,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
         ),
         keyboardActions = keyboardActions,
-        visualTransformation = if (passwordVisible) {
+        visualTransformation = if (showToggle && passwordVisible) {
             VisualTransformation.None
         } else {
             PasswordVisualTransformation()
@@ -80,7 +84,7 @@ fun PMPasswordField(
     )
 }
 
-@Preview(name = "PMPasswordField Light", showBackground = true, backgroundColor = 0xFFF6FAFB)
+@Preview(name = "PMPasswordField Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun PMPasswordFieldLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
@@ -88,7 +92,7 @@ private fun PMPasswordFieldLightPreview() {
     }
 }
 
-@Preview(name = "PMPasswordField Dark", showBackground = true, backgroundColor = 0xFF101618)
+@Preview(name = "PMPasswordField Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun PMPasswordFieldDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -116,9 +120,10 @@ private fun PMPasswordFieldPreviewContent() {
         PMPasswordField(
             value = "12",
             onValueChange = {},
-            label = "Password",
+            label = "Confirm Password",
             isError = true,
             errorText = "Password is too short",
+            showToggle = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = MaterialTheme.pmDimensions.spacing.s12)

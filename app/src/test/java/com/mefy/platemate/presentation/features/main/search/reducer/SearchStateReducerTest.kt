@@ -57,12 +57,22 @@ class SearchStateReducerTest {
         )
 
         val state = reducer.onRecentSearchesUpdated(
-            state = SearchUiState(),
+            state = SearchUiState(isInitialLoading = true),
             recentSearches = recent
         )
 
+        assertFalse(state.isInitialLoading)
         assertEquals(1, state.recentSearches.size)
         assertEquals("34ABC123", state.recentSearches.first().normalizedPlateCode)
+    }
+
+    @Test
+    fun onInitialLoadFailed_turnsOffInitialLoading() {
+        val state = reducer.onInitialLoadFailed(
+            state = SearchUiState(isInitialLoading = true)
+        )
+
+        assertFalse(state.isInitialLoading)
     }
 
     @Test

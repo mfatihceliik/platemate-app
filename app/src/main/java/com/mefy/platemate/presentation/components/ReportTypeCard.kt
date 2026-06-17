@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.style.TextOverflow
+import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -28,7 +29,7 @@ fun ReportTypeCard(
 
     PMText(
         text = tag.label,
-        style = PMTextStyle.Label,
+        style = PMTextStyle.Caption,
         color = contentColor,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -37,7 +38,7 @@ fun ReportTypeCard(
                 color = backgroundColor,
                 shape = RoundedCornerShape(radius.r8)
             )
-            .padding(horizontal = spacing.s8, vertical = spacing.s4)
+            .padding(horizontal = spacing.s4, vertical = spacing.s4)
     )
 }
 

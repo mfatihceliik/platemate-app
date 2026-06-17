@@ -54,8 +54,17 @@ class SearchStateReducer @Inject constructor() {
         formMessage = message
     )
 
-    fun onRecentSearchesUpdated(
+    fun onDataUpdated(
         state: SearchUiState,
-        recentSearches: List<SearchRecentUiModel>
-    ): SearchUiState = state.copy(recentSearches = recentSearches)
+        recentSearches: List<SearchRecentUiModel>,
+        bookmarkedPlates: List<SearchRecentUiModel>
+    ): SearchUiState = state.copy(
+        isInitialLoading = false,
+        recentSearches = recentSearches,
+        bookmarkedPlates = bookmarkedPlates
+    )
+
+    fun onInitialLoadFailed(state: SearchUiState): SearchUiState = state.copy(
+        isInitialLoading = false
+    )
 }

@@ -19,7 +19,9 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun getProfile(userId: Long): AppResult<UserProfile> =
         withContext(appDispatchers.io) {
-            safeApiCall { api.getProfile(userId) }.map(userProfileMapper::map)
+            safeApiCall {
+                api.getProfile(userId = userId)
+            }.map(userProfileMapper::map)
         }
 }
 

@@ -8,10 +8,8 @@ import javax.inject.Inject
 class UserSettingsMapper @Inject constructor() : Mapper<UserSettingsDto, UserSettings> {
     override fun map(input: UserSettingsDto): UserSettings = UserSettings(
         messagingEnabled = input.messagingEnabled,
-        locationSharingEnabled = input.locationSharingEnabled,
         messageNotificationsEnabled = input.messageNotificationsEnabled,
         friendNotificationsEnabled = input.friendNotificationsEnabled
     )
 }
-
 

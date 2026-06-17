@@ -7,6 +7,7 @@ data class Review(
     val plateCode: String,
     val rating: Int,
     val comment: String,
+    val reviewStatus: String,
     val userId: Long,
     val reviewerUsername: String,
     val createdAt: AppDateTime?,

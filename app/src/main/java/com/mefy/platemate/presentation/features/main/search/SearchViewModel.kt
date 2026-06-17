@@ -1,4 +1,4 @@
-﻿package com.mefy.platemate.presentation.features.main.search
+package com.mefy.platemate.presentation.features.main.search
 
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
@@ -7,8 +7,10 @@ import com.mefy.platemate.domain.model.search.RecentSearch
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.ClearRecentSearchesUseCase
+import com.mefy.platemate.domain.usecase.search.DeleteRecentSearchUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ObserveRecentSearchesUseCase
+import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlatesUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.UpsertRecentSearchUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
@@ -34,9 +36,11 @@ import kotlinx.coroutines.flow.update
 class SearchViewModel @Inject constructor(
     private val searchPlateUseCase: SearchPlateUseCase,
     private val observeRecentSearchesUseCase: ObserveRecentSearchesUseCase,
+    private val observeSavedPlatesUseCase: ObserveSavedPlatesUseCase,
     private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
     private val upsertRecentSearchUseCase: UpsertRecentSearchUseCase,
     private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
+    private val deleteRecentSearchUseCase: DeleteRecentSearchUseCase,
     private val clearRecentSearchesUseCase: ClearRecentSearchesUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase,
@@ -45,29 +49,42 @@ class SearchViewModel @Inject constructor(
     uiErrorResolver: UiErrorResolver
 ) : BaseViewModel(uiErrorResolver) {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow(SearchUiState(isInitialLoading = true))
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<SearchUiEffect>()
     val uiEffect: SharedFlow<SearchUiEffect> = _uiEffect.asSharedFlow()
     private var latestRecentItems: List<RecentSearch> = emptyList()
+    private var latestSavedPlates: List<com.mefy.platemate.domain.model.search.SavedPlate> = emptyList()
 
     init {
         observeRecentSearches()
     }
 
     private fun observeRecentSearches() {
-        launch {
-            observeRecentSearchesUseCase()
-                .combine(observeSavedPlateCodesUseCase()) { recentItems, bookmarkedCodes ->
-                    latestRecentItems = recentItems
-                    searchUiMapper.mapRecentSearches(recentItems, bookmarkedCodes)
+        launch(
+            onError = { throwable ->
+                _uiState.update { current ->
+                    searchStateReducer.onInitialLoadFailed(current)
                 }
-                .collectLatest { mappedItems ->
-                    _uiState.update { current ->
-                        searchStateReducer.onRecentSearchesUpdated(current, mappedItems)
-                    }
+                handleError(throwable)
+            }
+        ) {
+            combine(
+                observeRecentSearchesUseCase(),
+                observeSavedPlateCodesUseCase(),
+                observeSavedPlatesUseCase()
+            ) { recentItems, bookmarkedCodes, savedPlates ->
+                latestRecentItems = recentItems
+                latestSavedPlates = savedPlates
+                val mappedRecent = searchUiMapper.mapRecentSearches(recentItems, bookmarkedCodes)
+                val mappedSaved = searchUiMapper.mapSavedPlates(savedPlates)
+                Pair(mappedRecent, mappedSaved)
+            }.collectLatest { (mappedRecent, mappedSaved) ->
+                _uiState.update { current ->
+                    searchStateReducer.onDataUpdated(current, mappedRecent, mappedSaved)
                 }
+            }
         }
     }
 
@@ -77,6 +94,8 @@ class SearchViewModel @Inject constructor(
             SearchUiAction.SearchClicked -> onSearchClicked()
             is SearchUiAction.RecentItemClicked -> onRecentItemClicked(action.plateCode)
             is SearchUiAction.RecentBookmarkClicked -> onRecentBookmarkClicked(action.normalizedPlateCode)
+            is SearchUiAction.SavedPlateBookmarkClicked -> onSavedPlateBookmarkClicked(action.normalizedPlateCode)
+            is SearchUiAction.RecentDismissClicked -> onRecentDismissClicked(action.normalizedPlateCode)
             SearchUiAction.ClearRecentClicked -> onClearRecentClicked()
         }
     }
@@ -166,9 +185,25 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun onSavedPlateBookmarkClicked(normalizedPlateCode: String) {
+        launch {
+            val savedPlate = latestSavedPlates.firstOrNull {
+                it.normalizedPlateCode == normalizedPlateCode
+            } ?: return@launch
+
+            toggleSavedPlateUseCase(savedPlate)
+        }
+    }
+
     private fun onClearRecentClicked() {
         launch {
             clearRecentSearchesUseCase()
+        }
+    }
+
+    private fun onRecentDismissClicked(normalizedPlateCode: String) {
+        launch {
+            deleteRecentSearchUseCase(normalizedPlateCode)
         }
     }
 

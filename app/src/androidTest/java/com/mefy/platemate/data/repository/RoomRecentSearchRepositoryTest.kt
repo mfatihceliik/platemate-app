@@ -99,6 +99,27 @@ class RoomRecentSearchRepositoryTest {
         assertEquals("06XYZ987", user2Items.first().normalizedPlateCode)
     }
 
+    @Test
+    fun deleteRecent_removesOnlyTargetPlateForActiveUser() = runBlocking {
+        sessionStore.setSession(sampleSession(userId = 1L))
+        repository.upsertRecent(sampleRecent(normalized = "34ABC123", formatted = "34 ABC 123"))
+        repository.upsertRecent(sampleRecent(normalized = "06XYZ987", formatted = "06 XYZ 987"))
+
+        sessionStore.setSession(sampleSession(userId = 2L))
+        repository.upsertRecent(sampleRecent(normalized = "34ABC123", formatted = "34 ABC 123"))
+
+        sessionStore.setSession(sampleSession(userId = 1L))
+        repository.deleteRecent(normalizedPlateCode = "34ABC123")
+        val user1Items = repository.observeRecent().first()
+        assertEquals(1, user1Items.size)
+        assertEquals("06XYZ987", user1Items.first().normalizedPlateCode)
+
+        sessionStore.setSession(sampleSession(userId = 2L))
+        val user2Items = repository.observeRecent().first()
+        assertEquals(1, user2Items.size)
+        assertEquals("34ABC123", user2Items.first().normalizedPlateCode)
+    }
+
     private fun sampleSession(userId: Long): AuthSession = AuthSession(
         userId = userId,
         username = "user_$userId",

@@ -10,13 +10,16 @@ import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.domain.model.discovery.TopCityPlate
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DefaultDiscoverUiMapperTest {
 
-    private val mapper = DefaultDiscoverUiMapper()
+    private val mapper = DefaultDiscoverUiMapper(
+        formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase()
+    )
 
     @Test
     fun mapHome_mapsMetricsCityProgressAndRecentActivities() {
@@ -41,7 +44,7 @@ class DefaultDiscoverUiMapperTest {
 
         assertEquals(1, attention.size)
         assertEquals(1, attention.first().rank)
-        assertEquals("35DNG111", attention.first().plateCode)
+        assertEquals("35 DNG 111", attention.first().plateCode)
         assertEquals("Istanbul", attention.first().cityName)
         assertEquals(4.4, attention.first().ratingAverage, 0.0)
         assertEquals(1, attention.first().reportTags.size)
@@ -50,6 +53,34 @@ class DefaultDiscoverUiMapperTest {
         assertEquals(1, trend[0].rank)
         assertEquals(2, trend[1].rank)
         assertEquals(4.4, trend[0].ratingAverage, 0.0)
+    }
+
+    @Test
+    fun mapTabPlates_usesPlateCodeFallbackWhenCityIsMissing() {
+        val tabs = DiscoveryTabs(
+            trendPlates = listOf(samplePlate(plateCode = "34ABC123", cityName = null, score = 9.2)),
+            attentionPlates = emptyList(),
+            goodDriverPlates = emptyList(),
+            newPlates = emptyList()
+        )
+
+        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
+
+        assertEquals("\u0130stanbul", trend.first().cityName)
+    }
+
+    @Test
+    fun mapTabPlates_preservesBackendCityWhenPresent() {
+        val tabs = DiscoveryTabs(
+            trendPlates = listOf(samplePlate(plateCode = "34ABC123", cityName = "Ankara", score = 9.2)),
+            attentionPlates = emptyList(),
+            goodDriverPlates = emptyList(),
+            newPlates = emptyList()
+        )
+
+        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
+
+        assertEquals("Ankara", trend.first().cityName)
     }
 
     private fun sampleDiscoveryHome(): DiscoveryHome = DiscoveryHome(
@@ -105,9 +136,13 @@ class DefaultDiscoverUiMapperTest {
         )
     )
 
-    private fun samplePlate(plateCode: String, score: Double): PlateDetail = PlateDetail(
+    private fun samplePlate(
+        plateCode: String,
+        score: Double,
+        cityName: String? = "Istanbul"
+    ): PlateDetail = PlateDetail(
         plateCode = plateCode,
-        cityName = "Istanbul",
+        cityName = cityName,
         ratingAverage = 4.4,
         reviewCount = 5L,
         todaySearchCount = 7L,
