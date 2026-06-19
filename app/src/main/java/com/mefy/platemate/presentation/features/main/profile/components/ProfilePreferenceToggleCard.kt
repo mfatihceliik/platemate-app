@@ -15,6 +15,7 @@ import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun ProfilePreferenceToggleCard(
@@ -24,8 +25,8 @@ fun ProfilePreferenceToggleCard(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.pmColors
     val spacing = MaterialTheme.pmDimensions.spacing
-    val colorScheme = MaterialTheme.colorScheme
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
@@ -42,7 +43,7 @@ fun ProfilePreferenceToggleCard(
                 PMText(
                     text = title,
                     style = PMTextStyle.Label,
-                    color = colorScheme.onSurface,
+                    color = colors.onSurface,
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = spacing.s8)
@@ -55,7 +56,7 @@ fun ProfilePreferenceToggleCard(
             PMText(
                 text = description,
                 style = PMTextStyle.Body,
-                color = colorScheme.onSurfaceVariant
+                color = colors.onSurfaceVariant
             )
         }
     }

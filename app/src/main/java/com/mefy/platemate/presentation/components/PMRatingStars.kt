@@ -22,22 +22,23 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMRatingStars(
     rating: Int,
     modifier: Modifier = Modifier,
     maxStars: Int = 5,
-    starSize: Dp = 34.dp,
-    gap: Dp = 9.dp,
+    starSize: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
     interactive: Boolean = false,
     onRatingChange: ((Int) -> Unit)? = null
 ) {
     val colors = MaterialTheme.pmColors
+    val dims = MaterialTheme.pmDimensions
 
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(gap)
+        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s0)
     ) {
         for (i in 1..maxStars) {
             val filled = i <= rating
@@ -49,7 +50,7 @@ fun PMRatingStars(
                 Modifier.size(starSize)
             }
 
-            Icon(
+            PMIcon(
                 imageVector = if (filled) Icons.Filled.Star else Icons.Outlined.Star,
                 contentDescription = null,
                 tint = if (filled) colors.star else colors.starEmpty,
@@ -68,7 +69,7 @@ private fun PMRatingStarsPreview() {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             PMRatingStars(rating = 4, starSize = 34.dp)
-            PMRatingStars(rating = 3, starSize = 12.dp, gap = 0.dp)
+            PMRatingStars(rating = 3, starSize = 12.dp)
 
             var selectedRating by remember { mutableIntStateOf(0) }
             PMRatingStars(

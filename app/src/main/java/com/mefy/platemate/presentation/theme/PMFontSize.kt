@@ -11,4 +11,6 @@ data class PMFontSize(
     val md: TextUnit = 14.sp,
     val lg: TextUnit = 16.sp,
     val xl: TextUnit = 18.sp,
+    val xxl: TextUnit = 26.sp,
+    val huge: TextUnit = 36.sp
 )

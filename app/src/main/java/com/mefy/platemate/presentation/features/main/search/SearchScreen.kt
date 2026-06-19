@@ -29,9 +29,7 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,16 +41,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.text.resolve
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PlateBadgeSize
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
@@ -71,7 +70,12 @@ fun SearchScreen(
     onAction: (SearchUiAction) -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    PMBaseScreen(modifier = modifier) { innerPadding ->
+    PMBaseScreen(
+        modifier = modifier,
+        topBarConfig = PMTopBarConfig.Standard(
+            title = stringResource(R.string.search_header_title)
+        )
+    ) { innerPadding ->
         Crossfade(
             targetState = state.isInitialLoading,
             label = "search_loading_crossfade",
@@ -110,18 +114,10 @@ private fun SearchContent(
 
     LazyColumn(
         state = lazyListState,
-        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        modifier = modifier.background(colors.background),
         contentPadding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
-        item {
-            PMText(
-                text = stringResource(R.string.search_header_title),
-                fontSize = dims.fontSize.xl,
-                color = colors.textPrimary
-            )
-        }
-
         item {
             PMSearchBar(
                 query = state.plateInput,
@@ -135,14 +131,14 @@ private fun SearchContent(
                 PMText(
                     text = stringResource(R.string.search_plate_invalid_format),
                     fontSize = dims.fontSize.sm,
-                    color = MaterialTheme.colorScheme.error,
+                    color = colors.error,
                     modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
                 )
             } else if (state.formMessage != null) {
                 PMText(
                     text = state.formMessage.resolve(),
                     fontSize = dims.fontSize.sm,
-                    color = MaterialTheme.colorScheme.error,
+                    color = colors.error,
                     modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
                 )
             }
@@ -170,9 +166,9 @@ private fun SearchContent(
                     )
                     PMText(
                         text = stringResource(R.string.search_recent_clear),
-                        fontSize = dims.fontSize.sm,
+                        fontSize = dims.fontSize.md,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = colors.primary,
                         modifier = Modifier.debouncedClickable {
                             onAction(SearchUiAction.ClearRecentClicked)
                         }
@@ -208,9 +204,9 @@ private fun SearchContent(
                     )
                     PMText(
                         text = stringResource(R.string.search_saved_see_all),
-                        fontSize = dims.fontSize.sm,
+                        fontSize = dims.fontSize.md,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = colors.primary,
                         modifier = Modifier.debouncedClickable { }
                     )
                 }
@@ -252,11 +248,8 @@ private fun SearchContent(
                     horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Outlined.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(dims.spacing.s16)
                     )
                     PMText(
                         text = stringResource(R.string.search_safety_banner),
@@ -281,12 +274,12 @@ private fun RecentChip(
         modifier = Modifier
             .height(dims.sizing.chipHeight)
             .clip(RoundedCornerShape(dims.radius.rFull))
-            .background(colors.chipBg)
+            .background(colors.surfaceVariant)
             .debouncedClickable(onClick = onClick)
             .padding(horizontal = dims.spacing.s16),
         contentAlignment = Alignment.Center
     ) {
-        Text(
+        PMText(
             text = plateCode,
             fontSize = dims.fontSize.md,
             fontWeight = FontWeight.SemiBold,
@@ -323,13 +316,11 @@ private fun SavedPlateCompactCard(
                     cityCode = item.plateCode.take(2),
                     size = PlateBadgeSize.Small
                 )
-                Icon(
+                PMIcon(
                     imageVector = if (item.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    contentDescription = null,
-                    tint = if (item.isBookmarked) MaterialTheme.colorScheme.primary else colors.textLabel,
-                    modifier = Modifier
-                        .size(dims.spacing.s16)
-                        .debouncedClickable(onClick = onBookmarkClick)
+                    tint = if (item.isBookmarked) colors.primary else colors.textLabel,
+                    size = dims.sizing.iconXl,
+                    modifier = Modifier.debouncedClickable(onClick = onBookmarkClick)
                 )
             }
 
@@ -345,15 +336,13 @@ private fun SavedPlateCompactCard(
                 horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 if (item.ratingAverage > 0) {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = null,
                         tint = colors.star,
-                        modifier = Modifier.size(dims.spacing.s12)
                     )
                     PMText(
                         text = String.format("%.1f", item.ratingAverage),
-                        fontSize = dims.fontSize.sm,
+                        fontSize = dims.fontSize.md,
                         maxLines = 1,
                         color = colors.textTertiary
                     )
@@ -361,7 +350,7 @@ private fun SavedPlateCompactCard(
                 if (item.cityName != null) {
                     PMText(
                         text = "· ${item.cityName}",
-                        fontSize = dims.fontSize.sm,
+                        fontSize = dims.fontSize.md,
                         color = colors.textLabel,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -388,14 +377,11 @@ private fun SearchEmptyState() {
             modifier = Modifier
                 .size(56.dp)
                 .clip(CircleShape)
-                .background(colors.chipBg),
+                .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
+            PMIcon(
                 imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = colors.textLabel,
-                modifier = Modifier.size(dims.spacing.s24)
             )
         }
 
@@ -419,14 +405,14 @@ private fun SearchShimmerContent(
     val spacing = MaterialTheme.pmDimensions.spacing
     val radius = MaterialTheme.pmDimensions.radius
     val sizing = MaterialTheme.pmDimensions.sizing
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
 
     val shimmerTheme = remember(colorScheme) {
         defaultShimmerTheme.copy(
             shaderColors = listOf(
                 colors.skeleton.copy(alpha = 0.55f),
-                colorScheme.surface.copy(alpha = 0.95f),
+                colors.surface.copy(alpha = 0.95f),
                 colors.skeletonSecondary.copy(alpha = 0.45f)
             ),
             shaderColorStops = listOf(0f, 0.5f, 1f)
@@ -438,7 +424,7 @@ private fun SearchShimmerContent(
     )
 
     LazyColumn(
-        modifier = modifier.background(colorScheme.background),
+        modifier = modifier.background(colors.background),
         contentPadding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s16),
         verticalArrangement = Arrangement.spacedBy(spacing.s16)
     ) {

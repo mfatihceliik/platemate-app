@@ -14,13 +14,14 @@ import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun MainPlaceholderScreen(
     @StringRes titleRes: Int,
     modifier: Modifier = Modifier
 ) {
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
     val spacing = MaterialTheme.pmDimensions.spacing
 
     PMBaseScreen(modifier = modifier) { innerPadding ->
@@ -35,7 +36,7 @@ fun MainPlaceholderScreen(
             PMText(
                 text = stringResource(titleRes),
                 style = PMTextStyle.Title,
-                color = colorScheme.onBackground
+                color = colors.onBackground
             )
         }
     }

@@ -32,7 +32,7 @@ internal fun AppearanceTab(
             .height(dims.spacing.s32)
             .clip(RoundedCornerShape(dims.radius.r10))
             .then(
-                if (isSelected) Modifier.background(MaterialTheme.colorScheme.surface)
+                if (isSelected) Modifier.background(colors.surface)
                 else Modifier
             )
             .debouncedClickable(onClick = onClick),

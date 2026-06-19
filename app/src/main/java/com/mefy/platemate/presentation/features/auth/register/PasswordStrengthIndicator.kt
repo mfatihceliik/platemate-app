@@ -18,6 +18,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.auth.PasswordStrengthLevel
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -33,10 +34,11 @@ fun PasswordStrengthIndicator(
     val spacing = dimensions.spacing
     val radius = dimensions.radius
     val stroke = dimensions.stroke
+    val colors = MaterialTheme.pmColors
     val (strengthText, fillColor) = strength.toUiModel()
 
-    val defaultColor = MaterialTheme.colorScheme.outlineVariant
-    val textColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val defaultColor = colors.outlineVariant
+    val textColor = colors.onSurfaceVariant
     
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -75,19 +77,19 @@ fun PasswordStrengthIndicator(
 private fun PasswordStrength.toUiModel(): Pair<String, Color> {
     return when (level) {
         PasswordStrengthLevel.WEAK -> {
-            stringResource(R.string.auth_register_password_strength_weak_hint) to MaterialTheme.colorScheme.primary
+            stringResource(R.string.auth_register_password_strength_weak_hint) to MaterialTheme.pmColors.primary
         }
 
         PasswordStrengthLevel.MEDIUM -> {
-            stringResource(R.string.auth_register_password_strength_medium) to MaterialTheme.colorScheme.primary
+            stringResource(R.string.auth_register_password_strength_medium) to MaterialTheme.pmColors.primary
         }
 
         PasswordStrengthLevel.STRONG -> {
-            stringResource(R.string.auth_register_password_strength_strong) to MaterialTheme.colorScheme.primary
+            stringResource(R.string.auth_register_password_strength_strong) to MaterialTheme.pmColors.primary
         }
 
         PasswordStrengthLevel.NONE -> {
-            "" to MaterialTheme.colorScheme.onSurfaceVariant
+            "" to MaterialTheme.pmColors.onSurfaceVariant
         }
     }
 }

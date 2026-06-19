@@ -135,7 +135,7 @@ fun FeaturePagerContent(
                                     .padding(horizontal = MaterialTheme.pmDimensions.spacing.s4)
                                     .size(width = if (isSelected) 24.dp else 7.dp, height = 7.dp)
                                     .background(
-                                        color = if (isSelected) MaterialTheme.colorScheme.primary else colors.starEmpty,
+                                        color = if (isSelected) colors.primary else colors.starEmpty,
                                         shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r4)
                                     )
                             )

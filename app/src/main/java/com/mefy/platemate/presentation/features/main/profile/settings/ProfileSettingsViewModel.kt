@@ -1,12 +1,15 @@
 package com.mefy.platemate.presentation.features.main.profile.settings
 
+import com.mefy.platemate.R
 import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.domain.model.language.AppLanguage
 import com.mefy.platemate.domain.usecase.auth.LogoutUseCase
 import com.mefy.platemate.domain.usecase.settings.GetSettingsUseCase
 import com.mefy.platemate.domain.usecase.language.ObserveLanguageUseCase
 import com.mefy.platemate.domain.usecase.theme.ObserveThemeModeUseCase
 import com.mefy.platemate.presentation.common.error.ErrorContext
 import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -46,10 +49,18 @@ class ProfileSettingsViewModel @Inject constructor(
         }
         launch {
             observeLanguageUseCase().collect { language ->
-                _uiState.update { it.copy(language = language ?: com.mefy.platemate.domain.model.language.AppLanguage.TR) }
+                val resolved = language ?: AppLanguage.TR
+                _uiState.update { it.copy(language = resolved, languageLabel = resolved.toLabel()) }
             }
         }
     }
+
+    private fun AppLanguage.toLabel(): UiText = UiText.Resource(
+        when (this) {
+            AppLanguage.TR -> R.string.profile_setting_language_tr
+            AppLanguage.EN -> R.string.profile_setting_language_en
+        }
+    )
 
     fun onAction(action: ProfileSettingsUiAction) {
         when (action) {

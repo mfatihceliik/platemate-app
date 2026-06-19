@@ -26,6 +26,7 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMButton(
@@ -40,8 +41,10 @@ fun PMButton(
     colors: ButtonColors? = null,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
+    val dims = MaterialTheme.pmDimensions
+
     val resolvedEnabled = enabled && !loading
-    val buttonModifier = modifier.heightIn(min = MaterialTheme.pmDimensions.sizing.ctaHeight)
+    val buttonModifier = modifier.heightIn(min = dims.sizing.ctaHeight)
     val shape = MaterialTheme.shapes
     
     val safeOnClick = if (debounceClick) {
@@ -85,7 +88,7 @@ fun PMButton(
                 onClick = safeOnClick,
                 modifier = buttonModifier,
                 enabled = resolvedEnabled,
-                shape =shape.medium
+                shape = shape.medium
             ) {
                 PMButtonContent(
                     text = text,
@@ -104,6 +107,7 @@ private fun PMButtonContent(
     leadingIcon: @Composable (() -> Unit)?
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
 
     if (loading) {
         PMCircularProgressIndicator()
@@ -141,12 +145,15 @@ private fun PMButtonDarkPreview() {
 
 @Composable
 private fun PMButtonPreviewContent() {
+
+    val dims = MaterialTheme.pmDimensions
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(MaterialTheme.pmDimensions.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s12)
+            .background(MaterialTheme.pmColors.background)
+            .padding(dims.spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         PMButton(
             text = "Filled",

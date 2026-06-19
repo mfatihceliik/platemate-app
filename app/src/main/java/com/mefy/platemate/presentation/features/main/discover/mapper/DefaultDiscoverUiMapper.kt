@@ -92,7 +92,7 @@ class DefaultDiscoverUiMapper @Inject constructor(
     ): List<PlateDetailUiModel> {
         val plates = when (filter) {
             DiscoverFilterUi.Trend -> tabs.trendPlates
-            DiscoverFilterUi.Attention -> tabs.attentionPlates
+            DiscoverFilterUi.Careless -> tabs.attentionPlates
             DiscoverFilterUi.GoodDriver -> tabs.goodDriverPlates
             DiscoverFilterUi.Newest -> tabs.newPlates
         }

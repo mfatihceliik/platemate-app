@@ -59,7 +59,7 @@ internal fun ReportUserBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = colors.surface,
         modifier = modifier
     ) {
         LazyColumn(
@@ -79,7 +79,7 @@ internal fun ReportUserBottomSheet(
             }
 
             item(key = "divider_top") {
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                HorizontalDivider(color = colors.surfaceVariant)
             }
 
             item(key = "user_card") {
@@ -119,7 +119,7 @@ internal fun ReportUserBottomSheet(
             }
 
             item(key = "divider_bottom") {
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                HorizontalDivider(color = colors.surfaceVariant)
             }
 
             items(
@@ -149,7 +149,7 @@ internal fun ReportUserBottomSheet(
                             .weight(1f)
                             .height(dims.sizing.ctaHeight)
                             .clip(MaterialTheme.shapes.small)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .background(colors.surfaceVariant)
                             .debouncedClickable(onClick = onDismiss),
                         contentAlignment = Alignment.Center
                     ) {
@@ -167,10 +167,10 @@ internal fun ReportUserBottomSheet(
                             .shadow(
                                 elevation = 4.dp,
                                 shape = MaterialTheme.shapes.small,
-                                ambientColor = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                                ambientColor = colors.error.copy(alpha = 0.5f)
                             )
                             .clip(MaterialTheme.shapes.small)
-                            .background(MaterialTheme.colorScheme.error)
+                            .background(colors.error)
                             .debouncedClickable(onClick = onSubmit),
                         contentAlignment = Alignment.Center
                     ) {

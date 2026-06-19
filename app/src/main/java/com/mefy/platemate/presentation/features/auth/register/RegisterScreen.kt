@@ -41,6 +41,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.auth.PasswordStrengthLevel
 import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPasswordField
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
@@ -49,6 +50,7 @@ import com.mefy.platemate.presentation.features.auth.components.AuthHeroHeader
 import com.mefy.platemate.presentation.features.auth.components.AuthInfoBanner
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun RegisterScreen(
@@ -58,11 +60,9 @@ fun RegisterScreen(
     onBackClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val dimensions = MaterialTheme.pmDimensions
-    val spacing = dimensions.spacing
-    val radius = dimensions.radius
-    val stroke = dimensions.stroke
+    val colors = MaterialTheme.pmColors
+    val dims = MaterialTheme.pmDimensions
+    val spacing = dims.spacing
     val isSubmitLoading = state.submitState is UiActionState.Loading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())
@@ -89,7 +89,7 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colorScheme.background)
+            .background(colors.background)
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .imePadding()
             .verticalScroll(rememberScrollState())
@@ -117,10 +117,10 @@ fun RegisterScreen(
                 isError = isEmailErrorState,
                 errorText = resolvedEmailError,
                 leadingIcon = {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Email,
                         contentDescription = null,
-                        tint = colorScheme.outline,
+                        tint = colors.outline,
                         modifier = Modifier.size(spacing.s16)
                     )
                 },
@@ -129,10 +129,10 @@ fun RegisterScreen(
                         Box(
                             modifier = Modifier
                                 .size(spacing.s16)
-                                .background(colorScheme.error, CircleShape),
+                                .background(colors.error, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
+                            PMIcon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = null,
                                 tint = Color.White,
@@ -159,10 +159,10 @@ fun RegisterScreen(
                 isSuccess = isUsernameValid && state.username.isNotEmpty(),
                 supportingText = if (isUsernameValid && state.username.isNotEmpty()) stringResource(R.string.auth_register_username_available) else null,
                 leadingIcon = {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Person,
                         contentDescription = null,
-                        tint = colorScheme.outline,
+                        tint = colors.outline,
                         modifier = Modifier.size(spacing.s16)
                     )
                 },
@@ -171,13 +171,13 @@ fun RegisterScreen(
                         Box(
                             modifier = Modifier
                                 .size(spacing.s16)
-                                .background(colorScheme.primary, CircleShape),
+                                .background(colors.primary, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
+                            PMIcon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null,
-                                tint = colorScheme.onPrimary,
+                                tint = colors.onPrimary,
                                 modifier = Modifier.size(spacing.s12)
                             )
                         }
@@ -200,10 +200,10 @@ fun RegisterScreen(
                     isError = isPasswordErrorState,
                     errorText = resolvedPasswordError,
                     leadingIcon = {
-                        Icon(
+                        PMIcon(
                             imageVector = Icons.Filled.Lock,
                             contentDescription = null,
-                            tint = colorScheme.outline,
+                            tint = colors.outline,
                             modifier = Modifier.size(spacing.s16)
                         )
                     },
@@ -251,12 +251,12 @@ fun RegisterScreen(
                 PMText(
                     text = stringResource(R.string.auth_register_have_account) + " ",
                     style = PMTextStyle.Caption,
-                    color = colorScheme.onSurfaceVariant
+                    color = colors.onSurfaceVariant
                 )
                 PMText(
                     text = stringResource(R.string.auth_register_sign_in_link),
                     style = PMTextStyle.Caption,
-                    color = colorScheme.primary,
+                    color = colors.primary,
                     modifier = Modifier.clickable(onClick = onNavigateToLoginClick)
                 )
             }

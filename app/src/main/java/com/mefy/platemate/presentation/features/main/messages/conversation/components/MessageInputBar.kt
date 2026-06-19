@@ -26,8 +26,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmColors
@@ -42,12 +44,12 @@ internal fun MessageInputBar(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = colors.primary
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(colors.surface)
             .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s10)
             .navigationBarsPadding()
             .imePadding(),
@@ -58,7 +60,7 @@ internal fun MessageInputBar(
             modifier = Modifier
                 .size(38.dp)
                 .clip(CircleShape)
-                .background(colors.chipBg)
+                .background(colors.surfaceVariant)
                 .debouncedClickable {},
             contentAlignment = Alignment.Center
         ) {
@@ -77,7 +79,7 @@ internal fun MessageInputBar(
                 .weight(1f)
                 .height(42.dp)
                 .clip(MaterialTheme.shapes.extraLarge)
-                .background(colors.chipBg)
+                .background(colors.surfaceVariant)
                 .padding(horizontal = dims.spacing.s16),
             textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.textPrimary),
             cursorBrush = SolidColor(primary),
@@ -103,16 +105,48 @@ internal fun MessageInputBar(
                 .size(38.dp)
                 .shadow(elevation = if (text.isNotBlank()) 6.dp else 0.dp, CircleShape)
                 .clip(CircleShape)
-                .background(if (text.isNotBlank()) primary else colors.chipBg)
+                .background(if (text.isNotBlank()) primary else colors.surfaceVariant)
                 .debouncedClickable(enabled = text.isNotBlank(), onClick = onSend),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Send,
                 contentDescription = null,
-                tint = if (text.isNotBlank()) MaterialTheme.colorScheme.onPrimary else colors.textLabel,
+                tint = if (text.isNotBlank()) colors.onPrimary else colors.textLabel,
                 modifier = Modifier.size(dims.sizing.iconMd)
             )
         }
+    }
+}
+
+@Preview(name = "MessageInputBar Empty Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun MessageInputBarEmptyLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        MessageInputBar(text = "", onTextChange = {}, onSend = {})
+    }
+}
+
+@Preview(name = "MessageInputBar Filled Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun MessageInputBarFilledLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        MessageInputBar(text = "Merhaba, nasılsınız?", onTextChange = {}, onSend = {})
+    }
+}
+
+@Preview(name = "MessageInputBar Empty Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun MessageInputBarEmptyDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        MessageInputBar(text = "", onTextChange = {}, onSend = {})
+    }
+}
+
+@Preview(name = "MessageInputBar Filled Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun MessageInputBarFilledDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        MessageInputBar(text = "Merhaba, nasılsınız?", onTextChange = {}, onSend = {})
     }
 }

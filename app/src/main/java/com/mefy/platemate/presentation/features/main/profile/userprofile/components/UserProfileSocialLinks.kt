@@ -21,6 +21,7 @@ import com.mefy.platemate.presentation.features.main.profile.settings.sociallink
 import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 internal fun UserProfileSocialLinks(
@@ -30,6 +31,7 @@ internal fun UserProfileSocialLinks(
 ) {
     if (links.isEmpty()) return
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     val iconShape = MaterialTheme.shapes.small
 
     Row(
@@ -43,8 +45,8 @@ internal fun UserProfileSocialLinks(
                 modifier = Modifier
                     .size(dims.sizing.avatarIconInner)
                     .clip(iconShape)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(dims.stroke.st1, MaterialTheme.colorScheme.outline, iconShape)
+                    .background(colors.surface)
+                    .border(dims.stroke.st1, colors.outline, iconShape)
                     .debouncedClickable { onLinkClick(link) },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -65,6 +67,7 @@ internal fun UserProfileSocialLinks(
 private fun UserProfileSocialLinksLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
                 UserProfileSocialLinkUiModel(platform = "INSTAGRAM", url = ""),
@@ -82,6 +85,7 @@ private fun UserProfileSocialLinksLightPreview() {
 private fun UserProfileSocialLinksDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
                 UserProfileSocialLinkUiModel(platform = "INSTAGRAM", url = ""),

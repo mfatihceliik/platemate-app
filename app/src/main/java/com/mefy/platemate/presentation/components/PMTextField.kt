@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,6 +60,7 @@ fun PMTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -65,22 +68,22 @@ fun PMTextField(
     val supportingOrError = errorText ?: supportingText
 
     val borderColor = when {
-        shouldShowError -> MaterialTheme.colorScheme.error
-        isSuccess -> MaterialTheme.colorScheme.primary
-        isFocused -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.outlineVariant
+        shouldShowError -> colors.error
+        isSuccess -> colors.primary
+        isFocused -> colors.primary
+        else -> colors.outlineVariant
     }
 
-    val backgroundColor = MaterialTheme.colorScheme.surface
-    val textColor = MaterialTheme.colorScheme.onSurface
+    val backgroundColor = colors.surface
+    val textColor = colors.onSurface
 
     Column(modifier = modifier) {
         if (label != null) {
             PMText(
                 text = label,
                 style = PMTextStyle.Caption,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 2.dp, bottom = 7.dp)
+                color = colors.onSurfaceVariant,
+                modifier = Modifier.padding(start = dims.spacing.s4, bottom = dims.spacing.s8)
             )
         }
 
@@ -89,33 +92,49 @@ fun PMTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dims.sizing.ctaHeightLarge),
+                .then(
+                    if (singleLine) {
+                        Modifier.height(dims.sizing.ctaHeightLarge)
+                    } else {
+                        Modifier
+                            .heightIn(min = dims.sizing.ctaHeightLarge)
+                            .fillMaxHeight()
+                    }
+                ),
             enabled = enabled,
             readOnly = readOnly,
             singleLine = singleLine,
             textStyle = TextStyle(
                 color = textColor,
-                fontSize = 15.sp,
+                fontSize = dims.fontSize.lg,
                 letterSpacing = if (visualTransformation != VisualTransformation.None) 4.sp else 0.sp
             ),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             interactionSource = interactionSource,
             visualTransformation = visualTransformation,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            cursorBrush = SolidColor(colors.primary),
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dims.sizing.ctaHeightLarge)
-                        .background(backgroundColor, RoundedCornerShape(14.dp))
-                        .border(dims.stroke.st1, borderColor, RoundedCornerShape(14.dp))
-                        .padding(horizontal = 15.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .then(
+                            if (singleLine) {
+                                Modifier.height(dims.sizing.ctaHeightLarge)
+                            } else {
+                                Modifier
+                                    .heightIn(min = dims.sizing.ctaHeightLarge)
+                                    .fillMaxHeight()
+                            }
+                        )
+                        .background(backgroundColor, RoundedCornerShape(dims.radius.r16))
+                        .border(dims.stroke.st2, borderColor, RoundedCornerShape(dims.radius.r12))
+                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
+                    verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top
                 ) {
                     if (leadingIcon != null) {
                         leadingIcon()
-                        Spacer(modifier = Modifier.width(11.dp))
+                        Spacer(modifier = Modifier.width(dims.spacing.s12))
                     }
 
                     Box(modifier = Modifier.weight(1f)) {
@@ -123,14 +142,14 @@ fun PMTextField(
                             PMText(
                                 text = placeholder,
                                 style = PMTextStyle.Body,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                color = colors.onSurfaceVariant.copy(alpha = 0.6f)
                             )
                         }
                         innerTextField()
                     }
 
                     if (trailingIcon != null) {
-                        Spacer(modifier = Modifier.width(11.dp))
+                        Spacer(modifier = Modifier.width(dims.spacing.s12))
                         trailingIcon()
                     }
                 }
@@ -141,8 +160,8 @@ fun PMTextField(
             PMText(
                 text = supportingOrError,
                 style = PMTextStyle.Caption,
-                color = if (shouldShowError) MaterialTheme.colorScheme.error else MaterialTheme.pmColors.success,
-                modifier = Modifier.padding(start = 2.dp, top = 7.dp)
+                color = if (shouldShowError) colors.error else colors.success,
+                modifier = Modifier.padding(start = dims.spacing.s4, top = dims.spacing.s8)
             )
         }
     }
@@ -166,14 +185,16 @@ private fun PMTextFieldDarkPreview() {
 
 @Composable
 private fun PMTextFieldPreviewContent() {
+    val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     var normal by remember { mutableStateOf("ahmet_yl") }
     var email by remember { mutableStateOf("ahmet@ornek.com") }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(MaterialTheme.pmDimensions.spacing.s16)
+            .background(colors.background)
+            .padding(dims.spacing.s16)
     ) {
         PMTextField(
             value = normal,
@@ -184,7 +205,7 @@ private fun PMTextFieldPreviewContent() {
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dims.spacing.s16))
 
         PMTextField(
             value = email,

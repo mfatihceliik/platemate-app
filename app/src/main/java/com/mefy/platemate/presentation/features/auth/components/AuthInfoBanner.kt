@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,8 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -35,6 +36,7 @@ fun AuthInfoBanner(
     modifier: Modifier = Modifier
 ) {
     val dimensions = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     val spacing = dimensions.spacing
     var isChecked by remember { mutableStateOf(true) }
 
@@ -57,7 +59,7 @@ fun AuthInfoBanner(
                     append(text.substring(currentIndex, pos.first))
                 }
                 // Append highlighted link
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                withStyle(SpanStyle(color = colors.primary)) {
                     append(text.substring(pos.first, pos.second))
                 }
                 currentIndex = pos.second
@@ -83,16 +85,16 @@ fun AuthInfoBanner(
                 .padding(top = spacing.s4) // slight alignment tweak
                 .size(spacing.s24)
                 .background(
-                    color = if (isChecked) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    color = if (isChecked) colors.primary else Color.Transparent,
                     shape = RoundedCornerShape(dimensions.radius.r8)
                 ),
             contentAlignment = Alignment.Center
         ) {
             if (isChecked) {
-                Icon(
+                PMIcon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = colors.onPrimary,
                     modifier = Modifier.size(spacing.s16)
                 )
             }
@@ -101,7 +103,7 @@ fun AuthInfoBanner(
         PMText(
             text = annotatedString,
             style = PMTextStyle.Caption,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = colors.onSurfaceVariant,
             modifier = Modifier.weight(1f)
         )
     }

@@ -22,6 +22,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 internal fun ValidationRule(text: String, passed: Boolean) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -32,7 +33,7 @@ internal fun ValidationRule(text: String, passed: Boolean) {
                 .size(dims.sizing.iconMd)
                 .clip(RoundedCornerShape(dims.radius.r6))
                 .background(
-                    if (passed) MaterialTheme.colorScheme.primary
+                    if (passed) colors.primary
                     else MaterialTheme.pmColors.starEmpty
                 ),
             contentAlignment = Alignment.Center

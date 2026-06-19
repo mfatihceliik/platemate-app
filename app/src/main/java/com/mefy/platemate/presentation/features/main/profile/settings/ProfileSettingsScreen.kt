@@ -13,33 +13,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.text.resolve
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.components.PMRowDivider
+import com.mefy.platemate.presentation.components.PMRowGroup
+import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.profile.settings.components.BellIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.CrownIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.DropletIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.GlobeIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.LinkIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.LockIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.PersonIcon
+import com.mefy.platemate.presentation.features.main.profile.settings.components.ChevronIcon
 import com.mefy.platemate.presentation.features.main.profile.settings.components.LogoutIcon
-import com.mefy.platemate.presentation.features.main.profile.settings.components.SettingsDivider
-import com.mefy.platemate.presentation.features.main.profile.settings.components.SettingsNavRow
-import com.mefy.platemate.presentation.features.main.profile.settings.components.SettingsSection
+import com.mefy.platemate.presentation.features.main.profile.settings.components.ProBadge
+import com.mefy.platemate.presentation.features.main.profile.settings.components.SectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -56,7 +60,7 @@ fun ProfileSettingsScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_settings_title),
             onBackClick = onBackClick
         )
@@ -66,114 +70,141 @@ fun ProfileSettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s8),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
-            item(key = "account_section") {
-                SettingsSection(
-                    label = stringResource(R.string.profile_settings_section_account)
-                ) {
-                    SettingsNavRow(
-                        iconBg = colors.primaryContainer,
-                        iconContent = { LockIcon() },
-                        label = stringResource(R.string.profile_change_password_title),
+            // ── Account ──────────────────────────────────────
+            item(key = "account_label") {
+                SectionLabel(text = stringResource(R.string.profile_settings_section_account))
+            }
+            item(key = "account_group") {
+                PMRowGroup {
+                    PMRowItem(
+                        title = stringResource(R.string.profile_change_password_title),
+                        leadingIcon = Icons.Filled.Lock,
+                        leadingIconTint = colors.onPrimaryContainer,
+                        leadingContainerColor = colors.primaryContainer,
+                        showCard = false,
                         onClick = { onAction(ProfileSettingsUiAction.ChangePasswordClicked) }
                     )
-                    SettingsDivider()
-                    SettingsNavRow(
-                        iconBg = colors.primaryContainer,
-                        iconContent = { PersonIcon() },
-                        label = stringResource(R.string.profile_settings_edit_profile),
+                    PMRowDivider()
+                    PMRowItem(
+                        title = stringResource(R.string.profile_settings_edit_profile),
+                        leadingIcon = Icons.Filled.Person,
+                        leadingIconTint = colors.onPrimaryContainer,
+                        leadingContainerColor = colors.primaryContainer,
+                        showCard = false,
                         onClick = { onAction(ProfileSettingsUiAction.EditProfileClicked) }
                     )
-                    SettingsDivider()
-                    SettingsNavRow(
-                        iconBg = Color(0xFFFEF3C7),
-                        iconContent = { CrownIcon() },
-                        label = if (state.premiumActive) {
+                    PMRowDivider()
+                    PMRowItem(
+                        title = if (state.premiumActive) {
                             stringResource(R.string.profile_setting_premium_info)
                         } else {
                             stringResource(R.string.profile_settings_premium_go)
                         },
-                        badge = if (!state.premiumActive) "PRO" else null,
-                        onClick = { onAction(ProfileSettingsUiAction.PremiumClicked) }
+                        leadingIcon = Icons.Filled.Star,
+                        leadingIconTint = colors.star,
+                        leadingContainerColor = colors.warning.copy(alpha = 0.4f),
+                        showCard = false,
+                        onClick = { onAction(ProfileSettingsUiAction.PremiumClicked) },
+                        trailing = if (!state.premiumActive) {
+                            {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                                ) {
+                                    ProBadge()
+                                    ChevronIcon()
+                                }
+                            }
+                        } else {
+                            null
+                        }
                     )
                 }
             }
 
-            item(key = "app_section") {
-                SettingsSection(
-                    label = stringResource(R.string.profile_settings_section_app)
-                ) {
-                    SettingsNavRow(
-                        iconBg = colors.primaryContainer,
-                        iconContent = { DropletIcon() },
-                        label = stringResource(R.string.profile_settings_theme_color),
+            // ── Application ──────────────────────────────────
+            item(key = "app_label") {
+                SectionLabel(text = stringResource(R.string.profile_settings_section_app))
+            }
+            item(key = "app_group") {
+                PMRowGroup {
+                    PMRowItem(
+                        title = stringResource(R.string.profile_settings_theme_color),
+                        leadingIcon = Icons.Filled.Palette,
+                        leadingIconTint = colors.primary,
+                        leadingContainerColor = colors.primaryContainer,
+                        showCard = false,
+                        onClick = { onAction(ProfileSettingsUiAction.ThemeColorClicked) },
                         trailing = {
-                            Box(
-                                modifier = Modifier
-                                    .size(dims.sizing.iconMd)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primary)
-                            )
-                        },
-                        onClick = { onAction(ProfileSettingsUiAction.ThemeColorClicked) }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(dims.sizing.iconMd)
+                                        .clip(CircleShape)
+                                        .background(colors.primary)
+                                )
+                                ChevronIcon()
+                            }
+                        }
                     )
-                    SettingsDivider()
-                    SettingsNavRow(
-                        iconBg = colors.categoryGreenBg,
-                        iconContent = { GlobeIcon() },
-                        label = stringResource(R.string.profile_setting_language),
-                        trailing = {
-                            PMText(
-                                text = state.language.displayName(),
-                                style = PMTextStyle.Note,
-                                color = colors.textLabel
-                            )
-                        },
+                    PMRowDivider()
+                    PMRowItem(
+                        title = stringResource(R.string.profile_setting_language),
+                        leadingIcon = Icons.Filled.Language,
+                        leadingIconTint = colors.categoryGreenIcon,
+                        leadingContainerColor = colors.categoryGreenBg,
+                        trailingText = state.languageLabel.resolve(),
+                        showCard = false,
                         onClick = { onAction(ProfileSettingsUiAction.LanguageClicked) }
                     )
-                    SettingsDivider()
-                    SettingsNavRow(
-                        iconBg = Color(0xFFFFF1F2),
-                        iconContent = { BellIcon() },
-                        label = stringResource(R.string.profile_setting_notification_preferences),
+                    PMRowDivider()
+                    PMRowItem(
+                        title = stringResource(R.string.profile_setting_notification_preferences),
+                        leadingIcon = Icons.Filled.Notifications,
+                        leadingIconTint = colors.error,
+                        leadingContainerColor = colors.errorContainer,
+                        showCard = false,
                         onClick = { onAction(ProfileSettingsUiAction.NotificationPreferencesClicked) }
                     )
                 }
             }
 
-            item(key = "profile_section") {
-                SettingsSection(
-                    label = stringResource(R.string.profile_settings_section_profile)
-                ) {
-                    SettingsNavRow(
-                        iconBg = Color(0xFFF3E8FF),
-                        iconContent = { LinkIcon() },
-                        label = stringResource(R.string.profile_settings_social_accounts),
-                        trailing = {
-                            if (state.socialLinksCount > 0) {
-                                PMText(
-                                    text = stringResource(
-                                        R.string.profile_settings_social_count,
-                                        state.socialLinksCount
-                                    ),
-                                    style = PMTextStyle.Note,
-                                    color = colors.textLabel
-                                )
-                            }
+            // ── Profile ──────────────────────────────────────
+            item(key = "profile_label") {
+                SectionLabel(text = stringResource(R.string.profile_settings_section_profile))
+            }
+            item(key = "profile_group") {
+                PMRowGroup {
+                    PMRowItem(
+                        title = stringResource(R.string.profile_settings_social_accounts),
+                        leadingIcon = Icons.Filled.Link,
+                        leadingIconTint = colors.tertiary,
+                        leadingContainerColor = colors.tertiaryContainer,
+                        trailingText = if (state.socialLinksCount > 0) {
+                            stringResource(R.string.profile_settings_social_count, state.socialLinksCount)
+                        } else {
+                            null
                         },
+                        showCard = false,
                         onClick = { onAction(ProfileSettingsUiAction.SocialLinksClicked) }
                     )
                 }
             }
 
+            // ── Sign out ─────────────────────────────────────
             item(key = "sign_out") {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(top = dims.spacing.s8)
                         .height(dims.sizing.ctaHeightLarge)
-                        .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
-                        .border(dims.stroke.st1, MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.medium)
+                        .background(colors.surface, MaterialTheme.shapes.medium)
+                        .border(dims.stroke.st1, colors.errorContainer, MaterialTheme.shapes.medium)
                         .debouncedClickable { onAction(ProfileSettingsUiAction.SignOutClicked) },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -183,7 +214,7 @@ fun ProfileSettingsScreen(
                         text = stringResource(R.string.profile_setting_sign_out),
                         style = PMTextStyle.Body,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.error,
+                        color = colors.error,
                         modifier = Modifier.padding(start = dims.spacing.s8)
                     )
                 }
@@ -201,13 +232,6 @@ fun ProfileSettingsScreen(
                 )
             }
         }
-    }
-}
-
-private fun com.mefy.platemate.domain.model.language.AppLanguage.displayName(): String {
-    return when (this) {
-        com.mefy.platemate.domain.model.language.AppLanguage.TR -> "Türkçe"
-        com.mefy.platemate.domain.model.language.AppLanguage.EN -> "English"
     }
 }
 

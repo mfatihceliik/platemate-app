@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.profile
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,16 +30,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMStatCard
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PlateCard
@@ -54,6 +53,8 @@ import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivi
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileSocialLinks
+import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -70,7 +71,26 @@ fun ProfileScreen(
     onAction: (ProfileUiAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PMBaseScreen(modifier = modifier) { innerPadding ->
+    val dims = MaterialTheme.pmDimensions
+
+    PMBaseScreen(
+        modifier = modifier,
+        topBarConfig = PMTopBarConfig.Standard(
+            title = stringResource(R.string.main_tab_profile),
+            actions = {
+                PMIconButton(
+                    onClick = { onAction(ProfileUiAction.SettingsClicked) },
+                    modifier = Modifier.testTag(PROFILE_SETTINGS_ACTION_TAG)
+                ) {
+                    PMIcon(
+                        imageVector = Icons.Filled.Settings,
+                        size = dims.sizing.iconHuge,
+                        contentDescription = stringResource(R.string.profile_content_description_settings)
+                    )
+                }
+            }
+        )
+    ) { innerPadding ->
         Crossfade(
             targetState = state.isInitialLoading,
             label = "profile_loading_crossfade",
@@ -106,7 +126,7 @@ private fun ProfileContent(
 
     LazyColumn(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.background)
             .testTag(PROFILE_CONTENT_ROOT_TAG),
         contentPadding = PaddingValues(bottom = dims.spacing.s24),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
@@ -114,8 +134,7 @@ private fun ProfileContent(
         item {
             ProfileHeaderSection(
                 header = state.header,
-                accountSummary = state.accountSummary,
-                onSettingsClick = { onAction(ProfileUiAction.SettingsClicked) }
+                accountSummary = state.accountSummary
             )
         }
 
@@ -145,10 +164,25 @@ private fun ProfileContent(
 
         if (state.socialLinks.isNotEmpty()) {
             item {
-                ProfileSocialLinksSection(
-                    links = state.socialLinks,
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16)
-                )
+                val uriHandler = LocalUriHandler.current
+                PMCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dims.spacing.s16),
+                    padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
+                ) {
+                    UserProfileSocialLinks(
+                        links = state.socialLinks.map {
+                            UserProfileSocialLinkUiModel(platform = it.platform, url = it.url)
+                        },
+                        onLinkClick = { link ->
+                            try {
+                                uriHandler.openUri(link.url)
+                            } catch (_: Exception) {
+                            }
+                        }
+                    )
+                }
             }
         }
 
@@ -206,12 +240,10 @@ private fun ProfileContent(
 private fun ProfileHeaderSection(
     header: ProfileHeaderUiModel,
     accountSummary: ProfileAccountSummaryUiModel,
-    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
 
     val emailText = accountSummary.email
         .takeIf { it.isNotBlank() }
@@ -221,22 +253,11 @@ private fun ProfileHeaderSection(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = colorScheme.surface,
+                color = colors.surface,
                 shape = RoundedCornerShape(bottomStart = dims.radius.r16, bottomEnd = dims.radius.r16)
             )
             .padding(top = dims.spacing.s32, bottom = dims.spacing.s24, start = dims.spacing.s16, end = dims.spacing.s16)
     ) {
-        Icon(
-            imageVector = Icons.Filled.Settings,
-            contentDescription = stringResource(R.string.profile_content_description_settings),
-            tint = colors.textLabel,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(dims.spacing.s24)
-                .clickable(onClick = onSettingsClick)
-                .testTag(PROFILE_SETTINGS_ACTION_TAG)
-        )
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -246,13 +267,13 @@ private fun ProfileHeaderSection(
                 modifier = Modifier
                     .size(dims.sizing.avatarLarge)
                     .clip(CircleShape)
-                    .background(colorScheme.primaryContainer),
+                    .background(colors.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.Person,
                     contentDescription = null,
-                    tint = colorScheme.onPrimaryContainer,
+                    tint = colors.onPrimaryContainer,
                     modifier = Modifier.size(dims.sizing.avatarIconInner)
                 )
             }
@@ -290,13 +311,13 @@ private fun ProfileHeaderSection(
                     }
                     ProfileBadge(
                         text = premiumText,
-                        backgroundColor = colorScheme.primary,
-                        textColor = colorScheme.onPrimary
+                        backgroundColor = colors.primary,
+                        textColor = colors.onPrimary
                     )
                 } else {
                     ProfileBadge(
                         text = stringResource(R.string.profile_premium_inactive),
-                        backgroundColor = colors.chipBg,
+                        backgroundColor = colors.surfaceVariant,
                         textColor = colors.textSecondary
                     )
                 }
@@ -304,7 +325,7 @@ private fun ProfileHeaderSection(
                 if (accountSummary.joinedAtText.isNotBlank() && accountSummary.joinedAtText != "-") {
                     ProfileBadge(
                         text = accountSummary.joinedAtText,
-                        backgroundColor = colors.chipBg,
+                        backgroundColor = colors.surfaceVariant,
                         textColor = colors.textSecondary
                     )
                 }
@@ -374,7 +395,7 @@ private fun ProfileStatusSummarySection(
                 StatusCountPill(
                     label = stringResource(R.string.profile_status_rejected),
                     value = statusSummary.rejected.toString(),
-                    dotColor = MaterialTheme.colorScheme.error,
+                    dotColor = colors.error,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -394,7 +415,7 @@ private fun StatusCountPill(
 
     Column(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(dims.radius.r16))
+            .background(colors.surface, RoundedCornerShape(dims.radius.r16))
             .padding(horizontal = dims.spacing.s8, vertical = dims.spacing.s12),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
@@ -417,63 +438,6 @@ private fun StatusCountPill(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-    }
-}
-
-@Composable
-private fun ProfileSocialLinksSection(
-    links: List<ProfileSocialLinkUiModel>,
-    modifier: Modifier = Modifier
-) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
-    val uriHandler = LocalUriHandler.current
-
-    PMCard(
-        modifier = modifier.fillMaxWidth(),
-        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)) {
-            PMText(
-                text = stringResource(R.string.profile_section_social_links),
-                style = PMTextStyle.SectionLabel
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                links.forEach { link ->
-                    val iconRes = when (link.platform.uppercase()) {
-                        "INSTAGRAM" -> R.drawable.ic_instagram
-                        "X", "TWITTER" -> R.drawable.ic_x
-                        "FACEBOOK" -> R.drawable.ic_facebook
-                        else -> R.drawable.ic_link
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(dims.sizing.plateBadgeMedium)
-                            .background(colorScheme.primaryContainer, CircleShape)
-                            .clip(CircleShape)
-                            .clickable {
-                                try {
-                                    uriHandler.openUri(link.url)
-                                } catch (_: Exception) {
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = iconRes),
-                            contentDescription = link.platform,
-                            tint = colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(dims.sizing.iconLg)
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -542,7 +506,7 @@ private fun FriendRequestActivityCard(
                 PMText(
                     text = item.statusCode,
                     fontSize = dims.fontSize.sm,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colors.primary
                 )
                 PMText(
                     text = item.createdAtText,
@@ -562,6 +526,7 @@ private fun StatusPill(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
+
     val style = remember(status) {
         when (status) {
             ProfileReviewStatusUi.APPROVED -> StatusPillStyle(
@@ -596,7 +561,7 @@ private fun StatusPill(
             )
             ProfileReviewStatusUi.UNKNOWN -> StatusPillStyle(
                 label = R.string.profile_review_status_unknown,
-                background = colors.chipBg,
+                background = colors.surfaceVariant,
                 foreground = colors.textSecondary
             )
         }
@@ -633,13 +598,12 @@ private fun ProfileShimmerContent(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
 
-    val shimmerTheme = remember(colorScheme) {
+    val shimmerTheme = remember(colors) {
         defaultShimmerTheme.copy(
             shaderColors = listOf(
                 colors.skeleton.copy(alpha = 0.55f),
-                colorScheme.surface.copy(alpha = 0.95f),
+                colors.surface.copy(alpha = 0.95f),
                 colors.skeletonSecondary.copy(alpha = 0.45f)
             ),
             shaderColorStops = listOf(0f, 0.5f, 1f)
@@ -648,7 +612,7 @@ private fun ProfileShimmerContent(
     val shimmer = rememberShimmer(shimmerBounds = ShimmerBounds.View, theme = shimmerTheme)
 
     LazyColumn(
-        modifier = modifier.background(colorScheme.background),
+        modifier = modifier.background(colors.background),
         contentPadding = PaddingValues(bottom = dims.spacing.s24),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {

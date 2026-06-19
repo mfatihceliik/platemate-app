@@ -319,6 +319,7 @@
     <string name="edit_profile_field_display_name">AD SOYAD</string>
     <string name="edit_profile_field_username">KULLANICI ADI</string>
     <string name="edit_profile_field_bio">BİYOGRAFİ</string>
+    <string name="edit_profile_bio_placeholder">Kendinden bahset…</string>
     <string name="edit_profile_field_social">SOSYAL MEDYA</string>
     <string name="edit_profile_username_hint">platemate.app/@%1$s</string>
     <string name="edit_profile_social_add_hint">%1$s ekle…</string>
@@ -333,6 +334,9 @@
     <string name="chatdetail_media_files">Medya ve Dosyalar</string>
     <string name="chatdetail_delete_chat">Sohbeti Sil</string>
     <string name="chatdetail_report">Şikayet Et</string>
+    <string name="chatdetail_action_message">Mesaj</string>
+    <string name="chatdetail_action_plate">Plaka</string>
+    <string name="chatdetail_action_block">Engelle</string>
 
     <!-- Plate Detail -->
     <string name="platedetail_title">Plaka Detayı</string>
@@ -355,10 +359,11 @@
     <string name="review_anonymous_checkbox">Anonim olarak değerlendir</string>
     <string name="review_submit_button">Değerlendirmeyi Paylaş</string>
     <string name="review_section_overall">GENEL PUAN</string>
-    <string name="review_section_detailed">DETAYLI PUANLAMA</string>
     <string name="review_section_tags">ETİKETLER</string>
     <string name="review_section_experience">DENEYİMİN</string>
     <string name="review_comment_placeholder">Deneyimini paylaş…</string>
+    <string name="review_comment_counter">%1$d/%2$d</string>
+    <string name="review_comment_max_reached">Maksimum karakter sayısına ulaşıldı</string>
     <string name="review_city_review_count">%1$s · %2$d değerlendirme</string>
     <string name="review_count_format">%1$d değerlendirme</string>
 
@@ -404,7 +409,7 @@
     <string name="discover_filter_good_driver">İyi Sürücü</string>
     <string name="discover_filter_new">Yeni</string>
     <string name="discover_section_trend_plates">Trend Plakalar</string>
-    <string name="discover_section_attention_plates">Dikkat Plakaları</string>
+    <string name="discover_section_careless_plates">Dikkatsiz Plakaları</string>
     <string name="discover_section_good_driver_plates">İyi Sürücü Plakaları</string>
     <string name="discover_section_new_plates">Yeni Plakalar</string>
     <string name="discover_section_by_city">Şehre Göre</string>
@@ -453,4 +458,10 @@
     <string name="discover_time_14_min_ago">14 dk önce</string>
     <string name="discover_time_21_min_ago">21 dk önce</string>
     <string name="discover_time_35_min_ago">35 dk önce</string>
+    <string name="review_rating_1">�ok k�t�</string>
+    <string name="review_rating_2">K�t�</string>
+    <string name="review_rating_3">Orta</string>
+    <string name="review_rating_4">�ok iyi</string>
+    <string name="review_rating_5">M�kemmel</string>
 </resources>
+

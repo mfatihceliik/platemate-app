@@ -40,12 +40,12 @@ internal fun AvatarEditSection(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = colors.primary
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(colors.surface)
             .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)
@@ -66,7 +66,7 @@ internal fun AvatarEditSection(
                     text = initials,
                     style = PMTextStyle.Headline,
                     fontWeight = FontWeight.ExtraBold,
-                    color = colors.primaryDark
+                    color = colors.onPrimaryContainer
                 )
             }
             Box(
@@ -75,7 +75,7 @@ internal fun AvatarEditSection(
                     .shadow(elevation = dims.spacing.s4, shape = CircleShape, spotColor = primary.copy(alpha = 0.45f))
                     .clip(CircleShape)
                     .background(primary)
-                    .border(dims.stroke.st2, MaterialTheme.colorScheme.surface, CircleShape)
+                    .border(dims.stroke.st2, colors.surface, CircleShape)
                     .debouncedClickable(onClick = onAvatarClick),
                 contentAlignment = Alignment.Center
             ) {
@@ -97,7 +97,7 @@ internal fun AvatarEditSection(
         )
     }
 
-    HorizontalDivider(color = colors.cardBorder)
+    HorizontalDivider(color = colors.outlineVariant)
 }
 
 @Preview(name = "AvatarEditSection Light", showBackground = true, backgroundColor = 0xFFF6F8FB)

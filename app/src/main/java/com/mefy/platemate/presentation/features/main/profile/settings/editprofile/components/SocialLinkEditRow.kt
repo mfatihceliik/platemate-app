@@ -55,15 +55,15 @@ internal fun SocialLinkEditRow(
     val isFocused by interactionSource.collectIsFocusedAsState()
     val fieldShape = MaterialTheme.shapes.small
 
-    val borderColor = if (isFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+    val borderColor = if (isFocused) colors.primary else colors.outline
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(fieldShape)
             .background(
-                if (isFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.04f)
-                else MaterialTheme.colorScheme.surface
+                if (isFocused) colors.primary.copy(alpha = 0.04f)
+                else colors.surface
             )
             .border(dims.stroke.st1, borderColor, fieldShape)
             .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s12),
@@ -98,7 +98,7 @@ internal fun SocialLinkEditRow(
                 onValueChange = onValueChange,
                 singleLine = true,
                 textStyle = TextStyle(color = colors.textPrimary, fontSize = dims.fontSize.md),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                cursorBrush = SolidColor(colors.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 interactionSource = interactionSource
             )
@@ -116,8 +116,8 @@ internal fun SocialLinkEditRow(
                 modifier = Modifier
                     .size(dims.spacing.s24)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .border(dims.stroke.st1, MaterialTheme.colorScheme.outline, CircleShape),
+                    .background(colors.surfaceVariant)
+                    .border(dims.stroke.st1, colors.outline, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

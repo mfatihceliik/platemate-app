@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -55,13 +56,13 @@ fun PMTrendCard(
                 modifier = Modifier
                     .size(dims.sizing.rankBadgeSize)
                     .clip(RoundedCornerShape(dims.radius.r8))
-                    .background(if (isFirst) colors.rankFirstBg else colors.rankOtherBg),
+                    .background(if (isFirst) MaterialTheme.pmColors.rankFirstBg else MaterialTheme.pmColors.rankOtherBg),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
+                PMText(
                     text = rank.toString(),
-                    color = if (isFirst) colors.rankFirstFg else colors.rankOtherFg,
-                    fontSize = 14.sp,
+                    color = if (isFirst) MaterialTheme.pmColors.rankFirstFg else MaterialTheme.pmColors.rankOtherFg,
+                    fontSize = dims.fontSize.md,
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -70,27 +71,24 @@ fun PMTrendCard(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(3.dp)
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 Text(
                     text = plateNumber,
                     style = MaterialTheme.typography.titleMedium,
-                    color = colors.textPrimary
+                    color = MaterialTheme.pmColors.textPrimary
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
                 ) {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = null,
-                        tint = colors.star,
-                        modifier = Modifier.size(12.dp)
+                        tint = MaterialTheme.pmColors.star,
                     )
-                    Text(
+                    PMText(
                         text = "$rating · $extra",
-                        fontSize = 12.sp,
-                        color = colors.textTertiary
+                        color = MaterialTheme.pmColors.textTertiary
                     )
                 }
             }
@@ -102,12 +100,13 @@ fun PMTrendCard(
 @Composable
 private fun PMTrendCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        val dims = MaterialTheme.pmDimensions
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .background(MaterialTheme.pmColors.background)
+                .padding(dims.spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             PMTrendCard(rank = 1, cityCode = "34", plateNumber = "34 EK 0682", rating = "4.8", extra = "12.4B", onClick = {}, modifier = Modifier.fillMaxWidth())
             PMTrendCard(rank = 2, cityCode = "06", plateNumber = "06 ABC 123", rating = "4.6", extra = "9.1B", onClick = {}, modifier = Modifier.fillMaxWidth())

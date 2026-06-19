@@ -2,10 +2,16 @@ package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.lifecycle.SavedStateHandle
 import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.review.Review
+import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.domain.usecase.review.GetPlateReviewsUseCase
+import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
+import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.text.CityNameResolver
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -15,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -22,6 +29,9 @@ class PlateDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchPlateUseCase: SearchPlateUseCase,
     private val getPlateReviewsUseCase: GetPlateReviewsUseCase,
+    private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
+    private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     uiErrorResolver: UiErrorResolver
 ) : BaseViewModel(uiErrorResolver) {
 
@@ -33,17 +43,47 @@ class PlateDetailViewModel @Inject constructor(
     private val _uiEffect = MutableSharedFlow<PlateDetailUiEffect>()
     val uiEffect: SharedFlow<PlateDetailUiEffect> = _uiEffect.asSharedFlow()
 
+    private var latestPlate: PlateSearchResult? = null
+
     init {
+        observeBookmark()
         loadPlateDetail()
     }
 
     fun onAction(action: PlateDetailUiAction) {
         when (action) {
             PlateDetailUiAction.BackClicked -> launch { _uiEffect.emit(PlateDetailUiEffect.NavigateBack) }
-            PlateDetailUiAction.BookmarkClicked -> {}
+            PlateDetailUiAction.BookmarkClicked -> onBookmarkClicked()
             PlateDetailUiAction.ReviewClicked -> launch {
                 _uiEffect.emit(PlateDetailUiEffect.NavigateToReview(_uiState.value.plateCode))
             }
+        }
+    }
+
+    private fun observeBookmark() {
+        launch {
+            observeSavedPlateCodesUseCase().collectLatest { codes ->
+                _uiState.update { it.copy(isBookmarked = codes.contains(normalizedPlateCode)) }
+            }
+        }
+    }
+
+    private fun onBookmarkClicked() {
+        val plate = latestPlate ?: return
+        launch {
+            val savedPlate = SavedPlate(
+                normalizedPlateCode = normalizedPlateCode,
+                formattedPlateCode = formatTurkishPlateInputUseCase(plate.plateCode),
+                cityName = CityNameResolver.resolveCityName(
+                    cityName = plate.cityName,
+                    plateCode = plate.plateCode
+                ),
+                ratingAverage = plate.ratingAverage,
+                commentCount = plate.reviewCount,
+                reportTypes = plate.topReportTypes,
+                savedAt = System.currentTimeMillis()
+            )
+            toggleSavedPlateUseCase(savedPlate)
         }
     }
 
@@ -52,6 +92,7 @@ class PlateDetailViewModel @Inject constructor(
             when (val result = searchPlateUseCase(normalizedPlateCode)) {
                 is AppResult.Success -> {
                     val plate = result.data
+                    latestPlate = plate
                     _uiState.update {
                         it.copy(
                             isLoading = false,

@@ -37,11 +37,11 @@ fun PMTagChip(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.rFull)
+    val shape = RoundedCornerShape(dims.radius.r12)
 
-    val bg = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
-    val fg = if (isSelected) MaterialTheme.colorScheme.onPrimary else colors.textSecondary
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else colors.chipBg
+    val bg = if (isSelected) colors.primary else colors.surface
+    val fg = if (isSelected) colors.onPrimary else colors.textSecondary
+    val borderColor = if (isSelected) colors.primary else colors.surfaceVariant
 
     Box(
         modifier = modifier
@@ -53,10 +53,10 @@ fun PMTagChip(
             .padding(horizontal = dims.spacing.s16),
         contentAlignment = Alignment.Center
     ) {
-        Text(
+        PMText(
             text = text,
             color = fg,
-            fontSize = 13.5.sp,
+            fontSize = dims.fontSize.md,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -69,11 +69,12 @@ private fun PMTagChipPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         val tags = listOf("Nazik", "Yol verdi", "Saygili", "Tesekkur etti", "Sabirli", "Dikkatli")
         var selected by remember { mutableStateOf(setOf(0, 1, 2)) }
+        val dims = MaterialTheme.pmDimensions
 
         FlowRow(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(dims.spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
             tags.forEachIndexed { index, tag ->
                 PMTagChip(

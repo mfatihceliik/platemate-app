@@ -33,12 +33,13 @@ fun PMCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val dims = MaterialTheme.pmDimensions
+    val pmColors = MaterialTheme.pmColors
     val shape = when (variant) {
         PMCardVariant.Standard -> RoundedCornerShape(dims.radius.r12)
         PMCardVariant.Large -> RoundedCornerShape(dims.radius.r16)
     }
-    val colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    val border = BorderStroke(dims.stroke.st1, MaterialTheme.pmColors.cardBorder)
+    val colors = CardDefaults.cardColors(containerColor = pmColors.surface)
+    val border = BorderStroke(dims.stroke.st1, pmColors.outlineVariant)
     val resolvedPadding = padding ?: PaddingValues(dims.spacing.s16)
 
     val safeOnClick = if (onClick != null && debounceClick) {
@@ -88,11 +89,15 @@ private fun PMCardDarkPreview() {
 
 @Composable
 private fun PMCardPreviewContent() {
+
+    val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(MaterialTheme.pmDimensions.spacing.s16)
+            .background(colors.background)
+            .padding(dims.spacing.s16)
     ) {
         PMCard(modifier = Modifier.fillMaxWidth()) {
             PMText(text = "Standard card (12dp)", style = PMTextStyle.Title)

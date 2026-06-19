@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMPasswordField(
@@ -41,6 +42,7 @@ fun PMPasswordField(
     showToggle: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
+    val colors = MaterialTheme.pmColors
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     PMTextField(
@@ -67,7 +69,7 @@ fun PMPasswordField(
                         } else {
                             stringResource(R.string.common_show)
                         },
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.pmColors.primary
                     )
                 }
             }
@@ -107,7 +109,7 @@ private fun PMPasswordFieldPreviewContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.pmColors.background)
             .padding(MaterialTheme.pmDimensions.spacing.s16)
     ) {
         PMPasswordField(

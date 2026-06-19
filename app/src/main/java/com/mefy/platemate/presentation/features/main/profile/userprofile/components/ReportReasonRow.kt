@@ -39,7 +39,7 @@ internal fun ReportReasonRow(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
     val rowShape = MaterialTheme.shapes.small
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = colors.primary
 
     Row(
         modifier = modifier

@@ -95,7 +95,7 @@ fun PMMessageItem(
                     modifier = Modifier
                         .size(dims.sizing.unreadDotSize)
                         .clip(CircleShape)
-                        .background(colors.unreadDot)
+                        .background(colors.primary)
                 )
             }
         }

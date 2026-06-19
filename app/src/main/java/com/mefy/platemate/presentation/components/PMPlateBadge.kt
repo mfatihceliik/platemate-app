@@ -22,16 +22,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-
-enum class PlateBadgeSize {
-    Small,
-    Medium,
-    Large,
-    Review
-}
 
 @Composable
 fun PMPlateBadge(
@@ -53,28 +47,28 @@ fun PMPlateBadge(
             badgeSize = dims.sizing.plateBadgeSmall
             radius = dims.radius.r8
             stripeWidth = dims.sizing.stripeWidthSmall
-            fontSize = 14.sp
+            fontSize = dims.fontSize.sm
             paddingLeft = 5.dp
         }
         PlateBadgeSize.Medium -> {
             badgeSize = dims.sizing.plateBadgeMedium
             radius = dims.radius.r12
             stripeWidth = dims.sizing.stripeWidthSmall
-            fontSize = 16.sp
+            fontSize = dims.fontSize.md
             paddingLeft = 5.dp
         }
         PlateBadgeSize.Large -> {
             badgeSize = dims.sizing.plateBadgeLarge
             radius = dims.radius.r16
             stripeWidth = dims.sizing.stripeWidthLarge
-            fontSize = 24.sp
+            fontSize = dims.fontSize.lg
             paddingLeft = 8.dp
         }
         PlateBadgeSize.Review -> {
             badgeSize = dims.sizing.plateBadgeReview
             radius = dims.radius.r12
             stripeWidth = dims.sizing.stripeWidthReview
-            fontSize = 19.sp
+            fontSize = dims.fontSize.md
             paddingLeft = 7.dp
         }
     }
@@ -94,14 +88,13 @@ fun PMPlateBadge(
                 .align(Alignment.CenterStart)
                 .width(stripeWidth)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary)
+                .background(colors.primary)
         )
-        Text(
+        PMText(
             text = cityCode,
-            color = colors.primaryDark,
+            color = colors.onPrimaryContainer,
             fontSize = fontSize,
             fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-0.5).sp,
             modifier = Modifier.padding(start = paddingLeft)
         )
     }

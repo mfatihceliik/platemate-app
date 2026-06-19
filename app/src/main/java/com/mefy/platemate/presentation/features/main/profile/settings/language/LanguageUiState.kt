@@ -29,9 +29,5 @@ data class LanguageItem(
 
 val allLanguages = listOf(
     LanguageItem(AppLanguage.TR, "Türkçe", "Turkish"),
-    LanguageItem(AppLanguage.EN, "English", "English"),
-    LanguageItem(null, "Deutsch", "German"),
-    LanguageItem(null, "Français", "French"),
-    LanguageItem(null, "Español", "Spanish"),
-    LanguageItem(null, "العربية", "Arabic")
+    LanguageItem(AppLanguage.EN, "English", "English")
 )

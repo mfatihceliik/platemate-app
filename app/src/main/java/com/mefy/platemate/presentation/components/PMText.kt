@@ -30,12 +30,13 @@ fun PMText(
     style: PMTextStyle = PMTextStyle.Body,
     fontWeight: FontWeight? = null,
     fontSize: TextUnit = MaterialTheme.pmDimensions.fontSize.sm,
-    color: Color = MaterialTheme.colorScheme.onSurface,
+    color: Color = MaterialTheme.pmColors.onSurface,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
     textAlign: TextAlign? = null
 ) {
-    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.colorScheme.onSurface) {
+    val colors = MaterialTheme.pmColors
+    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.pmColors.onSurface) {
         MaterialTheme.pmColors.textLabel
     } else {
         color
@@ -66,12 +67,12 @@ fun PMText(
     modifier: Modifier = Modifier,
     fontWeight: FontWeight? = null,
     fontSize: TextUnit = MaterialTheme.pmDimensions.fontSize.sm,
-    color: Color = MaterialTheme.colorScheme.onSurface,
+    color: Color = MaterialTheme.pmColors.onSurface,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
     textAlign: TextAlign? = null
 ) {
-    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.colorScheme.onSurface) {
+    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.pmColors.onSurface) {
         MaterialTheme.pmColors.textLabel
     } else {
         color
@@ -120,7 +121,7 @@ private fun PMTextPreviewContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.pmColors.background)
             .padding(MaterialTheme.pmDimensions.spacing.s16)
     ) {
         PMText(text = "PlateMate", style = PMTextStyle.Display)

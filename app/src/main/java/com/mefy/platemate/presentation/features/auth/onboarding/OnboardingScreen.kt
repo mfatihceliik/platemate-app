@@ -5,6 +5,9 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +37,13 @@ fun OnboardingScreen(
         }
     )
 
-    Crossfade(targetState = currentStep, label = "OnboardingCrossfade", modifier = modifier) { step ->
+    Crossfade(
+        targetState = currentStep,
+        label = "OnboardingCrossfade",
+        // App Scaffold artık inset eklemiyor (contentWindowInsets = 0); onboarding kendi
+        // güvenli alanını yönetir — Login/Register ile aynı desen.
+        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing)
+    ) { step ->
         when (step) {
             OnboardingStep.SPLASH -> {
                 SplashContent(
