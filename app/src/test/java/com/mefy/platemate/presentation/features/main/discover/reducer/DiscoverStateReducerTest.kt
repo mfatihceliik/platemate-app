@@ -92,11 +92,11 @@ class DiscoverStateReducerTest {
 
         val state = reducer.onFilterSelected(
             state = DiscoverUiState(selectedFilter = DiscoverFilterUi.Trend),
-            filter = DiscoverFilterUi.Attention,
+            filter = DiscoverFilterUi.Careless,
             plateDetails = plates
         )
 
-        assertEquals(DiscoverFilterUi.Attention, state.selectedFilter)
+        assertEquals(DiscoverFilterUi.Careless, state.selectedFilter)
         assertEquals(1, state.plateDetail.size)
         assertEquals("35DNG111", state.plateDetail.first().plateCode)
     }

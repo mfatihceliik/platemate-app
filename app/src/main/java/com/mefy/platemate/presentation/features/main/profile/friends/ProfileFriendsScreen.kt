@@ -13,12 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun ProfileFriendsScreen(
@@ -26,12 +27,12 @@ fun ProfileFriendsScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.pmColors
     val spacing = MaterialTheme.pmDimensions.spacing
-    val colorScheme = MaterialTheme.colorScheme
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_friends_title),
             onBackClick = onBackClick
         )
@@ -47,7 +48,7 @@ fun ProfileFriendsScreen(
             PMText(
                 text = stringResource(R.string.profile_friends_empty),
                 style = PMTextStyle.Body,
-                color = colorScheme.onSurfaceVariant
+                color = colors.onSurfaceVariant
             )
         } else {
             LazyColumn(
@@ -63,17 +64,17 @@ fun ProfileFriendsScreen(
                             PMText(
                                 text = friend.username,
                                 style = PMTextStyle.Label,
-                                color = colorScheme.onSurface
+                                color = colors.onSurface
                             )
                             PMText(
                                 text = friend.status,
                                 style = PMTextStyle.Caption,
-                                color = colorScheme.primary
+                                color = colors.primary
                             )
                             PMText(
                                 text = friend.createdAtText,
                                 style = PMTextStyle.Caption,
-                                color = colorScheme.onSurfaceVariant
+                                color = colors.onSurfaceVariant
                             )
                         }
                     }

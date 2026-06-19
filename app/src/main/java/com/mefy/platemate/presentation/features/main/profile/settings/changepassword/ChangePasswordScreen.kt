@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMPasswordField
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.features.main.profile.settings.changepassword.components.ValidationChecklist
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -35,11 +35,11 @@ fun ChangePasswordScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_change_password_title),
             onBackClick = { onAction(ChangePasswordUiAction.BackClicked) }
         ),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = colors.background,
         bottomBar = {
             Box(
                 modifier = Modifier

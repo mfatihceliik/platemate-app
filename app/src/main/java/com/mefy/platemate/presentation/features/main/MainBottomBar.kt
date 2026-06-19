@@ -20,13 +20,12 @@ fun MainBottomBar(
     onDestinationSelected: (TopLevelDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorScheme = MaterialTheme.colorScheme
     val colors = MaterialTheme.pmColors
     val dimensions = MaterialTheme.pmDimensions
 
     NavigationBar(
         modifier = modifier,
-        containerColor = colorScheme.surface,
+        containerColor = colors.surface,
         tonalElevation = dimensions.spacing.s4
     ) {
         TopLevelDestination.entries.forEach { destination ->
@@ -55,9 +54,9 @@ fun MainBottomBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = colors.tabActive,
-                    selectedTextColor = colors.tabActive,
-                    indicatorColor = colorScheme.surface,
+                    selectedIconColor = colors.primary,
+                    selectedTextColor = colors.primary,
+                    indicatorColor = colors.surface,
                     unselectedIconColor = colors.tabInactive,
                     unselectedTextColor = colors.tabInactive
                 )

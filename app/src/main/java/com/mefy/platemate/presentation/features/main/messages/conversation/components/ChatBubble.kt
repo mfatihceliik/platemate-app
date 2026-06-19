@@ -20,17 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 private val ReceivedShape = RoundedCornerShape(
-    topStart = 16.dp, topEnd = 16.dp, bottomEnd = 16.dp, bottomStart = 4.dp
+    topStart = 8.dp, topEnd = 8.dp, bottomEnd = 8.dp, bottomStart = 4.dp
 )
 private val SentShape = RoundedCornerShape(
-    topStart = 16.dp, topEnd = 16.dp, bottomEnd = 4.dp, bottomStart = 16.dp
+    topStart = 8.dp, topEnd = 8.dp, bottomEnd = 4.dp, bottomStart = 8.dp
 )
 
 @Composable
@@ -70,7 +73,7 @@ internal fun ReceivedBubble(
         ) {
             Box(
                 modifier = Modifier
-                    .background(colors.chipBg, ReceivedShape)
+                    .background(colors.surfaceVariant, ReceivedShape)
                     .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s10)
             ) {
                 PMText(
@@ -98,8 +101,8 @@ internal fun SentBubble(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val primary = MaterialTheme.colorScheme.primary
-    val onPrimary = MaterialTheme.colorScheme.onPrimary
+    val primary = colors.primary
+    val onPrimary = colors.onPrimary
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -126,14 +129,65 @@ internal fun SentBubble(
             ) {
                 PMText(text = time, style = PMTextStyle.Note, color = colors.textLabel)
                 if (isRead) {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = null,
                         tint = primary,
-                        modifier = Modifier.size(dims.sizing.iconSm)
                     )
                 }
             }
         }
+    }
+}
+
+@Preview(name = "ChatBubble Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun ChatBubbleLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        ChatBubblePreviewContent()
+    }
+}
+
+@Preview(name = "ChatBubble Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun ChatBubbleDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        ChatBubblePreviewContent()
+    }
+}
+
+@Composable
+private fun ChatBubblePreviewContent() {
+    val dims = MaterialTheme.pmDimensions
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.pmColors.background)
+            .padding(dims.spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+    ) {
+        ReceivedBubble(
+            initials = "AY",
+            avatarBg = Color(0xFFECFEFF),
+            avatarFg = Color(0xFF0E7490),
+            content = "Merhaba, plakamı gördünüz mü?",
+            time = "10:42"
+        )
+        SentBubble(
+            content = "Evet, 34 EK 0682 değil mi?",
+            time = "10:43",
+            isRead = true
+        )
+        ReceivedBubble(
+            initials = "AY",
+            avatarBg = Color(0xFFECFEFF),
+            avatarFg = Color(0xFF0E7490),
+            content = "Evet aynen o! Teşekkürler.",
+            time = "10:44"
+        )
+        SentBubble(
+            content = "Rica ederim, iyi günler!",
+            time = "10:45",
+            isRead = false
+        )
     }
 }

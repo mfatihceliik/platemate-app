@@ -23,14 +23,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.material3.Icon
+import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 
 @Composable
@@ -49,8 +54,8 @@ internal fun ChatDetailUserCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(elevation = dims.stroke.st2, shape = RoundedCornerShape(dims.radius.r18))
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(dims.radius.r18))
-            .border(dims.stroke.st1, colors.cardBorder, RoundedCornerShape(dims.radius.r18))
+            .background(colors.surface, RoundedCornerShape(dims.radius.r18))
+            .border(dims.stroke.st1, colors.outlineVariant, RoundedCornerShape(dims.radius.r18))
             .padding(dims.spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
@@ -81,24 +86,24 @@ internal fun ChatDetailUserCard(
 
         Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16)) {
             QuickAction(
-                label = "Mesaj",
+                label = stringResource(R.string.chatdetail_action_message),
                 icon = Icons.Outlined.ChatBubbleOutline,
                 bg = colors.primaryContainer,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = colors.primary,
                 onClick = onMessageClick
             )
             QuickAction(
-                label = "Plaka",
+                label = stringResource(R.string.chatdetail_action_plate),
                 icon = Icons.Outlined.DirectionsCar,
                 bg = colors.categoryGreenBg,
                 tint = colors.categoryGreenFg,
                 onClick = {}
             )
             QuickAction(
-                label = "Engelle",
+                label = stringResource(R.string.chatdetail_action_block),
                 icon = Icons.Outlined.Block,
-                bg = MaterialTheme.colorScheme.errorContainer,
-                tint = MaterialTheme.colorScheme.error,
+                bg = colors.errorContainer,
+                tint = colors.error,
                 onClick = {}
             )
         }
@@ -122,19 +127,47 @@ private fun QuickAction(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(dims.sizing.avatarIconInner)
                 .clip(RoundedCornerShape(dims.radius.r12))
                 .background(bg)
                 .debouncedClickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
+            PMIcon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = tint,
-                modifier = Modifier.size(dims.sizing.iconLg)
+                size = dims.sizing.iconLg
             )
         }
         PMText(text = label, style = PMTextStyle.Note, color = colors.textLabel)
+    }
+}
+
+@Preview(name = "ChatDetailUserCard Light", showBackground = true, backgroundColor = 0xFFF1F5F9)
+@Composable
+private fun ChatDetailUserCardPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        ChatDetailUserCard(
+            participantName = "Ahmet Yılmaz",
+            initials = "AY",
+            avatarBg = Color(0xFFEEF2FF),
+            avatarFg = Color(0xFF4F46E5),
+            onMessageClick = {}
+        )
+    }
+}
+
+@Preview(name = "ChatDetailUserCard Dark", showBackground = true, backgroundColor = 0xFF1E293B)
+@Composable
+private fun ChatDetailUserCardDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        ChatDetailUserCard(
+            participantName = "Zeynep Demir",
+            initials = "ZD",
+            avatarBg = Color(0xFF312E81),
+            avatarFg = Color(0xFFC7D2FE),
+            onMessageClick = {}
+        )
     }
 }

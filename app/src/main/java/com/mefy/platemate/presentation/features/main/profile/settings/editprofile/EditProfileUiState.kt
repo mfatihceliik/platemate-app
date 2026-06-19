@@ -16,6 +16,7 @@ data class EditProfileUiState(
     val displayNameError: String? = null,
     val usernameError: String? = null
 ) {
+
     val bioLength: Int get() = bio.length
     val bioMaxLength: Int get() = 160
 }

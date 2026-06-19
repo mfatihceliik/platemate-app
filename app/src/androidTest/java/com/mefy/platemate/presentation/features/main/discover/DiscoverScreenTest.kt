@@ -88,7 +88,7 @@ class DiscoverScreenTest {
 
         composeRule.runOnIdle {
             assertEquals(
-                DiscoverUiAction.FilterSelected(DiscoverFilterUi.Attention),
+                DiscoverUiAction.FilterSelected(DiscoverFilterUi.Careless),
                 emittedActions.lastOrNull()
             )
         }

@@ -16,15 +16,16 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.profile.settings.themecolor.components.AccentColorGrid
 import com.mefy.platemate.presentation.features.main.profile.settings.themecolor.components.AppearanceSelector
 import com.mefy.platemate.presentation.features.main.profile.settings.themecolor.components.ThemePreviewCard
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun ThemeColorScreen(
@@ -33,14 +34,15 @@ fun ThemeColorScreen(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_theme_color_title),
             onBackClick = { onAction(ThemeColorUiAction.BackClicked) }
         ),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = colors.background
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
 
@@ -90,6 +92,7 @@ private fun ThemeSection(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
 
     Column(
         modifier = modifier,

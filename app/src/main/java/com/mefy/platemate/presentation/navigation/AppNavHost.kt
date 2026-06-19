@@ -3,11 +3,12 @@ package com.mefy.platemate.presentation.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import com.mefy.platemate.presentation.common.event.CommonDialogHost
 import com.mefy.platemate.presentation.common.event.rememberCommonDialogHostState
 import com.mefy.platemate.presentation.common.text.resolve
+import com.mefy.platemate.presentation.components.LocalScaffoldPadding
 import com.mefy.platemate.presentation.features.main.MainBottomBar
 import com.mefy.platemate.presentation.performance.StartupJankMonitor
 
@@ -69,6 +71,9 @@ fun AppNavHost(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        // Inset yönetimi alt bileşenlere devredilir (PMTopBar status-bar, MainBottomBar nav-bar);
+        // içerik edge-to-edge çizebilir.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(hostState = appState.snackbarHostState) },
         bottomBar = {
             if (shouldShowBottomBar && currentTopLevelDestination != null) {
@@ -79,34 +84,38 @@ fun AppNavHost(
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = appState.navController,
-            startDestination = SessionGateDestination,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            sessionGateGraph(
-                onNavigateToAuth = appState.navController::navigateToAuthGraphFromGate,
-                onNavigateToMain = appState.navController::navigateToMainGraphFromGate
-            )
-
-            authGraph(
-                onNavigateAfterLogin = appState.navController::navigateToMainAndClearBackStack,
-                onNavigateAfterRegister = appState.navController::navigateToMainAndClearBackStack,
-                onNavigateToRegister = appState.navController::navigateToRegister,
-                onNavigateToLogin = appState.navController::navigateToLogin,
-                onShowSnackbar = { uiText -> appState.showSnackbar(uiText.resolve(context)) },
-                onShowDialog = dialogHostState::showDialog,
-                onBackClick = { appState.navController.popBackStack() },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            mainGraph(
+        // Scaffold padding'i NavHost'a uygulanmaz (edge-to-edge); CompositionLocal ile
+        // PMBaseScreen'e akar ve orada içeriğe uygulanır.
+        CompositionLocalProvider(LocalScaffoldPadding provides innerPadding) {
+            NavHost(
                 navController = appState.navController,
-                onNavigateToSearchDetail = appState.navController::navigateToSearchDetail,
-                onNavigateToDiscoverDetail = appState.navController::navigateToDiscoverDetail,
-                onShowSnackbar = { message -> appState.showSnackbar(message) },
+                startDestination = SessionGateDestination,
                 modifier = Modifier.fillMaxSize()
-            )
+            ) {
+                sessionGateGraph(
+                    onNavigateToAuth = appState.navController::navigateToAuthGraphFromGate,
+                    onNavigateToMain = appState.navController::navigateToMainGraphFromGate
+                )
+
+                authGraph(
+                    onNavigateAfterLogin = appState.navController::navigateToMainAndClearBackStack,
+                    onNavigateAfterRegister = appState.navController::navigateToMainAndClearBackStack,
+                    onNavigateToRegister = appState.navController::navigateToRegister,
+                    onNavigateToLogin = appState.navController::navigateToLogin,
+                    onShowSnackbar = { uiText -> appState.showSnackbar(uiText.resolve(context)) },
+                    onShowDialog = dialogHostState::showDialog,
+                    onBackClick = { appState.navController.popBackStack() },
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                mainGraph(
+                    navController = appState.navController,
+                    onNavigateToSearchDetail = appState.navController::navigateToSearchDetail,
+                    onNavigateToDiscoverDetail = appState.navController::navigateToDiscoverDetail,
+                    onShowSnackbar = { message -> appState.showSnackbar(message) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         CommonDialogHost(state = dialogHostState)
     }

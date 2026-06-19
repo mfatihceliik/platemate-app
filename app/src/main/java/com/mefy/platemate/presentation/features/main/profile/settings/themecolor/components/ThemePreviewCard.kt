@@ -31,8 +31,8 @@ internal fun ThemePreviewCard(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
-            .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.large)
+            .background(colors.surface, MaterialTheme.shapes.large)
+            .border(dims.stroke.st1, colors.outlineVariant, MaterialTheme.shapes.large)
             .padding(dims.spacing.s16),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
@@ -62,7 +62,7 @@ private fun PreviewPlateRow() {
                 text = "34",
                 style = PMTextStyle.Body,
                 fontWeight = FontWeight.ExtraBold,
-                color = colors.primaryDark
+                color = colors.onPrimaryContainer
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)) {
@@ -85,8 +85,8 @@ private fun PreviewPlateRow() {
 private fun PreviewBadgeRow() {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val accentColor = MaterialTheme.colorScheme.primary
-    val onAccent = MaterialTheme.colorScheme.onPrimary
+    val accentColor = colors.primary
+    val onAccent = colors.onPrimary
 
     Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
         PMText(
@@ -103,7 +103,7 @@ private fun PreviewBadgeRow() {
             text = "Etiket",
             style = PMTextStyle.Caption,
             fontWeight = FontWeight.SemiBold,
-            color = colors.primaryDark,
+            color = colors.onPrimaryContainer,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.extraLarge)
                 .background(colors.primaryContainer)

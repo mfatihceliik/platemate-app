@@ -22,10 +22,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.profile.settings.sociallinks.components.PlatformRow
@@ -44,7 +44,7 @@ fun SocialLinksScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_setting_social_links),
             onBackClick = onBackClick
         )
@@ -80,7 +80,7 @@ fun SocialLinksScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+                            .background(colors.surface, MaterialTheme.shapes.large)
                             .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.large)
                     ) {
                         SocialLinksViewModel.supportedPlatforms.forEachIndexed { index, platform ->
@@ -109,7 +109,7 @@ fun SocialLinksScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = dims.spacing.s12)
                                         .height(dims.stroke.st1)
-                                        .background(MaterialTheme.colorScheme.outlineVariant)
+                                        .background(colors.outlineVariant)
                                 )
                             }
                         }
@@ -140,7 +140,7 @@ fun SocialLinksScreen(
                             modifier = Modifier
                                 .height(48.dp)
                                 .clip(MaterialTheme.shapes.small)
-                                .background(MaterialTheme.colorScheme.primary)
+                                .background(colors.primary)
                                 .debouncedClickable(
                                     enabled = state.newUrl.isNotBlank() && !state.isSubmitting
                                 ) {

@@ -52,10 +52,10 @@ internal fun UserProfileActionButtons(
                 .weight(1f)
                 .height(dims.spacing.s48)
                 .then(
-                    if (isFollowing) Modifier.background(MaterialTheme.colorScheme.outline, buttonShape)
+                    if (isFollowing) Modifier.background(colors.outline, buttonShape)
                     else Modifier
-                        .shadow(elevation = dims.spacing.s4, shape = buttonShape, ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
-                        .background(MaterialTheme.colorScheme.primary, buttonShape)
+                        .shadow(elevation = dims.spacing.s4, shape = buttonShape, ambientColor = colors.primary.copy(alpha = 0.4f))
+                        .background(colors.primary, buttonShape)
                 )
                 .debouncedClickable(onClick = onFollowClick),
             horizontalArrangement = Arrangement.Center,
@@ -74,8 +74,8 @@ internal fun UserProfileActionButtons(
                 .weight(1f)
                 .height(dims.spacing.s48)
                 .clip(buttonShape)
-                .background(MaterialTheme.colorScheme.surface)
-                .border(dims.stroke.st1, MaterialTheme.colorScheme.outline, buttonShape)
+                .background(colors.surface)
+                .border(dims.stroke.st1, colors.outline, buttonShape)
                 .debouncedClickable(onClick = onMessageClick),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -92,8 +92,8 @@ internal fun UserProfileActionButtons(
             modifier = Modifier
                 .size(dims.spacing.s48)
                 .clip(buttonShape)
-                .background(MaterialTheme.colorScheme.surface)
-                .border(dims.stroke.st1, MaterialTheme.colorScheme.outline, buttonShape)
+                .background(colors.surface)
+                .border(dims.stroke.st1, colors.outline, buttonShape)
                 .debouncedClickable(onClick = onShareClick),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically

@@ -38,17 +38,17 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 fun FeatureIllustration1() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
     
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
             .background(
-                Brush.linearGradient(listOf(pmColors.categoryTealBg, colorScheme.surface)),
+                Brush.linearGradient(listOf(pmColors.categoryTealBg, colors.surface)),
                 RoundedCornerShape(dimensions.radius.r24)
             )
-            .border(dimensions.stroke.st2, colorScheme.primary.copy(alpha = 0.15f), RoundedCornerShape(dimensions.radius.r24))
+            .border(dimensions.stroke.st2, colors.primary.copy(alpha = 0.15f), RoundedCornerShape(dimensions.radius.r24))
             .clip(RoundedCornerShape(dimensions.radius.r24))
             .padding(vertical = dimensions.spacing.s32, horizontal = dimensions.spacing.s24),
         contentAlignment = Alignment.Center
@@ -59,7 +59,7 @@ fun FeatureIllustration1() {
                 .align(Alignment.BottomEnd)
                 .offset(x = dimensions.spacing.s48, y = dimensions.spacing.s48)
                 .size(180.dp)
-                .background(colorScheme.primary.copy(alpha = 0.07f), CircleShape)
+                .background(colors.primary.copy(alpha = 0.07f), CircleShape)
         )
 
         Column(
@@ -70,13 +70,13 @@ fun FeatureIllustration1() {
             Box(
                 modifier = Modifier
                     .size(width = 220.dp, height = 86.dp)
-                    .shadow(dimensions.spacing.s32, spotColor = colorScheme.primary.copy(alpha = 0.25f))
-                    .background(colorScheme.surface, RoundedCornerShape(dimensions.radius.r16))
+                    .shadow(dimensions.spacing.s32, spotColor = colors.primary.copy(alpha = 0.25f))
+                    .background(colors.surface, RoundedCornerShape(dimensions.radius.r16))
                     .border(dimensions.stroke.st2, pmColors.cardBorder, RoundedCornerShape(dimensions.radius.r16))
                     .clip(RoundedCornerShape(dimensions.radius.r16)),
                 contentAlignment = Alignment.Center
             ) {
-                Box(modifier = Modifier.width(dimensions.spacing.s12).fillMaxSize().background(colorScheme.primary).align(Alignment.CenterStart))
+                Box(modifier = Modifier.width(dimensions.spacing.s12).fillMaxSize().background(colors.primary).align(Alignment.CenterStart))
                 PMText(text = stringResource(R.string.illustration_plate_1), style = PMTextStyle.Display, color = pmColors.primaryDark, modifier = Modifier.padding(start = dimensions.spacing.s12))
             }
 
@@ -121,14 +121,14 @@ fun FeatureIllustration1() {
 fun FeatureIllustration2() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
             .background(
-                Brush.linearGradient(listOf(pmColors.categoryOrangeBg, colorScheme.surface)),
+                Brush.linearGradient(listOf(pmColors.categoryOrangeBg, colors.surface)),
                 RoundedCornerShape(dimensions.radius.r24)
             )
             .border(dimensions.stroke.st2, pmColors.warning.copy(alpha = 0.18f), RoundedCornerShape(dimensions.radius.r24))
@@ -171,7 +171,7 @@ fun FeatureIllustration2() {
             ) {
                 TrendItem(rank = "1", rankBg = pmColors.categoryOrangeBg, rankColor = pmColors.warning, city = "34", plate = stringResource(R.string.illustration_plate_1), stats = stringResource(R.string.illustration_stats_1), trend = "+12%", trendBg = pmColors.success)
                 TrendItem(rank = "2", rankBg = pmColors.chipBg, rankColor = pmColors.textTertiary, city = "06", plate = stringResource(R.string.illustration_plate_2), stats = stringResource(R.string.illustration_stats_2), trend = "+8%", trendBg = pmColors.success)
-                TrendItem(rank = "3", rankBg = pmColors.errorContainer, rankColor = colorScheme.error, city = "35", plate = stringResource(R.string.illustration_plate_3), stats = stringResource(R.string.illustration_stats_3), trend = "-3%", trendBg = colorScheme.error)
+                TrendItem(rank = "3", rankBg = pmColors.errorContainer, rankColor = colors.error, city = "35", plate = stringResource(R.string.illustration_plate_3), stats = stringResource(R.string.illustration_stats_3), trend = "-3%", trendBg = colors.error)
             }
         }
     }
@@ -181,12 +181,12 @@ fun FeatureIllustration2() {
 private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: String, plate: String, stats: String, trend: String, trendBg: Color) {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colorScheme.surface, RoundedCornerShape(dimensions.radius.r16))
+            .background(colors.surface, RoundedCornerShape(dimensions.radius.r16))
             .padding(vertical = dimensions.spacing.s8, horizontal = dimensions.spacing.s12)
             .shadow(10.dp, spotColor = pmColors.cardShadow),
         verticalAlignment = Alignment.CenterVertically,
@@ -203,7 +203,7 @@ private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: Strin
                 .clip(RoundedCornerShape(dimensions.radius.r12)),
             contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.width(7.dp).fillMaxSize().background(colorScheme.primary).align(Alignment.CenterStart))
+            Box(modifier = Modifier.width(7.dp).fillMaxSize().background(colors.primary).align(Alignment.CenterStart))
             PMText(text = city, style = PMTextStyle.Label, color = pmColors.primaryDark, modifier = Modifier.padding(start = dimensions.spacing.s8))
         }
         Column(modifier = Modifier.weight(1f)) {
@@ -211,7 +211,7 @@ private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: Strin
             PMText(text = stats, style = PMTextStyle.Caption, color = pmColors.textTertiary)
         }
         Box(modifier = Modifier.size(width = 38.dp, height = 20.dp).background(trendBg, RoundedCornerShape(dimensions.radius.r8)), contentAlignment = Alignment.Center) {
-            PMText(text = trend, style = PMTextStyle.Caption, color = colorScheme.onPrimary)
+            PMText(text = trend, style = PMTextStyle.Caption, color = colors.onPrimary)
         }
     }
 }
@@ -220,14 +220,14 @@ private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: Strin
 fun FeatureIllustration3() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
             .background(
-                Brush.linearGradient(listOf(pmColors.categoryGreenBg, colorScheme.surface)),
+                Brush.linearGradient(listOf(pmColors.categoryGreenBg, colors.surface)),
                 RoundedCornerShape(dimensions.radius.r24)
             )
             .border(dimensions.stroke.st2, pmColors.success.copy(alpha = 0.18f), RoundedCornerShape(dimensions.radius.r24))
@@ -251,23 +251,23 @@ fun FeatureIllustration3() {
         ) {
             // Avatar stack
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(52.dp).background(pmColors.categoryTealBg, CircleShape).border(dimensions.stroke.st3, colorScheme.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.size(52.dp).background(pmColors.categoryTealBg, CircleShape).border(dimensions.stroke.st3, colors.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
                     PMText(text = "AY", style = PMTextStyle.Title, color = pmColors.primaryDark)
                 }
-                Box(modifier = Modifier.offset(x = (-14).dp).size(52.dp).background(pmColors.categoryOrangeBg, CircleShape).border(dimensions.stroke.st3, colorScheme.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.offset(x = (-14).dp).size(52.dp).background(pmColors.categoryOrangeBg, CircleShape).border(dimensions.stroke.st3, colors.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
                     PMText(text = "MK", style = PMTextStyle.Title, color = pmColors.categoryOrangeFg)
                 }
-                Box(modifier = Modifier.offset(x = (-28).dp).size(52.dp).background(pmColors.categoryIndigoBg, CircleShape).border(dimensions.stroke.st3, colorScheme.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.offset(x = (-28).dp).size(52.dp).background(pmColors.categoryIndigoBg, CircleShape).border(dimensions.stroke.st3, colors.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
                     PMText(text = "ZE", style = PMTextStyle.Title, color = pmColors.categoryIndigoFg)
                 }
-                Box(modifier = Modifier.offset(x = (-42).dp).size(52.dp).background(pmColors.chipBg, CircleShape).border(dimensions.stroke.st3, colorScheme.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.offset(x = (-42).dp).size(52.dp).background(pmColors.chipBg, CircleShape).border(dimensions.stroke.st3, colors.surface, CircleShape).shadow(8.dp, spotColor = pmColors.cardShadow), contentAlignment = Alignment.Center) {
                     PMText(text = "+8K", style = PMTextStyle.Label, color = pmColors.textTertiary)
                 }
             }
 
             // Stats grid
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = dimensions.spacing.s4), horizontalArrangement = Arrangement.spacedBy(dimensions.spacing.s8)) {
-                StatBox(value = stringResource(R.string.illustration_users_count), label = stringResource(R.string.illustration_users_label), color = colorScheme.primary, modifier = Modifier.weight(1f))
+                StatBox(value = stringResource(R.string.illustration_users_count), label = stringResource(R.string.illustration_users_label), color = colors.primary, modifier = Modifier.weight(1f))
                 StatBox(value = stringResource(R.string.illustration_reviews_count), label = stringResource(R.string.illustration_reviews_label), color = pmColors.warning, modifier = Modifier.weight(1f))
                 StatBox(value = stringResource(R.string.illustration_plates_count), label = stringResource(R.string.illustration_plates_label), color = pmColors.success, modifier = Modifier.weight(1f))
             }
@@ -276,7 +276,7 @@ fun FeatureIllustration3() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(colorScheme.surface, RoundedCornerShape(dimensions.radius.r16))
+                    .background(colors.surface, RoundedCornerShape(dimensions.radius.r16))
                     .padding(vertical = dimensions.spacing.s12, horizontal = dimensions.spacing.s16)
                     .shadow(8.dp, spotColor = pmColors.cardShadow),
                 horizontalArrangement = Arrangement.spacedBy(dimensions.spacing.s8)

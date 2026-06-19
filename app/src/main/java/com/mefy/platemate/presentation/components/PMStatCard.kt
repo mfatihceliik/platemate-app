@@ -35,20 +35,20 @@ fun PMStatCard(
     Column(
         modifier = modifier
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surface)
-            .border(dims.stroke.st1, colors.cardBorder, shape)
+            .background(colors.surface)
+            .border(dims.stroke.st1, colors.outlineVariant, shape)
             .padding(vertical = dims.spacing.s16, horizontal = dims.spacing.s8),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(3.dp)
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
     ) {
-        Text(
+        PMText(
             text = value,
-            style = MaterialTheme.typography.displayMedium,
+            fontSize = dims.fontSize.xl,
             color = colors.textPrimary
         )
-        Text(
+        PMText(
             text = label,
-            fontSize = 11.sp,
+            fontSize = dims.fontSize.md,
             color = colors.textTertiary
         )
     }
@@ -58,11 +58,12 @@ fun PMStatCard(
 @Composable
 private fun PMStatCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        val dims = MaterialTheme.pmDimensions
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(dims.spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             PMStatCard(value = "42", label = "Degerlendirme", modifier = Modifier.weight(1f))
             PMStatCard(value = "318", label = "Takipci", modifier = Modifier.weight(1f))

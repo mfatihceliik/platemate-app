@@ -25,8 +25,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -46,8 +48,8 @@ internal fun UserProfileReviewCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(elevation = dims.spacing.s4, shape = cardShape)
-            .background(MaterialTheme.colorScheme.surface, cardShape)
-            .border(dims.stroke.st1, colors.cardBorder, cardShape)
+            .background(colors.surface, cardShape)
+            .border(dims.stroke.st1, colors.outlineVariant, cardShape)
             .padding(dims.spacing.s12),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)
     ) {
@@ -56,34 +58,11 @@ internal fun UserProfileReviewCard(
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.plateBadgeSmall)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(colors.primaryContainer)
-                    .border(dims.stroke.st1, colors.primaryContainerBorder, MaterialTheme.shapes.small)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(dims.spacing.s8)
-                        .matchParentSize()
-                        .background(MaterialTheme.colorScheme.primary)
-                        .align(Alignment.CenterStart)
-                )
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .padding(start = dims.spacing.s8),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PMText(
-                        text = review.plateCode,
-                        style = PMTextStyle.Note,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = colors.primaryDark
-                    )
-                }
-            }
+
+            PMPlateBadge(
+                cityCode = review.plateCode,
+                size = PlateBadgeSize.Small
+            )
 
             Column(
                 modifier = Modifier.weight(1f),
@@ -139,7 +118,7 @@ internal fun UserProfileReviewCard(
                             text = tag,
                             style = PMTextStyle.Note,
                             fontWeight = FontWeight.SemiBold,
-                            color = colors.primaryDark
+                            color = colors.onPrimaryContainer
                         )
                     }
                 }

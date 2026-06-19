@@ -6,6 +6,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMSwitch(
@@ -13,12 +14,14 @@ fun PMSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val colors = MaterialTheme.pmColors
     Switch(
+        modifier = modifier,
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
-            checkedTrackColor = MaterialTheme.colorScheme.primary,
-            uncheckedTrackColor = MaterialTheme.colorScheme.outline,
+            checkedTrackColor = colors.primary,
+            uncheckedTrackColor = colors.outline,
             checkedThumbColor = Color.White,
             uncheckedThumbColor = Color.White,
             uncheckedBorderColor = Color.Transparent,

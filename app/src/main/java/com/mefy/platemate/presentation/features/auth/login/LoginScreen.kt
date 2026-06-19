@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPasswordField
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
@@ -51,6 +51,7 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.auth.components.AuthHeroHeader
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun LoginScreen(
@@ -60,11 +61,11 @@ fun LoginScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val dimensions = MaterialTheme.pmDimensions
-    val spacing = dimensions.spacing
-    val radius = dimensions.radius
-    val stroke = dimensions.stroke
+    val colors = MaterialTheme.pmColors
+    val dims = MaterialTheme.pmDimensions
+    val spacing = dims.spacing
+    val radius = dims.radius
+    val stroke = dims.stroke
     val isSubmitLoading = state.submitState is UiActionState.Loading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())
@@ -80,7 +81,7 @@ fun LoginScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colorScheme.background)
+            .background(colors.background)
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .imePadding()
             .verticalScroll(rememberScrollState())
@@ -104,7 +105,7 @@ fun LoginScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(colorScheme.errorContainer, RoundedCornerShape(radius.r12))
+                        .background(colors.errorContainer, RoundedCornerShape(radius.r12))
                         .padding(horizontal = spacing.s16, vertical = spacing.s12),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(spacing.s12)
@@ -112,10 +113,10 @@ fun LoginScreen(
                     Box(
                         modifier = Modifier
                             .size(spacing.s24)
-                            .background(colorScheme.error, CircleShape),
+                            .background(colors.error, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        PMIcon(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = Color.White,
@@ -125,7 +126,7 @@ fun LoginScreen(
                     PMText(
                         text = stringResource(R.string.auth_login_error_banner),
                         style = PMTextStyle.Caption,
-                        color = colorScheme.error
+                        color = colors.error
                     )
                 }
             }
@@ -138,10 +139,10 @@ fun LoginScreen(
                 isError = isErrorState, // highlight if any error to match design
                 errorText = resolvedEmailError,
                 leadingIcon = {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Email,
                         contentDescription = null,
-                        tint = colorScheme.outline,
+                        tint = colors.outline,
                         modifier = Modifier.size(spacing.s16)
                     )
                 },
@@ -150,10 +151,10 @@ fun LoginScreen(
                         Box(
                             modifier = Modifier
                                 .size(spacing.s24)
-                                .background(colorScheme.error, CircleShape),
+                                .background(colors.error, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
+                            PMIcon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = null,
                                 tint = Color.White,
@@ -177,10 +178,10 @@ fun LoginScreen(
                 isError = isErrorState,
                 errorText = state.passwordError,
                 leadingIcon = {
-                    Icon(
+                    PMIcon(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = null,
-                        tint = colorScheme.outline,
+                        tint = colors.outline,
                         modifier = Modifier.size(spacing.s16)
                     )
                 },
@@ -198,7 +199,7 @@ fun LoginScreen(
                 PMText(
                     text = stringResource(R.string.auth_login_forgot_password),
                     style = PMTextStyle.Caption,
-                    color = colorScheme.primary,
+                    color = colors.primary,
                     modifier = Modifier.clickable { /* Handle forgot password */ }
                 )
             }
@@ -220,13 +221,13 @@ fun LoginScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(spacing.s12)
             ) {
-                Box(modifier = Modifier.weight(1f).height(stroke.st1).background(colorScheme.outlineVariant))
+                Box(modifier = Modifier.weight(1f).height(stroke.st1).background(colors.outlineVariant))
                 PMText(
                     text = stringResource(R.string.auth_login_or),
                     style = PMTextStyle.Caption,
-                    color = colorScheme.outline
+                    color = colors.outline
                 )
-                Box(modifier = Modifier.weight(1f).height(stroke.st1).background(colorScheme.outlineVariant))
+                Box(modifier = Modifier.weight(1f).height(stroke.st1).background(colors.outlineVariant))
             }
 
             // Apple Sign In
@@ -254,12 +255,12 @@ fun LoginScreen(
                 PMText(
                     text = stringResource(R.string.auth_login_no_account) + " ",
                     style = PMTextStyle.Caption,
-                    color = colorScheme.tertiary
+                    color = colors.tertiary
                 )
                 PMText(
                     text = stringResource(R.string.auth_login_register_link),
                     style = PMTextStyle.Caption,
-                    color = colorScheme.primary,
+                    color = colors.primary,
                     modifier = Modifier.clickable(onClick = onNavigateToRegisterClick)
                 )
             }
@@ -283,7 +284,7 @@ fun AppleIcon() {
         pathData = pathNodes,
         fill = SolidColor(Color.White)
     )
-    Icon(
+    PMIcon(
         imageVector = builder.build(),
         contentDescription = "Apple",
         tint = Color.White,

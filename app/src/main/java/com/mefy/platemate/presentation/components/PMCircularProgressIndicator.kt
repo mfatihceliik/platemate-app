@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,18 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import com.mefy.platemate.presentation.theme.LocalPMDimensions
-import com.mefy.platemate.presentation.theme.PMDimensions
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMCircularProgressIndicator(
     modifier: Modifier = Modifier,
     size: Dp = MaterialTheme.pmDimensions.sizing.progressBarSmall,
     strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st2,
-    color: Color = MaterialTheme.colorScheme.primary,
+    color: Color = MaterialTheme.pmColors.primary,
     trackColor: Color = Color.Transparent,
 ) {
     CircularProgressIndicator(
@@ -56,24 +53,25 @@ private fun PMCircularProgressIndicatorDarkPreview() {
 @Composable
 private fun PMCircularProgressIndicatorPreviewContent() {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.pmColors.background)
             .padding(dims.spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
         // Small — inline / button use
-        PMCircularProgressIndicator(size = dims.sizing.iconMd, strokeWidth = 2.dp)
+        PMCircularProgressIndicator(size = dims.sizing.iconMd, strokeWidth = dims.stroke.st2)
 
         // Default — list / card loading
         PMCircularProgressIndicator()
 
         // Large — full-screen loading overlay
-        PMCircularProgressIndicator(size = 48.dp, strokeWidth = 4.dp)
+        PMCircularProgressIndicator(size = dims.sizing.avatarMedium, strokeWidth = dims.stroke.st3)
 
         // Custom color
-        PMCircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
+        PMCircularProgressIndicator(color = MaterialTheme.pmColors.secondary)
     }
 }

@@ -1,7 +1,6 @@
 package com.mefy.platemate.presentation.features.main.profile.settings.editprofile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -19,19 +17,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.components.PMCommentField
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.profile.settings.editprofile.components.AvatarEditSection
 import com.mefy.platemate.presentation.features.main.profile.settings.editprofile.components.DangerZoneSection
@@ -52,7 +47,7 @@ internal fun EditProfileScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.WithActions(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.edit_profile_title),
             onBackClick = { onAction(EditProfileUiAction.BackClicked) },
             actions = {
@@ -111,6 +106,7 @@ internal fun EditProfileScreen(
                             PMTextField(
                                 value = state.username,
                                 onValueChange = { onAction(EditProfileUiAction.UsernameChanged(it)) },
+                                readOnly = true,
                                 isError = state.usernameError != null,
                                 errorText = state.usernameError,
                                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -127,36 +123,13 @@ internal fun EditProfileScreen(
                         }
 
                         FieldLabel(stringResource(R.string.edit_profile_field_bio))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.small)
-                                .background(MaterialTheme.colorScheme.surface)
-                                .border(dims.stroke.st1, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-                                .padding(dims.spacing.s12)
-                        ) {
-                            Column {
-                                BasicTextField(
-                                    value = state.bio,
-                                    onValueChange = { onAction(EditProfileUiAction.BioChanged(it)) },
-                                    minLines = 3,
-                                    maxLines = 5,
-                                    textStyle = TextStyle(color = colors.textPrimary, fontSize = dims.fontSize.lg),
-                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().padding(top = dims.spacing.s8),
-                                    contentAlignment = Alignment.CenterEnd
-                                ) {
-                                    PMText(
-                                        text = "${state.bioLength}/${state.bioMaxLength}",
-                                        style = PMTextStyle.Note,
-                                        color = colors.textLabel
-                                    )
-                                }
-                            }
-                        }
+                        PMCommentField(
+                            value = state.bio,
+                            onValueChange = { onAction(EditProfileUiAction.BioChanged(it)) },
+                            maxLength = state.bioMaxLength,
+                            placeholder = stringResource(R.string.edit_profile_bio_placeholder),
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(top = dims.spacing.s4),
@@ -165,7 +138,7 @@ internal fun EditProfileScreen(
                         ) {
                             FieldLabel(stringResource(R.string.edit_profile_field_social))
                             HorizontalDivider(
-                                color = MaterialTheme.colorScheme.outline,
+                                color = colors.outline,
                                 modifier = Modifier.weight(1f)
                             )
                         }

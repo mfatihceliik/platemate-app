@@ -1,0 +1,109 @@
+package com.mefy.platemate.presentation.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.mefy.platemate.R
+import com.mefy.platemate.presentation.theme.PlateMateTheme
+import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.pmDimensions
+
+/**
+ * Multi-line, growable text field with a live character counter and a
+ * "max reached" warning. The single source of truth for comment/bio style
+ * inputs across the app (review comment, profile bio, …).
+ *
+ * The counter turns red and the warning appears once [value] hits [maxLength].
+ * Enforcing the hard limit (truncating input) is the caller/ViewModel's job —
+ * this composable only reflects state, matching the review comment use case.
+ *
+ * @param maxLength character limit shown in the counter (e.g. 240 review, 160 bio).
+ * @param placeholder hint shown when empty.
+ * @param height fixed field height; the inner field fills it and wraps text.
+ */
+@Composable
+fun PMCommentField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    maxLength: Int,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    height: Dp = 150.dp,
+) {
+    val colors = MaterialTheme.pmColors
+    val dims = MaterialTheme.pmDimensions
+
+    val isMaxReached = value.length >= maxLength
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+        ) {
+            PMTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxSize(),
+                placeholder = placeholder,
+                singleLine = false,
+            )
+            PMText(
+                text = stringResource(R.string.review_comment_counter, value.length, maxLength),
+                color = if (isMaxReached) colors.error else colors.textLabel,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = dims.spacing.s16, bottom = dims.spacing.s12)
+            )
+        }
+        if (isMaxReached) {
+            PMText(
+                text = stringResource(R.string.review_comment_max_reached),
+                color = colors.error,
+                fontSize = dims.fontSize.sm,
+                modifier = Modifier.padding(start = dims.spacing.s4)
+            )
+        }
+    }
+}
+
+@Preview(name = "PMCommentField Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun PMCommentFieldLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        PMCommentField(
+            value = "Çok nazik bir sürücü, yol verdi.",
+            onValueChange = {},
+            maxLength = 160,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(name = "PMCommentField Max", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun PMCommentFieldMaxPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        PMCommentField(
+            value = "a".repeat(160),
+            onValueChange = {},
+            maxLength = 160,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}

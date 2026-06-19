@@ -23,7 +23,7 @@ internal fun ValidationChecklist(state: ChangePasswordUiState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
+            .background(colors.surface, MaterialTheme.shapes.medium)
             .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.medium)
             .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s12),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -28,13 +29,14 @@ fun AuthHeroHeader(
     subtitle: String,
     modifier: Modifier = Modifier
 ) {
-    val dimensions = MaterialTheme.pmDimensions
-    val spacing = dimensions.spacing
+    val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
+    val spacing = dims.spacing
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.surface)
+            .background(color = colors.surface)
             .padding(top = spacing.s24, bottom = spacing.s48),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing.s16)
@@ -43,17 +45,16 @@ fun AuthHeroHeader(
             modifier = Modifier
                 .size(76.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = colors.primary,
                     shape = RoundedCornerShape(spacing.s24)
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(
+            PMText(
                 text = "P",
                 color = Color.White,
-                fontSize = 38.sp,
+                fontSize = dims.fontSize.huge,
                 fontWeight = FontWeight.ExtraBold,
-                letterSpacing = (-2).sp
             )
         }
 
@@ -61,17 +62,16 @@ fun AuthHeroHeader(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
-            Text(
+            PMText(
                 text = title,
-                fontSize = 26.sp,
+                fontSize = dims.fontSize.xxl,
                 fontWeight = FontWeight.ExtraBold,
-                letterSpacing = (-0.5).sp,
-                color = MaterialTheme.colorScheme.onSurface
+                color = colors.onSurface
             )
             PMText(
                 text = subtitle,
                 style = PMTextStyle.Body,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = colors.onSurfaceVariant
             )
         }
     }

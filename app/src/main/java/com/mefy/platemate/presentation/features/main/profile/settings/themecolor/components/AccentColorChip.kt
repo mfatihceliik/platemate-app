@@ -30,7 +30,7 @@ internal fun AccentColorChip(
     Box(
         modifier = modifier
             .height(58.dp)
-            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium)
+            .background(colors.surface, MaterialTheme.shapes.medium)
             .border(
                 width = if (isSelected) 2.dp else dims.stroke.st1,
                 color = if (isSelected) color else colors.cardBorder,

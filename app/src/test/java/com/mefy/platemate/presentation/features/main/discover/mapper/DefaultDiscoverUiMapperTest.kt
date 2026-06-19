@@ -39,16 +39,16 @@ class DefaultDiscoverUiMapperTest {
     fun mapTabPlates_appliesFilterAndRanksFromOne() {
         val tabs = sampleDiscoveryHome().tabs
 
-        val attention = mapper.mapTabPlates(tabs, DiscoverFilterUi.Attention)
+        val careless = mapper.mapTabPlates(tabs, DiscoverFilterUi.Careless)
         val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
 
-        assertEquals(1, attention.size)
-        assertEquals(1, attention.first().rank)
-        assertEquals("35 DNG 111", attention.first().plateCode)
-        assertEquals("Istanbul", attention.first().cityName)
-        assertEquals(4.4, attention.first().ratingAverage, 0.0)
-        assertEquals(1, attention.first().reportTags.size)
-        assertEquals("#FF0000", attention.first().reportTags.first().colorHex)
+        assertEquals(1, careless.size)
+        assertEquals(1, careless.first().rank)
+        assertEquals("35 DNG 111", careless.first().plateCode)
+        assertEquals("Istanbul", careless.first().cityName)
+        assertEquals(4.4, careless.first().ratingAverage, 0.0)
+        assertEquals(1, careless.first().reportTags.size)
+        assertEquals("#FF0000", careless.first().reportTags.first().colorHex)
         assertEquals(2, trend.size)
         assertEquals(1, trend[0].rank)
         assertEquals(2, trend[1].rank)

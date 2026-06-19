@@ -20,12 +20,12 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 fun StatBox(value: String, label: String, color: Color, modifier: Modifier = Modifier) {
     val pmColors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
     val dimensions = MaterialTheme.pmDimensions
 
     Column(
         modifier = modifier
-            .background(colorScheme.surface, RoundedCornerShape(dimensions.radius.r16))
+            .background(colors.surface, RoundedCornerShape(dimensions.radius.r16))
             .padding(vertical = dimensions.spacing.s12, horizontal = dimensions.spacing.s8)
             .shadow(dimensions.spacing.s8, spotColor = pmColors.cardShadow),
         horizontalAlignment = Alignment.CenterHorizontally,

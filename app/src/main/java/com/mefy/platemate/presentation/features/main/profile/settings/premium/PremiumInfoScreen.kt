@@ -31,9 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -54,11 +54,11 @@ fun PremiumInfoScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.Simple(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.profile_premium_title),
             onBackClick = onBackClick
         ),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = colors.surface,
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -181,7 +181,7 @@ fun PremiumInfoScreen(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+                        .background(colors.surface, MaterialTheme.shapes.large)
                         .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.large)
                         .padding(dims.spacing.s12),
                     verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)

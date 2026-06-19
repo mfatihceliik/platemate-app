@@ -35,7 +35,7 @@ fun PMCategoryCard(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
-    val color = MaterialTheme.colorScheme
+    val pmColors = MaterialTheme.pmColors
     val shape = RoundedCornerShape(dims.radius.r16)
 
     Column(
@@ -50,7 +50,7 @@ fun PMCategoryCard(
                 //.size(dims.sizing.categoryIconContainer)
                 .shadow(elevation = dims.spacing.s0, RoundedCornerShape(dims.radius.r12))
                 .clip(RoundedCornerShape(dims.radius.r12))
-                .background(color.background)
+                .background(pmColors.background)
                 .padding(dims.spacing.s12)
         ) {
             Box(

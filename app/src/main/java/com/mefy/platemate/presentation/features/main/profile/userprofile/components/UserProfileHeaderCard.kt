@@ -55,7 +55,7 @@ internal fun UserProfileHeaderCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(colors.surface)
             .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
     ) {
         Row(
@@ -85,7 +85,7 @@ internal fun UserProfileHeaderCard(
                             .size(dims.spacing.s16)
                             .clip(CircleShape)
                             .background(colors.success)
-                            .border(dims.stroke.st2, MaterialTheme.colorScheme.surface, CircleShape)
+                            .border(dims.stroke.st2, colors.surface, CircleShape)
                             .align(Alignment.BottomEnd)
                     )
                 }
@@ -111,7 +111,7 @@ internal fun UserProfileHeaderCard(
                         Icon(
                             imageVector = Icons.Filled.Verified,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = colors.primary,
                             modifier = Modifier.size(dims.spacing.s16)
                         )
                     }
@@ -135,12 +135,12 @@ internal fun UserProfileHeaderCard(
                 .padding(top = dims.spacing.s12)
                 .height(IntrinsicSize.Min)
                 .clip(MaterialTheme.shapes.medium)
-                .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.medium)
+                .border(dims.stroke.st1, colors.outlineVariant, MaterialTheme.shapes.medium)
         ) {
             StatCell(value = reviewCount.toString(), label = stringResource(R.string.user_profile_stat_reviews), modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.cardBorder))
+            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant))
             StatCell(value = followerCount, label = stringResource(R.string.user_profile_stat_followers), modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.cardBorder))
+            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant))
             StatCell(value = followingCount.toString(), label = stringResource(R.string.user_profile_stat_following), modifier = Modifier.weight(1f))
         }
     }

@@ -37,27 +37,25 @@ fun PMRatingBar(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val barShape = RoundedCornerShape(4.dp)
+    val barShape = RoundedCornerShape(dims.radius.r4)
 
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
-        Text(
+        PMText(
             text = starNumber.toString(),
-            fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = colors.textTertiary,
-            modifier = Modifier.width(8.dp),
+            modifier = Modifier.width(dims.spacing.s8),
             textAlign = TextAlign.Center
         )
 
-        Icon(
+        PMIcon(
             imageVector = Icons.Filled.Star,
-            contentDescription = null,
+            size = dims.sizing.iconSm,
             tint = colors.star,
-            modifier = Modifier.size(11.dp)
         )
 
         Box(
@@ -65,22 +63,21 @@ fun PMRatingBar(
                 .weight(1f)
                 .height(dims.sizing.ratingBarHeight)
                 .clip(barShape)
-                .background(colors.chipBg)
+                .background(colors.surfaceVariant)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(percentage.coerceIn(0f, 1f))
                     .height(dims.sizing.ratingBarHeight)
                     .clip(barShape)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(colors.primary)
             )
         }
 
-        Text(
+        PMText(
             text = "${(percentage * 100).toInt()}%",
-            fontSize = 11.sp,
             color = colors.textLabel,
-            modifier = Modifier.width(30.dp),
+            modifier = Modifier.width(dims.spacing.s32),
             textAlign = TextAlign.End
         )
     }
@@ -90,11 +87,12 @@ fun PMRatingBar(
 @Composable
 private fun PMRatingBarPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        val dims = MaterialTheme.pmDimensions
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(7.dp)
+                .padding(dims.spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
             PMRatingBar(starNumber = 5, percentage = 0.78f)
             PMRatingBar(starNumber = 4, percentage = 0.14f)

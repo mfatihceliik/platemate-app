@@ -62,10 +62,10 @@ class DiscoverViewModelTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onAction(DiscoverUiAction.FilterSelected(DiscoverFilterUi.Attention))
+        viewModel.onAction(DiscoverUiAction.FilterSelected(DiscoverFilterUi.Careless))
 
         val state = viewModel.uiState.value
-        assertEquals(DiscoverFilterUi.Attention, state.selectedFilter)
+        assertEquals(DiscoverFilterUi.Careless, state.selectedFilter)
         assertEquals(1, state.plateDetail.size)
         assertTrue(state.plateDetail.all { it.plateCode.isNotBlank() })
     }

@@ -76,7 +76,7 @@ fun SplashContent(
                 .background(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
+                            colors.primary.copy(alpha = 0.22f),
                             Color.Transparent
                         )
                     )
@@ -123,10 +123,10 @@ fun SplashContent(
                             .size(56.dp)
                             .shadow(
                                 elevation = 28.dp,
-                                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                spotColor = colors.primary.copy(alpha = 0.7f),
                                 shape = RoundedCornerShape(dims.radius.r16)
                             )
-                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(dims.radius.r16)),
+                            .background(colors.primary, RoundedCornerShape(dims.radius.r16)),
                         contentAlignment = Alignment.Center
                     ) {
                         PMText(
@@ -231,13 +231,13 @@ private fun FloatingPlatesAnimation() {
                 .align(Alignment.BottomStart)
                 .offset(x = 28.dp, y = (-8).dp + floatC.dp)
                 .size(width = 110.dp, height = 46.dp)
-                .shadow(20.dp, spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f))
+                .shadow(20.dp, spotColor = colors.primary.copy(alpha = 0.18f))
                 .background(Color(0xFF1E2A36), RoundedCornerShape(dims.radius.r12))
-                .border(dims.stroke.st1, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(dims.radius.r12))
+                .border(dims.stroke.st1, colors.primary.copy(alpha = 0.35f), RoundedCornerShape(dims.radius.r12))
                 .clip(RoundedCornerShape(dims.radius.r12)),
             contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.width(8.dp).fillMaxSize().background(MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)).align(Alignment.CenterStart))
+            Box(modifier = Modifier.width(8.dp).fillMaxSize().background(colors.primary.copy(alpha = 0.6f)).align(Alignment.CenterStart))
             PMText(text = "35 MK 777", style = PMTextStyle.Label, color = colors.textLabel, modifier = Modifier.padding(start = dims.spacing.s8))
         }
 
@@ -253,7 +253,7 @@ private fun FloatingPlatesAnimation() {
                 .clip(RoundedCornerShape(dims.radius.r12)),
             contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.width(9.dp).fillMaxSize().background(MaterialTheme.colorScheme.primary).align(Alignment.CenterStart))
+            Box(modifier = Modifier.width(9.dp).fillMaxSize().background(colors.primary).align(Alignment.CenterStart))
             PMText(text = "06 AB 1234", style = PMTextStyle.Title, color = colors.primaryDark, modifier = Modifier.padding(start = dims.spacing.s8))
         }
 
@@ -264,8 +264,8 @@ private fun FloatingPlatesAnimation() {
                 .offset(x = 16.dp, y = 10.dp + floatA.dp)
                 .rotate(-4f)
                 .size(width = 120.dp, height = 52.dp)
-                .shadow(28.dp, spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(dims.radius.r12))
+                .shadow(28.dp, spotColor = colors.primary.copy(alpha = 0.45f))
+                .background(colors.primary, RoundedCornerShape(dims.radius.r12))
                 .clip(RoundedCornerShape(dims.radius.r12)),
             contentAlignment = Alignment.Center
         ) {
@@ -299,7 +299,7 @@ private fun FloatingPlatesAnimation() {
         Icon(
             imageVector = Icons.Filled.Star,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+            tint = colors.primary.copy(alpha = 0.8f),
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .offset(x = 0.dp, y = 20.dp)

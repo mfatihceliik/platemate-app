@@ -44,7 +44,6 @@ import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmIconColors
 
 @Composable
 fun PlateCard(
@@ -60,6 +59,7 @@ fun PlateCard(
     action: PlateCardAction = PlateCardAction.None
 ) {
     val spacing = MaterialTheme.pmDimensions.spacing
+    val colors = MaterialTheme.pmColors
 
     val cardPadding = if (density == PlateCardDensity.Compact) spacing.s8 else spacing.s12
     val horizontalGap = if (density == PlateCardDensity.Compact) spacing.s8 else spacing.s12
@@ -84,7 +84,7 @@ fun PlateCard(
                     PMText(
                         text = stringResource(R.string.discover_rank_format, rank),
                         style = PMTextStyle.Title,
-                        color = MaterialTheme.colorScheme.primary
+                        color = colors.primary
                     )
                 }
                 CompactPlateBadge(plateCode = plateCode)
@@ -118,7 +118,7 @@ fun PlateCard(
                     PMText(
                         text = cityName,
                         style = PMTextStyle.Body,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = colors.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -136,14 +136,14 @@ fun PlateCard(
                             InlineMetric(
                                 icon = Icons.Filled.Star,
                                 text = String.format("%.1f", ratingAverage),
-                                color = MaterialTheme.pmIconColors.favorite
+                                color = colors.primary
                             )
                         }
                         if (hasComments) {
                             InlineMetric(
                                 icon = Icons.Filled.ChatBubble,
                                 text = commentCount.toString(),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = colors.onSurfaceVariant
                             )
                         }
                     }
@@ -157,7 +157,7 @@ fun PlateCard(
                         icon = Icons.Filled.Close,
                         contentDescription = stringResource(R.string.search_recent_remove),
                         onClick = action.onClose,
-                        tint = MaterialTheme.pmIconColors.destructive
+                        tint = colors.primary
                     )
                 }
                 is PlateCardAction.Bookmarkable -> {
@@ -176,7 +176,7 @@ fun PlateCard(
                             icon = Icons.Filled.Close,
                             contentDescription = stringResource(R.string.search_recent_remove),
                             onClick = action.onClose,
-                            tint = MaterialTheme.pmIconColors.destructive
+                            tint = colors.primary
                         )
                         CompactBookmarkIcon(
                             isBookmarked = action.isBookmarked,
@@ -200,25 +200,26 @@ private fun CompactPlateBadge(
     val radius = MaterialTheme.pmDimensions.radius
     val stroke = MaterialTheme.pmDimensions.stroke
     val pmColors = MaterialTheme.pmColors
+    val colors = MaterialTheme.pmColors
 
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(radius.r8))
             .border(stroke.st1, pmColors.primaryContainerBorder, RoundedCornerShape(radius.r8))
-            .background(pmColors.primaryContainer),
+            .background(colors.primaryContainer),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .width(spacing.s8)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary)
+                .background(colors.primary)
         )
         PMText(
             text = plateCode,
             style = PMTextStyle.Title,
-            color = pmColors.primaryDark,
+            color = colors.onPrimaryContainer,
             modifier = Modifier.padding(horizontal = spacing.s8, vertical = spacing.s8)
         )
     }
@@ -247,9 +248,11 @@ private fun InlineMetric(icon: ImageVector, text: String, color: Color) {
 
 @Composable
 private fun CompactPlateTag(tag: PlateReportTagUiModel) {
+
     val spacing = MaterialTheme.pmDimensions.spacing
+    val colors = MaterialTheme.pmColors
     val radius = MaterialTheme.pmDimensions.radius
-    val color = runCatching { Color(parseColor(tag.colorHex)) }.getOrDefault(MaterialTheme.colorScheme.onSurfaceVariant)
+    val color = runCatching { Color(parseColor(tag.colorHex)) }.getOrDefault(colors.onSurfaceVariant)
 
     Box(
         modifier = Modifier
@@ -271,17 +274,17 @@ private fun CompactPlateTag(tag: PlateReportTagUiModel) {
 private fun CompactTagOverflow(text: String) {
     val spacing = MaterialTheme.pmDimensions.spacing
     val radius = MaterialTheme.pmDimensions.radius
-    val colorScheme = MaterialTheme.colorScheme
+    val colors = MaterialTheme.pmColors
 
     Box(
         modifier = Modifier
-            .background(colorScheme.surfaceVariant, RoundedCornerShape(radius.r8))
+            .background(colors.surfaceVariant, RoundedCornerShape(radius.r8))
             .padding(horizontal = spacing.s8, vertical = spacing.s4)
     ) {
         PMText(
             text = text,
             style = PMTextStyle.Caption,
-            color = colorScheme.onSurfaceVariant
+            color = colors.onSurfaceVariant
         )
     }
 }
@@ -318,8 +321,10 @@ private fun CompactBookmarkIcon(
     modifier: Modifier = Modifier
 ) {
     val spacing = MaterialTheme.pmDimensions.spacing
-    val activeTint = MaterialTheme.pmIconColors.favorite
-    val inactiveTint = MaterialTheme.pmIconColors.favoriteInactive
+    val colors = MaterialTheme.pmColors
+
+    val activeTint = colors.primary
+    val inactiveTint = colors.primary
 
     val buttonModifier = if (testTag == null) {
         modifier
@@ -425,11 +430,11 @@ private fun PlateCardPreviewContainer(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val spacing = MaterialTheme.pmDimensions.spacing
-
+    val colors = MaterialTheme.pmColors
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.background)
             .padding(spacing.s16),
         verticalArrangement = Arrangement.spacedBy(spacing.s12),
         content = content

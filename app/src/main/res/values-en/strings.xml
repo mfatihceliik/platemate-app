@@ -319,6 +319,7 @@
     <string name="edit_profile_field_display_name">DISPLAY NAME</string>
     <string name="edit_profile_field_username">USERNAME</string>
     <string name="edit_profile_field_bio">BIO</string>
+    <string name="edit_profile_bio_placeholder">Tell us about yourself…</string>
     <string name="edit_profile_field_social">SOCIAL MEDIA</string>
     <string name="edit_profile_username_hint">platemate.app/@%1$s</string>
     <string name="edit_profile_social_add_hint">Add %1$s…</string>
@@ -333,6 +334,9 @@
     <string name="chatdetail_media_files">Media &amp; Files</string>
     <string name="chatdetail_delete_chat">Delete Chat</string>
     <string name="chatdetail_report">Report</string>
+    <string name="chatdetail_action_message">Message</string>
+    <string name="chatdetail_action_plate">Plate</string>
+    <string name="chatdetail_action_block">Block</string>
 
     <!-- Plate Detail -->
     <string name="platedetail_title">Plate Detail</string>
@@ -355,10 +359,11 @@
     <string name="review_anonymous_checkbox">Review anonymously</string>
     <string name="review_submit_button">Share Review</string>
     <string name="review_section_overall">OVERALL RATING</string>
-    <string name="review_section_detailed">DETAILED RATING</string>
     <string name="review_section_tags">TAGS</string>
     <string name="review_section_experience">YOUR EXPERIENCE</string>
     <string name="review_comment_placeholder">Share your experience…</string>
+    <string name="review_comment_counter">%1$d/%2$d</string>
+    <string name="review_comment_max_reached">Maximum character limit reached</string>
     <string name="review_city_review_count">%1$s · %2$d reviews</string>
     <string name="review_count_format">%1$d reviews</string>
 
@@ -404,7 +409,7 @@
     <string name="discover_filter_good_driver">Good Driver</string>
     <string name="discover_filter_new">New</string>
     <string name="discover_section_trend_plates">Trend Plates</string>
-    <string name="discover_section_attention_plates">Attention Plates</string>
+    <string name="discover_section_careless_plates">Careless Plates</string>
     <string name="discover_section_good_driver_plates">Good Driver Plates</string>
     <string name="discover_section_new_plates">New Plates</string>
     <string name="discover_section_by_city">By City</string>
@@ -453,4 +458,10 @@
     <string name="discover_time_14_min_ago">14 min ago</string>
     <string name="discover_time_21_min_ago">21 min ago</string>
     <string name="discover_time_35_min_ago">35 min ago</string>
+    <string name="review_rating_1">Very bad</string>
+    <string name="review_rating_2">Bad</string>
+    <string name="review_rating_3">Average</string>
+    <string name="review_rating_4">Very good</string>
+    <string name="review_rating_5">Excellent</string>
 </resources>
+

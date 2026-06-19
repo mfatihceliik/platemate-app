@@ -26,9 +26,7 @@ import androidx.compose.material.icons.outlined.RateReview
 import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,18 +36,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMTopBarConfig
+import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMRatingBar
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PlateBadgeSize
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.features.main.platedetail.components.PlateDetailShimmerContent
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -66,25 +65,27 @@ fun PlateDetailScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.WithActions(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.platedetail_title),
             onBackClick = { onAction(PlateDetailUiAction.BackClicked) },
             actions = {
-                IconButton(onClick = { onAction(PlateDetailUiAction.BookmarkClicked) }) {
-                    Icon(
+                PMIconButton(
+                    onClick = { onAction(PlateDetailUiAction.BookmarkClicked) },
+                ) {
+                    PMIcon(
                         imageVector = if (state.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        size = dims.sizing.iconHuge,
                         contentDescription = stringResource(R.string.platedetail_bookmark),
-                        tint = if (state.isBookmarked) MaterialTheme.colorScheme.primary else colors.textLabel
                     )
                 }
             }
         ),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = colors.surface,
         bottomBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(colors.surface)
                     .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
             ) {
                 PMButton(
@@ -96,17 +97,11 @@ fun PlateDetailScreen(
         }
     ) { innerPadding ->
         if (state.isLoading) {
-            Box(
+            PlateDetailShimmerContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = stringResource(R.string.common_loading),
-                    color = colors.textTertiary
-                )
-            }
+                    .padding(innerPadding)
+            )
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -120,7 +115,7 @@ fun PlateDetailScreen(
                 }
 
                 item {
-                    HorizontalDivider(color = colors.cardBorder)
+                    HorizontalDivider(color = colors.outlineVariant)
                 }
 
                 if (state.hasRatingBreakdown) {
@@ -136,7 +131,7 @@ fun PlateDetailScreen(
                     }
 
                     item {
-                        HorizontalDivider(color = colors.cardBorder)
+                        HorizontalDivider(color = colors.outlineVariant)
                     }
                 }
 
@@ -160,7 +155,7 @@ fun PlateDetailScreen(
                     }
 
                     item {
-                        HorizontalDivider(color = colors.cardBorder)
+                        HorizontalDivider(color = colors.outlineVariant)
                     }
                 }
 
@@ -262,11 +257,8 @@ private fun EmptyInfoRow(icon: ImageVector, text: String) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = dims.spacing.s24)
     ) {
-        Icon(
+        PMIcon(
             imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(dims.sizing.iconMd)
         )
         PMText(
             text = text,
@@ -318,8 +310,6 @@ private fun PlateInfoRow(state: PlateDetailUiState) {
                 )
                 PMRatingStars(
                     rating = state.ratingAverage.toInt(),
-                    starSize = dims.sizing.iconMd,
-                    gap = dims.spacing.s0
                 )
                 PMText(
                     text = stringResource(R.string.platedetail_review_count, state.reviewCount),
@@ -338,12 +328,9 @@ private fun PlateInfoRow(state: PlateDetailUiState) {
                 )
                 PMRatingStars(
                     rating = 0,
-                    starSize = dims.sizing.iconMd,
-                    gap = dims.spacing.s0
                 )
                 PMText(
                     text = stringResource(R.string.platedetail_no_rating),
-                    fontSize = 11.sp,
                     color = colors.textLabel
                 )
             }
@@ -360,7 +347,7 @@ private fun TagChipWithCount(label: String, count: Int) {
         modifier = Modifier
             .height(dims.sizing.chipHeight)
             .clip(RoundedCornerShape(dims.radius.rFull))
-            .background(colors.chipBg)
+            .background(colors.surfaceVariant)
             .padding(horizontal = dims.spacing.s16),
         contentAlignment = Alignment.Center
     ) {
@@ -398,14 +385,14 @@ private fun ReviewItem(review: PlateReviewUiModel) {
             modifier = Modifier
                 .size(dims.sizing.avatarSmall)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
+                .background(colors.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             PMText(
                 text = review.initials,
                 fontSize = dims.fontSize.md,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = colors.onPrimaryContainer
             )
         }
 
@@ -431,8 +418,7 @@ private fun ReviewItem(review: PlateReviewUiModel) {
 
             PMRatingStars(
                 rating = review.rating,
-                starSize = 12.dp,
-                gap = 1.dp
+                starSize = dims.sizing.iconSm
             )
 
             if (review.comment.isNotBlank()) {

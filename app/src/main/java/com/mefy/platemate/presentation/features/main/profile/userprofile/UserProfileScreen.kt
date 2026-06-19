@@ -24,12 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.ReportUserBottomSheet
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileActionButtons
@@ -53,7 +52,7 @@ internal fun UserProfileScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        topBarConfig = PMTopBarConfig.WithActions(
+        topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.user_profile_title),
             onBackClick = { onAction(UserProfileUiAction.BackClicked) },
             actions = {
@@ -103,7 +102,7 @@ internal fun UserProfileScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(colors.surface)
                             .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
                     ) {
                         UserProfileActionButtons(
@@ -120,7 +119,7 @@ internal fun UserProfileScreen(
                             )
                         }
                     }
-                    HorizontalDivider(color = colors.cardBorder)
+                    HorizontalDivider(color = colors.outlineVariant)
                 }
 
                 if (state.approvedReviews.isNotEmpty()) {

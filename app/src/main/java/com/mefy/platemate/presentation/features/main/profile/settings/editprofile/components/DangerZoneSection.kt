@@ -26,6 +26,7 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 internal fun DangerZoneSection(
@@ -33,14 +34,15 @@ internal fun DangerZoneSection(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     val shape = MaterialTheme.shapes.small
-    val errorColor = MaterialTheme.colorScheme.error
+    val errorColor = colors.error
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(MaterialTheme.colorScheme.errorContainer)
+            .background(colors.errorContainer)
             .border(dims.stroke.st1, errorColor.copy(alpha = 0.3f), shape)
             .debouncedClickable(onClick = onDeleteAccountClick)
             .padding(dims.spacing.s12),

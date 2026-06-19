@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,9 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,10 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMMessageItem
+import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -53,27 +52,16 @@ fun MessagesScreen(
 
     PMBaseScreen(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface
+        topBarConfig = PMTopBarConfig.Standard(
+            title = stringResource(R.string.main_tab_messages)
+        ),
+        containerColor = colors.surface
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.main_tab_messages),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = colors.textPrimary
-                )
-            }
-
             if (state.isLoading) {
                 MessagesShimmerContent(modifier = Modifier.fillMaxSize())
             } else if (state.conversations.isEmpty()) {
@@ -98,7 +86,7 @@ fun MessagesScreen(
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMedium + dims.spacing.s12),
-                            color = colors.cardBorder
+                            color = colors.outlineVariant
                         )
                     }
                 }
@@ -112,7 +100,6 @@ private fun MessagesEmptyState(
     modifier: Modifier = Modifier
 ) {
     val colors = MaterialTheme.pmColors
-
     val dims = MaterialTheme.pmDimensions
 
     Column(
@@ -124,10 +111,10 @@ private fun MessagesEmptyState(
             modifier = Modifier
                 .size(dims.sizing.plateBadgeMedium)
                 .clip(CircleShape)
-                .background(colors.chipBg),
+                .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
+            PMIcon(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
                 contentDescription = null,
                 tint = colors.textLabel,
@@ -135,15 +122,15 @@ private fun MessagesEmptyState(
             )
         }
 
-        Text(
+        PMText(
             text = stringResource(R.string.messages_empty_title),
-            style = MaterialTheme.typography.titleMedium,
+            fontSize = dims.fontSize.md,
             color = colors.textPrimary,
             modifier = Modifier.padding(top = dims.spacing.s12)
         )
-        Text(
+        PMText(
             text = stringResource(R.string.messages_empty_subtitle),
-            fontSize = 13.sp,
+            fontSize = dims.fontSize.md,
             color = colors.textTertiary,
             modifier = Modifier.padding(top = dims.spacing.s4)
         )
@@ -156,13 +143,13 @@ private fun MessagesShimmerContent(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = MaterialTheme.pmColors
 
     val shimmerTheme = remember(colorScheme) {
         defaultShimmerTheme.copy(
             shaderColors = listOf(
                 colors.skeleton.copy(alpha = 0.55f),
-                colorScheme.surface.copy(alpha = 0.95f),
+                colors.surface.copy(alpha = 0.95f),
                 colors.skeletonSecondary.copy(alpha = 0.45f)
             ),
             shaderColorStops = listOf(0f, 0.5f, 1f)

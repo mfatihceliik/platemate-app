@@ -6,6 +6,7 @@ import com.mefy.platemate.domain.usecase.review.AddPlateReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.presentation.common.error.UiErrorResolver
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
+import com.mefy.platemate.presentation.features.main.review.ReviewUiState.Companion.REVIEW_COMMENT_MAX_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,10 +41,9 @@ class ReviewViewModel @Inject constructor(
         when (action) {
             ReviewUiAction.BackClicked -> launch { _uiEffect.emit(ReviewUiEffect.NavigateBack) }
             is ReviewUiAction.OverallRatingChanged -> _uiState.update { it.copy(overallRating = action.rating) }
-            is ReviewUiAction.SubRatingChanged -> updateSubRating(action.key, action.rating)
             is ReviewUiAction.TagToggled -> toggleTag(action.code)
             is ReviewUiAction.CommentChanged -> {
-                if (action.text.length <= MAX_COMMENT_LENGTH) {
+                if (action.text.length <= REVIEW_COMMENT_MAX_LENGTH) {
                     _uiState.update { it.copy(comment = action.text) }
                 }
             }
@@ -60,23 +60,17 @@ class ReviewViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cityCode = plate.plateCode.take(2),
-                            cityName = plate.cityName ?: "",
-                            reviewCount = plate.reviewCount
+                            cityName = plate.cityName,
+                            reviewCount = plate.reviewCount,
+                            isLoading = false
                         )
                     }
                 }
-                is AppResult.Error -> handleError(result.error)
-            }
-        }
-    }
-
-    private fun updateSubRating(key: String, rating: Int) {
-        _uiState.update { state ->
-            state.copy(
-                subRatings = state.subRatings.map {
-                    if (it.key == key) it.copy(rating = rating) else it
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                    handleError(result.error)
                 }
-            )
+            }
         }
     }
 
@@ -106,9 +100,5 @@ class ReviewViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private companion object {
-        const val MAX_COMMENT_LENGTH = 240
     }
 }

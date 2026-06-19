@@ -33,6 +33,7 @@ internal fun PlatformRow(
     onRemoveClick: () -> Unit
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
     val platformInfo = getPlatformInfo(platform)
 
     Row(
@@ -70,7 +71,7 @@ internal fun PlatformRow(
             PMText(
                 text = if (isConnected) displayValue ?: "" else "Bağlı değil",
                 style = PMTextStyle.Note,
-                color = if (isConnected) MaterialTheme.colorScheme.primary else MaterialTheme.pmColors.textLabel
+                color = if (isConnected) colors.primary else MaterialTheme.pmColors.textLabel
             )
         }
 
@@ -90,7 +91,7 @@ internal fun PlatformRow(
                 color = MaterialTheme.pmColors.primaryDark,
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.extraLarge)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(colors.primaryContainer)
                     .padding(horizontal = dims.spacing.s12, vertical = 6.dp)
                     .debouncedClickable(onClick = onConnectClick)
             )

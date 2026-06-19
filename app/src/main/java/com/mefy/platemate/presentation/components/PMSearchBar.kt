@@ -13,16 +13,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +36,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.util.debouncedClickable
@@ -51,8 +47,8 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 fun PMSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
+    onSearch: (() -> Unit)? = null,
     placeholder: String = stringResource(R.string.search_plate_placeholder),
     isLoading: Boolean = false,
     enabled: Boolean = true
@@ -60,7 +56,7 @@ fun PMSearchBar(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
     val searchBarShape = RoundedCornerShape(dims.radius.r12)
-    val buttonEnabled = query.isNotBlank() && !isLoading && enabled
+    val buttonEnabled = query.isNotBlank() && !isLoading && enabled && onSearch != null
 
     var textFieldValue by remember { mutableStateOf(TextFieldValue(query, TextRange(query.length))) }
 
@@ -99,19 +95,16 @@ fun PMSearchBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
-            Icon(
+            PMIcon(
                 imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = colors.textTertiary,
-                modifier = Modifier.size(dims.sizing.iconMd)
             )
 
             Box(modifier = Modifier.weight(1f)) {
                 if (query.isEmpty()) {
-                    Text(
+                    PMText(
                         text = placeholder,
                         color = colors.textLabel,
-                        fontSize = 15.sp,
+                        fontSize = dims.fontSize.lg,
                         fontWeight = FontWeight.Normal
                     )
                 }
@@ -128,9 +121,11 @@ fun PMSearchBar(
                         color = colors.textPrimary,
                         letterSpacing = 0.3.sp
                     ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { if (buttonEnabled) onSearch() })
+                    cursorBrush = SolidColor(colors.primary),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = if (onSearch != null) ImeAction.Search else ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onSearch = { if (buttonEnabled) onSearch?.invoke() })
                 )
             }
 
@@ -142,35 +137,36 @@ fun PMSearchBar(
                     animationSpec = infiniteRepeatable(tween(900, easing = LinearEasing)),
                     label = "rotation"
                 )
-                Icon(
+                PMIcon(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = colors.primary,
                     modifier = Modifier
-                        .size(18.dp)
                         .rotate(rotation)
                 )
             }
         }
 
-        Box(
-            modifier = Modifier
-                .height(dims.sizing.searchBarHeight)
-                .clip(searchBarShape)
-                .background(
-                    if (buttonEnabled) MaterialTheme.colorScheme.primary
-                    else colors.disabled
+        if (onSearch != null) {
+            Box(
+                modifier = Modifier
+                    .height(dims.sizing.searchBarHeight)
+                    .clip(searchBarShape)
+                    .background(
+                        if (buttonEnabled) colors.primary
+                        else colors.disabled
+                    )
+                    .debouncedClickable(enabled = buttonEnabled, onClick = onSearch)
+                    .padding(horizontal = dims.spacing.s24),
+                contentAlignment = Alignment.Center
+            ) {
+                PMText(
+                    text = stringResource(R.string.search_submit),
+                    color = colors.onPrimary,
+                    fontSize = dims.fontSize.lg,
+                    fontWeight = FontWeight.Bold
                 )
-                .debouncedClickable(enabled = buttonEnabled, onClick = onSearch)
-                .padding(horizontal = dims.spacing.s24),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.search_submit),
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+            }
         }
     }
 }
@@ -179,12 +175,14 @@ fun PMSearchBar(
 @Composable
 private fun PMSearchBarPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        val dims = MaterialTheme.pmDimensions
+        val colors = MaterialTheme.pmColors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .background(colors.background)
+                .padding(dims.spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             var query by remember { mutableStateOf("") }
             PMSearchBar(
@@ -214,12 +212,14 @@ private fun PMSearchBarPreview() {
 @Composable
 private fun PMSearchBarDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        val dims = MaterialTheme.pmDimensions
+        val colors = MaterialTheme.pmColors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .background(colors.background)
+                .padding(dims.spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             PMSearchBar(
                 query = "",

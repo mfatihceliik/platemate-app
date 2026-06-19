@@ -23,6 +23,7 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 internal fun EditProfileSaveAction(
@@ -31,7 +32,8 @@ internal fun EditProfileSaveAction(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
-    val primary = MaterialTheme.colorScheme.primary
+    val colors = MaterialTheme.pmColors
+    val primary = colors.primary
 
     Box(
         modifier = modifier

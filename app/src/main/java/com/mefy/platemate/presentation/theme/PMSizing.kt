@@ -35,6 +35,7 @@ data class PMSizing(
     val iconMd: Dp = 20.dp,
     val iconLg: Dp = 24.dp,
     val iconXl: Dp = 28.dp,
+    val iconHuge: Dp = 32.dp,
     val settingsRowIcon: Dp = 36.dp,
     val platformRowIcon: Dp = 40.dp,
 )

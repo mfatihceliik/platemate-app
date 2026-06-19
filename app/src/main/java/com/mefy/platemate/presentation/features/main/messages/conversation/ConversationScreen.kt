@@ -14,13 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMTopBarConfig
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ConversationTopBar
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.DateSeparator
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.MessageInputBar
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ReceivedBubble
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.SentBubble
+import com.mefy.platemate.presentation.theme.PlateMateTheme
+import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -50,7 +54,7 @@ fun ConversationScreen(
                 onInfoClick = { onAction(ConversationUiAction.InfoClicked) }
             )
         },
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.pmColors.surface,
         bottomBar = {
             MessageInputBar(
                 text = state.inputText,
@@ -76,7 +80,7 @@ fun ConversationScreen(
                     .padding(innerPadding),
                 contentPadding = PaddingValues(
                     horizontal = dims.spacing.s12,
-                    vertical = dims.spacing.s10
+                    vertical = dims.spacing.s8
                 ),
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
             ) {
@@ -115,5 +119,69 @@ fun ConversationScreen(
                 }
             }
         }
+    }
+}
+
+private val previewState = ConversationUiState(
+    isLoading = false,
+    participantName = "Ahmet Yılmaz",
+    initials = "AY",
+    avatarBg = Color(0xFFECFEFF),
+    avatarFg = Color(0xFF0E7490),
+    inputText = "",
+    items = listOf(
+        ConversationListItem.DateHeader(label = "Bugün"),
+        ConversationListItem.Message(
+            ChatMessageUiModel(
+                id = 1L,
+                content = "Merhaba, plakamı gördünüz mü?",
+                time = "10:42",
+                isMine = false,
+                isRead = true
+            )
+        ),
+        ConversationListItem.Message(
+            ChatMessageUiModel(
+                id = 2L,
+                content = "Evet, 34 EK 0682 değil mi?",
+                time = "10:43",
+                isMine = true,
+                isRead = true
+            )
+        ),
+        ConversationListItem.Message(
+            ChatMessageUiModel(
+                id = 3L,
+                content = "Evet aynen o! Teşekkürler.",
+                time = "10:44",
+                isMine = false,
+                isRead = true
+            )
+        ),
+        ConversationListItem.Message(
+            ChatMessageUiModel(
+                id = 4L,
+                content = "Rica ederim, iyi günler!",
+                time = "10:45",
+                isMine = true,
+                isRead = false
+            )
+        ),
+    )
+)
+
+@Preview(name = "ConversationScreen Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun ConversationScreenLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        ConversationScreen(state = previewState, onAction = {})
+    }
+}
+
+@Preview(name = "ConversationScreen Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun ConversationScreenDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        ConversationScreen(state = previewState, onAction = {})
     }
 }
