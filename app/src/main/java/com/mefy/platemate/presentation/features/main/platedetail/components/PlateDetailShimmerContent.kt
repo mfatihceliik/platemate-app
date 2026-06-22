@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -37,6 +38,31 @@ internal fun PlateDetailShimmerContent(modifier: Modifier = Modifier) {
             .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
+        // Topbar iskeleti (geri + başlık + bookmark)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dims.sizing.iconHuge),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ShimmerBlock(
+                shimmer = shimmer,
+                modifier = Modifier.size(dims.sizing.iconLg),
+                shape = CircleShape
+            )
+            ShimmerBlock(
+                shimmer = shimmer,
+                modifier = Modifier.width(140.dp).height(22.dp),
+                shape = RoundedCornerShape(dims.radius.r8)
+            )
+            ShimmerBlock(
+                shimmer = shimmer,
+                modifier = Modifier.size(dims.sizing.iconLg),
+                shape = CircleShape
+            )
+        }
+
         // Plate header
         Row(
             modifier = Modifier.fillMaxWidth(),

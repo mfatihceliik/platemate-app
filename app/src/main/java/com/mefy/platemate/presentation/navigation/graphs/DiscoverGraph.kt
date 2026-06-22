@@ -11,8 +11,8 @@ import com.mefy.platemate.presentation.features.main.discover.DiscoverRoute
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailViewModel
-import com.mefy.platemate.presentation.features.main.review.ReviewRoute
-import com.mefy.platemate.presentation.features.main.review.ReviewViewModel
+import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewRoute
+import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewViewModel
 
 internal fun NavGraphBuilder.discoverGraph(
     navController: NavHostController,

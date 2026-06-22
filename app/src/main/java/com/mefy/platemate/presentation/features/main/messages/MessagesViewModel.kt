@@ -5,7 +5,8 @@ import androidx.compose.ui.graphics.toArgb
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.model.chat.ChatRoom
 import com.mefy.platemate.domain.usecase.chat.GetChatRoomsUseCase
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,8 +21,8 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class MessagesViewModel @Inject constructor(
     private val getChatRoomsUseCase: GetChatRoomsUseCase,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val _uiState = MutableStateFlow(MessagesUiState())
     val uiState: StateFlow<MessagesUiState> = _uiState.asStateFlow()
@@ -36,23 +37,25 @@ class MessagesViewModel @Inject constructor(
     fun onAction(action: MessagesUiAction) {
         when (action) {
             is MessagesUiAction.ConversationClicked -> onConversationClicked(action.roomId)
+            MessagesUiAction.RetryClicked -> loadConversations()
         }
     }
 
     private fun loadConversations() {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         launch {
             when (val result = getChatRoomsUseCase()) {
                 is AppResult.Success -> {
                     _uiState.update { current ->
                         current.copy(
                             isLoading = false,
+                            errorMessage = null,
                             conversations = result.data.map { it.toUiModel() }
                         )
                     }
                 }
                 is AppResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false) }
-                    handleError(result.error)
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toUiText()) }
                 }
             }
         }

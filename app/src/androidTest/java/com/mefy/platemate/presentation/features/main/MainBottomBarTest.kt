@@ -7,10 +7,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.bottombar.MainBottomBar
 import com.mefy.platemate.presentation.navigation.TopLevelDestination
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import org.junit.Rule
@@ -38,8 +38,10 @@ class MainBottomBarTest {
             }
         }
 
+        // Yeni tasarımda etiket yalnızca seçili sekmede görünür; sekmeler durumdan
+        // bağımsız olan contentDescription ile bulunur.
         composeRule.onNodeWithContentDescription(searchLabel).assertIsSelected()
-        composeRule.onNodeWithText(discoverLabel).assertIsDisplayed().performClick()
+        composeRule.onNodeWithContentDescription(discoverLabel).assertIsDisplayed().performClick()
         composeRule.onNodeWithContentDescription(discoverLabel).assertIsSelected()
     }
 

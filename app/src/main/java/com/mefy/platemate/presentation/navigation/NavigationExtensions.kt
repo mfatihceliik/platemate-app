@@ -72,12 +72,6 @@ fun NavHostController.navigateToEditProfile() {
     }
 }
 
-fun NavHostController.navigateToProfileSettings() {
-    navigate(ProfileSettingsHomeDestination) {
-        launchSingleTop = true
-    }
-}
-
 fun NavHostController.navigateToProfileFriends() {
     navigate(ProfileFriendsDestination) {
         launchSingleTop = true

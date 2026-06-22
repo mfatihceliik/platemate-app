@@ -1,5 +1,7 @@
 package com.mefy.platemate.presentation.features.main.messages.chatdetail
 
+import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +16,8 @@ fun ChatDetailRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleUiMessages(viewModel.uiMessages)
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->

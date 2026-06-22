@@ -1,10 +1,8 @@
 package com.mefy.platemate.presentation.features.main.search
 
-import androidx.compose.animation.Crossfade
+import com.mefy.platemate.presentation.common.state.ScreenStatus
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,54 +12,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.text.resolve
+import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
-import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.features.main.search.components.RecentChip
+import com.mefy.platemate.presentation.features.main.search.components.SavedPlateCompactCard
+import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
 import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.defaultShimmerTheme
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun SearchScreen(
@@ -70,34 +55,28 @@ fun SearchScreen(
     onAction: (SearchUiAction) -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
+    // İçerik yereldir (Room) ve anlık gelir; ayrı yükleme yok. Ekran-geneli hata yalnızca çevrimdışı.
+    val status = when {
+        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
+        else -> ScreenStatus.Content
+    }
+
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.search_header_title)
-        )
+            title = stringResource(R.string.search_header_title),
+            alignment = PMTopBarAlignment.Start
+        ),
+        status = status,
+        onRetry = { onAction(SearchUiAction.RetryClicked) }
     ) { innerPadding ->
-        Crossfade(
-            targetState = state.isInitialLoading,
-            label = "search_loading_crossfade",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) { isInitialLoading ->
-            if (isInitialLoading) {
-                SearchShimmerContent(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag(SEARCH_SHIMMER_ROOT_TAG)
-                )
-            } else {
-                SearchContent(
-                    state = state,
-                    onAction = onAction,
-                    lazyListState = lazyListState,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
+        SearchContent(
+            state = state,
+            onAction = onAction,
+            lazyListState = lazyListState,
+            bottomInset = innerPadding.calculateBottomPadding(),
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -107,6 +86,7 @@ private fun SearchContent(
     state: SearchUiState,
     onAction: (SearchUiAction) -> Unit,
     lazyListState: LazyListState,
+    bottomInset: Dp = 0.dp,
     modifier: Modifier = Modifier
 ) {
     val colors = MaterialTheme.pmColors
@@ -115,7 +95,12 @@ private fun SearchContent(
     LazyColumn(
         state = lazyListState,
         modifier = modifier.background(colors.background),
-        contentPadding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+        contentPadding = PaddingValues(
+            start = dims.spacing.s16,
+            end = dims.spacing.s16,
+            top = dims.spacing.s16,
+            bottom = dims.spacing.s16 + bottomInset
+        ),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
         item {
@@ -130,13 +115,6 @@ private fun SearchContent(
             if (state.plateInput.isNotBlank() && !state.isPlateValid) {
                 PMText(
                     text = stringResource(R.string.search_plate_invalid_format),
-                    fontSize = dims.fontSize.sm,
-                    color = colors.error,
-                    modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
-                )
-            } else if (state.formMessage != null) {
-                PMText(
-                    text = state.formMessage.resolve(),
                     fontSize = dims.fontSize.sm,
                     color = colors.error,
                     modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
@@ -262,329 +240,6 @@ private fun SearchContent(
     }
 }
 
-@Composable
-private fun RecentChip(
-    plateCode: String,
-    onClick: () -> Unit
-) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-
-    Box(
-        modifier = Modifier
-            .height(dims.sizing.chipHeight)
-            .clip(RoundedCornerShape(dims.radius.rFull))
-            .background(colors.surfaceVariant)
-            .debouncedClickable(onClick = onClick)
-            .padding(horizontal = dims.spacing.s16),
-        contentAlignment = Alignment.Center
-    ) {
-        PMText(
-            text = plateCode,
-            fontSize = dims.fontSize.md,
-            fontWeight = FontWeight.SemiBold,
-            color = colors.textSecondary
-        )
-    }
-}
-
-@Composable
-private fun SavedPlateCompactCard(
-    item: SearchRecentUiModel,
-    onClick: () -> Unit,
-    onBookmarkClick: () -> Unit
-) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-
-    PMCard(
-        modifier = Modifier.width(dims.sizing.savedPlateCardWidth),
-        padding = PaddingValues(dims.spacing.s12)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .debouncedClickable(onClick = onClick),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PMPlateBadge(
-                    cityCode = item.plateCode.take(2),
-                    size = PlateBadgeSize.Small
-                )
-                PMIcon(
-                    imageVector = if (item.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    tint = if (item.isBookmarked) colors.primary else colors.textLabel,
-                    size = dims.sizing.iconXl,
-                    modifier = Modifier.debouncedClickable(onClick = onBookmarkClick)
-                )
-            }
-
-            PMText(
-                text = item.plateCode,
-                fontSize = dims.fontSize.lg,
-                color = colors.textPrimary,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-            ) {
-                if (item.ratingAverage > 0) {
-                    PMIcon(
-                        imageVector = Icons.Filled.Star,
-                        tint = colors.star,
-                    )
-                    PMText(
-                        text = String.format("%.1f", item.ratingAverage),
-                        fontSize = dims.fontSize.md,
-                        maxLines = 1,
-                        color = colors.textTertiary
-                    )
-                }
-                if (item.cityName != null) {
-                    PMText(
-                        text = "· ${item.cityName}",
-                        fontSize = dims.fontSize.md,
-                        color = colors.textLabel,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchEmptyState() {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dims.spacing.s32),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(colors.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            PMIcon(
-                imageVector = Icons.Outlined.Search,
-            )
-        }
-
-        PMText(
-            text = stringResource(R.string.search_empty_title),
-            fontSize = dims.fontSize.sm,
-            color = colors.textPrimary
-        )
-        PMText(
-            text = stringResource(R.string.search_empty_subtitle),
-            fontSize = dims.fontSize.sm,
-            color = colors.textTertiary
-        )
-    }
-}
-
-@Composable
-private fun SearchShimmerContent(
-    modifier: Modifier = Modifier
-) {
-    val spacing = MaterialTheme.pmDimensions.spacing
-    val radius = MaterialTheme.pmDimensions.radius
-    val sizing = MaterialTheme.pmDimensions.sizing
-    val colorScheme = MaterialTheme.pmColors
-    val colors = MaterialTheme.pmColors
-
-    val shimmerTheme = remember(colorScheme) {
-        defaultShimmerTheme.copy(
-            shaderColors = listOf(
-                colors.skeleton.copy(alpha = 0.55f),
-                colors.surface.copy(alpha = 0.95f),
-                colors.skeletonSecondary.copy(alpha = 0.45f)
-            ),
-            shaderColorStops = listOf(0f, 0.5f, 1f)
-        )
-    }
-    val shimmer = rememberShimmer(
-        shimmerBounds = ShimmerBounds.View,
-        theme = shimmerTheme
-    )
-
-    LazyColumn(
-        modifier = modifier.background(colors.background),
-        contentPadding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(spacing.s16)
-    ) {
-        item {
-            SearchShimmerBlock(
-                shimmer = shimmer,
-                modifier = Modifier
-                    .fillMaxWidth(0.4f)
-                    .height(spacing.s32),
-                shape = RoundedCornerShape(radius.r8)
-            )
-        }
-
-        item {
-            SearchShimmerBlock(
-                shimmer = shimmer,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(spacing.s64),
-                shape = RoundedCornerShape(radius.r16)
-            )
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SearchShimmerBlock(
-                    shimmer = shimmer,
-                    modifier = Modifier
-                        .fillMaxWidth(0.35f)
-                        .height(spacing.s16),
-                    shape = RoundedCornerShape(radius.r8)
-                )
-                SearchShimmerBlock(
-                    shimmer = shimmer,
-                    modifier = Modifier
-                        .fillMaxWidth(0.16f)
-                        .height(spacing.s16),
-                    shape = RoundedCornerShape(radius.r8)
-                )
-            }
-        }
-
-        item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.s8)
-            ) {
-                repeat(3) {
-                    SearchShimmerBlock(
-                        shimmer = shimmer,
-                        modifier = Modifier
-                            .width(90.dp)
-                            .height(spacing.s32),
-                        shape = RoundedCornerShape(radius.rFull)
-                    )
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SearchShimmerBlock(
-                    shimmer = shimmer,
-                    modifier = Modifier
-                        .fillMaxWidth(0.4f)
-                        .height(spacing.s16),
-                    shape = RoundedCornerShape(radius.r8)
-                )
-                SearchShimmerBlock(
-                    shimmer = shimmer,
-                    modifier = Modifier
-                        .fillMaxWidth(0.12f)
-                        .height(spacing.s16),
-                    shape = RoundedCornerShape(radius.r8)
-                )
-            }
-        }
-
-        item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.s8)
-            ) {
-                repeat(3) {
-                    SearchShimmerBlock(
-                        shimmer = shimmer,
-                        modifier = Modifier
-                            .width(sizing.savedPlateCardWidth)
-                            .height(spacing.s48 + spacing.s64),
-                        shape = RoundedCornerShape(radius.r16)
-                    )
-                }
-            }
-        }
-
-        item {
-            PMCard(
-                modifier = Modifier.fillMaxWidth(),
-                padding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s12)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SearchShimmerBlock(
-                        shimmer = shimmer,
-                        modifier = Modifier.size(spacing.s24),
-                        shape = RoundedCornerShape(radius.r8)
-                    )
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(spacing.s8)
-                    ) {
-                        SearchShimmerBlock(
-                            shimmer = shimmer,
-                            modifier = Modifier
-                                .fillMaxWidth(0.86f)
-                                .height(spacing.s12),
-                            shape = RoundedCornerShape(radius.r8)
-                        )
-                        SearchShimmerBlock(
-                            shimmer = shimmer,
-                            modifier = Modifier
-                                .fillMaxWidth(0.62f)
-                                .height(spacing.s12),
-                            shape = RoundedCornerShape(radius.r8)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchShimmerBlock(
-    shimmer: com.valentinilk.shimmer.Shimmer,
-    modifier: Modifier,
-    shape: RoundedCornerShape
-) {
-    val colors = MaterialTheme.pmColors
-
-    Box(
-        modifier = modifier
-            .shimmer(shimmer)
-            .background(
-                color = colors.skeleton.copy(alpha = 0.75f),
-                shape = shape
-            )
-    )
-}
-
-private const val SEARCH_SHIMMER_ROOT_TAG = "search_shimmer_root"
-
 @Preview(name = "Search Screen Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun SearchScreenLightPreview() {
@@ -649,16 +304,7 @@ private fun SearchScreenLightPreview() {
     }
 }
 
-@Preview(name = "Search Screen Empty", showBackground = true, backgroundColor = 0xFFF6F8FB)
-@Composable
-private fun SearchScreenEmptyPreview() {
-    PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        SearchScreen(
-            state = SearchUiState(),
-            onAction = {}
-        )
-    }
-}
+
 
 @Preview(name = "Search Screen Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
@@ -694,16 +340,7 @@ private fun SearchScreenDarkPreview() {
     }
 }
 
-@Preview(name = "Search Screen Shimmer", showBackground = true, backgroundColor = 0xFFF6F8FB)
-@Composable
-private fun SearchScreenShimmerPreview() {
-    PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        SearchScreen(
-            state = SearchUiState(isInitialLoading = true),
-            onAction = {}
-        )
-    }
-}
+
 
 private fun previewReportTags(): List<PlateReportTagUiModel> = listOf(
     PlateReportTagUiModel(

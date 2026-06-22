@@ -3,9 +3,8 @@ package com.mefy.platemate.presentation.features.auth.register
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.usecase.auth.RegisterUseCase
-import com.mefy.platemate.presentation.common.error.ErrorContext
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
-import com.mefy.platemate.presentation.common.state.UiActionState
+import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.auth.register.reducer.RegisterStateReducer
@@ -23,8 +22,8 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
     private val registerStateReducer: RegisterStateReducer,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
     private val _uiState = MutableStateFlow(registerStateReducer.initialState())
     val uiState: StateFlow<RegisterScreenUiState> = _uiState.asStateFlow()
     private val _uiEffect = MutableSharedFlow<RegisterUiEffect>()
@@ -57,7 +56,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun onRegisterClicked() {
-        if (_uiState.value.submitState is UiActionState.Loading) return
+        if (_uiState.value.isLoading) return
 
         val submitCandidate = prepareSubmitAttempt()
         if (guardInvalidSubmit(submitCandidate)) return
@@ -75,6 +74,7 @@ class RegisterViewModel @Inject constructor(
         if (state.isSubmitEnabled) return false
 
         _uiState.update(registerStateReducer::onInvalidSubmit)
+        showSnackbar(UiText.Resource(R.string.auth_register_form_invalid))
         return true
     }
 
@@ -96,17 +96,12 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun onSubmitError(error: AppError) {
-        var resolvedFieldErrors: Map<String, UiText> = emptyMap()
-        val resolvedError = handleError(
-            error = error,
-            context = ErrorContext.Register,
-            applyFieldErrors = { resolvedFieldErrors = it }
-        )
+        handleError(error)
+        val fieldErrors = (error as? AppError.Server)?.fieldErrors.orEmpty()
         _uiState.update { current ->
             registerStateReducer.onSubmitError(
                 state = current,
-                message = resolvedError.message,
-                fieldErrors = resolvedFieldErrors
+                fieldErrors = fieldErrors
             )
         }
     }

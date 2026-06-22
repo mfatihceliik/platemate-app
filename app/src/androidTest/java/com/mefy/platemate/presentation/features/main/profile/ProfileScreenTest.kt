@@ -55,23 +55,6 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun settingsClick_dispatchesAction() {
-        var lastAction: ProfileUiAction? = null
-
-        composeRule.setContent {
-            PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                ProfileScreen(
-                    state = sampleState(isInitialLoading = false),
-                    onAction = { lastAction = it }
-                )
-            }
-        }
-
-        composeRule.onNodeWithTag("profile_settings_action").performClick()
-        assertEquals(ProfileUiAction.SettingsClicked, lastAction)
-    }
-
-    @Test
     fun friendActivityClick_dispatchesFriendsAction() {
         var lastAction: ProfileUiAction? = null
 

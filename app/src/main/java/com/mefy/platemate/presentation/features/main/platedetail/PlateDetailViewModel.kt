@@ -2,15 +2,15 @@ package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.lifecycle.SavedStateHandle
 import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.domain.model.plate.PlateDetailReview
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
-import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.search.SavedPlate
-import com.mefy.platemate.domain.usecase.review.GetPlateReviewsUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.CityNameResolver
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,12 +28,11 @@ import kotlinx.coroutines.flow.update
 class PlateDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchPlateUseCase: SearchPlateUseCase,
-    private val getPlateReviewsUseCase: GetPlateReviewsUseCase,
     private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
     private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val normalizedPlateCode: String = checkNotNull(savedStateHandle["id"])
 
@@ -57,6 +56,7 @@ class PlateDetailViewModel @Inject constructor(
             PlateDetailUiAction.ReviewClicked -> launch {
                 _uiEffect.emit(PlateDetailUiEffect.NavigateToReview(_uiState.value.plateCode))
             }
+            PlateDetailUiAction.RetryClicked -> loadPlateDetail()
         }
     }
 
@@ -88,11 +88,30 @@ class PlateDetailViewModel @Inject constructor(
     }
 
     private fun loadPlateDetail() {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         launch {
             when (val result = searchPlateUseCase(normalizedPlateCode)) {
                 is AppResult.Success -> {
                     val plate = result.data
                     latestPlate = plate
+
+                    val breakdown = plate.ratingDistribution.map { dist ->
+                        RatingBreakdownItem(
+                            stars = dist.rating,
+                            percentage = (dist.percentage / 100.0).toFloat()
+                        )
+                    }
+
+                    val tags = plate.tagSummary.map { tag ->
+                        PlateTagUiModel(
+                            code = tag.code,
+                            label = tag.label,
+                            count = tag.count.toInt()
+                        )
+                    }
+
+                    val reviews = plate.recentReviews.map { it.toUiModel() }
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -100,65 +119,43 @@ class PlateDetailViewModel @Inject constructor(
                             cityCode = plate.plateCode.take(2),
                             cityName = plate.cityName,
                             ratingAverage = plate.ratingAverage,
-                            reviewCount = plate.reviewCount
+                            reviewCount = plate.reviewCount,
+                            ratingBreakdown = breakdown,
+                            tags = tags,
+                            reviews = reviews
                         )
                     }
-                    loadReviews(plate.plateCode)
                 }
                 is AppResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false) }
-                    handleError(result.error)
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toUiText()) }
                 }
             }
         }
     }
 
-    private fun loadReviews(plateCode: String) {
-        launch {
-            when (val result = getPlateReviewsUseCase(plateCode)) {
-                is AppResult.Success -> {
-                    val reviews = result.data.items.map { it.toUiModel() }
-                    val breakdown = buildBreakdownFromReviews(result.data.items)
-                    _uiState.update {
-                        it.copy(
-                            reviews = reviews,
-                            ratingBreakdown = breakdown
-                        )
-                    }
-                }
-                is AppResult.Error -> handleError(result.error)
-            }
-        }
-    }
-
-    private fun Review.toUiModel(): PlateReviewUiModel {
-        val initials = reviewerUsername
+    private fun PlateDetailReview.toUiModel(): PlateReviewUiModel {
+        val name = displayName ?: username
+        val initials = name
             .split(" ")
             .take(2)
             .mapNotNull { it.firstOrNull()?.uppercaseChar() }
             .joinToString("")
             .ifEmpty { "?" }
 
-        val timeText = createdAt?.iso8601
+        val timeText = createdAt
             ?.substringBefore("T")
             ?: ""
 
         return PlateReviewUiModel(
             id = id,
-            username = reviewerUsername,
+            username = username,
+            displayName = displayName,
             initials = initials,
+            profilePhotoUrl = profilePhotoUrl,
             rating = rating,
             timeAgo = timeText,
-            comment = comment
+            comment = comment,
+            reportTags = reportTags
         )
-    }
-
-    private fun buildBreakdownFromReviews(reviews: List<Review>): List<RatingBreakdownItem> {
-        if (reviews.isEmpty()) return emptyList()
-        val total = reviews.size.toFloat()
-        return (5 downTo 1).map { star ->
-            val count = reviews.count { it.rating == star }
-            RatingBreakdownItem(stars = star, percentage = count / total)
-        }
     }
 }

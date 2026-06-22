@@ -62,6 +62,24 @@ class DtoMappersTest {
     }
 
     @Test
+    fun reviewMapper_handlesMissingReviewerFieldsFromProfileEndpoint() {
+        val mapper = PlateReviewMapper()
+        val review = PlateReviewDto(
+            id = 1,
+            plateCode = "34KIS448",
+            rating = 5,
+            comment = "",
+            reviewStatusCode = "PENDING_REVIEW",
+            createdAt = "2026-06-20T17:17:47.346992"
+        ).let(mapper::map)
+
+        assertEquals("", review.reviewerUsername)
+        assertEquals(0L, review.userId)
+        assertEquals(AppDateTime("2026-06-20T17:17:47.346992"), review.createdAt)
+        assertEquals(null, review.updatedAt)
+    }
+
+    @Test
     fun pageMapper_mapsItemsAndMetaPaginationShape() {
         val mapper = PlateReviewPageMapper(PlateReviewMapper())
         val page = PagedResult(

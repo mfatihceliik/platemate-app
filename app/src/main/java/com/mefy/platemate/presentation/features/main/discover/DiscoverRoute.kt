@@ -1,5 +1,7 @@
 package com.mefy.platemate.presentation.features.main.discover
 
+import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,6 +17,8 @@ fun DiscoverRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleUiMessages(viewModel.uiMessages)
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(viewModel) {

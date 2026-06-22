@@ -7,6 +7,8 @@ import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
+import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
@@ -29,8 +31,9 @@ class DiscoverViewModel @Inject constructor(
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase,
     private val discoverUiMapper: DiscoverUiMapper,
-    private val discoverStateReducer: DiscoverStateReducer
-) : BaseViewModel() {
+    private val discoverStateReducer: DiscoverStateReducer,
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val _uiState = MutableStateFlow(DiscoverUiState())
     val uiState: StateFlow<DiscoverUiState> = _uiState.asStateFlow()
@@ -72,8 +75,9 @@ class DiscoverViewModel @Inject constructor(
     }
 
     private fun loadDiscoveryHome(forceRefresh: Boolean) {
+        val refreshing = shouldShowRefreshingState(current = _uiState.value, forceRefresh = forceRefresh)
         _uiState.update { current ->
-            if (shouldShowRefreshingState(current = current, forceRefresh = forceRefresh)) {
+            if (refreshing) {
                 discoverStateReducer.onRefreshing(current)
             } else {
                 discoverStateReducer.onInitialLoading(current)
@@ -98,7 +102,14 @@ class DiscoverViewModel @Inject constructor(
                     }
                 }
                 is AppResult.Error -> {
-                    _uiState.update { discoverStateReducer.onLoadError(it) }
+                    val message = result.error.toUiText()
+                    if (refreshing) {
+                        // İçerik zaten var; yenileme hatası snackbar ile bildirilir.
+                        _uiState.update { it.copy(isRefreshing = false) }
+                        showSnackbar(message)
+                    } else {
+                        _uiState.update { discoverStateReducer.onLoadError(it, message) }
+                    }
                 }
             }
         }
@@ -110,6 +121,7 @@ class DiscoverViewModel @Inject constructor(
             is DiscoverUiAction.TrendPlateClicked -> onTrendPlateClicked(action.trendId)
             is DiscoverUiAction.TrendPlateBookmarkClicked -> onTrendPlateBookmarkClicked(action.trendId)
             DiscoverUiAction.RefreshRequested -> onRefreshRequested()
+            DiscoverUiAction.RetryClicked -> loadDiscoveryHome(forceRefresh = false)
         }
     }
 
@@ -126,8 +138,10 @@ class DiscoverViewModel @Inject constructor(
     }
 
     private fun onTrendPlateClicked(trendId: String) {
+        val plateCode = trendId.substringBefore("_")
+        val normalizedCode = validateTurkishPlateUseCase.normalize(plateCode)
         launch {
-            _uiEffects.emit(DiscoverUiEffect.NavigateToTrendDetail(trendId))
+            _uiEffects.emit(DiscoverUiEffect.NavigateToTrendDetail(normalizedCode))
         }
     }
 

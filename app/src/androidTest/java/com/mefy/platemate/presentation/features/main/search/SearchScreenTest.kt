@@ -25,28 +25,11 @@ class SearchScreenTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun shimmerVisible_whenInitialLoadingAndContentHidden() {
-        composeRule.setContent {
-            PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                SearchScreen(
-                    state = SearchUiState(isInitialLoading = true),
-                    onAction = {}
-                )
-            }
-        }
-
-        composeRule.onNodeWithTag("search_shimmer_root").assertIsDisplayed()
-        composeRule
-            .onAllNodesWithText(getString(R.string.search_header_title))
-            .assertCountEquals(0)
-    }
-
-    @Test
     fun searchScreen_displaysCoreSections() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
-                    state = SearchUiState(isInitialLoading = false),
+                    state = SearchUiState(),
                     onAction = {}
                 )
             }
@@ -64,7 +47,6 @@ class SearchScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
                     state = SearchUiState(
-                        isInitialLoading = false,
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
                     onAction = { action -> lastAction = action }
@@ -88,7 +70,6 @@ class SearchScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
                     state = SearchUiState(
-                        isInitialLoading = false,
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
                     onAction = { action -> lastAction = action }

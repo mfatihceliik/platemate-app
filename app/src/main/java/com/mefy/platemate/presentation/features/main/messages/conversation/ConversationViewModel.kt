@@ -4,14 +4,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
+import com.mefy.platemate.R
 import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.domain.model.chat.ChatMessage
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.chat.GetRoomMessagesUseCase
 import com.mefy.platemate.domain.usecase.chat.MarkMessagesAsReadUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveMessagesUseCase
 import com.mefy.platemate.domain.usecase.chat.SendChatMessageUseCase
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.navigation.ChatDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,8 +37,8 @@ class ConversationViewModel @Inject constructor(
     private val sendChatMessageUseCase: SendChatMessageUseCase,
     private val markMessagesAsReadUseCase: MarkMessagesAsReadUseCase,
     private val observeSessionUseCase: ObserveSessionUseCase,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val route: ChatDestination = savedStateHandle.toRoute()
     private val roomId: Long = route.conversationId.toLongOrNull() ?: 0L
@@ -74,23 +77,25 @@ class ConversationViewModel @Inject constructor(
 
             ConversationUiAction.BackClicked ->
                 _uiEffect.emitUiEffect(ConversationUiEffect.NavigateBack)
+
+            ConversationUiAction.RetryClicked -> loadMessages()
         }
     }
 
     private fun loadMessages() {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         launch(onError = { e ->
+            _uiState.update { it.copy(isLoading = false, errorMessage = UiText.Resource(R.string.common_error_unknown)) }
             handleError(e)
-            _uiState.update { it.copy(isLoading = false) }
         }) {
             when (val result = getRoomMessagesUseCase(roomId)) {
                 is AppResult.Success -> {
                     val items = buildListItems(result.data)
-                    _uiState.update { it.copy(isLoading = false, items = items) }
+                    _uiState.update { it.copy(isLoading = false, errorMessage = null, items = items) }
                     markMessagesAsReadUseCase(roomId)
                 }
                 is AppResult.Error -> {
-                    handleError(result.error)
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toUiText()) }
                 }
             }
         }

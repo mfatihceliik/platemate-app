@@ -10,6 +10,7 @@ import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRe
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DiscoverStateReducerTest {

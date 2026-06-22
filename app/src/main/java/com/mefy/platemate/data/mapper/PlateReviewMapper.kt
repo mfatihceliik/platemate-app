@@ -15,7 +15,7 @@ class PlateReviewMapper @Inject constructor() : Mapper<PlateReviewDto, Review> {
         comment = input.comment,
         reviewStatus = input.reviewStatusCode,
         userId = input.userId,
-        reviewerUsername = input.username,
+        reviewerUsername = input.username.orEmpty(),
         createdAt = input.createdAt.toAppDateTimeOrNull(),
         updatedAt = input.updatedAt.toAppDateTimeOrNull()
     )

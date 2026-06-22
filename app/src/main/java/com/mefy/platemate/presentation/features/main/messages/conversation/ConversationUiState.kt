@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.messages.conversation
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.mefy.platemate.presentation.common.text.UiText
 
 sealed interface ConversationListItem {
     @Immutable
@@ -23,6 +24,7 @@ data class ChatMessageUiModel(
 @Immutable
 data class ConversationUiState(
     val isLoading: Boolean = true,
+    val errorMessage: UiText? = null,
     val participantName: String = "",
     val initials: String = "",
     val avatarBg: Color = Color(0xFFEEF2FF),

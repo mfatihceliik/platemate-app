@@ -9,6 +9,10 @@ class LanguageInterceptor @Inject constructor(
     private val languageProvider: LanguageProvider
 ) : Interceptor {
 
+    private companion object {
+        private const val ACCEPT_LANGUAGE_HEADER = "Accept-Language"
+    }
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val requestBuilder = request.newBuilder()
@@ -18,9 +22,5 @@ class LanguageInterceptor @Inject constructor(
         }
 
         return chain.proceed(requestBuilder.build())
-    }
-
-    private companion object {
-        private const val ACCEPT_LANGUAGE_HEADER = "Accept-Language"
     }
 }

@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
+import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.components.PMLoading
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ConversationTopBar
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.DateSeparator
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.MessageInputBar
@@ -55,12 +57,21 @@ fun ConversationScreen(
             )
         },
         containerColor = MaterialTheme.pmColors.surface,
+        status = when {
+            state.isLoading -> ScreenStatus.Loading
+            state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
+            else -> ScreenStatus.Content
+        },
+        onRetry = { onAction(ConversationUiAction.RetryClicked) },
+        loading = { innerPadding -> PMLoading(modifier = Modifier.padding(innerPadding)) },
         bottomBar = {
-            MessageInputBar(
-                text = state.inputText,
-                onTextChange = { onAction(ConversationUiAction.InputChanged(it)) },
-                onSend = { onAction(ConversationUiAction.SendClicked) }
-            )
+            if (state.errorMessage == null) {
+                MessageInputBar(
+                    text = state.inputText,
+                    onTextChange = { onAction(ConversationUiAction.InputChanged(it)) },
+                    onSend = { onAction(ConversationUiAction.SendClicked) }
+                )
+            }
         }
     ) { innerPadding ->
         if (state.isLoading) {

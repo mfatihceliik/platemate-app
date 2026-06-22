@@ -1,7 +1,5 @@
 package com.mefy.platemate.presentation.features.main.search.reducer
 
-import com.mefy.platemate.presentation.common.state.UiActionState
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.search.SearchUiState
 import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
 import org.junit.Assert.assertEquals
@@ -15,7 +13,7 @@ class SearchStateReducerTest {
 
     @Test
     fun onPlateInputChanged_fromLoading_resetsSubmitStateAndEnablesSearch() {
-        val start = SearchUiState(submitState = UiActionState.Loading)
+        val start = SearchUiState(isSearching = true)
 
         val state = reducer.onPlateInputChanged(
             state = start,
@@ -25,7 +23,7 @@ class SearchStateReducerTest {
         )
 
         assertEquals("34 ABC 123", state.plateInput)
-        assertTrue(state.submitState is UiActionState.Idle)
+        assertFalse(state.isSearching)
         assertFalse(state.isSearchEnabled)
     }
 
@@ -39,7 +37,7 @@ class SearchStateReducerTest {
 
         assertEquals("34 ABC 123", state.plateInput)
         assertEquals("Istanbul", state.detectedCityName)
-        assertTrue(state.submitState is UiActionState.Idle)
+        assertFalse(state.isSearching)
     }
 
     @Test
@@ -56,34 +54,23 @@ class SearchStateReducerTest {
             )
         )
 
-        val state = reducer.onRecentSearchesUpdated(
-            state = SearchUiState(isInitialLoading = true),
-            recentSearches = recent
+        val state = reducer.onDataUpdated(
+            state = SearchUiState(),
+            recentSearches = recent,
+            bookmarkedPlates = emptyList()
         )
 
-        assertFalse(state.isInitialLoading)
         assertEquals(1, state.recentSearches.size)
         assertEquals("34ABC123", state.recentSearches.first().normalizedPlateCode)
     }
 
     @Test
-    fun onInitialLoadFailed_turnsOffInitialLoading() {
-        val state = reducer.onInitialLoadFailed(
-            state = SearchUiState(isInitialLoading = true)
-        )
-
-        assertFalse(state.isInitialLoading)
-    }
-
-    @Test
-    fun onSearchError_keepsValidityAndSetsInlineMessage() {
+    fun onSearchError_keepsValidityAndResetsSubmit() {
         val state = reducer.onSearchError(
-            state = SearchUiState(isPlateValid = true),
-            message = UiText.Dynamic("network")
+            state = SearchUiState(isPlateValid = true)
         )
 
         assertTrue(state.isSearchEnabled)
-        assertTrue(state.submitState is UiActionState.Error)
-        assertEquals(UiText.Dynamic("network"), state.formMessage)
+        assertFalse(state.isSearching)
     }
 }

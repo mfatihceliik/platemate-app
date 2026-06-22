@@ -12,6 +12,13 @@
     <string name="common_error_empty_data">Sunucudan veri alınamadı.</string>
     <string name="common_error_http">Sunucuda bir sorun oluştu. Lütfen tekrar deneyin.</string>
     <string name="common_error_unknown">Bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="common_error_title">Hata</string>
+    <string name="common_error_state_title">Bir şeyler ters gitti</string>
+    <string name="common_retry">Tekrar dene</string>
+    <string name="common_ok">Tamam</string>
+    <string name="session_expired_title">Oturum süresi doldu</string>
+    <string name="session_expired_action_login">Giriş yap</string>
+    <string name="connectivity_offline_banner">İnternet bağlantısı yok</string>
 
     <!-- Auth — Register -->
     <string name="auth_register_title">Hesap Oluştur</string>
@@ -64,7 +71,6 @@
     <string name="auth_login_forgot_password">Şifremi unuttum</string>
     <string name="auth_login_or">veya</string>
     <string name="auth_login_apple_continue">Apple ile devam et</string>
-    <string name="auth_login_error_banner">E-posta veya şifre hatalı. Lütfen tekrar dene.</string>
 
     <!-- Onboarding — Illustrations -->
     <string name="illustration_plate_1">34 EK 0682</string>
@@ -130,6 +136,7 @@
     <string name="main_tab_discover">Keşfet</string>
     <string name="main_tab_messages">Mesajlar</string>
     <string name="main_tab_profile">Profil</string>
+    <string name="main_tab_settings">Ayarlar</string>
     <string name="main_discover_placeholder_title">Keşfet ekranı yakında gelecek.</string>
     <string name="main_messages_placeholder_title">Mesajlar ekranı yakında gelecek.</string>
     <string name="main_profile_placeholder_title">Profil ekranı yakında gelecek.</string>
@@ -201,6 +208,9 @@
     <string name="profile_history_title">Bildirim Geçmişi</string>
     <string name="profile_history_empty">Henüz bildirim yok.</string>
     <string name="profile_recent_empty">Son bildirim bulunmuyor.</string>
+    <string name="profile_error_title">Profilin yüklenemedi</string>
+    <string name="profile_error_message">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
+    <string name="profile_error_retry">Tekrar dene</string>
     <string name="profile_history_loading_more">Yükleniyor...</string>
     <string name="profile_history_removed_totals_title">Kaldırılma Özetleri</string>
     <string name="profile_history_removed_totals_format">Kullanıcı: %1$d  Moderatör: %2$d  Yasal: %3$d</string>
@@ -213,7 +223,7 @@
     <string name="profile_settings_theme_color">Tema Rengi</string>
     <string name="profile_settings_social_accounts">Sosyal Medya Hesapları</string>
     <string name="profile_settings_social_count">%1$d bağlı</string>
-    <string name="profile_settings_version">PlateMate v2.4.1</string>
+    <string name="profile_settings_version">PlateMate v%1$s</string>
     <string name="profile_settings_edit_profile">Profili Düzenle</string>
     <string name="profile_change_password_title">Şifre Değiştir</string>
     <string name="profile_change_password_desc">Hesabını güvende tutmak için güçlü ve benzersiz bir şifre seç.</string>
@@ -366,6 +376,15 @@
     <string name="review_comment_max_reached">Maksimum karakter sayısına ulaşıldı</string>
     <string name="review_city_review_count">%1$s · %2$d değerlendirme</string>
     <string name="review_count_format">%1$d değerlendirme</string>
+    <string name="review_popup_success_title">Başarıyla Paylaşıldı!</string>
+    <string name="review_popup_success_message">Değerlendirmen toplulukla paylaşıldı. Teşekkürler!</string>
+    <string name="review_popup_pending_title">İncelemeye Alındı</string>
+    <string name="review_popup_pending_message">Değerlendirmen incelendikten sonra yayınlanacak.</string>
+    <string name="review_popup_error_title">Yayınlanamadı</string>
+    <string name="review_popup_go_home">Ana Sayfaya Git</string>
+    <string name="review_popup_rate_another">Başka Araç Puanla</string>
+    <string name="review_popup_retry">Tekrar Dene</string>
+    <string name="review_popup_cancel">İptal Et</string>
 
     <!-- Search -->
     <string name="search_header_title">PlateMate</string>
@@ -458,10 +477,10 @@
     <string name="discover_time_14_min_ago">14 dk önce</string>
     <string name="discover_time_21_min_ago">21 dk önce</string>
     <string name="discover_time_35_min_ago">35 dk önce</string>
-    <string name="review_rating_1">�ok k�t�</string>
-    <string name="review_rating_2">K�t�</string>
+    <string name="review_rating_1">Çok kötü</string>
+    <string name="review_rating_2">Kötü</string>
     <string name="review_rating_3">Orta</string>
-    <string name="review_rating_4">�ok iyi</string>
-    <string name="review_rating_5">M�kemmel</string>
+    <string name="review_rating_4">Çok iyi</string>
+    <string name="review_rating_5">Mükemmel</string>
 </resources>
 

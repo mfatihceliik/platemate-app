@@ -15,7 +15,7 @@ import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.common.error.DefaultUiErrorResolver
+import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.profile.mapper.DefaultProfileUiMapper
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
 import com.mefy.platemate.testutil.MainDispatcherRule
@@ -73,19 +73,6 @@ class ProfileViewModelTest {
         )
     }
 
-    @Test
-    fun action_settingsClicked_emitsNavigateSettings() = runTest(mainDispatcherRule.dispatcher.scheduler) {
-        val viewModel = createViewModel(
-            FakeAuthRepository(AuthSession(42L, "u", "t")),
-            FakeProfileRepository(sampleProfile())
-        )
-        advanceUntilIdle()
-
-        val deferred = async { viewModel.uiEffect.first() }
-        viewModel.onAction(ProfileUiAction.SettingsClicked)
-        assertEquals(ProfileUiEffect.NavigateToSettings, deferred.await())
-    }
-
     private fun createViewModel(
         authRepository: FakeAuthRepository,
         profileRepository: FakeProfileRepository
@@ -97,7 +84,7 @@ class ProfileViewModelTest {
             validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
         ),
         profileStateReducer = ProfileStateReducer(),
-        uiErrorResolver = DefaultUiErrorResolver()
+        globalUiEventBus = DefaultGlobalUiEventBus()
     )
 
     private class FakeAuthRepository(initialSession: AuthSession?) : AuthRepository {
@@ -108,10 +95,10 @@ class ProfileViewModelTest {
             sessionState.value = AuthSession(userId, "user$userId", "token$userId")
         }
 
-        override suspend fun login(email: String, password: String) = AppResult.Error(AppError.Unknown("unused"))
+        override suspend fun login(email: String, password: String) = AppResult.Error(AppError.Server("unused"))
         override suspend fun register(username: String, email: String, password: String) =
-            AppResult.Error(AppError.Unknown("unused"))
-        override suspend fun refreshSession() = AppResult.Error(AppError.Unknown("unused"))
+            AppResult.Error(AppError.Server("unused"))
+        override suspend fun refreshSession() = AppResult.Error(AppError.Server("unused"))
         override suspend fun logout() {
             sessionState.value = null
         }

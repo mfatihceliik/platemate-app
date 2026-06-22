@@ -55,7 +55,7 @@ class UserRepositoryImpl @Inject constructor(
 
     private suspend fun currentUserIdResult(): AppResult<Long> =
         withContext(appDispatchers.io) {
-            sessionStore.session.first()?.userId.toResultOr(AppError.Unauthorized)
+            sessionStore.session.first()?.userId.toResultOr(AppError.SessionExpired)
         }
 }
 

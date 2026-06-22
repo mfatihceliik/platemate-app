@@ -1,11 +1,10 @@
 package com.mefy.platemate.presentation.features.auth.login
 
+import com.mefy.platemate.R
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.usecase.auth.LoginUseCase
-import com.mefy.platemate.presentation.common.error.ErrorContext
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
-import com.mefy.platemate.presentation.common.state.UiActionState
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.auth.login.reducer.LoginStateReducer
@@ -23,8 +22,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val loginStateReducer: LoginStateReducer,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState: StateFlow<LoginScreenUiState> = _uiState.asStateFlow()
@@ -53,7 +52,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun onLoginClicked() {
-        if (_uiState.value.submitState is UiActionState.Loading) return
+        if (_uiState.value.isLoading) return
 
         val submitCandidate = prepareSubmitAttempt()
         if (guardInvalidSubmit(submitCandidate)) return
@@ -71,6 +70,7 @@ class LoginViewModel @Inject constructor(
         if (state.isSubmitEnabled) return false
 
         _uiState.update(loginStateReducer::onInvalidSubmit)
+        showSnackbar(UiText.Resource(R.string.auth_login_form_invalid))
         return true
     }
 
@@ -91,18 +91,12 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun onSubmitError(error: AppError) {
-        var resolvedFieldErrors: Map<String, UiText> = emptyMap()
-        val resolvedError = handleError(
-            error = error,
-            context = ErrorContext.Login,
-            applyFieldErrors = { resolvedFieldErrors = it }
-        )
-
+        handleError(error)
+        val fieldErrors = (error as? AppError.Server)?.fieldErrors.orEmpty()
         _uiState.update { current ->
             loginStateReducer.onSubmitError(
                 state = current,
-                message = resolvedError.message,
-                fieldErrors = resolvedFieldErrors
+                fieldErrors = fieldErrors
             )
         }
     }

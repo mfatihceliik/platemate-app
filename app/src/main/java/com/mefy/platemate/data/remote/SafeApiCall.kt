@@ -3,14 +3,12 @@ package com.mefy.platemate.data.remote
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
-import com.google.gson.JsonSyntaxException
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import java.io.IOException
-import java.net.ConnectException
+import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 
@@ -20,8 +18,9 @@ suspend fun <T> safeApiCall(call: suspend () -> DataResultResponse<T>): AppResul
     return try {
         val response = call()
         when {
-            !response.success -> AppResult.Error(AppError.Backend(response.message))
-            response.data == null -> AppResult.Error(AppError.EmptyData)
+            !response.success -> AppResult.Error(AppError.Server(message = response.message))
+            // Başarılı zarf ama veri yok: beklenmeyen/bozuk yanıt -> sunucuya ulaşılamadı say.
+            response.data == null -> AppResult.Error(AppError.Unreachable())
             else -> AppResult.Success(response.data)
         }
     } catch (throwable: Throwable) {
@@ -35,7 +34,7 @@ suspend fun safeMessageCall(call: suspend () -> ResultResponse): AppResult<Unit>
         if (response.success) {
             AppResult.Success(Unit)
         } else {
-            AppResult.Error(AppError.Backend(response.message))
+            AppResult.Error(AppError.Server(message = response.message))
         }
     } catch (throwable: Throwable) {
         throwable.toAppResultError()
@@ -50,54 +49,30 @@ private fun Throwable.toAppResultError(): AppResult.Error {
 }
 
 private fun Throwable.toAppError(): AppError = when {
-    isSerializationFailure() -> AppError.Serialization(message = message, cause = this)
     this is HttpException -> toHttpAppError()
-    this is ConnectException -> AppError.ServerUnavailable(message = message, cause = this)
-    this is IOException -> AppError.Network(message = message, cause = this)
-    else -> AppError.Unknown(message = message, cause = this)
-}
-
-private fun Throwable.isSerializationFailure(): Boolean {
-    if (this is JsonParseException || this is JsonSyntaxException) {
-        return true
-    }
-
-    if (this is IllegalStateException && message.isLikelyGsonStructureMismatch()) {
-        return true
-    }
-
-    return generateSequence(cause) { it.cause }.any { rootCause ->
-        rootCause is JsonParseException ||
-            rootCause is JsonSyntaxException ||
-            (rootCause is IllegalStateException && rootCause.message.isLikelyGsonStructureMismatch())
-    }
-}
-
-private fun String?.isLikelyGsonStructureMismatch(): Boolean {
-    if (this.isNullOrBlank()) {
-        return false
-    }
-    return contains("Expected BEGIN_") || (contains(" at line ") && contains(" path \$"))
+    // DNS çözülemiyorsa cihaz büyük olasılıkla çevrimdışı -> ağ hatası.
+    this is UnknownHostException -> AppError.Network(cause = this)
+    // Diğer I/O hataları (zaman aşımı, bağlantı reddi, callTimeout) -> sunucuya ulaşılamadı.
+    this is IOException -> AppError.Unreachable(cause = this)
+    else -> AppError.Unreachable(cause = this)
 }
 
 private fun HttpException.toHttpAppError(): AppError {
     val statusCode = code()
-    if (statusCode == 401) {
-        return AppError.Unauthorized
+    return when {
+        statusCode == 401 || statusCode == 403 -> AppError.SessionExpired
+        statusCode >= 500 -> AppError.Unreachable(cause = this)
+        else -> {
+            val rawBody = response()?.errorBody()?.string()?.takeIf { it.isNotBlank() }
+            val envelope = rawBody?.let(::parseBackendErrorEnvelope)
+            val backendMessage = envelope?.message?.takeIf { it.isNotBlank() }
+            AppError.Server(
+                message = backendMessage ?: message(),
+                fieldErrors = envelope?.data.toFieldErrors(),
+                cause = this
+            )
+        }
     }
-
-    val rawBody = response()?.errorBody()?.string()?.takeIf { it.isNotBlank() }
-    val parsedErrorEnvelope = rawBody?.let(::parseBackendErrorEnvelope)
-    val backendMessage = parsedErrorEnvelope?.message?.takeIf { it.isNotBlank() }
-
-    return AppError.Http(
-        code = statusCode,
-        message = backendMessage ?: message(),
-        cause = this,
-        rawBody = rawBody,
-        fieldErrors = parsedErrorEnvelope?.data.toFieldErrors(),
-        backendMessage = backendMessage
-    )
 }
 
 private data class BackendErrorEnvelope(
@@ -124,4 +99,3 @@ private fun JsonElement?.toFieldErrors(): Map<String, String>? {
     }.toMap()
     return fieldErrors.takeIf { it.isNotEmpty() }
 }
-

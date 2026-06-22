@@ -1,10 +1,7 @@
 package com.mefy.platemate.presentation.features.auth.login.reducer
 
-import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.auth.EmailValidationReason
 import com.mefy.platemate.domain.usecase.auth.ValidateLoginFormUseCase
-import com.mefy.platemate.presentation.common.state.UiActionState
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.login.LoginScreenUiState
 import javax.inject.Inject
 
@@ -16,14 +13,14 @@ class LoginStateReducer @Inject constructor(
         state: LoginScreenUiState,
         value: String
     ): LoginScreenUiState = recomputeDerivedState(
-        state.copy(email = value, emailError = null, formMessage = null)
+        state.copy(email = value, emailError = null)
     )
 
     fun onPasswordChanged(
         state: LoginScreenUiState,
         value: String
     ): LoginScreenUiState = recomputeDerivedState(
-        state.copy(password = value, passwordError = null, formMessage = null)
+        state.copy(password = value, passwordError = null)
     )
 
     fun onPrefillEmailReceived(
@@ -39,44 +36,33 @@ class LoginStateReducer @Inject constructor(
     fun prepareSubmitAttempt(state: LoginScreenUiState): LoginScreenUiState =
         recomputeDerivedState(state.copy(hasSubmittedOnce = true))
 
-    fun onInvalidSubmit(state: LoginScreenUiState): LoginScreenUiState = state.copy(
-        submitState = UiActionState.Idle,
-        formMessage = UiText.Resource(R.string.auth_login_form_invalid)
-    )
+    fun onInvalidSubmit(state: LoginScreenUiState): LoginScreenUiState =
+        state.copy(isLoading = false)
 
     fun onSubmitLoading(state: LoginScreenUiState): LoginScreenUiState =
-        state.copy(submitState = UiActionState.Loading, formMessage = null)
+        state.copy(isLoading = true)
 
     fun onSubmitSuccess(state: LoginScreenUiState): LoginScreenUiState =
-        state.copy(submitState = UiActionState.Idle, formMessage = null)
+        state.copy(isLoading = false)
 
     fun onSubmitError(
         state: LoginScreenUiState,
-        message: UiText,
-        fieldErrors: Map<String, UiText>
+        fieldErrors: Map<String, String>
     ): LoginScreenUiState {
         val stateWithFieldErrors = state.copy(
-            emailError = fieldErrors.dynamicValueOrNull("email", "identifier", "username"),
-            passwordError = fieldErrors.dynamicValueOrNull("password")
+            emailError = fieldErrors.firstValue("email", "identifier", "username"),
+            passwordError = fieldErrors.firstValue("password")
         )
 
         return recomputeDerivedState(
-            stateWithFieldErrors.copy(
-                submitState = UiActionState.Error,
-                formMessage = message
-            )
+            stateWithFieldErrors.copy(isLoading = false)
         )
     }
 
-    private fun Map<String, UiText>.dynamicValueOrNull(vararg keys: String): String? =
+    private fun Map<String, String>.firstValue(vararg keys: String): String? =
         keys.asSequence()
-            .mapNotNull { key -> this[key].asDynamicValueOrNull() }
+            .mapNotNull { key -> this[key]?.takeIf { it.isNotBlank() } }
             .firstOrNull()
-
-    private fun UiText?.asDynamicValueOrNull(): String? = when (this) {
-        is UiText.Dynamic -> value
-        else -> null
-    }
 
     private fun recomputeDerivedState(state: LoginScreenUiState): LoginScreenUiState {
         val validationResult = validateLoginFormUseCase(

@@ -28,7 +28,7 @@ class AppResultExtensionsTest {
             onSuccess = { "S:$it" },
             onError = { "E:${it.message}" }
         )
-        val errorOutput = AppResult.Error(AppError.Backend("bad")).fold(
+        val errorOutput = AppResult.Error(AppError.Server("bad")).fold(
             onSuccess = { "S:$it" },
             onError = { "E:${it.message}" }
         )
@@ -39,11 +39,11 @@ class AppResultExtensionsTest {
 
     @Test
     fun mapError_transformsErrorOnly() {
-        val result = AppResult.Error(AppError.Backend("x")).mapError {
-            AppError.Backend("mapped")
+        val result = AppResult.Error(AppError.Server("x")).mapError {
+            AppError.Server("mapped")
         }
 
-        assertEquals(AppResult.Error(AppError.Backend("mapped")), result)
+        assertEquals(AppResult.Error(AppError.Server("mapped")), result)
     }
 
     @Test

@@ -9,8 +9,10 @@ import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeader
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.common.text.UiText
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -62,8 +64,41 @@ class ProfileStateReducerTest {
     }
 
     @Test
-    fun onLoadFailed_turnsOffLoading() {
-        val state = reducer.onLoadFailed(ProfileUiState(isInitialLoading = true))
-        assertFalse(state.isInitialLoading)
+    fun onLoadFailed_turnsOffLoadingAndSetsError() {
+        val state = reducer.onLoadFailed(ProfileUiState(isInitialLoading = true), UiText.Dynamic("err"))
+        assertEquals(UiText.Dynamic("err"), state.errorMessage)
+        assertFalse(state.isRefreshing)
+    }
+
+    @Test
+    fun onRefreshing_setsRefreshingTrue() {
+        val state = reducer.onRefreshing(ProfileUiState())
+        assertTrue(state.isRefreshing)
+    }
+
+    @Test
+    fun onProfileLoaded_clearsRefreshingAndError() {
+        val mapped = ProfileUiData(
+            header = ProfileHeaderUiModel(username = "fatih"),
+            accountSummary = ProfileAccountSummaryUiModel(),
+            stats = emptyList(),
+            statusSummary = ProfileStatusSummaryUiModel(),
+            socialLinks = emptyList(),
+            activities = emptyList()
+        )
+
+        val state = reducer.onProfileLoaded(
+            ProfileUiState(isRefreshing = true, errorMessage = UiText.Dynamic("x")),
+            mapped
+        )
+
+        assertFalse(state.isRefreshing)
+        assertNull(state.errorMessage)
+    }
+
+    @Test
+    fun onRefreshFailed_stopsRefreshingWithoutError() {
+        val state = reducer.onRefreshFailed(ProfileUiState(isRefreshing = true))
+        assertFalse(state.isRefreshing)
     }
 }

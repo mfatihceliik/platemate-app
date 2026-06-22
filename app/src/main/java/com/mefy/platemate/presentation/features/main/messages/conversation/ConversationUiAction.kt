@@ -5,4 +5,5 @@ sealed interface ConversationUiAction {
     data object SendClicked : ConversationUiAction
     data object InfoClicked : ConversationUiAction
     data object BackClicked : ConversationUiAction
+    data object RetryClicked : ConversationUiAction
 }

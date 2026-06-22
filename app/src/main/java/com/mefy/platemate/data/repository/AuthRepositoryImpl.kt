@@ -35,7 +35,7 @@ class AuthRepositoryImpl @Inject constructor(
                 .flatMap { user ->
                     userAuthSessionMapper.mapOrNull(user)
                         ?.let { session -> AppResult.Success(session) }
-                        ?: AppResult.Error(AppError.Backend("Access or refresh token not found in login response"))
+                        ?: AppResult.Error(AppError.Server("Access or refresh token not found in login response"))
                 }
                 .onSuccessSuspend(sessionStore::saveSession)
         }
@@ -46,7 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
                 .flatMap { user ->
                     userAuthSessionMapper.mapOrNull(user)
                         ?.let { session -> AppResult.Success(session) }
-                        ?: AppResult.Error(AppError.Backend("Access or refresh token not found in register response"))
+                        ?: AppResult.Error(AppError.Server("Access or refresh token not found in register response"))
                 }
                 .onSuccessSuspend(sessionStore::saveSession)
         }
@@ -58,7 +58,7 @@ class AuthRepositoryImpl @Inject constructor(
 
             if (refreshToken.isNullOrBlank()) {
                 sessionStore.clearSession()
-                return@withContext AppResult.Error(AppError.Unauthorized)
+                return@withContext AppResult.Error(AppError.SessionExpired)
             }
 
             val refreshResult = safeApiCall {
@@ -66,15 +66,11 @@ class AuthRepositoryImpl @Inject constructor(
             }.flatMap { user ->
                 userAuthSessionMapper.mapOrNull(user)
                     ?.let { session -> AppResult.Success(session) }
-                    ?: AppResult.Error(AppError.Backend("Access or refresh token not found in refresh response"))
+                    ?: AppResult.Error(AppError.Server("Access or refresh token not found in refresh response"))
             }.onSuccessSuspend(sessionStore::saveSession)
 
             if (refreshResult is AppResult.Error) {
-                val shouldClearSession = when (val error = refreshResult.error) {
-                    AppError.Unauthorized -> true
-                    is AppError.Http -> error.code == 401 || error.code == 403
-                    else -> false
-                }
+                val shouldClearSession = refreshResult.error is AppError.SessionExpired
                 if (shouldClearSession) {
                     sessionStore.clearSession()
                 }
