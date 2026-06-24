@@ -44,25 +44,8 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 
-/**
- * Kayan seçili gösterge animasyon süresi (ms). Gerçek navigasyon bu süre sonunda
- * tetiklenir: gösterge boş thread'de akıcı kayar, sonra (ağır ilk-kare derlemesi
- * yapan) ekran açılır → kayma main thread için ekranla yarışmaz. Kısa tutuldu ki
- * ekrana geçiş gecikmesi minimum hissedilsin.
- */
 private const val IndicatorAnimMs = 350
 
-/**
- * PlateMate'e özgü yüzen-hap (floating pill) alt navigasyon barı.
- *
- * - Ekran kenarlarından boşluklu, tam yuvarlatılmış, gölgeli yüzen bar.
- * - Ortadaki [TopLevelDestination.Messages] sekmesi, gradient + ışıltılı gölgeli
- *   yükseltilmiş bir FAB olarak barın üstünden taşar.
- * - Seçili sekme `primaryContainer` hap + etiket gösterir; diğerleri yalnızca ikon.
- *
- * Erişilebilirlik/test: her sekme [selectable] (Role.Tab) ve ikonu her durumda
- * `contentDescription = label` taşır.
- */
 @Composable
 fun MainBottomBar(
     selectedDestination: TopLevelDestination,
