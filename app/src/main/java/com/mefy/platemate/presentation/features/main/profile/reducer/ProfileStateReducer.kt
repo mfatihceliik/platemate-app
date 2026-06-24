@@ -1,5 +1,6 @@
 package com.mefy.platemate.presentation.features.main.profile.reducer
 
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.profile.ProfileUiState
 import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiData
 import javax.inject.Inject
@@ -7,7 +8,12 @@ import javax.inject.Inject
 class ProfileStateReducer @Inject constructor() {
 
     fun onInitialLoading(state: ProfileUiState): ProfileUiState = state.copy(
-        isInitialLoading = true
+        isInitialLoading = true,
+        errorMessage = null
+    )
+
+    fun onRefreshing(state: ProfileUiState): ProfileUiState = state.copy(
+        isRefreshing = true
     )
 
     fun onProfileLoaded(
@@ -15,6 +21,8 @@ class ProfileStateReducer @Inject constructor() {
         uiData: ProfileUiData
     ): ProfileUiState = state.copy(
         isInitialLoading = false,
+        isRefreshing = false,
+        errorMessage = null,
         header = uiData.header,
         accountSummary = uiData.accountSummary,
         stats = uiData.stats,
@@ -23,7 +31,13 @@ class ProfileStateReducer @Inject constructor() {
         activities = uiData.activities
     )
 
-    fun onLoadFailed(state: ProfileUiState): ProfileUiState = state.copy(
-        isInitialLoading = false
+    fun onLoadFailed(state: ProfileUiState, message: UiText): ProfileUiState = state.copy(
+        isInitialLoading = false,
+        isRefreshing = false,
+        errorMessage = message
+    )
+
+    fun onRefreshFailed(state: ProfileUiState): ProfileUiState = state.copy(
+        isRefreshing = false
     )
 }

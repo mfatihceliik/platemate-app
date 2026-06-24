@@ -10,15 +10,23 @@ import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.domain.model.discovery.TopCityPlate
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.domain.repository.DiscoveryRepository
+import com.mefy.platemate.domain.repository.SavedPlateRepository
 import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryHomeUseCase
+import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
+import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
+import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.discover.mapper.DefaultDiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
 import com.mefy.platemate.testutil.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -108,15 +116,28 @@ class DiscoverViewModelTest {
     private fun createViewModel(
         repository: FakeDiscoveryRepository = FakeDiscoveryRepository(
             response = AppResult.Success(sampleDiscoveryHome())
-        )
+        ),
+        savedPlateRepository: SavedPlateRepository = FakeSavedPlateRepository()
     ): DiscoverViewModel {
         return DiscoverViewModel(
             getDiscoveryHomeUseCase = GetDiscoveryHomeUseCase(repository),
+            observeSavedPlateCodesUseCase = ObserveSavedPlateCodesUseCase(savedPlateRepository),
+            toggleSavedPlateUseCase = ToggleSavedPlateUseCase(savedPlateRepository),
+            formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
+            validateTurkishPlateUseCase = ValidateTurkishPlateUseCase(),
             discoverUiMapper = DefaultDiscoverUiMapper(
-                formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase()
+                formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
+                validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
             ),
-            discoverStateReducer = DiscoverStateReducer()
+            discoverStateReducer = DiscoverStateReducer(),
+            globalUiEventBus = DefaultGlobalUiEventBus()
         )
+    }
+
+    private class FakeSavedPlateRepository : SavedPlateRepository {
+        override fun observeSavedPlates(): Flow<List<SavedPlate>> = flowOf(emptyList())
+        override fun observeSavedPlateCodes(): Flow<Set<String>> = flowOf(emptySet())
+        override suspend fun toggleSaved(plate: SavedPlate): Boolean = true
     }
 
     private fun sampleDiscoveryHome(): DiscoveryHome = DiscoveryHome(

@@ -13,3 +13,6 @@ data object MessagesGraphDestination : AppDestination
 
 @Serializable
 data object ProfileGraphDestination : AppDestination
+
+@Serializable
+data object SettingsGraphDestination : AppDestination

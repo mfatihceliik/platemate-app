@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.search.mapper
 
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.report.ReportType
-import com.mefy.platemate.domain.model.review.Review
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -112,14 +111,17 @@ class DefaultSearchUiMapperTest {
     }
 
     private fun sampleResult(): PlateSearchResult = PlateSearchResult(
+        id = 1L,
         plateCode = "34ABC123",
         cityName = "Istanbul",
         ratingAverage = 4.3,
         reviewCount = 12L,
-        todaySearchCount = 10L,
-        todayReviewCount = 0L,
-        todayReportCount = 0L,
-        todayWeightedReportScore = 0.0,
+        ratingDistribution = emptyList(),
+        tagSummary = emptyList(),
+        recentReviews = emptyList(),
+        totalSearchCount = 10L,
+        totalReviewCount = 0L,
+        totalReportCount = 0L,
         score = 0.0,
         lastActivityAt = "2026-05-19T00:00:00Z",
         topReportTypes = listOf(

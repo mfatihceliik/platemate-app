@@ -3,7 +3,7 @@ package com.mefy.platemate.presentation.features.main.messages.chatdetail
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.navigation.ChatDetailDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class ChatDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val route: ChatDetailDestination = savedStateHandle.toRoute()
 

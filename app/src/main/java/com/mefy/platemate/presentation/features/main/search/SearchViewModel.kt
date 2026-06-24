@@ -1,7 +1,9 @@
 package com.mefy.platemate.presentation.features.main.search
 
+import com.mefy.platemate.R
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.connectivity.NetworkMonitor
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.search.RecentSearch
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
@@ -14,9 +16,8 @@ import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlatesUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.UpsertRecentSearchUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.common.error.ErrorContext
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
-import com.mefy.platemate.presentation.common.state.UiActionState
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.search.mapper.SearchUiMapper
 import com.mefy.platemate.presentation.features.main.search.reducer.SearchStateReducer
@@ -46,10 +47,11 @@ class SearchViewModel @Inject constructor(
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase,
     private val searchUiMapper: SearchUiMapper,
     private val searchStateReducer: SearchStateReducer,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    private val networkMonitor: NetworkMonitor,
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
-    private val _uiState = MutableStateFlow(SearchUiState(isInitialLoading = true))
+    private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<SearchUiEffect>()
@@ -59,16 +61,24 @@ class SearchViewModel @Inject constructor(
 
     init {
         observeRecentSearches()
+        observeConnectivity()
     }
+
+    /** Çevrimdışıyken Search da diğer ekranlar gibi tam-ekran bağlantı hatası gösterir. */
+    private fun observeConnectivity() {
+        launch {
+            networkMonitor.isOnline.collectLatest { online ->
+                _uiState.update { it.copy(errorMessage = offlineMessage(online)) }
+            }
+        }
+    }
+
+    private fun offlineMessage(online: Boolean): UiText? =
+        if (online) null else UiText.Resource(R.string.common_error_network)
 
     private fun observeRecentSearches() {
         launch(
-            onError = { throwable ->
-                _uiState.update { current ->
-                    searchStateReducer.onInitialLoadFailed(current)
-                }
-                handleError(throwable)
-            }
+            onError = { throwable -> handleError(throwable) }
         ) {
             combine(
                 observeRecentSearchesUseCase(),
@@ -97,6 +107,8 @@ class SearchViewModel @Inject constructor(
             is SearchUiAction.SavedPlateBookmarkClicked -> onSavedPlateBookmarkClicked(action.normalizedPlateCode)
             is SearchUiAction.RecentDismissClicked -> onRecentDismissClicked(action.normalizedPlateCode)
             SearchUiAction.ClearRecentClicked -> onClearRecentClicked()
+            SearchUiAction.RetryClicked ->
+                _uiState.update { it.copy(errorMessage = offlineMessage(networkMonitor.isCurrentlyOnline())) }
         }
     }
 
@@ -118,7 +130,7 @@ class SearchViewModel @Inject constructor(
 
     private fun onSearchClicked() {
         val currentState = _uiState.value
-        if (currentState.submitState is UiActionState.Loading) return
+        if (currentState.isSearching) return
         if (!currentState.isPlateValid) return
 
         val normalizedPlate = validateTurkishPlateUseCase.normalize(currentState.plateInput)
@@ -161,13 +173,10 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onSearchError(error: AppError) {
-        val resolvedError = handleError(
-            error = error,
-            context = ErrorContext.Search,
-            consumeUxAction = false
-        )
+        // Hata ortak kanaldan: Server -> snackbar, bağlantı -> pop-up. Ekran aksiyonu Idle'a çeker.
+        handleError(error)
         _uiState.update { current ->
-            searchStateReducer.onSearchError(current, resolvedError.message)
+            searchStateReducer.onSearchError(current)
         }
     }
 

@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.auth.register.reducer
 import com.mefy.platemate.domain.model.auth.PasswordStrengthLevel
 import com.mefy.platemate.domain.usecase.auth.CalculateRegisterPasswordStrengthUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateEmailFormatUseCase
-import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.register.RegisterScreenUiState
 import org.junit.Assert.assertEquals
@@ -46,18 +45,16 @@ class RegisterStateReducerTest {
     fun onSubmitError_setsFieldErrorsAndErrorState() {
         val state = reducer.onSubmitError(
             state = RegisterScreenUiState(),
-            message = UiText.Dynamic("Validation failed"),
             fieldErrors = mapOf(
-                "username" to UiText.Dynamic("Username already exists"),
-                "email" to UiText.Dynamic("Email invalid"),
-                "password" to UiText.Dynamic("Password too short")
+                "username" to "Username already exists",
+                "email" to "Email invalid",
+                "password" to "Password too short"
             )
         )
 
-        assertTrue(state.submitState is UiActionState.Error)
+        assertFalse(state.isLoading)
         assertEquals("Username already exists", state.usernameError)
         assertEquals("Email invalid", state.emailError)
         assertEquals("Password too short", state.passwordError)
-        assertEquals(UiText.Dynamic("Validation failed"), state.formMessage)
     }
 }

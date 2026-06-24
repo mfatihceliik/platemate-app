@@ -1,5 +1,6 @@
 package com.mefy.platemate.presentation.features.main.discover.reducer
 
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
@@ -9,13 +10,14 @@ import javax.inject.Inject
 class DiscoverStateReducer @Inject constructor() {
 
     fun onInitialLoading(state: DiscoverUiState): DiscoverUiState =
-        state.copy(isInitialLoading = true, isRefreshing = false)
+        state.copy(isInitialLoading = true, isRefreshing = false, errorMessage = null)
 
     fun onRefreshing(state: DiscoverUiState): DiscoverUiState =
         state.copy(isRefreshing = true)
 
-    fun onLoadError(state: DiscoverUiState): DiscoverUiState =
-        state.copy(isInitialLoading = false, isRefreshing = false)
+    /** İlk yükleme hatası ekran-içi gösterilir. */
+    fun onLoadError(state: DiscoverUiState, message: UiText): DiscoverUiState =
+        state.copy(isInitialLoading = false, isRefreshing = false, errorMessage = message)
 
     fun onContentLoaded(
         state: DiscoverUiState,
@@ -24,6 +26,7 @@ class DiscoverStateReducer @Inject constructor() {
     ): DiscoverUiState = state.copy(
         isInitialLoading = false,
         isRefreshing = false,
+        errorMessage = null,
         metrics = mappedHome.metrics,
         cityStats = mappedHome.cityStats,
         recentActivities = mappedHome.recentActivities,

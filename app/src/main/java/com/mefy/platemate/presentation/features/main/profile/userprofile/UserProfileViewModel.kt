@@ -3,7 +3,7 @@ package com.mefy.platemate.presentation.features.main.profile.userprofile
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.profile.userprofile.model.ReportReason
 import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val route: UserProfileDestination = savedStateHandle.toRoute()
 

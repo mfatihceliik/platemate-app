@@ -12,6 +12,13 @@
     <string name="common_error_empty_data">No data received from server.</string>
     <string name="common_error_http">Something went wrong on the server. Please try again.</string>
     <string name="common_error_unknown">Something went wrong. Please try again.</string>
+    <string name="common_error_title">Error</string>
+    <string name="common_error_state_title">Something went wrong</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_ok">OK</string>
+    <string name="session_expired_title">Session expired</string>
+    <string name="session_expired_action_login">Log in</string>
+    <string name="connectivity_offline_banner">No internet connection</string>
 
     <!-- Auth — Register -->
     <string name="auth_register_title">Create Account</string>
@@ -64,7 +71,6 @@
     <string name="auth_login_forgot_password">Forgot password</string>
     <string name="auth_login_or">or</string>
     <string name="auth_login_apple_continue">Continue with Apple</string>
-    <string name="auth_login_error_banner">Invalid email or password. Please try again.</string>
 
     <!-- Onboarding — Illustrations -->
     <string name="illustration_plate_1">34 EK 0682</string>
@@ -130,6 +136,7 @@
     <string name="main_tab_discover">Discover</string>
     <string name="main_tab_messages">Messages</string>
     <string name="main_tab_profile">Profile</string>
+    <string name="main_tab_settings">Settings</string>
     <string name="main_discover_placeholder_title">Discover screen is coming soon.</string>
     <string name="main_messages_placeholder_title">Messages screen is coming soon.</string>
     <string name="main_profile_placeholder_title">Profile screen is coming soon.</string>
@@ -201,6 +208,9 @@
     <string name="profile_history_title">Notification History</string>
     <string name="profile_history_empty">No notifications yet.</string>
     <string name="profile_recent_empty">No recent notifications.</string>
+    <string name="profile_error_title">Couldn\'t load your profile</string>
+    <string name="profile_error_message">Something went wrong. Please try again.</string>
+    <string name="profile_error_retry">Retry</string>
     <string name="profile_history_loading_more">Loading more...</string>
     <string name="profile_history_removed_totals_title">Removed Totals</string>
     <string name="profile_history_removed_totals_format">User: %1$d  Moderator: %2$d  Legal: %3$d</string>
@@ -213,7 +223,7 @@
     <string name="profile_settings_theme_color">Theme Color</string>
     <string name="profile_settings_social_accounts">Social Media Accounts</string>
     <string name="profile_settings_social_count">%1$d connected</string>
-    <string name="profile_settings_version">PlateMate v2.4.1</string>
+    <string name="profile_settings_version">PlateMate v%1$s</string>
     <string name="profile_settings_edit_profile">Edit Profile</string>
     <string name="profile_change_password_title">Change Password</string>
     <string name="profile_change_password_desc">Choose a strong and unique password to keep your account safe.</string>
@@ -366,6 +376,15 @@
     <string name="review_comment_max_reached">Maximum character limit reached</string>
     <string name="review_city_review_count">%1$s · %2$d reviews</string>
     <string name="review_count_format">%1$d reviews</string>
+    <string name="review_popup_success_title">Shared Successfully!</string>
+    <string name="review_popup_success_message">Your review has been shared with the community. Thank you!</string>
+    <string name="review_popup_pending_title">Under Review</string>
+    <string name="review_popup_pending_message">Your review will be published after it has been reviewed.</string>
+    <string name="review_popup_error_title">Couldn\'t Publish</string>
+    <string name="review_popup_go_home">Go to Home</string>
+    <string name="review_popup_rate_another">Rate Another Vehicle</string>
+    <string name="review_popup_retry">Try Again</string>
+    <string name="review_popup_cancel">Cancel</string>
 
     <!-- Search -->
     <string name="search_header_title">PlateMate</string>

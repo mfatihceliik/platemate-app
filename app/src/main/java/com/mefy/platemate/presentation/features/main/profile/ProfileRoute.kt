@@ -1,5 +1,7 @@
 package com.mefy.platemate.presentation.features.main.profile
 
+import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,21 +17,18 @@ import kotlinx.coroutines.flow.collectLatest
 fun ProfileRoute(
     viewModel: ProfileViewModel,
     onNavigateToSearchDetail: (String) -> Unit,
-    onNavigateToSettings: () -> Unit,
     onNavigateToFriends: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleUiMessages(viewModel.uiMessages)
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
                 is ProfileUiEffect.NavigateToSearchDetail -> {
                     onNavigateToSearchDetail(effect.normalizedPlateCode)
-                }
-
-                ProfileUiEffect.NavigateToSettings -> {
-                    onNavigateToSettings()
                 }
 
                 ProfileUiEffect.NavigateToFriends -> {

@@ -41,7 +41,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPasswordField
@@ -66,11 +65,10 @@ fun LoginScreen(
     val spacing = dims.spacing
     val radius = dims.radius
     val stroke = dims.stroke
-    val isSubmitLoading = state.submitState is UiActionState.Loading
+    val isSubmitLoading = state.isLoading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())
-    val isSubmitError = state.submitState is UiActionState.Error
-    val isErrorState = isSubmitError || showEmailValidationError || state.emailError != null || state.passwordError != null
+    val isErrorState = showEmailValidationError || state.emailError != null || state.passwordError != null
 
     val resolvedEmailError = state.emailError ?: if (showEmailValidationError) {
         stringResource(R.string.auth_login_email_invalid)
@@ -100,37 +98,6 @@ fun LoginScreen(
                 .padding(horizontal = spacing.s24),
             verticalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
-            // Error Banner
-            if (isSubmitError) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colors.errorContainer, RoundedCornerShape(radius.r12))
-                        .padding(horizontal = spacing.s16, vertical = spacing.s12),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacing.s12)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(spacing.s24)
-                            .background(colors.error, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        PMIcon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(spacing.s16)
-                        )
-                    }
-                    PMText(
-                        text = stringResource(R.string.auth_login_error_banner),
-                        style = PMTextStyle.Caption,
-                        color = colors.error
-                    )
-                }
-            }
-
             PMTextField(
                 value = state.email,
                 onValueChange = { onAction(LoginUiAction.EmailChanged(it)) },
@@ -317,8 +284,7 @@ private fun LoginScreenDarkPreview() {
             state = LoginScreenUiState(
                 email = "ornek@mail.com",
                 password = "123",
-                isSubmitEnabled = true,
-                submitState = UiActionState.Error
+                isSubmitEnabled = true
             ),
             onAction = {},
             onNavigateToRegisterClick = {},

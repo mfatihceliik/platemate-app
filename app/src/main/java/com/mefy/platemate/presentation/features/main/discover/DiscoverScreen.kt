@@ -1,43 +1,37 @@
 package com.mefy.platemate.presentation.features.main.discover
 
-import androidx.compose.animation.Crossfade
+import com.mefy.platemate.presentation.common.state.ScreenStatus
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCategoryCard
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.PMTrendCard
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.components.PMPlateCard
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction.FilterSelected
+import com.mefy.platemate.presentation.features.main.discover.components.DiscoverFilterChips
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverShimmerContent
+import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -49,39 +43,40 @@ fun DiscoverScreen(
     onAction: (DiscoverUiAction) -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
+    val status = when {
+        state.isInitialLoading -> ScreenStatus.Loading
+        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
+        else -> ScreenStatus.Content
+    }
+
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.discover_header_title)
-        )
+            title = stringResource(R.string.discover_header_title),
+            alignment = PMTopBarAlignment.Start
+        ),
+        status = status,
+        onRetry = { onAction(DiscoverUiAction.RetryClicked) },
+        loading = { innerPadding ->
+            DiscoverShimmerContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        }
     ) { innerPadding ->
-        Crossfade(
-            targetState = state.isInitialLoading,
-            label = "discover_loading_crossfade",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) { isInitialLoading ->
-            if (isInitialLoading) {
-                DiscoverShimmerContent(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag(DISCOVER_SHIMMER_ROOT_TAG)
-                )
-            } else {
-                PullToRefreshBox(
-                    isRefreshing = state.isRefreshing,
-                    onRefresh = { onAction(DiscoverUiAction.RefreshRequested) },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    DiscoverContent(
-                        state = state,
-                        onAction = onAction,
-                        lazyListState = lazyListState,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = { onAction(DiscoverUiAction.RefreshRequested) },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            DiscoverContent(
+                state = state,
+                onAction = onAction,
+                lazyListState = lazyListState,
+                bottomInset = innerPadding.calculateBottomPadding(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -91,6 +86,7 @@ private fun DiscoverContent(
     state: DiscoverUiState,
     onAction: (DiscoverUiAction) -> Unit,
     lazyListState: LazyListState,
+    bottomInset: Dp = 0.dp,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
@@ -99,16 +95,18 @@ private fun DiscoverContent(
     LazyColumn(
         state = lazyListState,
         modifier = modifier
-            .background(colors.background)
-            .testTag(DISCOVER_CONTENT_ROOT_TAG),
-        contentPadding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+            .background(colors.background),
+        contentPadding = PaddingValues(
+            start = dims.spacing.s16,
+            end = dims.spacing.s16,
+            top = dims.spacing.s16,
+            bottom = dims.spacing.s16 + bottomInset
+        ),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
         item {
-            PMText(
+            SectionLabel(
                 text = stringResource(R.string.discover_header_subtitle),
-                fontSize = dims.fontSize.md,
-                color = colors.textTertiary
             )
         }
 
@@ -120,9 +118,8 @@ private fun DiscoverContent(
         }
 
         item {
-            PMText(
+            SectionLabel(
                 text = stringResource(R.string.discover_section_trending),
-                style = PMTextStyle.SectionLabel
             )
         }
 
@@ -131,7 +128,7 @@ private fun DiscoverContent(
             key = { it.id },
             contentType = { "trend_card" }
         ) { detail ->
-            PMTrendCard(
+            PMPlateCard(
                 rank = detail.rank ?: 0,
                 cityCode = detail.plateCode.take(2),
                 plateNumber = detail.plateCode,
@@ -143,9 +140,8 @@ private fun DiscoverContent(
         }
 
         item {
-            PMText(
+            SectionLabel(
                 text = stringResource(R.string.discover_section_categories),
-                style = PMTextStyle.SectionLabel
             )
         }
 
@@ -203,44 +199,6 @@ private fun DiscoverContent(
     }
 }
 
-@Composable
-private fun DiscoverFilterChips(
-    selectedFilter: DiscoverFilterUi,
-    onSelected: (DiscoverFilterUi) -> Unit
-) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-    ) {
-        items(DiscoverFilterUi.entries, key = { it.name }) { filter ->
-            val isSelected = selectedFilter == filter
-            val bg = if (isSelected) colors.primary else colors.surfaceVariant
-            val fg = if (isSelected) colors.onPrimary else colors.textSecondary
-
-            Box(
-                modifier = Modifier
-                    .height(dims.sizing.chipHeight)
-                    .clip(RoundedCornerShape(dims.radius.rFull))
-                    .background(bg)
-                    .debouncedClickable { onSelected(filter) }
-                    .padding(horizontal = dims.spacing.s16),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = stringResource(filter.toLabelResId()),
-                    fontSize = dims.fontSize.md,
-                    fontWeight = FontWeight.SemiBold,
-                    color = fg
-                )
-            }
-        }
-    }
-}
-
-private const val DISCOVER_SHIMMER_ROOT_TAG = "discover_shimmer_root"
-private const val DISCOVER_CONTENT_ROOT_TAG = "discover_content_root"
 
 @Preview(name = "Discover Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable

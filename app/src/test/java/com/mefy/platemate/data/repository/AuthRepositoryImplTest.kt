@@ -68,7 +68,7 @@ class AuthRepositoryImplTest {
         val result = repository.refreshSession()
 
         assertTrue(result is AppResult.Error)
-        assertEquals(AppError.Unauthorized, (result as AppResult.Error).error)
+        assertEquals(AppError.SessionExpired, (result as AppResult.Error).error)
         assertNull(sessionStore.session.first())
         assertEquals(0, authTokenApi.refreshCallCount)
     }
@@ -91,7 +91,7 @@ class AuthRepositoryImplTest {
         val result = repository.refreshSession()
 
         assertTrue(result is AppResult.Error)
-        assertEquals(AppError.Unauthorized, (result as AppResult.Error).error)
+        assertEquals(AppError.SessionExpired, (result as AppResult.Error).error)
         assertNull(sessionStore.session.first())
         assertEquals(1, authTokenApi.refreshCallCount)
     }

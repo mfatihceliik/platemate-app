@@ -1,11 +1,8 @@
 package com.mefy.platemate.presentation.features.auth.register.reducer
 
-import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.auth.EmailValidationReason
 import com.mefy.platemate.domain.usecase.auth.CalculateRegisterPasswordStrengthUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateEmailFormatUseCase
-import com.mefy.platemate.presentation.common.state.UiActionState
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.register.PasswordStrength
 import com.mefy.platemate.presentation.features.auth.register.RegisterScreenUiState
 import javax.inject.Inject
@@ -23,21 +20,21 @@ class RegisterStateReducer @Inject constructor(
         state: RegisterScreenUiState,
         value: String
     ): RegisterScreenUiState = recomputeDerivedState(
-        state.copy(username = value, usernameError = null, formMessage = null)
+        state.copy(username = value, usernameError = null)
     )
 
     fun onEmailChanged(
         state: RegisterScreenUiState,
         value: String
     ): RegisterScreenUiState = recomputeDerivedState(
-        state.copy(email = value, emailError = null, formMessage = null)
+        state.copy(email = value, emailError = null)
     )
 
     fun onPasswordChanged(
         state: RegisterScreenUiState,
         value: String
     ): RegisterScreenUiState = recomputeDerivedState(
-        state.copy(password = value, passwordError = null, formMessage = null)
+        state.copy(password = value, passwordError = null)
     )
 
     fun onPrefillIdentifierReceived(
@@ -56,45 +53,34 @@ class RegisterStateReducer @Inject constructor(
     fun prepareSubmitAttempt(state: RegisterScreenUiState): RegisterScreenUiState =
         recomputeDerivedState(state.copy(hasSubmittedOnce = true))
 
-    fun onInvalidSubmit(state: RegisterScreenUiState): RegisterScreenUiState = state.copy(
-        submitState = UiActionState.Idle,
-        formMessage = UiText.Resource(R.string.auth_register_form_invalid)
-    )
+    fun onInvalidSubmit(state: RegisterScreenUiState): RegisterScreenUiState =
+        state.copy(isLoading = false)
 
     fun onSubmitLoading(state: RegisterScreenUiState): RegisterScreenUiState =
-        state.copy(submitState = UiActionState.Loading, formMessage = null)
+        state.copy(isLoading = true)
 
     fun onSubmitSuccess(state: RegisterScreenUiState): RegisterScreenUiState =
-        state.copy(submitState = UiActionState.Idle, formMessage = null)
+        state.copy(isLoading = false)
 
     fun onSubmitError(
         state: RegisterScreenUiState,
-        message: UiText,
-        fieldErrors: Map<String, UiText>
+        fieldErrors: Map<String, String>
     ): RegisterScreenUiState {
         val stateWithFieldErrors = state.copy(
-            usernameError = fieldErrors.dynamicValueOrNull("username"),
-            emailError = fieldErrors.dynamicValueOrNull("email"),
-            passwordError = fieldErrors.dynamicValueOrNull("password")
+            usernameError = fieldErrors.firstValue("username"),
+            emailError = fieldErrors.firstValue("email"),
+            passwordError = fieldErrors.firstValue("password")
         )
 
         return recomputeDerivedState(
-            stateWithFieldErrors.copy(
-                submitState = UiActionState.Error,
-                formMessage = message
-            )
+            stateWithFieldErrors.copy(isLoading = false)
         )
     }
 
-    private fun Map<String, UiText>.dynamicValueOrNull(vararg keys: String): String? =
+    private fun Map<String, String>.firstValue(vararg keys: String): String? =
         keys.asSequence()
-            .mapNotNull { key -> this[key].asDynamicValueOrNull() }
+            .mapNotNull { key -> this[key]?.takeIf { it.isNotBlank() } }
             .firstOrNull()
-
-    private fun UiText?.asDynamicValueOrNull(): String? = when (this) {
-        is UiText.Dynamic -> value
-        else -> null
-    }
 
     private fun recomputeDerivedState(state: RegisterScreenUiState): RegisterScreenUiState {
         val strengthResult = calculateRegisterPasswordStrengthUseCase(state.password)

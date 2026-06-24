@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailViewModel
-import com.mefy.platemate.presentation.features.main.review.ReviewRoute
-import com.mefy.platemate.presentation.features.main.review.ReviewViewModel
+import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewRoute
+import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewViewModel
 import com.mefy.platemate.presentation.features.main.search.SearchRoute
 import com.mefy.platemate.presentation.features.main.search.SearchViewModel
 

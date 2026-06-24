@@ -30,5 +30,10 @@ internal fun NavGraphBuilder.mainGraph(
             onShowSnackbar = onShowSnackbar,
             modifier = modifier
         )
+        settingsGraph(
+            navController = navController,
+            onShowSnackbar = onShowSnackbar,
+            modifier = modifier
+        )
     }
 }

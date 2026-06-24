@@ -1,22 +1,25 @@
 package com.mefy.platemate.presentation.common.topbar
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMText
@@ -24,60 +27,85 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Uygulamanın kendi üst barı. Material `TopAppBar` türevlerine bağımlı değildir;
+ * yükseklik/hizalama/padding tamamen design-token'larla kontrol edilir.
+ *
+ * - [PMTopBarConfig.Standard]: başlık (ortalı/sola) + opsiyonel geri + opsiyonel aksiyonlar.
+ * - [PMTopBarConfig.Custom]: ekran kendi composable'ını verir (tam serbest).
+ * - [PMTopBarConfig.Hidden]: hiçbir şey çizmez.
+ */
 @Composable
 fun PMTopBar(
     config: PMTopBarConfig,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.pmColors.surface
 ) {
-    val dims = MaterialTheme.pmDimensions
-
     when (config) {
         is PMTopBarConfig.Hidden -> {}
-        is PMTopBarConfig.Standard -> {
-            TopAppBar(
-                title = {
-                    PMText(
-                        text = config.title,
-                        fontSize = dims.fontSize.xxl
-                    )
-                },
-                navigationIcon = { config.onBackClick?.let { PMBackButton(it) } },
-                actions = { config.actions?.invoke(this) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = containerColor),
-                modifier = modifier
-            )
+        is PMTopBarConfig.Standard -> PMStandardTopBar(config, modifier, containerColor)
+        is PMTopBarConfig.Custom -> config.content()
+    }
+}
+
+@Composable
+private fun PMStandardTopBar(
+    config: PMTopBarConfig.Standard,
+    modifier: Modifier,
+    containerColor: Color
+) {
+    val dims = MaterialTheme.pmDimensions
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(containerColor)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .height(dims.sizing.topBarHeight)
+            .padding(horizontal = dims.spacing.s4)
+    ) {
+        // Geri butonu (varsa) — sol kenar
+        config.onBackClick?.let { onBack ->
+            Box(modifier = Modifier.align(Alignment.CenterStart)) {
+                PMBackButton(onBack)
+            }
         }
-        is PMTopBarConfig.Collapsing -> {
-            LargeTopAppBar(
-                title = {
-                    PMText(
-                        text = config.title,
-                        fontSize = dims.fontSize.xxl
-                    )
-                },
-                navigationIcon = { config.onBackClick?.let { PMBackButton(it) } },
-                actions = { config.actions?.invoke(this) },
-                scrollBehavior = config.scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = containerColor),
-                modifier = modifier
-            )
+
+        // Başlık. Ortalı/sola hizada; sol-sağ reserve padding ile geri/aksiyon üstüne binmez,
+        // taşarsa ellipsize.
+        val titleModifier = when (config.alignment) {
+            PMTopBarAlignment.Center -> Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = dims.spacing.s48)
+
+            PMTopBarAlignment.Start -> Modifier
+                .align(Alignment.CenterStart)
+                .padding(
+                    start = if (config.onBackClick != null) dims.spacing.s48 else dims.spacing.s12,
+                    end = dims.spacing.s48
+                )
         }
-        is PMTopBarConfig.Transparent -> {
-            TopAppBar(
-                title = {},
-                navigationIcon = { config.onBackClick?.let { PMBackButton(it) } },
-                actions = { config.actions?.invoke(this) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                modifier = modifier
-            )
-        }
-        is PMTopBarConfig.Custom -> {
-            config.content()
+        PMText(
+            text = config.title,
+            fontSize = dims.fontSize.xxl,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = titleModifier
+        )
+
+        // Aksiyonlar — sağ kenar
+        config.actions?.let { actions ->
+            Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                actions()
+            }
         }
     }
 }
+
+// ── Previews ────────────────────────────────────────────────
 
 @Preview(name = "PMTopBar Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
@@ -99,79 +127,37 @@ private fun PMTopBarDarkPreview() {
 private fun PMTopBarPreviewContent() {
     val colors = MaterialTheme.pmColors
     Column {
-        // Geri butonsuz (tab ekranı)
+        // Geri butonsuz, ortalı (tab ekranı)
         PMTopBar(config = PMTopBarConfig.Standard(title = "PlateMate"))
-        // Geri butonlu
-        PMTopBar(config = PMTopBarConfig.Standard(
-            title = "Profil",
-            onBackClick = {}
-        ))
-        // Geri + aksiyonlar
-        PMTopBar(config = PMTopBarConfig.Standard(
-            title = "Plaka Detayı",
-            onBackClick = {},
-            actions = {
-                IconButton(onClick = {}) {
-                    PMIcon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = null,
-                        tint = colors.textPrimary
-                    )
-                }
-                IconButton(onClick = {}) {
-                    PMIcon(
-                        imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = null,
-                        tint = colors.textPrimary
-                    )
-                }
-            }
-        ))
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(name = "PMTopBar Collapsing Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
-@Composable
-private fun PMTopBarCollapsingLightPreview() {
-    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        // Geri butonlu, ortalı
         PMTopBar(
-            config = PMTopBarConfig.Collapsing(
+            config = PMTopBarConfig.Standard(
                 title = "Profil",
-                onBackClick = {},
-                scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
+                onBackClick = {}
             )
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(name = "PMTopBar Collapsing Dark", showBackground = true, backgroundColor = 0xFF0F172A)
-@Composable
-private fun PMTopBarCollapsingDarkPreview() {
-    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        // Geri + aksiyonlar, ortalı
         PMTopBar(
-            config = PMTopBarConfig.Collapsing(
-                title = "Profil",
+            config = PMTopBarConfig.Standard(
+                title = "Plaka Detayı",
                 onBackClick = {},
-                scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
+                actions = {
+                    PMIconButton(onClick = {}) {
+                        PMIcon(imageVector = Icons.Outlined.Share, tint = colors.textPrimary)
+                    }
+                    PMIconButton(onClick = {}) {
+                        PMIcon(imageVector = Icons.Outlined.MoreVert, tint = colors.textPrimary)
+                    }
+                }
             )
         )
-    }
-}
-
-@Preview(name = "PMTopBar Transparent Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
-@Composable
-private fun PMTopBarTransparentLightPreview() {
-    PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        PMTopBar(config = PMTopBarConfig.Transparent(onBackClick = {}))
-    }
-}
-
-@Preview(name = "PMTopBar Transparent Dark", showBackground = true, backgroundColor = 0xFF0F172A)
-@Composable
-private fun PMTopBarTransparentDarkPreview() {
-    PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        PMTopBar(config = PMTopBarConfig.Transparent(onBackClick = {}))
+        // Sola hizalı başlık
+        PMTopBar(
+            config = PMTopBarConfig.Standard(
+                title = "Sola Hizalı",
+                onBackClick = {},
+                alignment = PMTopBarAlignment.Start
+            )
+        )
     }
 }

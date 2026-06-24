@@ -1,11 +1,10 @@
 package com.mefy.platemate.presentation.features.main.search
 
-import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
 
 data class SearchUiState(
-    val isInitialLoading: Boolean = false,
+    val errorMessage: UiText? = null,
     val countryCode: String = "TR",
     val plateInput: String = "",
     val isPlateValid: Boolean = false,
@@ -13,6 +12,5 @@ data class SearchUiState(
     val recentSearches: List<SearchRecentUiModel> = emptyList(),
     val bookmarkedPlates: List<SearchRecentUiModel> = emptyList(),
     val isSearchEnabled: Boolean = false,
-    val submitState: UiActionState = UiActionState.Idle,
-    val formMessage: UiText? = null
+    val isSearching: Boolean = false
 )

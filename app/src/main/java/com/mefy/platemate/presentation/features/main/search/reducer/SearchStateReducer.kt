@@ -1,7 +1,5 @@
 package com.mefy.platemate.presentation.features.main.search.reducer
 
-import com.mefy.platemate.presentation.common.state.UiActionState
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.search.SearchUiState
 import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
 import javax.inject.Inject
@@ -17,19 +15,13 @@ class SearchStateReducer @Inject constructor() {
         plateInput = formattedPlate,
         isPlateValid = isPlateValid,
         detectedCityName = detectedCityName,
-        isSearchEnabled = isPlateValid && state.submitState !is UiActionState.Loading,
-        submitState = if (state.submitState is UiActionState.Loading) {
-            UiActionState.Idle
-        } else {
-            state.submitState
-        },
-        formMessage = null
+        isSearchEnabled = isPlateValid && !state.isSearching,
+        isSearching = false
     )
 
     fun onSearchLoading(state: SearchUiState): SearchUiState = state.copy(
-        submitState = UiActionState.Loading,
-        isSearchEnabled = false,
-        formMessage = null
+        isSearching = true,
+        isSearchEnabled = false
     )
 
     fun onSearchSuccess(
@@ -41,17 +33,12 @@ class SearchStateReducer @Inject constructor() {
         isPlateValid = true,
         detectedCityName = detectedCityName,
         isSearchEnabled = true,
-        submitState = UiActionState.Idle,
-        formMessage = null
+        isSearching = false
     )
 
-    fun onSearchError(
-        state: SearchUiState,
-        message: UiText
-    ): SearchUiState = state.copy(
+    fun onSearchError(state: SearchUiState): SearchUiState = state.copy(
         isSearchEnabled = state.isPlateValid,
-        submitState = UiActionState.Error,
-        formMessage = message
+        isSearching = false
     )
 
     fun onDataUpdated(
@@ -59,12 +46,7 @@ class SearchStateReducer @Inject constructor() {
         recentSearches: List<SearchRecentUiModel>,
         bookmarkedPlates: List<SearchRecentUiModel>
     ): SearchUiState = state.copy(
-        isInitialLoading = false,
         recentSearches = recentSearches,
         bookmarkedPlates = bookmarkedPlates
-    )
-
-    fun onInitialLoadFailed(state: SearchUiState): SearchUiState = state.copy(
-        isInitialLoading = false
     )
 }

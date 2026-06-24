@@ -6,10 +6,12 @@ import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.ChatBubble
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.mefy.platemate.R
 import kotlin.reflect.KClass
@@ -53,5 +55,13 @@ enum class TopLevelDestination(
         route = ProfileDestination::class,
         graphRoute = ProfileGraphDestination::class,
         graphDestination = ProfileGraphDestination
+    ),
+    Settings(
+        labelRes = R.string.main_tab_settings,
+        selectedIcon = Icons.Filled.Settings,
+        unselectedIcon = Icons.Outlined.Settings,
+        route = ProfileSettingsHomeDestination::class,
+        graphRoute = SettingsGraphDestination::class,
+        graphDestination = SettingsGraphDestination
     )
 }

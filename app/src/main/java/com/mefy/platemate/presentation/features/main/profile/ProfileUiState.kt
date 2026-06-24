@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.features.main.profile
 
 import androidx.compose.runtime.Immutable
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivityUiModel
 import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
@@ -11,6 +12,8 @@ import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatus
 @Immutable
 data class ProfileUiState(
     val isInitialLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
+    val errorMessage: UiText? = null,
     val header: ProfileHeaderUiModel = ProfileHeaderUiModel(),
     val accountSummary: ProfileAccountSummaryUiModel = ProfileAccountSummaryUiModel(),
     val stats: List<ProfileStatUiModel> = emptyList(),

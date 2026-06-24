@@ -8,4 +8,5 @@ sealed interface SearchUiAction {
     data class SavedPlateBookmarkClicked(val normalizedPlateCode: String) : SearchUiAction
     data class RecentDismissClicked(val normalizedPlateCode: String) : SearchUiAction
     data object ClearRecentClicked : SearchUiAction
+    data object RetryClicked : SearchUiAction
 }

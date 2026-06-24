@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.mefy.platemate.presentation.common.event.CommonDialogModel
+import com.mefy.platemate.presentation.common.dialog.DialogModel
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.login.LoginRoute
 import com.mefy.platemate.presentation.features.auth.login.LoginViewModel
@@ -20,7 +20,7 @@ internal fun NavGraphBuilder.authGraph(
     onNavigateToRegister: (String?) -> Unit,
     onNavigateToLogin: (String?) -> Unit,
     onShowSnackbar: (UiText) -> Unit,
-    onShowDialog: (CommonDialogModel) -> Unit,
+    onShowDialog: (DialogModel) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

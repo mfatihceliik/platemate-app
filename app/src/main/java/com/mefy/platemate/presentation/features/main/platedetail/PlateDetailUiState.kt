@@ -1,10 +1,12 @@
 package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.compose.runtime.Immutable
+import com.mefy.platemate.presentation.common.text.UiText
 
 @Immutable
 data class PlateDetailUiState(
     val isLoading: Boolean = true,
+    val errorMessage: UiText? = null,
     val plateCode: String = "",
     val cityCode: String = "",
     val cityName: String = "",
@@ -38,8 +40,11 @@ data class PlateTagUiModel(
 data class PlateReviewUiModel(
     val id: Long,
     val username: String,
+    val displayName: String?,
     val initials: String,
+    val profilePhotoUrl: String?,
     val rating: Int,
     val timeAgo: String,
-    val comment: String
+    val comment: String?,
+    val reportTags: List<String>
 )

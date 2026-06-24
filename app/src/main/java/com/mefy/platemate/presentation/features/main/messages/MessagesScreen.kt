@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.state.ScreenStatus
+import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMIcon
@@ -50,46 +53,59 @@ fun MessagesScreen(
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
+    val status = when {
+        state.isLoading -> ScreenStatus.Loading
+        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
+        state.conversations.isEmpty() -> ScreenStatus.Empty
+        else -> ScreenStatus.Content
+    }
+
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.main_tab_messages)
+            title = stringResource(R.string.main_tab_messages),
+            alignment = PMTopBarAlignment.Start
         ),
-        containerColor = colors.surface
+        containerColor = colors.surface,
+        status = status,
+        onRetry = { onAction(MessagesUiAction.RetryClicked) },
+        loading = { innerPadding ->
+            MessagesShimmerContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        },
+        empty = { innerPadding ->
+            MessagesEmptyState(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
         ) {
-            if (state.isLoading) {
-                MessagesShimmerContent(modifier = Modifier.fillMaxSize())
-            } else if (state.conversations.isEmpty()) {
-                MessagesEmptyState(modifier = Modifier.fillMaxSize())
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = state.conversations,
-                        key = { it.roomId }
-                    ) { conversation ->
-                        PMMessageItem(
-                            initials = conversation.initials,
-                            name = conversation.name,
-                            preview = conversation.preview,
-                            time = conversation.time,
-                            isUnread = conversation.isUnread,
-                            avatarBg = conversation.avatarBg,
-                            avatarFg = conversation.avatarFg,
-                            onClick = { onAction(MessagesUiAction.ConversationClicked(conversation.roomId)) }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMedium + dims.spacing.s12),
-                            color = colors.outlineVariant
-                        )
-                    }
-                }
+            items(
+                items = state.conversations,
+                key = { it.roomId }
+            ) { conversation ->
+                PMMessageItem(
+                    initials = conversation.initials,
+                    name = conversation.name,
+                    preview = conversation.preview,
+                    time = conversation.time,
+                    isUnread = conversation.isUnread,
+                    avatarBg = conversation.avatarBg,
+                    avatarFg = conversation.avatarFg,
+                    onClick = { onAction(MessagesUiAction.ConversationClicked(conversation.roomId)) }
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMedium + dims.spacing.s12),
+                    color = colors.outlineVariant
+                )
             }
         }
     }

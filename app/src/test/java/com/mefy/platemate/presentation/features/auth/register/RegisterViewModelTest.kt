@@ -9,9 +9,8 @@ import com.mefy.platemate.domain.usecase.auth.CalculateRegisterPasswordStrengthU
 import com.mefy.platemate.domain.usecase.auth.RegisterUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateEmailFormatUseCase
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.error.DefaultUiErrorResolver
-import com.mefy.platemate.presentation.common.event.CommonUiEvent
-import com.mefy.platemate.presentation.common.state.UiActionState
+import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
+import com.mefy.platemate.presentation.common.messaging.UiMessage
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.register.reducer.RegisterStateReducer
 import com.mefy.platemate.testutil.MainDispatcherRule
@@ -50,7 +49,7 @@ class RegisterViewModelTest {
         viewModel.onAction(RegisterUiAction.SubmitClicked)
         viewModel.onAction(RegisterUiAction.SubmitClicked)
 
-        assertTrue(viewModel.uiState.value.submitState is UiActionState.Loading)
+        assertTrue(viewModel.uiState.value.isLoading)
 
         runCurrent()
         assertEquals(1, repository.registerCallCount)
@@ -62,7 +61,7 @@ class RegisterViewModelTest {
     fun errorResult_setsErrorStateAndEmitsSnackbarEffect() = runTest {
         val repository = FakeAuthRepository(
             registerResult = AppResult.Error(
-                AppError.Backend(
+                AppError.Server(
                     message = "Validation failed",
                     fieldErrors = mapOf("email" to "Email is invalid")
                 )
@@ -71,18 +70,17 @@ class RegisterViewModelTest {
         val viewModel = createViewModel(repository)
         fillValidForm(viewModel)
 
-        val emittedEvent = async { viewModel.commonUiEvents.first() }
+        val emittedEvent = async { viewModel.uiMessages.first() }
 
         viewModel.onAction(RegisterUiAction.SubmitClicked)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        val expectedMessage = UiText.Resource(R.string.common_error_unknown)
-        assertTrue(state.submitState is UiActionState.Error)
+        val expectedMessage = UiText.Dynamic("Validation failed")
+        assertFalse(state.isLoading)
         assertEquals("Email is invalid", state.emailError)
-        assertEquals(expectedMessage, state.formMessage)
         assertEquals(
-            CommonUiEvent.ShowSnackbar(expectedMessage),
+            UiMessage.ShowSnackbar(expectedMessage),
             emittedEvent.await()
         )
     }
@@ -101,8 +99,7 @@ class RegisterViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertTrue(state.submitState is UiActionState.Idle)
-        assertNull(state.formMessage)
+        assertFalse(state.isLoading)
         assertEquals(RegisterUiEffect.NavigateAfterRegister, emittedEffect.await())
     }
 
@@ -122,7 +119,6 @@ class RegisterViewModelTest {
         val state = viewModel.uiState.value
         assertFalse(state.isEmailFormatValid)
         assertFalse(state.isSubmitEnabled)
-        assertNotNull(state.formMessage)
         assertEquals(0, repository.registerCallCount)
     }
 
@@ -145,7 +141,7 @@ class RegisterViewModelTest {
     fun usernameChange_clearsUsernameErrorAndFormMessage() = runTest {
         val repository = FakeAuthRepository(
             registerResult = AppResult.Error(
-                AppError.Backend(
+                AppError.Server(
                     message = "Validation failed",
                     fieldErrors = mapOf("username" to "Username already exists")
                 )
@@ -161,7 +157,6 @@ class RegisterViewModelTest {
         val state = viewModel.uiState.value
 
         assertNull(state.usernameError)
-        assertNull(state.formMessage)
     }
 
     @Test
@@ -177,7 +172,6 @@ class RegisterViewModelTest {
         val state = viewModel.uiState.value
         assertTrue(state.hasSubmittedOnce)
         assertFalse(state.isSubmitEnabled)
-        assertNotNull(state.formMessage)
         assertEquals(0, repository.registerCallCount)
     }
 
@@ -209,7 +203,7 @@ class RegisterViewModelTest {
                 calculateRegisterPasswordStrengthUseCase = CalculateRegisterPasswordStrengthUseCase(),
                 validateEmailFormatUseCase = ValidateEmailFormatUseCase()
             ),
-            uiErrorResolver = DefaultUiErrorResolver()
+            globalUiEventBus = DefaultGlobalUiEventBus()
         )
 
     private fun fillValidForm(viewModel: RegisterViewModel) {
@@ -230,7 +224,7 @@ class RegisterViewModelTest {
         var registerCallCount: Int = 0
 
         override suspend fun login(email: String, password: String): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun register(
             username: String,
@@ -245,7 +239,7 @@ class RegisterViewModelTest {
         }
 
         override suspend fun refreshSession(): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun logout() = Unit
     }

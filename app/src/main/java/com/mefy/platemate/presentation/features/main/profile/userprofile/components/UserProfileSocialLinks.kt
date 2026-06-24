@@ -15,10 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.profile.settings.sociallinks.components.getPlatformInfo
 import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.main.settings.sociallinks.components.getPlatformInfo
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 import com.mefy.platemate.presentation.theme.pmColors

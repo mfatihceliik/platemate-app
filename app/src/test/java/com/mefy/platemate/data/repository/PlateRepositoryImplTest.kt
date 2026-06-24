@@ -5,8 +5,10 @@ import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.PlateSearchResultMapper
-import com.mefy.platemate.data.remote.dto.plate.PlateDetailDto
-import com.mefy.platemate.data.remote.dto.report.ReportTypeDto
+import com.mefy.platemate.data.remote.dto.plate.PlateDetailReviewItemDto
+import com.mefy.platemate.data.remote.dto.plate.PlateSearchResponseDto
+import com.mefy.platemate.data.remote.dto.plate.PlateTagSummaryItemDto
+import com.mefy.platemate.data.remote.dto.plate.RatingDistributionItemDto
 import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import com.mefy.platemate.testutil.MainDispatcherRule
 import java.io.IOException
@@ -35,18 +37,28 @@ class PlateRepositoryImplTest {
                 response = DataResultResponse(
                     success = true,
                     message = null,
-                    data = PlateDetailDto(
+                    data = PlateSearchResponseDto(
+                        id = 1L,
                         plateCode = "34ABC123",
                         cityName = "Istanbul",
                         ratingAverage = 4.2,
-                        reviewCount = 7L,
-                        todaySearchCount = 12L,
-                        todayReviewCount = 2L,
-                        todayReportCount = 1L,
-                        todayWeightedReportScore = 2.0,
+                        reviewCount = 7,
+                        totalRatingSum = 30L,
+                        ratingDistribution = listOf(
+                            RatingDistributionItemDto(rating = 5, count = 4, percentage = 57.14)
+                        ),
+                        tagSummary = listOf(
+                            PlateTagSummaryItemDto(code = "SAFE", label = "Safe", iconKey = "shield", colorHex = "#00AA00", count = 3)
+                        ),
+                        totalSearchCount = 12L,
+                        totalReviewCount = 7L,
+                        totalReportCount = 1L,
+                        totalWeightedReportScore = 2L,
                         score = 80.0,
                         lastActivityAt = "2026-05-19T00:00:00Z",
-                        reportTypeDto = listOf(sampleReportTypeDto())
+                        recentReviews = listOf(
+                            PlateDetailReviewItemDto(id = 1, userId = 1, username = "mfy", displayName = "Fatih", profilePhotoUrl = null, rating = 5, comment = "Great", reportTags = listOf("SAFE"), createdAt = "2026-05-19T00:00:00Z")
+                        )
                     )
                 )
             )
@@ -60,6 +72,10 @@ class PlateRepositoryImplTest {
         assertEquals("Istanbul", data.cityName)
         assertEquals(4.2, data.ratingAverage, 0.0)
         assertEquals(7L, data.reviewCount)
+        assertEquals(1, data.ratingDistribution.size)
+        assertEquals(1, data.tagSummary.size)
+        assertEquals(1, data.recentReviews.size)
+        assertEquals(1, data.topReportTypes.size)
     }
 
     @Test
@@ -77,11 +93,11 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Backend)
+        assertTrue((result as AppResult.Error).error is AppError.Server)
     }
 
     @Test
-    fun searchPlate_httpFailure_returnsHttpError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+    fun searchPlate_http4xxFailure_returnsServerError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
         val repository = createRepository(
             api = FakePlateApiService(
                 throwable = HttpException(
@@ -97,7 +113,7 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Http)
+        assertTrue((result as AppResult.Error).error is AppError.Server)
     }
 
     @Test
@@ -113,7 +129,7 @@ class PlateRepositoryImplTest {
     }
 
     @Test
-    fun searchPlate_serverUnavailableFailure_returnsServerUnavailableError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+    fun searchPlate_connectFailure_returnsUnreachableError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
         val repository = createRepository(
             api = FakePlateApiService(throwable = ConnectException("connection refused"))
         )
@@ -121,7 +137,7 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.ServerUnavailable)
+        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
     }
 
     private fun createRepository(api: FakePlateApiService): PlateRepositoryImpl = PlateRepositoryImpl(
@@ -135,26 +151,12 @@ class PlateRepositoryImplTest {
     )
 
     private class FakePlateApiService(
-        private val response: DataResultResponse<PlateDetailDto>? = null,
+        private val response: DataResultResponse<PlateSearchResponseDto>? = null,
         private val throwable: Throwable? = null
     ) : PlateApiService {
-        override suspend fun searchPlate(plate: String): DataResultResponse<PlateDetailDto> {
+        override suspend fun searchPlate(plate: String): DataResultResponse<PlateSearchResponseDto> {
             throwable?.let { throw it }
             return response ?: error("Response must be provided for this test case.")
         }
     }
-
-    private companion object {
-        fun sampleReportTypeDto(): ReportTypeDto = ReportTypeDto(
-            code = "SAFE",
-            label = "Safe",
-            description = "Safe driving",
-            iconKey = "shield",
-            severity = "LOW",
-            colorHex = "#00AA00",
-            weight = 1,
-            sortOrder = 1
-        )
-    }
 }
-

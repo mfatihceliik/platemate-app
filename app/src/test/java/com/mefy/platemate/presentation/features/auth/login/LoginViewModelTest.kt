@@ -8,9 +8,8 @@ import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.usecase.auth.LoginUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateEmailFormatUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateLoginFormUseCase
-import com.mefy.platemate.presentation.common.error.DefaultUiErrorResolver
-import com.mefy.platemate.presentation.common.event.CommonUiEvent
-import com.mefy.platemate.presentation.common.state.UiActionState
+import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
+import com.mefy.platemate.presentation.common.messaging.UiMessage
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.login.reducer.LoginStateReducer
 import com.mefy.platemate.testutil.MainDispatcherRule
@@ -49,7 +48,7 @@ class LoginViewModelTest {
         viewModel.onAction(LoginUiAction.SubmitClicked)
         viewModel.onAction(LoginUiAction.SubmitClicked)
 
-        assertTrue(viewModel.uiState.value.submitState is UiActionState.Loading)
+        assertTrue(viewModel.uiState.value.isLoading)
 
         runCurrent()
         assertEquals(1, repository.loginCallCount)
@@ -61,7 +60,7 @@ class LoginViewModelTest {
     fun errorResult_setsErrorState_mapsEmailAndPasswordErrors_andEmitsSnackbar() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.Backend(
+                AppError.Server(
                     message = "Login failed",
                     fieldErrors = mapOf(
                         "identifier" to "Use email or username",
@@ -74,19 +73,18 @@ class LoginViewModelTest {
         val viewModel = createViewModel(repository)
         fillValidForm(viewModel)
 
-        val emittedEvent = async { viewModel.commonUiEvents.first() }
+        val emittedEvent = async { viewModel.uiMessages.first() }
 
         viewModel.onAction(LoginUiAction.SubmitClicked)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        val expectedMessage = UiText.Resource(R.string.common_error_unknown)
-        assertTrue(state.submitState is UiActionState.Error)
+        val expectedMessage = UiText.Dynamic("Login failed")
+        assertFalse(state.isLoading)
         assertEquals("Email format is invalid", state.emailError)
         assertEquals("Password is incorrect", state.passwordError)
-        assertEquals(expectedMessage, state.formMessage)
         assertEquals(
-            CommonUiEvent.ShowSnackbar(expectedMessage),
+            UiMessage.ShowSnackbar(expectedMessage),
             emittedEvent.await()
         )
     }
@@ -95,42 +93,40 @@ class LoginViewModelTest {
     fun serverUnavailableError_setsResourceMessage_andEmitsSnackbar() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.ServerUnavailable(message = "Connection refused")
+                AppError.Unreachable()
             )
         )
         val viewModel = createViewModel(repository)
         fillValidForm(viewModel)
 
-        val emittedEvent = async { viewModel.commonUiEvents.first() }
+        val emittedEvent = async { viewModel.uiMessages.first() }
 
         viewModel.onAction(LoginUiAction.SubmitClicked)
         advanceUntilIdle()
 
         val expectedMessage = UiText.Resource(R.string.common_error_server_unavailable)
         val state = viewModel.uiState.value
-        assertTrue(state.submitState is UiActionState.Error)
-        assertEquals(expectedMessage, state.formMessage)
-        assertEquals(CommonUiEvent.ShowSnackbar(expectedMessage), emittedEvent.await())
+        assertFalse(state.isLoading)
+        assertEquals(UiMessage.ShowSnackbar(expectedMessage), emittedEvent.await())
     }
 
     @Test
     fun unauthorizedError_showsInvalidCredentialsMessage_andEmitsSnackbar() = runTest {
         val repository = FakeAuthRepository(
-            loginResult = AppResult.Error(AppError.Unauthorized)
+            loginResult = AppResult.Error(AppError.SessionExpired)
         )
         val viewModel = createViewModel(repository)
         fillValidForm(viewModel)
 
-        val emittedEvent = async { viewModel.commonUiEvents.first() }
+        val emittedEvent = async { viewModel.uiMessages.first() }
 
         viewModel.onAction(LoginUiAction.SubmitClicked)
         advanceUntilIdle()
 
         val expectedMessage = UiText.Resource(R.string.auth_login_invalid_credentials)
         val state = viewModel.uiState.value
-        assertTrue(state.submitState is UiActionState.Error)
-        assertEquals(expectedMessage, state.formMessage)
-        assertEquals(CommonUiEvent.ShowSnackbar(expectedMessage), emittedEvent.await())
+        assertFalse(state.isLoading)
+        assertEquals(UiMessage.ShowSnackbar(expectedMessage), emittedEvent.await())
     }
 
     @Test
@@ -147,8 +143,7 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertTrue(state.submitState is UiActionState.Idle)
-        assertNull(state.formMessage)
+        assertFalse(state.isLoading)
         assertEquals(LoginUiEffect.NavigateAfterLogin, emittedEffect.await())
     }
 
@@ -167,7 +162,6 @@ class LoginViewModelTest {
         val state = viewModel.uiState.value
         assertFalse(state.isEmailFormatValid)
         assertFalse(state.isSubmitEnabled)
-        assertNotNull(state.formMessage)
         assertEquals(0, repository.loginCallCount)
     }
 
@@ -185,7 +179,6 @@ class LoginViewModelTest {
 
         val state = viewModel.uiState.value
         assertFalse(state.isSubmitEnabled)
-        assertNotNull(state.formMessage)
         assertEquals(0, repository.loginCallCount)
     }
 
@@ -193,7 +186,7 @@ class LoginViewModelTest {
     fun emailChange_clearsEmailErrorAndFormMessage() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.Backend(
+                AppError.Server(
                     message = "Login failed",
                     fieldErrors = mapOf(
                         "email" to "Email format is invalid",
@@ -212,7 +205,6 @@ class LoginViewModelTest {
         val state = viewModel.uiState.value
 
         assertNull(state.emailError)
-        assertNull(state.formMessage)
     }
 
     @Test
@@ -228,7 +220,6 @@ class LoginViewModelTest {
         val state = viewModel.uiState.value
         assertTrue(state.hasSubmittedOnce)
         assertFalse(state.isSubmitEnabled)
-        assertNotNull(state.formMessage)
         assertEquals(0, repository.loginCallCount)
     }
 
@@ -238,7 +229,7 @@ class LoginViewModelTest {
             loginStateReducer = LoginStateReducer(
                 validateLoginFormUseCase = ValidateLoginFormUseCase(ValidateEmailFormatUseCase())
             ),
-            uiErrorResolver = DefaultUiErrorResolver()
+            globalUiEventBus = DefaultGlobalUiEventBus()
         )
 
     private fun fillValidForm(viewModel: LoginViewModel) {
@@ -270,10 +261,10 @@ class LoginViewModelTest {
             email: String,
             password: String
         ): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun refreshSession(): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun logout() = Unit
     }

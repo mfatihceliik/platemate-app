@@ -1,10 +1,12 @@
 package com.mefy.platemate.presentation.features.main.profile
 
+import com.mefy.platemate.R
 import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
-import com.mefy.platemate.presentation.common.error.ErrorContext
-import com.mefy.platemate.presentation.common.error.UiErrorResolver
+import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiMapper
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
@@ -25,8 +27,8 @@ class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
     private val profileUiMapper: ProfileUiMapper,
     private val profileStateReducer: ProfileStateReducer,
-    uiErrorResolver: UiErrorResolver
-) : BaseViewModel(uiErrorResolver) {
+    globalUiEventBus: GlobalUiEventBus
+) : BaseViewModel(globalUiEventBus) {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -43,16 +45,23 @@ class ProfileViewModel @Inject constructor(
     fun onAction(action: ProfileUiAction) {
         when (action) {
             is ProfileUiAction.PlateReviewClicked -> onPlateReviewClicked(action.normalizedPlateCode)
-            ProfileUiAction.SettingsClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToSettings)
             ProfileUiAction.FriendsClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToFriends)
-            ProfileUiAction.OnResume -> loadProfile(isSilentRefresh = true)
+            ProfileUiAction.OnResume -> loadProfile(mode = LoadMode.SILENT)
+            ProfileUiAction.RefreshRequested -> onRefreshRequested()
+            ProfileUiAction.RetryClicked -> loadProfile(mode = LoadMode.INITIAL)
         }
+    }
+
+    private fun onRefreshRequested() {
+        val state = _uiState.value
+        if (state.isInitialLoading || state.isRefreshing) return
+        loadProfile(mode = LoadMode.REFRESH)
     }
 
     private fun observeSession(observeSessionUseCase: ObserveSessionUseCase) {
         launch(
             onError = { throwable ->
-                _uiState.update(profileStateReducer::onLoadFailed)
+                applyLoadError(LoadMode.INITIAL, UiText.Resource(R.string.common_error_unknown))
                 handleError(throwable)
             }
         ) {
@@ -71,16 +80,16 @@ class ProfileViewModel @Inject constructor(
         _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToSearchDetail(normalizedPlateCode))
     }
 
-    private fun loadProfile(isSilentRefresh: Boolean = false) {
+    private fun loadProfile(mode: LoadMode = LoadMode.INITIAL) {
         val userId = currentUserId ?: return
-        if (!isSilentRefresh) {
-            _uiState.update(profileStateReducer::onInitialLoading)
+        when (mode) {
+            LoadMode.INITIAL -> _uiState.update(profileStateReducer::onInitialLoading)
+            LoadMode.REFRESH -> _uiState.update(profileStateReducer::onRefreshing)
+            LoadMode.SILENT -> Unit
         }
         launch(
             onError = { throwable ->
-                if (!isSilentRefresh) {
-                    _uiState.update(profileStateReducer::onLoadFailed)
-                }
+                applyLoadError(mode, UiText.Resource(R.string.common_error_unknown))
                 handleError(throwable)
             }
         ) {
@@ -92,13 +101,25 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
 
-                is AppResult.Error -> {
-                    handleError(result.error, context = ErrorContext.Profile)
-                    if (!isSilentRefresh) {
-                        _uiState.update(profileStateReducer::onLoadFailed)
-                    }
-                }
+                is AppResult.Error -> applyLoadError(mode, result.error.toUiText())
             }
         }
     }
+
+    /**
+     * İlk yükleme hatası ekran-içi gösterilir (inline); yenileme/sessiz tazeleme hatası
+     * içeriği silmemek için snackbar ile bildirilir.
+     */
+    private fun applyLoadError(mode: LoadMode, message: UiText) {
+        when (mode) {
+            LoadMode.INITIAL -> _uiState.update { profileStateReducer.onLoadFailed(it, message) }
+            LoadMode.REFRESH -> {
+                _uiState.update(profileStateReducer::onRefreshFailed)
+                showSnackbar(message)
+            }
+            LoadMode.SILENT -> showSnackbar(message)
+        }
+    }
+
+    private enum class LoadMode { INITIAL, REFRESH, SILENT }
 }

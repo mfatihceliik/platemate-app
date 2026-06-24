@@ -5,6 +5,8 @@ import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.data.remote.dto.plate.PlateReviewDto
 import com.mefy.platemate.data.remote.dto.plate.AddPlateReviewRequest
 import com.mefy.platemate.core.common.result.ResultResponse
+import com.mefy.platemate.data.remote.dto.report.PlateReportTypeDto
+import com.mefy.platemate.data.remote.dto.review.ReviewResponseDto
 import com.mefy.platemate.data.remote.dto.review.UpdatePlateReviewRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -19,7 +21,7 @@ interface ReviewApiService {
     suspend fun addOrUpdateMyReviewForPlate(
         @Path("plateCode") plateCode: String,
         @Body request: AddPlateReviewRequest
-    ): ResultResponse
+    ): DataResultResponse<ReviewResponseDto>
 
     @GET("api/plates/{plateCode}/reviews")
     suspend fun getPlateReviews(
@@ -27,6 +29,9 @@ interface ReviewApiService {
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): DataResultResponse<PagedResult<PlateReviewDto>>
+
+    @GET("api/plate-report-types")
+    suspend fun getReportTypes(): DataResultResponse<List<PlateReportTypeDto>>
 
     @PUT("api/plates/reviews/{id}")
     suspend fun updateReview(

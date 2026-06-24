@@ -1,5 +1,7 @@
 package com.mefy.platemate.presentation.features.main.search
 
+import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +19,8 @@ fun SearchRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    HandleUiMessages(viewModel.uiMessages)
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(Unit) {

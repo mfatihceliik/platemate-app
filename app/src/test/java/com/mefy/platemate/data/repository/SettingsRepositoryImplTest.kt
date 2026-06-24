@@ -40,7 +40,7 @@ class SettingsRepositoryImplTest {
 
         val result = repository.getSettingsOverview()
 
-        assertEquals(AppResult.Error(AppError.Unauthorized), result)
+        assertEquals(AppResult.Error(AppError.SessionExpired), result)
     }
 
     @Test

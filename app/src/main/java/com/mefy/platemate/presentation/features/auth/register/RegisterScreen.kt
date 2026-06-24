@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.auth.PasswordStrengthLevel
-import com.mefy.platemate.presentation.common.state.UiActionState
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPasswordField
@@ -63,13 +62,12 @@ fun RegisterScreen(
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
     val spacing = dims.spacing
-    val isSubmitLoading = state.submitState is UiActionState.Loading
+    val isSubmitLoading = state.isLoading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())
     val showPasswordValidationError = !state.isPasswordLengthValid && (state.hasSubmittedOnce || state.password.isNotBlank())
-    val isSubmitError = state.submitState is UiActionState.Error
 
-    val isEmailErrorState = showEmailValidationError || state.emailError != null || isSubmitError
+    val isEmailErrorState = showEmailValidationError || state.emailError != null
     val isPasswordErrorState = showPasswordValidationError || state.passwordError != null
 
     val resolvedEmailError = state.emailError ?: if (showEmailValidationError) {

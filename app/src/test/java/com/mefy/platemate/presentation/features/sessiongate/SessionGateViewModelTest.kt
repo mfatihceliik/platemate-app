@@ -6,7 +6,7 @@ import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.auth.RefreshSessionUseCase
-import com.mefy.platemate.presentation.common.error.DefaultUiErrorResolver
+import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.auth.sessiongate.SessionGateTarget
 import com.mefy.platemate.presentation.features.auth.sessiongate.SessionGateViewModel
 import com.mefy.platemate.testutil.MainDispatcherRule
@@ -30,7 +30,7 @@ class SessionGateViewModelTest {
     fun nullSession_setsAuthTarget() = runTest {
         val repository = FakeAuthRepository(
             initialSession = null,
-            refreshResult = AppResult.Error(AppError.Unauthorized)
+            refreshResult = AppResult.Error(AppError.SessionExpired)
         )
         val viewModel = createViewModel(repository)
 
@@ -60,7 +60,7 @@ class SessionGateViewModelTest {
     fun existingSession_refreshUnauthorized_setsAuthTarget() = runTest {
         val repository = FakeAuthRepository(
             initialSession = sampleSession(),
-            refreshResult = AppResult.Error(AppError.Unauthorized)
+            refreshResult = AppResult.Error(AppError.SessionExpired)
         )
         val viewModel = createViewModel(repository)
 
@@ -75,7 +75,7 @@ class SessionGateViewModelTest {
     fun existingSession_refreshForbidden_setsAuthTarget() = runTest {
         val repository = FakeAuthRepository(
             initialSession = sampleSession(),
-            refreshResult = AppResult.Error(AppError.Http(code = 403, message = "forbidden"))
+            refreshResult = AppResult.Error(AppError.SessionExpired)
         )
         val viewModel = createViewModel(repository)
 
@@ -90,7 +90,7 @@ class SessionGateViewModelTest {
     fun existingSession_refreshNetworkFailure_setsMainTarget() = runTest {
         val repository = FakeAuthRepository(
             initialSession = sampleSession(),
-            refreshResult = AppResult.Error(AppError.Network("offline"))
+            refreshResult = AppResult.Error(AppError.Network())
         )
         val viewModel = createViewModel(repository)
 
@@ -105,7 +105,7 @@ class SessionGateViewModelTest {
         SessionGateViewModel(
             observeSessionUseCase = ObserveSessionUseCase(repository),
             refreshSessionUseCase = RefreshSessionUseCase(repository),
-            uiErrorResolver = DefaultUiErrorResolver()
+            globalUiEventBus = DefaultGlobalUiEventBus()
         )
 
     private fun sampleSession(
@@ -127,14 +127,14 @@ class SessionGateViewModelTest {
         var refreshCallCount: Int = 0
 
         override suspend fun login(email: String, password: String): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun register(
             username: String,
             email: String,
             password: String
         ): AppResult<AuthSession> =
-            AppResult.Error(AppError.Unknown("Not used in this test"))
+            AppResult.Error(AppError.Server("Not used in this test"))
 
         override suspend fun refreshSession(): AppResult<AuthSession> {
             refreshCallCount++
