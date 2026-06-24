@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -40,6 +41,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -54,6 +56,16 @@ android {
 
 kotlin {
     jvmToolchain(17)
+}
+
+composeCompiler {
+    // Reports/metrics only generate when invoked with -PenableComposeCompilerReports=true,
+    // so normal builds stay fast. Output: app/build/compose_compiler/.
+    if (project.findProperty("enableComposeCompilerReports") == "true") {
+        val dest = layout.buildDirectory.dir("compose_compiler")
+        metricsDestination = dest
+        reportsDestination = dest
+    }
 }
 
 dependencies {
@@ -124,4 +136,8 @@ dependencies {
     // Shimmer Effect
     implementation(libs.compose.shimmer)
 
+    // Baseline Profile: ProfileInstaller gömülü profili release/profileable build'de yükler;
+    // :baselineprofile producer modülü hot-path profilini üretir.
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
 }
