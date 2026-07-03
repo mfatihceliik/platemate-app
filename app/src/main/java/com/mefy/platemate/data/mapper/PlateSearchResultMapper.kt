@@ -31,7 +31,8 @@ class PlateSearchResultMapper @Inject constructor() :
             totalReportCount = input.totalReportCount ?: 0L,
             score = input.score ?: 0.0,
             lastActivityAt = input.lastActivityAt.orEmpty(),
-            topReportTypes = tagSummary.map(::tagSummaryToReportType)
+            topReportTypes = tagSummary.map(::tagSummaryToReportType),
+            isFollowing = input.following ?: false
         )
     }
 

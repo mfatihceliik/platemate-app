@@ -70,7 +70,7 @@ private fun SearchScreenEmptyPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         SearchScreen(
             state = SearchUiState(),
-            onAction = {}
+            onAction = {},
         )
     }
 }

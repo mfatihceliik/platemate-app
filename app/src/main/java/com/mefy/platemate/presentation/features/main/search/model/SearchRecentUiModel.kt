@@ -1,7 +1,9 @@
 package com.mefy.platemate.presentation.features.main.search.model
 
+import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 
+@Immutable
 data class SearchRecentUiModel(
     val normalizedPlateCode: String,
     val plateCode: String,

@@ -1,6 +1,6 @@
-package com.mefy.platemate.domain.usecase.search
+﻿package com.mefy.platemate.domain.usecase.search
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.repository.PlateRepository
@@ -58,5 +58,15 @@ class SearchPlateUseCaseTest {
                 )
             )
         }
+
+        override suspend fun followPlate(plateCode: String): AppResult<Unit> = AppResult.Success(Unit)
+
+        override suspend fun unfollowPlate(plateCode: String): AppResult<Unit> = AppResult.Success(Unit)
+
+        override suspend fun createRemovalRequest(
+            plateId: Long,
+            reasonCode: String,
+            description: String
+        ): AppResult<Unit> = AppResult.Success(Unit)
     }
 }

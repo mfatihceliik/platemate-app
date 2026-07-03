@@ -1,14 +1,11 @@
 package com.mefy.platemate.presentation.features.main.search
 
-import com.mefy.platemate.presentation.common.state.ScreenStatus
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,24 +18,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.text.resolve
-import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
-import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.features.main.search.components.AlarmPlateCompactCard
 import com.mefy.platemate.presentation.features.main.search.components.RecentChip
 import com.mefy.platemate.presentation.features.main.search.components.SavedPlateCompactCard
 import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
@@ -54,43 +48,21 @@ fun SearchScreen(
     state: SearchUiState,
     onAction: (SearchUiAction) -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
-) {
-    // İçerik yereldir (Room) ve anlık gelir; ayrı yükleme yok. Ekran-geneli hata yalnızca çevrimdışı.
-    val status = when {
-        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
-        else -> ScreenStatus.Content
-    }
-
-    PMBaseScreen(
-        modifier = modifier,
-        topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.search_header_title),
-            alignment = PMTopBarAlignment.Start
-        ),
-        status = status,
-        onRetry = { onAction(SearchUiAction.RetryClicked) }
-    ) { innerPadding ->
-        SearchContent(
-            state = state,
-            onAction = onAction,
-            lazyListState = lazyListState,
-            bottomInset = innerPadding.calculateBottomPadding(),
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun SearchContent(
-    state: SearchUiState,
-    onAction: (SearchUiAction) -> Unit,
-    lazyListState: LazyListState,
-    bottomInset: Dp = 0.dp,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues = PaddingValues(),
 ) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
+
+    // Stable, paylaşılan callback'ler: chip/kart'lar veri değişmedikçe skip etsin.
+    val onRecentClick = remember(onAction) {
+        { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) }
+    }
+    val onSavedBookmark = remember(onAction) {
+        { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) }
+    }
+    val onAlarmRemove = remember(onAction) {
+        { norm: String -> onAction(SearchUiAction.AlarmPlateRemoveClicked(norm)) }
+    }
 
     LazyColumn(
         state = lazyListState,
@@ -99,7 +71,7 @@ private fun SearchContent(
             start = dims.spacing.s16,
             end = dims.spacing.s16,
             top = dims.spacing.s16,
-            bottom = dims.spacing.s16 + bottomInset
+            bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
         ),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
@@ -160,10 +132,12 @@ private fun SearchContent(
                     verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
                 ) {
                     state.recentSearches.forEach { item ->
-                        RecentChip(
-                            plateCode = item.plateCode,
-                            onClick = { onAction(SearchUiAction.RecentItemClicked(item.plateCode)) }
-                        )
+                        key(item.normalizedPlateCode) {
+                            RecentChip(
+                                plateCode = item.plateCode,
+                                onClick = onRecentClick
+                            )
+                        }
                     }
                 }
             }
@@ -197,21 +171,48 @@ private fun SearchContent(
                 ) {
                     items(
                         items = state.bookmarkedPlates,
-                        key = { "saved_${it.normalizedPlateCode}" }
+                        key = { "saved_${it.normalizedPlateCode}" },
+                        contentType = { "saved_plate" }
                     ) { item ->
                         SavedPlateCompactCard(
                             item = item,
-                            onClick = { onAction(SearchUiAction.RecentItemClicked(item.plateCode)) },
-                            onBookmarkClick = {
-                                onAction(SearchUiAction.SavedPlateBookmarkClicked(item.normalizedPlateCode))
-                            }
+                            onClick = onRecentClick,
+                            onBookmarkClick = onSavedBookmark
                         )
                     }
                 }
             }
         }
 
-        if (state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty()) {
+        if (state.alarmPlates.isNotEmpty()) {
+            item {
+                PMText(
+                    text = stringResource(R.string.search_section_alarms),
+                    style = PMTextStyle.SectionLabel
+                )
+            }
+
+            item {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    contentPadding = PaddingValues(end = dims.spacing.s16)
+                ) {
+                    items(
+                        items = state.alarmPlates,
+                        key = { "alarm_${it.normalizedPlateCode}" },
+                        contentType = { "alarm_plate" }
+                    ) { item ->
+                        AlarmPlateCompactCard(
+                            item = item,
+                            onClick = onRecentClick,
+                            onRemoveClick = onAlarmRemove
+                        )
+                    }
+                }
+            }
+        }
+
+        if (state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty() && state.alarmPlates.isEmpty()) {
             item {
                 SearchEmptyState()
             }
@@ -299,7 +300,7 @@ private fun SearchScreenLightPreview() {
                     )
                 )
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }
@@ -335,7 +336,7 @@ private fun SearchScreenDarkPreview() {
                     )
                 )
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }

@@ -46,6 +46,7 @@ class SearchStateReducer @Inject constructor() {
         recentSearches: List<SearchRecentUiModel>,
         bookmarkedPlates: List<SearchRecentUiModel>
     ): SearchUiState = state.copy(
+        isInitialLoading = false,
         recentSearches = recentSearches,
         bookmarkedPlates = bookmarkedPlates
     )

@@ -1,11 +1,16 @@
 package com.mefy.platemate.presentation.features.main.search
 
 import com.mefy.platemate.R
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.connectivity.NetworkMonitor
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
+import com.mefy.platemate.domain.model.search.AlarmPlate
 import com.mefy.platemate.domain.model.search.RecentSearch
+import com.mefy.platemate.domain.usecase.alarm.ObserveAlarmPlatesUseCase
+import com.mefy.platemate.domain.usecase.alarm.SyncMyPlateListsUseCase
+import com.mefy.platemate.domain.usecase.alarm.ToggleAlarmPlateUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.ClearRecentSearchesUseCase
@@ -31,6 +36,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -39,6 +45,9 @@ class SearchViewModel @Inject constructor(
     private val observeRecentSearchesUseCase: ObserveRecentSearchesUseCase,
     private val observeSavedPlatesUseCase: ObserveSavedPlatesUseCase,
     private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
+    private val observeAlarmPlatesUseCase: ObserveAlarmPlatesUseCase,
+    private val toggleAlarmPlateUseCase: ToggleAlarmPlateUseCase,
+    private val syncMyPlateListsUseCase: SyncMyPlateListsUseCase,
     private val upsertRecentSearchUseCase: UpsertRecentSearchUseCase,
     private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
     private val deleteRecentSearchUseCase: DeleteRecentSearchUseCase,
@@ -48,6 +57,7 @@ class SearchViewModel @Inject constructor(
     private val searchUiMapper: SearchUiMapper,
     private val searchStateReducer: SearchStateReducer,
     private val networkMonitor: NetworkMonitor,
+    private val appDispatchers: AppDispatchers,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -56,12 +66,35 @@ class SearchViewModel @Inject constructor(
 
     private val _uiEffect = MutableSharedFlow<SearchUiEffect>()
     val uiEffect: SharedFlow<SearchUiEffect> = _uiEffect.asSharedFlow()
+    // Mapping arka planda (flowOn Default) yapıldığından, Main'den okunan bu
+    // cache'ler @Volatile (görünürlük garantisi).
+    @Volatile
     private var latestRecentItems: List<RecentSearch> = emptyList()
+    @Volatile
     private var latestSavedPlates: List<com.mefy.platemate.domain.model.search.SavedPlate> = emptyList()
+    @Volatile
+    private var latestAlarmPlates: List<AlarmPlate> = emptyList()
 
     init {
         observeRecentSearches()
+        observeAlarmPlates()
         observeConnectivity()
+        syncMyLists()
+    }
+
+    /** SearchScreen açılışında tek istek: saved + alarm listelerini backend'den çekip cache'i yeniler. */
+    private fun syncMyLists() {
+        launch { syncMyPlateListsUseCase() }
+    }
+
+    private fun observeAlarmPlates() {
+        launch(onError = { throwable -> handleError(throwable) }) {
+            observeAlarmPlatesUseCase().collectLatest { alarms ->
+                latestAlarmPlates = alarms
+                val mapped = searchUiMapper.mapAlarmPlates(alarms)
+                _uiState.update { it.copy(alarmPlates = mapped) }
+            }
+        }
     }
 
     /** Çevrimdışıyken Search da diğer ekranlar gibi tam-ekran bağlantı hatası gösterir. */
@@ -90,7 +123,7 @@ class SearchViewModel @Inject constructor(
                 val mappedRecent = searchUiMapper.mapRecentSearches(recentItems, bookmarkedCodes)
                 val mappedSaved = searchUiMapper.mapSavedPlates(savedPlates)
                 Pair(mappedRecent, mappedSaved)
-            }.collectLatest { (mappedRecent, mappedSaved) ->
+            }.flowOn(appDispatchers.default).collectLatest { (mappedRecent, mappedSaved) ->
                 _uiState.update { current ->
                     searchStateReducer.onDataUpdated(current, mappedRecent, mappedSaved)
                 }
@@ -105,6 +138,7 @@ class SearchViewModel @Inject constructor(
             is SearchUiAction.RecentItemClicked -> onRecentItemClicked(action.plateCode)
             is SearchUiAction.RecentBookmarkClicked -> onRecentBookmarkClicked(action.normalizedPlateCode)
             is SearchUiAction.SavedPlateBookmarkClicked -> onSavedPlateBookmarkClicked(action.normalizedPlateCode)
+            is SearchUiAction.AlarmPlateRemoveClicked -> onAlarmPlateRemoveClicked(action.normalizedPlateCode)
             is SearchUiAction.RecentDismissClicked -> onRecentDismissClicked(action.normalizedPlateCode)
             SearchUiAction.ClearRecentClicked -> onClearRecentClicked()
             SearchUiAction.RetryClicked ->
@@ -201,6 +235,19 @@ class SearchViewModel @Inject constructor(
             } ?: return@launch
 
             toggleSavedPlateUseCase(savedPlate)
+        }
+    }
+
+    private fun onAlarmPlateRemoveClicked(normalizedPlateCode: String) {
+        launch {
+            val alarmPlate = latestAlarmPlates.firstOrNull {
+                it.normalizedPlateCode == normalizedPlateCode
+            } ?: return@launch
+
+            when (val result = toggleAlarmPlateUseCase(alarmPlate)) {
+                is AppResult.Error -> handleError(result.error)
+                is AppResult.Success -> Unit
+            }
         }
     }
 

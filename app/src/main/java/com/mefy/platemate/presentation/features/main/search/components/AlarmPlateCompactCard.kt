@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -27,10 +26,10 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun SavedPlateCompactCard(
+fun AlarmPlateCompactCard(
     item: SearchRecentUiModel,
     onClick: (String) -> Unit,
-    onBookmarkClick: (String) -> Unit
+    onRemoveClick: (String) -> Unit
 ) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
@@ -55,10 +54,10 @@ fun SavedPlateCompactCard(
                     size = PlateBadgeSize.Small
                 )
                 PMIcon(
-                    imageVector = if (item.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    tint = if (item.isBookmarked) colors.primary else colors.textLabel,
+                    imageVector = Icons.Filled.NotificationsActive,
+                    tint = colors.primary,
                     size = dims.sizing.iconXl,
-                    modifier = Modifier.debouncedClickable { onBookmarkClick(item.normalizedPlateCode) }
+                    modifier = Modifier.debouncedClickable { onRemoveClick(item.normalizedPlateCode) }
                 )
             }
 

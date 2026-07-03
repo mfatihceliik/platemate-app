@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,12 +26,12 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 fun RecentChip(
     plateCode: String,
-    onClick: () -> Unit
+    onClick: (String) -> Unit
 ) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
-    val shape = RoundedCornerShape(dims.radius.r12)
+    val shape = remember(dims.radius.r12) { RoundedCornerShape(dims.radius.r12) }
 
     Box(
         modifier = Modifier
@@ -38,7 +39,7 @@ fun RecentChip(
             .clip(shape)
             .border(dims.stroke.st1, colors.primary, shape)
             .background(colors.surface)
-            .debouncedClickable(onClick = onClick)
+            .debouncedClickable { onClick(plateCode) }
             .padding(horizontal = dims.spacing.s16),
         contentAlignment = Alignment.Center
     ) {

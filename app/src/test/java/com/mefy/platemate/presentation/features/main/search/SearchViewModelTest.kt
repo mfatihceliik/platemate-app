@@ -1,14 +1,27 @@
-package com.mefy.platemate.presentation.features.main.search
+﻿package com.mefy.platemate.presentation.features.main.search
 
 import com.mefy.platemate.data.repository.InMemoryRecentSearchRepository
-import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.common.result.DataResultResponse
+import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.core.connectivity.NetworkMonitor
+import com.mefy.platemate.core.coroutine.AppDispatchers
+import com.mefy.platemate.core.error.AppError
+import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
+import com.mefy.platemate.data.remote.dto.plate.AddPlateRemovalRequestRequest
+import com.mefy.platemate.data.remote.dto.plate.MyPlateListsDto
+import com.mefy.platemate.data.remote.dto.plate.PlateSearchResponseDto
+import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.model.search.AlarmPlate
 import com.mefy.platemate.domain.model.search.SavedPlate
+import com.mefy.platemate.domain.repository.AlarmPlateRepository
 import com.mefy.platemate.domain.repository.PlateRepository
 import com.mefy.platemate.domain.repository.SavedPlateRepository
+import com.mefy.platemate.domain.usecase.alarm.ObserveAlarmPlatesUseCase
+import com.mefy.platemate.domain.usecase.alarm.SyncMyPlateListsUseCase
+import com.mefy.platemate.domain.usecase.alarm.ToggleAlarmPlateUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlatesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
@@ -247,12 +260,21 @@ class SearchViewModelTest {
     private fun createViewModel(
         repository: FakePlateRepository = FakePlateRepository(),
         recentSearchRepository: InMemoryRecentSearchRepository = InMemoryRecentSearchRepository(),
-        savedPlateRepository: FakeSavedPlateRepository = FakeSavedPlateRepository()
+        savedPlateRepository: FakeSavedPlateRepository = FakeSavedPlateRepository(),
+        alarmPlateRepository: FakeAlarmPlateRepository = FakeAlarmPlateRepository()
     ): SearchViewModel = SearchViewModel(
         searchPlateUseCase = SearchPlateUseCase(repository),
         observeRecentSearchesUseCase = ObserveRecentSearchesUseCase(recentSearchRepository),
         observeSavedPlatesUseCase = ObserveSavedPlatesUseCase(savedPlateRepository),
         observeSavedPlateCodesUseCase = ObserveSavedPlateCodesUseCase(savedPlateRepository),
+        observeAlarmPlatesUseCase = ObserveAlarmPlatesUseCase(alarmPlateRepository),
+        toggleAlarmPlateUseCase = ToggleAlarmPlateUseCase(alarmPlateRepository),
+        syncMyPlateListsUseCase = SyncMyPlateListsUseCase(
+            plateApiService = FakePlateApiService,
+            savedPlateRepository = savedPlateRepository,
+            alarmPlateRepository = alarmPlateRepository,
+            formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase()
+        ),
         upsertRecentSearchUseCase = UpsertRecentSearchUseCase(recentSearchRepository),
         toggleSavedPlateUseCase = ToggleSavedPlateUseCase(savedPlateRepository),
         deleteRecentSearchUseCase = DeleteRecentSearchUseCase(recentSearchRepository),
@@ -262,6 +284,11 @@ class SearchViewModelTest {
         searchUiMapper = DefaultSearchUiMapper(),
         searchStateReducer = SearchStateReducer(),
         networkMonitor = FakeOnlineNetworkMonitor,
+        appDispatchers = AppDispatchers(
+            main = mainDispatcherRule.dispatcher,
+            io = mainDispatcherRule.dispatcher,
+            default = mainDispatcherRule.dispatcher
+        ),
         globalUiEventBus = DefaultGlobalUiEventBus()
     )
 
@@ -306,6 +333,54 @@ class SearchViewModelTest {
         )
     )
 
+    private object FakePlateApiService : PlateApiService {
+        // getMyLists boş liste döner: sync no-op olur, testler alarm/saved senkronundan etkilenmez.
+        override suspend fun getMyLists(): DataResultResponse<MyPlateListsDto> =
+            DataResultResponse(message = null, success = true, data = MyPlateListsDto(savedPlates = null, alarmPlates = null))
+
+        override suspend fun searchPlate(plate: String): DataResultResponse<PlateSearchResponseDto> =
+            throw UnsupportedOperationException("not used in tests")
+
+        override suspend fun followPlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun unfollowPlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun savePlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun unsavePlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun createAlarm(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun removeAlarm(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun createRemovalRequest(
+            plateId: Long,
+            request: AddPlateRemovalRequestRequest
+        ): DataResultResponse<PlateRemovalRequestDto> =
+            throw UnsupportedOperationException("not used in tests")
+    }
+
+    private class FakeAlarmPlateRepository : AlarmPlateRepository {
+        private val alarmPlates = MutableStateFlow<List<AlarmPlate>>(emptyList())
+        private val alarmCodes = MutableStateFlow<Set<String>>(emptySet())
+
+        override fun observeAlarmPlates(): Flow<List<AlarmPlate>> = alarmPlates.asStateFlow()
+
+        override fun observeAlarmPlateCodes(): Flow<Set<String>> = alarmCodes.asStateFlow()
+
+        override suspend fun toggleAlarm(plate: AlarmPlate): AppResult<Boolean> {
+            val code = plate.normalizedPlateCode
+            return if (alarmCodes.value.contains(code)) {
+                alarmCodes.value = alarmCodes.value - code
+                alarmPlates.value = alarmPlates.value.filterNot { it.normalizedPlateCode == code }
+                AppResult.Success(false)
+            } else {
+                alarmCodes.value = alarmCodes.value + code
+                alarmPlates.value = listOf(plate) + alarmPlates.value
+                AppResult.Success(true)
+            }
+        }
+
+        override suspend fun replaceFromRemote(plates: List<AlarmPlate>) {
+            alarmPlates.value = plates
+            alarmCodes.value = plates.map { it.normalizedPlateCode }.toSet()
+        }
+    }
+
     private class FakeSavedPlateRepository : SavedPlateRepository {
         private val savedPlates = MutableStateFlow<List<SavedPlate>>(emptyList())
         private val savedCodes = MutableStateFlow<Set<String>>(emptySet())
@@ -313,6 +388,11 @@ class SearchViewModelTest {
         override fun observeSavedPlates(): Flow<List<SavedPlate>> = savedPlates.asStateFlow()
 
         override fun observeSavedPlateCodes(): Flow<Set<String>> = savedCodes.asStateFlow()
+
+        override suspend fun replaceFromRemote(plates: List<SavedPlate>) {
+            savedPlates.value = plates
+            savedCodes.value = plates.map { it.normalizedPlateCode }.toSet()
+        }
 
         override suspend fun toggleSaved(plate: SavedPlate): Boolean {
             val normalizedPlateCode = plate.normalizedPlateCode
@@ -371,6 +451,16 @@ class SearchViewModelTest {
             lastPlateCode = plateCode
             return result
         }
+
+        override suspend fun followPlate(plateCode: String): AppResult<Unit> = AppResult.Success(Unit)
+
+        override suspend fun unfollowPlate(plateCode: String): AppResult<Unit> = AppResult.Success(Unit)
+
+        override suspend fun createRemovalRequest(
+            plateId: Long,
+            reasonCode: String,
+            description: String
+        ): AppResult<Unit> = AppResult.Success(Unit)
     }
 }
 

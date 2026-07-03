@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.search.mapper
 
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.model.search.AlarmPlate
 import com.mefy.platemate.domain.model.search.RecentSearch
 import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.presentation.common.text.CityNameResolver
@@ -60,6 +61,18 @@ class DefaultSearchUiMapper @Inject constructor() : SearchUiMapper {
             ratingAverage = item.ratingAverage,
             commentCount = item.commentCount,
             isBookmarked = true
+        )
+    }
+
+    override fun mapAlarmPlates(items: List<AlarmPlate>): List<SearchRecentUiModel> = items.map { item ->
+        SearchRecentUiModel(
+            normalizedPlateCode = item.normalizedPlateCode,
+            plateCode = item.formattedPlateCode,
+            cityName = resolveCityName(item.cityName, item.normalizedPlateCode),
+            reportTags = mapReportTags(item.reportTypes),
+            ratingAverage = item.ratingAverage,
+            commentCount = item.commentCount,
+            isBookmarked = false
         )
     }
 
