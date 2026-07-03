@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun ChatDetailRoute(
     viewModel: ChatDetailViewModel,
     onNavigateBack: () -> Unit,
+    onNavigateToUserProfile: (Long) -> Unit,
+    onNavigateToMessagesList: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -23,6 +25,8 @@ fun ChatDetailRoute(
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
                 ChatDetailUiEffect.NavigateBack -> onNavigateBack()
+                is ChatDetailUiEffect.NavigateToUserProfile -> onNavigateToUserProfile(effect.userId)
+                ChatDetailUiEffect.NavigateToMessagesList -> onNavigateToMessagesList()
             }
         }
     }

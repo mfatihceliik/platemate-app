@@ -8,7 +8,9 @@ import com.mefy.platemate.presentation.common.text.UiText
 data class MessagesUiState(
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
-    val conversations: List<MessageConversationUiModel> = emptyList()
+    val conversations: List<MessageConversationUiModel> = emptyList(),
+    val pendingDeleteRoomId: Long? = null,
+    val isDeleting: Boolean = false
 )
 
 @Immutable
@@ -18,7 +20,7 @@ data class MessageConversationUiModel(
     val name: String,
     val preview: String,
     val time: String,
-    val isUnread: Boolean,
+    val unreadCount: Int,
     val avatarBg: Color,
     val avatarFg: Color
 )

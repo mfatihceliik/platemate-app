@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,6 +45,8 @@ internal fun ChatDetailUserCard(
     avatarBg: Color,
     avatarFg: Color,
     onMessageClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onBlockClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
@@ -60,7 +62,15 @@ internal fun ChatDetailUserCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
-        Box(modifier = Modifier.size(dims.sizing.avatarXLarge)) {
+        // Avatar + isim: dokununca kullanıcının profiline gider.
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(dims.radius.r12))
+                .debouncedClickable(onClick = onProfileClick)
+                .padding(dims.spacing.s4),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        ) {
             Box(
                 modifier = Modifier
                     .size(dims.sizing.avatarXLarge)
@@ -75,14 +85,14 @@ internal fun ChatDetailUserCard(
                     color = avatarFg
                 )
             }
-        }
 
-        PMText(
-            text = participantName,
-            style = PMTextStyle.Title,
-            fontWeight = FontWeight.Bold,
-            color = colors.textPrimary
-        )
+            PMText(
+                text = participantName,
+                style = PMTextStyle.Title,
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary
+            )
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16)) {
             QuickAction(
@@ -93,18 +103,18 @@ internal fun ChatDetailUserCard(
                 onClick = onMessageClick
             )
             QuickAction(
-                label = stringResource(R.string.chatdetail_action_plate),
-                icon = Icons.Outlined.DirectionsCar,
+                label = stringResource(R.string.chatdetail_action_profile),
+                icon = Icons.Outlined.Person,
                 bg = colors.categoryGreenBg,
                 tint = colors.categoryGreenFg,
-                onClick = {}
+                onClick = onProfileClick
             )
             QuickAction(
                 label = stringResource(R.string.chatdetail_action_block),
                 icon = Icons.Outlined.Block,
                 bg = colors.errorContainer,
                 tint = colors.error,
-                onClick = {}
+                onClick = onBlockClick
             )
         }
     }
@@ -153,7 +163,9 @@ private fun ChatDetailUserCardPreview() {
             initials = "AY",
             avatarBg = Color(0xFFEEF2FF),
             avatarFg = Color(0xFF4F46E5),
-            onMessageClick = {}
+            onMessageClick = {},
+            onProfileClick = {},
+            onBlockClick = {}
         )
     }
 }
@@ -167,7 +179,9 @@ private fun ChatDetailUserCardDarkPreview() {
             initials = "ZD",
             avatarBg = Color(0xFF312E81),
             avatarFg = Color(0xFFC7D2FE),
-            onMessageClick = {}
+            onMessageClick = {},
+            onProfileClick = {},
+            onBlockClick = {}
         )
     }
 }

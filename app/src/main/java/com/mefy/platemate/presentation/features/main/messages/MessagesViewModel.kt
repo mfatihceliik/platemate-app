@@ -1,10 +1,14 @@
 package com.mefy.platemate.presentation.features.main.messages
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.data.local.NotificationPermissionStore
 import com.mefy.platemate.domain.model.chat.ChatRoom
-import com.mefy.platemate.domain.usecase.chat.GetChatRoomsUseCase
+import com.mefy.platemate.domain.usecase.chat.LeaveChatUseCase
+import com.mefy.platemate.domain.usecase.chat.MarkMessagesAsReadUseCase
+import com.mefy.platemate.domain.usecase.chat.ObserveChatRoomsUseCase
+import com.mefy.platemate.domain.usecase.chat.SyncChatRoomsUseCase
+import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
@@ -20,7 +24,11 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class MessagesViewModel @Inject constructor(
-    private val getChatRoomsUseCase: GetChatRoomsUseCase,
+    private val observeChatRoomsUseCase: ObserveChatRoomsUseCase,
+    private val syncChatRoomsUseCase: SyncChatRoomsUseCase,
+    private val leaveChatUseCase: LeaveChatUseCase,
+    private val markMessagesAsReadUseCase: MarkMessagesAsReadUseCase,
+    private val notificationPermissionStore: NotificationPermissionStore,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -31,31 +39,81 @@ class MessagesViewModel @Inject constructor(
     val uiEffect: SharedFlow<MessagesUiEffect> = _uiEffect.asSharedFlow()
 
     init {
-        loadConversations()
+        observeConversations()
+        refreshConversations()
     }
 
     fun onAction(action: MessagesUiAction) {
         when (action) {
             is MessagesUiAction.ConversationClicked -> onConversationClicked(action.roomId)
-            MessagesUiAction.RetryClicked -> loadConversations()
+            MessagesUiAction.RetryClicked -> refreshConversations()
+            is MessagesUiAction.DeleteSwiped -> _uiState.update { it.copy(pendingDeleteRoomId = action.roomId) }
+            MessagesUiAction.DeleteDismissed -> _uiState.update { it.copy(pendingDeleteRoomId = null) }
+            MessagesUiAction.DeleteConfirmed -> onDeleteConfirmed()
+            is MessagesUiAction.MarkReadSwiped -> onMarkReadSwiped(action.roomId)
         }
     }
 
-    private fun loadConversations() {
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+    // Non-destructive → fires instantly, no confirm. Repo clears the local unread count optimistically
+    // so the badge disappears through observeChatRoomsUseCase(); only surface an error if it fails.
+    private fun onMarkReadSwiped(roomId: Long) {
         launch {
-            when (val result = getChatRoomsUseCase()) {
-                is AppResult.Success -> {
-                    _uiState.update { current ->
-                        current.copy(
-                            isLoading = false,
-                            errorMessage = null,
-                            conversations = result.data.map { it.toUiModel() }
-                        )
-                    }
-                }
+            when (val result = markMessagesAsReadUseCase(roomId)) {
+                is AppResult.Success -> Unit
+                is AppResult.Error -> showError(result.error.toUiText())
+            }
+        }
+    }
+
+    private fun onDeleteConfirmed() {
+        val roomId = _uiState.value.pendingDeleteRoomId ?: return
+        _uiState.update { it.copy(isDeleting = true) }
+        launch(onError = { error ->
+            _uiState.update { it.copy(isDeleting = false, pendingDeleteRoomId = null) }
+            handleError(error)
+        }) {
+            when (val result = leaveChatUseCase(roomId)) {
+                // Room-Flow-driven list updates itself once the repository clears the local cache row.
+                is AppResult.Success -> _uiState.update { it.copy(isDeleting = false, pendingDeleteRoomId = null) }
                 is AppResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toUiText()) }
+                    _uiState.update { it.copy(isDeleting = false, pendingDeleteRoomId = null) }
+                    showError(result.error.toUiText())
+                }
+            }
+        }
+    }
+
+    /** Messages'ta bildirim izni daha önce istendi mi (kalıcı). İlk girişte bağlamsal istem için. */
+    suspend fun hasRequestedNotificationPermission(): Boolean =
+        notificationPermissionStore.hasRequestedOnMessages()
+
+    /** Bildirim izni isteminin yapıldığını kalıcı olarak işaretler. */
+    fun markNotificationPermissionRequested() {
+        launch { notificationPermissionStore.setRequestedOnMessages() }
+    }
+
+    // Liste artık tek doğru kaynaktan (Room) reaktif beslenir → global canlı senk + gönderim echo'su
+    // ile otomatik güncel kalır; konuşmadan dönünce son mesaj/sıra doğru.
+    private fun observeConversations() {
+        launch {
+            observeChatRoomsUseCase().collect { rooms ->
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = null, conversations = rooms.map { room -> room.toUiModel() })
+                }
+            }
+        }
+    }
+
+    // REST'ten Room'u tazeler (ilk açılış + retry). Hata yalnız yerel liste boşken gösterilir.
+    private fun refreshConversations() {
+        launch {
+            when (val result = syncChatRoomsUseCase()) {
+                is AppResult.Success -> Unit // Liste Room Flow'undan zaten güncellenir
+                is AppResult.Error -> _uiState.update { state ->
+                    // Yerelde önbellek varsa kullanıcıyı bozma; yalnız boşsa hatayı göster.
+                    if (state.conversations.isEmpty()) {
+                        state.copy(isLoading = false, errorMessage = result.error.toUiText())
+                    } else state
                 }
             }
         }
@@ -78,29 +136,17 @@ class MessagesViewModel @Inject constructor(
 
     private fun ChatRoom.toUiModel(): MessageConversationUiModel {
         val displayName = otherParticipantName ?: roomName ?: "Chat"
-        val initials = displayName.split(" ")
-            .take(2)
-            .mapNotNull { it.firstOrNull()?.uppercase() }
-            .joinToString("")
-            .ifEmpty { "?" }
-
-        val colorPairs = listOf(
-            Color(0xFFEEF2FF) to Color(0xFF4F46E5),
-            Color(0xFFECFEFF) to Color(0xFF0891B2),
-            Color(0xFFF0FDF4) to Color(0xFF15803D),
-            Color(0xFFFFF7ED) to Color(0xFFC2410C)
-        )
-        val pair = colorPairs[(id % colorPairs.size).toInt()]
+        val (background, foreground) = AvatarPalette.colorsFor(id)
 
         return MessageConversationUiModel(
             roomId = id,
-            initials = initials,
+            initials = AvatarPalette.initials(displayName),
             name = displayName,
             preview = lastMessageContent ?: "",
             time = lastMessageAt?.iso8601?.substringAfter("T")?.take(5) ?: "",
-            isUnread = false,
-            avatarBg = pair.first,
-            avatarFg = pair.second
+            unreadCount = unreadCount,
+            avatarBg = background,
+            avatarFg = foreground
         )
     }
 }

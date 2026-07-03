@@ -5,18 +5,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -50,11 +51,13 @@ internal fun MessageInputBar(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surface)
-            .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s10)
-            .navigationBarsPadding()
-            .imePadding(),
+            // IME inset'i ekran kökünde (PMBaseScreen.applyImePadding) uygulanır; burada
+            // yalnızca nav-bar boşluğu kalır. İkisi birden uygulanırsa çifte padding olur.
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s10),
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
-        verticalAlignment = Alignment.CenterVertically
+        // Alan çok satıra büyürken +/gönder butonları altta sabit kalır (WhatsApp davranışı).
+        verticalAlignment = Alignment.Bottom
     ) {
         Box(
             modifier = Modifier
@@ -72,18 +75,22 @@ internal fun MessageInputBar(
             )
         }
 
+        // Bilinçli olarak BasicTextField: PMTextField kenarlıklı/etiketli form alanıdır,
+        // chat hap (pill) biçimine uymaz.
         BasicTextField(
             value = text,
             onValueChange = onTextChange,
             modifier = Modifier
                 .weight(1f)
-                .height(42.dp)
+                .heightIn(min = 42.dp)
                 .clip(MaterialTheme.shapes.extraLarge)
                 .background(colors.surfaceVariant)
-                .padding(horizontal = dims.spacing.s16),
+                .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s10),
             textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.textPrimary),
             cursorBrush = SolidColor(primary),
-            singleLine = true,
+            // Uzun metin sağa kaymak yerine alt satıra sarar; 5 satırdan sonra alan
+            // büyümez, metin kendi içinde kayar.
+            maxLines = 5,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSend() }),
             decorationBox = { inner ->
@@ -102,15 +109,15 @@ internal fun MessageInputBar(
 
         Box(
             modifier = Modifier
-                .size(38.dp)
-                .shadow(elevation = if (text.isNotBlank()) 6.dp else 0.dp, CircleShape)
+                .size(dims.spacing.s32)
+                .shadow(elevation = if (text.isNotBlank()) dims.spacing.s8 else dims.spacing.s0, CircleShape)
                 .clip(CircleShape)
                 .background(if (text.isNotBlank()) primary else colors.surfaceVariant)
                 .debouncedClickable(enabled = text.isNotBlank(), onClick = onSend),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Send,
+                imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = null,
                 tint = if (text.isNotBlank()) colors.onPrimary else colors.textLabel,
                 modifier = Modifier.size(dims.sizing.iconMd)
@@ -148,5 +155,18 @@ private fun MessageInputBarEmptyDarkPreview() {
 private fun MessageInputBarFilledDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         MessageInputBar(text = "Merhaba, nasılsınız?", onTextChange = {}, onSend = {})
+    }
+}
+
+@Preview(name = "MessageInputBar Multiline Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun MessageInputBarMultilineLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        MessageInputBar(
+            text = "Bu uzun bir mesaj örneği. Metin alanı beş satıra kadar büyür, " +
+                "sonrasında içeride kaydırılır. Gönder butonu altta sabit kalır.",
+            onTextChange = {},
+            onSend = {}
+        )
     }
 }

@@ -14,7 +14,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.runtime.Composable
+import com.mefy.platemate.domain.model.chat.MessageStatus
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +57,7 @@ internal fun ReceivedBubble(
     ) {
         Box(
             modifier = Modifier
-                .size(28.dp)
+                .size(dims.spacing.s32)
                 .clip(CircleShape)
                 .background(avatarBg),
             contentAlignment = Alignment.Center
@@ -96,7 +98,7 @@ internal fun ReceivedBubble(
 internal fun SentBubble(
     content: String,
     time: String,
-    isRead: Boolean,
+    status: MessageStatus,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
@@ -128,9 +130,18 @@ internal fun SentBubble(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 PMText(text = time, style = PMTextStyle.Note, color = colors.textLabel)
-                if (isRead) {
-                    PMIcon(
+                // Single check = sent, double check = delivered (grey) / read (primary)
+                when (status) {
+                    MessageStatus.SENT -> PMIcon(
                         imageVector = Icons.Default.Check,
+                        tint = colors.textLabel,
+                    )
+                    MessageStatus.DELIVERED -> PMIcon(
+                        imageVector = Icons.Default.DoneAll,
+                        tint = colors.textLabel,
+                    )
+                    MessageStatus.READ -> PMIcon(
+                        imageVector = Icons.Default.DoneAll,
                         tint = primary,
                     )
                 }
@@ -175,7 +186,7 @@ private fun ChatBubblePreviewContent() {
         SentBubble(
             content = "Evet, 34 EK 0682 değil mi?",
             time = "10:43",
-            isRead = true
+            status = MessageStatus.READ
         )
         ReceivedBubble(
             initials = "AY",
@@ -187,7 +198,7 @@ private fun ChatBubblePreviewContent() {
         SentBubble(
             content = "Rica ederim, iyi günler!",
             time = "10:45",
-            isRead = false
+            status = MessageStatus.SENT
         )
     }
 }

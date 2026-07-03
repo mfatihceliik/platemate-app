@@ -8,5 +8,9 @@ data class ChatRoom(
     val lastMessageAt: AppDateTime?,
     val lastMessageContent: String?,
     val otherParticipantName: String?,
-    val isGroup: Boolean
+    val otherParticipantId: Long?,
+    val isGroup: Boolean,
+    val requestStatus: ChatRoomRequestStatus,
+    val initiatorId: Long?,
+    val unreadCount: Int = 0
 )

@@ -3,8 +3,12 @@ package com.mefy.platemate.presentation.features.main.messages.chatdetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +18,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMPopup
+import com.mefy.platemate.presentation.components.model.PMButtonStyle
 import com.mefy.platemate.presentation.features.main.messages.chatdetail.components.ChatDetailSettingsCard
 import com.mefy.platemate.presentation.features.main.messages.chatdetail.components.ChatDetailUserCard
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -27,6 +34,7 @@ internal fun ChatDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
 
     PMBaseScreen(
         modifier = modifier,
@@ -34,7 +42,6 @@ internal fun ChatDetailScreen(
             title = stringResource(R.string.chatdetail_title),
             onBackClick = { onAction(ChatDetailUiAction.BackClicked) }
         ),
-        containerColor = MaterialTheme.pmColors.surfaceSecondary
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -49,7 +56,9 @@ internal fun ChatDetailScreen(
                     initials = state.initials,
                     avatarBg = state.avatarBg,
                     avatarFg = state.avatarFg,
-                    onMessageClick = { onAction(ChatDetailUiAction.MessageClicked) }
+                    onMessageClick = { onAction(ChatDetailUiAction.MessageClicked) },
+                    onProfileClick = { onAction(ChatDetailUiAction.ProfileClicked) },
+                    onBlockClick = { onAction(ChatDetailUiAction.BlockClicked) }
                 )
             }
 
@@ -62,7 +71,39 @@ internal fun ChatDetailScreen(
                     onReportClick = { onAction(ChatDetailUiAction.ReportClicked) }
                 )
             }
+
+            item(key = "block_button") {
+                PMButton(
+                    text = stringResource(
+                        if (state.isBlocked) R.string.chatdetail_unblock else R.string.chatdetail_block
+                    ),
+                    onClick = { onAction(ChatDetailUiAction.BlockClicked) },
+                    style = PMButtonStyle.Outlined,
+                    enabled = state.otherUserId != null && !state.isBlockInProgress,
+                    loading = state.isBlockInProgress,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+    }
+
+    if (state.showDeleteConfirmation) {
+        PMPopup(
+            title = stringResource(R.string.messages_delete_confirm_title),
+            message = stringResource(R.string.messages_delete_confirm_message),
+            icon = Icons.Filled.Delete,
+            iconTint = colors.error,
+            iconContainerColor = colors.errorContainer,
+            primaryText = stringResource(R.string.common_delete),
+            onPrimaryClick = { onAction(ChatDetailUiAction.DeleteConfirmed) },
+            primaryButtonColors = ButtonDefaults.buttonColors(
+                containerColor = colors.error,
+                contentColor = colors.onError
+            ),
+            secondaryText = stringResource(R.string.common_cancel),
+            onSecondaryClick = { onAction(ChatDetailUiAction.DeleteDismissed) },
+            onDismissRequest = { onAction(ChatDetailUiAction.DeleteDismissed) }
+        )
     }
 }
 
