@@ -20,13 +20,14 @@ internal fun AccentColorGrid(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
+    val gridSize = 4
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
+        columns = GridCells.Fixed(gridSize),
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12),
         userScrollEnabled = false,
-        modifier = modifier.height(144.dp)
+        modifier = modifier.height(dims.sizing.gridHeight)
     ) {
         items(colors, key = { it.value.toLong() }) { color ->
             AccentColorChip(

@@ -1,5 +1,8 @@
 package com.mefy.platemate.presentation.features.main.settings.changepassword
 
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.domain.usecase.auth.ChangePasswordUseCase
+import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class ChangePasswordViewModel @Inject constructor(
+    private val changePasswordUseCase: ChangePasswordUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -41,16 +45,26 @@ class ChangePasswordViewModel @Inject constructor(
     }
 
     private fun submitPasswordChange() {
+        val state = _uiState.value
+        if (!state.isSubmitEnabled) return
+
         _uiState.update { it.copy(isSubmitting = true) }
         launch(
             onError = {
-                _uiState.update { state -> state.copy(isSubmitting = false) }
+                _uiState.update { current -> current.copy(isSubmitting = false) }
                 handleError(it)
             }
         ) {
-            // TODO: Call change password use case when backend endpoint is available
-            _uiState.update { it.copy(isSubmitting = false) }
-            _uiEffect.emitUiEffect(ChangePasswordUiEffect.PasswordChanged)
+            when (val result = changePasswordUseCase(state.currentPassword, state.newPassword)) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(isSubmitting = false) }
+                    _uiEffect.emitUiEffect(ChangePasswordUiEffect.PasswordChanged)
+                }
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(isSubmitting = false) }
+                    showError(result.error.toUiText())
+                }
+            }
         }
     }
 }

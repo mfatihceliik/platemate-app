@@ -6,6 +6,7 @@ import com.mefy.platemate.domain.model.theme.AppThemeMode
 
 @Immutable
 data class ThemeColorUiState(
+    val isLoading: Boolean = true,
     val selectedColor: Color = AccentColors[0],
     val themeMode: AppThemeMode = AppThemeMode.SYSTEM
 )

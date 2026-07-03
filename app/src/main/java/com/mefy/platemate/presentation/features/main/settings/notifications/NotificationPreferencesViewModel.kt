@@ -1,7 +1,7 @@
 package com.mefy.platemate.presentation.features.main.settings.notifications
 
 import com.mefy.platemate.R
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.domain.model.settings.UserSettings
 import com.mefy.platemate.domain.usecase.settings.GetSettingsUseCase
@@ -41,6 +41,9 @@ class NotificationPreferencesViewModel @Inject constructor(
             is NotificationPreferencesUiAction.MessagingChanged ->
                 _uiState.updateWith(messagingEnabled = action.enabled)
 
+            is NotificationPreferencesUiAction.OnlineVisibilityChanged ->
+                _uiState.updateWith(onlineVisibilityEnabled = action.enabled)
+
             is NotificationPreferencesUiAction.MessageNotificationsChanged ->
                 _uiState.updateWith(messageNotificationsEnabled = action.enabled)
 
@@ -75,15 +78,19 @@ class NotificationPreferencesViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             messagingEnabled = settings.messagingEnabled,
+                            onlineVisibilityEnabled = settings.onlineVisibilityEnabled,
                             messageNotificationsEnabled = settings.messageNotificationsEnabled,
                             friendNotificationsEnabled = settings.friendNotificationsEnabled,
+                            plateReviewEnabled = settings.plateReviewNotificationsEnabled,
+                            newFollowerEnabled = settings.newFollowerNotificationsEnabled,
+                            reviewReplyEnabled = settings.reviewReplyNotificationsEnabled,
                             initialMessagingEnabled = settings.messagingEnabled,
+                            initialOnlineVisibilityEnabled = settings.onlineVisibilityEnabled,
                             initialMessageNotificationsEnabled = settings.messageNotificationsEnabled,
                             initialFriendNotificationsEnabled = settings.friendNotificationsEnabled,
-                            // backend desteklemediği alanlar için initial değer false kalır
-                            initialNewFollowerEnabled = false,
-                            initialPlateReviewEnabled = false,
-                            initialReviewReplyEnabled = false,
+                            initialPlateReviewEnabled = settings.plateReviewNotificationsEnabled,
+                            initialNewFollowerEnabled = settings.newFollowerNotificationsEnabled,
+                            initialReviewReplyEnabled = settings.reviewReplyNotificationsEnabled,
                             hasChanges = false
                         )
                     }
@@ -106,8 +113,12 @@ class NotificationPreferencesViewModel @Inject constructor(
                 val result = updateSettingsUseCase(
                     UserSettings(
                         messagingEnabled = state.messagingEnabled,
+                        onlineVisibilityEnabled = state.onlineVisibilityEnabled,
                         messageNotificationsEnabled = state.messageNotificationsEnabled,
-                        friendNotificationsEnabled = state.friendNotificationsEnabled
+                        friendNotificationsEnabled = state.friendNotificationsEnabled,
+                        plateReviewNotificationsEnabled = state.plateReviewEnabled,
+                        newFollowerNotificationsEnabled = state.newFollowerEnabled,
+                        reviewReplyNotificationsEnabled = state.reviewReplyEnabled
                     )
                 )
             ) {
@@ -116,6 +127,7 @@ class NotificationPreferencesViewModel @Inject constructor(
                         it.copy(
                             isSaving = false,
                             initialMessagingEnabled = it.messagingEnabled,
+                            initialOnlineVisibilityEnabled = it.onlineVisibilityEnabled,
                             initialMessageNotificationsEnabled = it.messageNotificationsEnabled,
                             initialFriendNotificationsEnabled = it.friendNotificationsEnabled,
                             initialNewFollowerEnabled = it.newFollowerEnabled,
@@ -141,6 +153,7 @@ class NotificationPreferencesViewModel @Inject constructor(
 
     private fun MutableStateFlow<NotificationPreferencesUiState>.updateWith(
         messagingEnabled: Boolean? = null,
+        onlineVisibilityEnabled: Boolean? = null,
         messageNotificationsEnabled: Boolean? = null,
         friendNotificationsEnabled: Boolean? = null,
         newFollowerEnabled: Boolean? = null,
@@ -150,6 +163,7 @@ class NotificationPreferencesViewModel @Inject constructor(
         update { current ->
             val next = current.copy(
                 messagingEnabled = messagingEnabled ?: current.messagingEnabled,
+                onlineVisibilityEnabled = onlineVisibilityEnabled ?: current.onlineVisibilityEnabled,
                 messageNotificationsEnabled = messageNotificationsEnabled ?: current.messageNotificationsEnabled,
                 friendNotificationsEnabled = friendNotificationsEnabled ?: current.friendNotificationsEnabled,
                 newFollowerEnabled = newFollowerEnabled ?: current.newFollowerEnabled,
@@ -158,6 +172,7 @@ class NotificationPreferencesViewModel @Inject constructor(
             )
             next.copy(
                 hasChanges = next.messagingEnabled != next.initialMessagingEnabled ||
+                    next.onlineVisibilityEnabled != next.initialOnlineVisibilityEnabled ||
                     next.messageNotificationsEnabled != next.initialMessageNotificationsEnabled ||
                     next.friendNotificationsEnabled != next.initialFriendNotificationsEnabled ||
                     next.newFollowerEnabled != next.initialNewFollowerEnabled ||

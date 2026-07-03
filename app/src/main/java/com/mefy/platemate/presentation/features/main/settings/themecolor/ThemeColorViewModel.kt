@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -35,13 +36,17 @@ class ThemeColorViewModel @Inject constructor(
 
     init {
         launch {
-            observeThemeModeUseCase().collect { mode ->
-                _uiState.update { it.copy(themeMode = mode) }
-            }
-        }
-        launch {
-            observeAccentColorUseCase().collect { argb ->
-                _uiState.update { it.copy(selectedColor = Color(argb.toInt())) }
+            combine(
+                observeThemeModeUseCase(),
+                observeAccentColorUseCase()
+            ) { mode, argb -> mode to argb }.collect { (mode, argb) ->
+                _uiState.update {
+                    it.copy(
+                        themeMode = mode,
+                        selectedColor = Color(argb.toInt()),
+                        isLoading = false
+                    )
+                }
             }
         }
     }

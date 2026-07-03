@@ -1,6 +1,6 @@
-package com.mefy.platemate.data.repository
+﻿package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
@@ -12,7 +12,6 @@ import com.mefy.platemate.data.mapper.UserSettingsMapper
 import com.mefy.platemate.data.remote.dto.settings.SettingsOverviewDto
 import com.mefy.platemate.data.remote.dto.settings.UpdateSettingsRequest
 import com.mefy.platemate.data.remote.dto.social.SocialMediaLinkDto
-import com.mefy.platemate.data.remote.dto.social.SocialPlatformDto
 import com.mefy.platemate.data.remote.dto.user.UserSettingsDto
 import com.mefy.platemate.data.remote.rest.service.SettingsApiService
 import com.mefy.platemate.domain.model.auth.AuthSession
@@ -72,6 +71,7 @@ class SettingsRepositoryImplTest {
         val result = repository.updateSettings(
             UserSettings(
                 messagingEnabled = true,
+                onlineVisibilityEnabled = true,
                 messageNotificationsEnabled = false,
                 friendNotificationsEnabled = true
             )
@@ -81,6 +81,7 @@ class SettingsRepositoryImplTest {
         assertEquals(
             UpdateSettingsRequest(
                 messagingEnabled = true,
+                onlineVisibilityEnabled = true,
                 messageNotificationsEnabled = false,
                 friendNotificationsEnabled = true
             ),

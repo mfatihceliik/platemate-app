@@ -14,5 +14,5 @@ data class ProfileSettingsUiState(
     val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
     val language: AppLanguage = AppLanguage.TR,
     val languageLabel: UiText = UiText.Resource(R.string.profile_setting_language_tr),
-    val socialLinksCount: Int = 0
+    val isAdmin: Boolean = false
 )

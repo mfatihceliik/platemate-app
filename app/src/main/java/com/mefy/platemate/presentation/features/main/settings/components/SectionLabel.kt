@@ -9,12 +9,15 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun SectionLabel(text: String) {
+fun SectionLabel(
+    modifier: Modifier = Modifier,
+    text: String
+) {
     val dims = MaterialTheme.pmDimensions
     PMText(
         text = text,
         style = PMTextStyle.SectionLabel,
-        modifier = Modifier.padding(
+        modifier = modifier.padding(
             start = dims.spacing.s4,
             top = dims.spacing.s8,
             bottom = dims.spacing.s4

@@ -1,9 +1,11 @@
 package com.mefy.platemate.presentation.features.main.settings
 
 import com.mefy.platemate.R
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.language.AppLanguage
+import com.mefy.platemate.domain.model.auth.UserRole
 import com.mefy.platemate.domain.usecase.auth.LogoutUseCase
+import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.settings.GetSettingsUseCase
 import com.mefy.platemate.domain.usecase.language.ObserveLanguageUseCase
 import com.mefy.platemate.domain.usecase.theme.ObserveThemeModeUseCase
@@ -27,6 +29,7 @@ class ProfileSettingsViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val observeThemeModeUseCase: ObserveThemeModeUseCase,
     private val observeLanguageUseCase: ObserveLanguageUseCase,
+    private val observeSessionUseCase: ObserveSessionUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -51,6 +54,11 @@ class ProfileSettingsViewModel @Inject constructor(
             observeLanguageUseCase().collect { language ->
                 val resolved = language ?: AppLanguage.TR
                 _uiState.update { it.copy(language = resolved, languageLabel = resolved.toLabel()) }
+            }
+        }
+        launch {
+            observeSessionUseCase().collect { session ->
+                _uiState.update { it.copy(isAdmin = session?.role == UserRole.ADMIN) }
             }
         }
     }
@@ -84,6 +92,9 @@ class ProfileSettingsViewModel @Inject constructor(
 
             ProfileSettingsUiAction.SocialLinksClicked ->
                 _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToSocialLinks)
+
+            ProfileSettingsUiAction.AdminPanelClicked ->
+                _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToAdmin)
 
             ProfileSettingsUiAction.SignOutClicked -> onSignOutClicked()
 
