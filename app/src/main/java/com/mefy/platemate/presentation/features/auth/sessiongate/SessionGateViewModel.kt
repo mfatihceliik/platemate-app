@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.features.auth.sessiongate
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.auth.RefreshSessionUseCase

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -63,7 +62,6 @@ fun LoginScreen(
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
     val spacing = dims.spacing
-    val radius = dims.radius
     val stroke = dims.stroke
     val isSubmitLoading = state.isLoading
 

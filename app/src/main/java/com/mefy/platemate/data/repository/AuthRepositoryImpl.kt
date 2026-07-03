@@ -1,22 +1,27 @@
 package com.mefy.platemate.data.repository
 
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.common.result.flatMap
+import com.mefy.platemate.core.common.result.onSuccessSuspend
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
-import com.mefy.platemate.core.common.flatMap
-import com.mefy.platemate.core.common.onSuccessSuspend
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.mapper.UserAuthSessionMapper
 import com.mefy.platemate.data.remote.rest.service.AuthApiService
 import com.mefy.platemate.data.remote.rest.service.AuthTokenApiService
+import com.mefy.platemate.data.remote.dto.auth.ChangePasswordRequest
 import com.mefy.platemate.data.remote.dto.auth.LoginRequest
 import com.mefy.platemate.data.remote.dto.auth.RefreshTokenRequest
 import com.mefy.platemate.data.remote.dto.auth.RegisterRequest
 import com.mefy.platemate.data.remote.safeApiCall
+import com.mefy.platemate.data.remote.safeResultCall
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.repository.AuthRepository
+import com.mefy.platemate.domain.repository.FcmTokenRepository
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class AuthRepositoryImpl @Inject constructor(
@@ -24,6 +29,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val authTokenApiService: AuthTokenApiService,
     private val sessionStore: SessionStore,
     private val userAuthSessionMapper: UserAuthSessionMapper,
+    private val fcmTokenRepository: FcmTokenRepository,
     private val appDispatchers: AppDispatchers
 ) : AuthRepository {
 
@@ -35,7 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
                 .flatMap { user ->
                     userAuthSessionMapper.mapOrNull(user)
                         ?.let { session -> AppResult.Success(session) }
-                        ?: AppResult.Error(AppError.Server("Access or refresh token not found in login response"))
+                        ?: AppResult.Error(AppError.Api("Access or refresh token not found in login response"))
                 }
                 .onSuccessSuspend(sessionStore::saveSession)
         }
@@ -46,7 +52,7 @@ class AuthRepositoryImpl @Inject constructor(
                 .flatMap { user ->
                     userAuthSessionMapper.mapOrNull(user)
                         ?.let { session -> AppResult.Success(session) }
-                        ?: AppResult.Error(AppError.Server("Access or refresh token not found in register response"))
+                        ?: AppResult.Error(AppError.Api("Access or refresh token not found in register response"))
                 }
                 .onSuccessSuspend(sessionStore::saveSession)
         }
@@ -66,7 +72,7 @@ class AuthRepositoryImpl @Inject constructor(
             }.flatMap { user ->
                 userAuthSessionMapper.mapOrNull(user)
                     ?.let { session -> AppResult.Success(session) }
-                    ?: AppResult.Error(AppError.Server("Access or refresh token not found in refresh response"))
+                    ?: AppResult.Error(AppError.Api("Access or refresh token not found in refresh response"))
             }.onSuccessSuspend(sessionStore::saveSession)
 
             if (refreshResult is AppResult.Error) {
@@ -79,8 +85,22 @@ class AuthRepositoryImpl @Inject constructor(
             refreshResult
         }
 
+    override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.changePassword(ChangePasswordRequest(currentPassword, newPassword)) }
+        }
+
     override suspend fun logout() {
         withContext(appDispatchers.io) {
+            // Unregister the FCM token while the session is still valid (request is authenticated),
+            // so a logged-out device no longer receives push notifications.
+            runCatching {
+                val fcmToken = FirebaseMessaging.getInstance().token.await()
+                if (fcmToken.isNotBlank()) {
+                    fcmTokenRepository.unregisterToken(fcmToken)
+                }
+            }
+
             val refreshToken = sessionStore.peekRefreshToken()?.takeIf { it.isNotBlank() }
                 ?: sessionStore.getRefreshToken()?.takeIf { it.isNotBlank() }
 

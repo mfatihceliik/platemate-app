@@ -18,7 +18,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun StatBox(value: String, label: String, color: Color, modifier: Modifier = Modifier) {
+internal fun StatBox(value: String, label: String, color: Color, modifier: Modifier = Modifier) {
     val pmColors = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
     val dimensions = MaterialTheme.pmDimensions

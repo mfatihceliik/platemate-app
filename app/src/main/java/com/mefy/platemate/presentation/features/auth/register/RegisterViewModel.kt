@@ -1,9 +1,9 @@
 package com.mefy.platemate.presentation.features.auth.register
 
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.usecase.auth.RegisterUseCase
 import com.mefy.platemate.R
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
@@ -74,7 +74,7 @@ class RegisterViewModel @Inject constructor(
         if (state.isSubmitEnabled) return false
 
         _uiState.update(registerStateReducer::onInvalidSubmit)
-        showSnackbar(UiText.Resource(R.string.auth_register_form_invalid))
+        showError(UiText.Resource(R.string.auth_register_form_invalid))
         return true
     }
 
@@ -97,7 +97,7 @@ class RegisterViewModel @Inject constructor(
 
     private fun onSubmitError(error: AppError) {
         handleError(error)
-        val fieldErrors = (error as? AppError.Server)?.fieldErrors.orEmpty()
+        val fieldErrors = (error as? AppError.Api)?.fieldErrors.orEmpty()
         _uiState.update { current ->
             registerStateReducer.onSubmitError(
                 state = current,

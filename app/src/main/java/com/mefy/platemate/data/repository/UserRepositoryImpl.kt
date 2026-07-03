@@ -1,18 +1,18 @@
 package com.mefy.platemate.data.repository
 
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.common.result.flatMapSuspend
+import com.mefy.platemate.core.common.result.map
+import com.mefy.platemate.core.common.result.toResultOr
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.coroutine.AppDispatchers
-import com.mefy.platemate.core.common.flatMapSuspend
-import com.mefy.platemate.core.common.map
-import com.mefy.platemate.core.common.toResultOr
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.mapper.UserMapper
 import com.mefy.platemate.core.mapper.mapList
 import com.mefy.platemate.data.remote.rest.service.UserApiService
 import com.mefy.platemate.data.remote.dto.user.UpdateUserRequest
 import com.mefy.platemate.data.remote.safeApiCall
-import com.mefy.platemate.data.remote.safeMessageCall
+import com.mefy.platemate.data.remote.safeResultCall
 import com.mefy.platemate.domain.model.user.User
 import com.mefy.platemate.domain.repository.UserRepository
 import javax.inject.Inject
@@ -44,13 +44,20 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateCurrentUser(email: String?, password: String?): AppResult<Unit> =
         withContext(appDispatchers.io) {
             currentUserIdResult().flatMapSuspend { userId ->
-                safeMessageCall { api.updateCurrentUser(userId, UpdateUserRequest(email, password)) }
+                safeResultCall { api.updateCurrentUser(userId, UpdateUserRequest(email, password)) }
             }
         }
 
     override suspend fun deleteUser(id: Long): AppResult<Unit> =
         withContext(appDispatchers.io) {
-            safeMessageCall { api.deleteUser(id) }
+            safeResultCall { api.deleteUser(id) }
+        }
+
+    override suspend fun deleteCurrentUser(): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            currentUserIdResult().flatMapSuspend { userId ->
+                safeResultCall { api.deleteUser(userId) }
+            }
         }
 
     private suspend fun currentUserIdResult(): AppResult<Long> =

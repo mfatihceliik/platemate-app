@@ -14,13 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.mefy.platemate.presentation.features.auth.model.OnboardingStep
 import com.mefy.platemate.presentation.features.auth.onboarding.components.FeaturePagerContent
 import com.mefy.platemate.presentation.features.auth.onboarding.components.NotificationPermissionContent
 import com.mefy.platemate.presentation.features.auth.onboarding.components.SplashContent
-
-enum class OnboardingStep {
-    SPLASH, FEATURES, PERMISSION
-}
 
 @Composable
 fun OnboardingScreen(

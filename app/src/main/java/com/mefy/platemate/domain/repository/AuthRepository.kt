@@ -1,6 +1,6 @@
 package com.mefy.platemate.domain.repository
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.auth.AuthSession
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +9,7 @@ interface AuthRepository {
     suspend fun login(email: String, password: String): AppResult<AuthSession>
     suspend fun register(username: String, email: String, password: String): AppResult<AuthSession>
     suspend fun refreshSession(): AppResult<AuthSession>
+    suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit>
     suspend fun logout()
 }
 

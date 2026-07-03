@@ -1,7 +1,7 @@
-package com.mefy.platemate.presentation.features.auth.register
+﻿package com.mefy.platemate.presentation.features.auth.register
 
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.model.auth.PasswordStrengthLevel
 import com.mefy.platemate.domain.repository.AuthRepository
@@ -61,7 +61,7 @@ class RegisterViewModelTest {
     fun errorResult_setsErrorStateAndEmitsSnackbarEffect() = runTest {
         val repository = FakeAuthRepository(
             registerResult = AppResult.Error(
-                AppError.Server(
+                AppError.Api(
                     message = "Validation failed",
                     fieldErrors = mapOf("email" to "Email is invalid")
                 )
@@ -141,7 +141,7 @@ class RegisterViewModelTest {
     fun usernameChange_clearsUsernameErrorAndFormMessage() = runTest {
         val repository = FakeAuthRepository(
             registerResult = AppResult.Error(
-                AppError.Server(
+                AppError.Api(
                     message = "Validation failed",
                     fieldErrors = mapOf("username" to "Username already exists")
                 )
@@ -224,7 +224,7 @@ class RegisterViewModelTest {
         var registerCallCount: Int = 0
 
         override suspend fun login(email: String, password: String): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun register(
             username: String,
@@ -239,7 +239,10 @@ class RegisterViewModelTest {
         }
 
         override suspend fun refreshSession(): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
+
+        override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> =
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun logout() = Unit
     }

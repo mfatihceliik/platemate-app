@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material3.Icon
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -24,21 +22,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMButtonStyle
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 
 @Composable
-fun NotificationPermissionContent(
+internal fun NotificationPermissionContent(
     onAllowClick: () -> Unit,
     onSkipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.colorScheme
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -54,15 +54,15 @@ fun NotificationPermissionContent(
             // Bell Icon
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(dims.sizing.avatarLarge)
                     .background(Color(0xFFFEF9C3), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
+                PMIcon(
                     imageVector = Icons.Filled.Notifications,
                     contentDescription = null,
                     tint = Color(0xFFEAB308),
-                    modifier = Modifier.size(40.dp)
+                    size = dims.sizing.avatarIconInner,
                 )
             }
 
@@ -136,42 +136,4 @@ fun NotificationPermissionContent(
     }
 }
 
-@Composable
-private fun BenefitItem(
-    icon: ImageVector,
-    iconBg: Color,
-    iconColor: Color,
-    title: String,
-    desc: String
-) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s16)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .background(iconBg, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s4)) {
-            PMText(
-                text = title,
-                style = PMTextStyle.Title,
-                color = MaterialTheme.pmColors.textPrimary
-            )
-            PMText(
-                text = desc,
-                style = PMTextStyle.Caption,
-                color = MaterialTheme.pmColors.textTertiary
-            )
-        }
-    }
-}
+

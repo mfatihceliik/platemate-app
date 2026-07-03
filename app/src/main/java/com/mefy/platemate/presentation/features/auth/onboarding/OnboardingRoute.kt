@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun OnboardingRoute(
+internal fun OnboardingRoute(
     onNavigateToRegister: () -> Unit,
     onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier

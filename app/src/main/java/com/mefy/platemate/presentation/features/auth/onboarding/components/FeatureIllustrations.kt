@@ -35,7 +35,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun FeatureIllustration1() {
+internal fun FeatureIllustration1() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
@@ -118,7 +118,7 @@ fun FeatureIllustration1() {
 }
 
 @Composable
-fun FeatureIllustration2() {
+internal fun FeatureIllustration2() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
@@ -178,7 +178,7 @@ fun FeatureIllustration2() {
 }
 
 @Composable
-private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: String, plate: String, stats: String, trend: String, trendBg: Color) {
+internal fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: String, plate: String, stats: String, trend: String, trendBg: Color) {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
@@ -217,7 +217,7 @@ private fun TrendItem(rank: String, rankBg: Color, rankColor: Color, city: Strin
 }
 
 @Composable
-fun FeatureIllustration3() {
+internal fun FeatureIllustration3() {
     val dimensions = MaterialTheme.pmDimensions
     val pmColors = MaterialTheme.pmColors
     val colors = MaterialTheme.pmColors
