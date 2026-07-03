@@ -1,7 +1,7 @@
 package com.mefy.platemate.domain.repository
 
-import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.core.common.pagination.PagedResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.review.ReviewResponse
@@ -12,5 +12,6 @@ interface PlateReviewRepository {
     suspend fun getPlateReviews(plateCode: String, page: Int, size: Int): AppResult<PagedResult<Review>>
     suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit>
     suspend fun deleteReview(id: Long): AppResult<Unit>
+    suspend fun reportReview(commentId: Long, reasonCode: String, description: String?): AppResult<Unit>
 }
 

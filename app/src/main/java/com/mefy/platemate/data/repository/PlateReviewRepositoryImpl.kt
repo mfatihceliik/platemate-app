@@ -1,15 +1,16 @@
 package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.common.AppResult
-import com.mefy.platemate.core.common.map
 import com.mefy.platemate.core.common.pagination.PagedResult
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.common.result.map
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.PlateReviewPageMapper
 import com.mefy.platemate.data.remote.rest.service.ReviewApiService
 import com.mefy.platemate.data.remote.dto.plate.AddPlateReviewRequest
+import com.mefy.platemate.data.remote.dto.report.AddCommentReportRequest
 import com.mefy.platemate.data.remote.dto.review.UpdatePlateReviewRequest
 import com.mefy.platemate.data.remote.safeApiCall
-import com.mefy.platemate.data.remote.safeMessageCall
+import com.mefy.platemate.data.remote.safeResultCall
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.review.ReviewResponse
@@ -84,7 +85,7 @@ class PlateReviewRepositoryImpl @Inject constructor(
 
     override suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit> =
         withContext(appDispatchers.io) {
-            safeMessageCall {
+            safeResultCall {
                 api.updateReview(
                     id,
                     UpdatePlateReviewRequest(rating = rating, comment = comment.orEmpty())
@@ -94,6 +95,16 @@ class PlateReviewRepositoryImpl @Inject constructor(
 
     override suspend fun deleteReview(id: Long): AppResult<Unit> =
         withContext(appDispatchers.io) {
-            safeMessageCall { api.deleteReview(id) }
+            safeResultCall { api.deleteReview(id) }
+        }
+
+    override suspend fun reportReview(commentId: Long, reasonCode: String, description: String?): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall {
+                api.reportComment(
+                    commentId,
+                    AddCommentReportRequest(reasonCode = reasonCode, description = description?.ifBlank { null })
+                )
+            }
         }
 }

@@ -26,6 +26,7 @@ data class ReviewUiState(
     val isAnonymous: Boolean = false,
     val isSubmitting: Boolean = false,
     val isLoading: Boolean = true,
+    val isEditMode: Boolean = false,
     val submitResult: ReviewSubmitResult? = null
 ) {
     companion object {

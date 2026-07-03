@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
+import com.mefy.platemate.presentation.features.main.platedetail.model.CommentReportReason
 
 @Immutable
 data class PlateDetailUiState(
@@ -15,7 +16,7 @@ data class PlateDetailUiState(
     val ratingBreakdown: List<RatingBreakdownItem> = emptyList(),
     val tags: List<PlateTagUiModel> = emptyList(),
     val reviews: List<PlateReviewUiModel> = emptyList(),
-    val isBookmarked: Boolean = false
+    val reviewReport: ReviewReportUiState? = null
 ) {
     val hasReviews: Boolean get() = reviews.isNotEmpty()
     val hasRatingBreakdown: Boolean get() = ratingBreakdown.isNotEmpty()
@@ -46,5 +47,18 @@ data class PlateReviewUiModel(
     val rating: Int,
     val timeAgo: String,
     val comment: String?,
-    val reportTags: List<String>
+    val reportTags: List<String>,
+    val userId: Long = 0L,
+    val canReport: Boolean = false,
+    val canEdit: Boolean = false
+)
+
+@Immutable
+data class ReviewReportUiState(
+    val reviewId: Long,
+    val reviewerName: String,
+    val initials: String,
+    val selectedReason: CommentReportReason? = null,
+    val description: String = "",
+    val isSubmitting: Boolean = false
 )

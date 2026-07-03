@@ -11,5 +11,9 @@ data class PlateDetailUiModel(
     val reportTags: List<PlateReportTagUiModel> = emptyList(),
     val ratingAverage: Double,
     val commentCount: Long,
-    val isBookmarked: Boolean = false
+    val searchCount: Long = 0,
+    val isBookmarked: Boolean = false,
+    // Precomputed in the mapper so composition does no per-frame formatting.
+    val cityCode: String = "",
+    val ratingText: String = ""
 )

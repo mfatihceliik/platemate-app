@@ -1,10 +1,14 @@
-package com.mefy.platemate.data.repository
+﻿package com.mefy.platemate.data.repository
 
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
+import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.PlateSearchResultMapper
+import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
+import com.mefy.platemate.data.remote.dto.plate.AddPlateRemovalRequestRequest
+import com.mefy.platemate.data.remote.dto.plate.MyPlateListsDto
 import com.mefy.platemate.data.remote.dto.plate.PlateDetailReviewItemDto
 import com.mefy.platemate.data.remote.dto.plate.PlateSearchResponseDto
 import com.mefy.platemate.data.remote.dto.plate.PlateTagSummaryItemDto
@@ -58,7 +62,8 @@ class PlateRepositoryImplTest {
                         lastActivityAt = "2026-05-19T00:00:00Z",
                         recentReviews = listOf(
                             PlateDetailReviewItemDto(id = 1, userId = 1, username = "mfy", displayName = "Fatih", profilePhotoUrl = null, rating = 5, comment = "Great", reportTags = listOf("SAFE"), createdAt = "2026-05-19T00:00:00Z")
-                        )
+                        ),
+                        following = false
                     )
                 )
             )
@@ -93,7 +98,7 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Server)
+        assertTrue((result as AppResult.Error).error is AppError.Api)
     }
 
     @Test
@@ -113,7 +118,7 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Server)
+        assertTrue((result as AppResult.Error).error is AppError.Api)
     }
 
     @Test
@@ -129,7 +134,7 @@ class PlateRepositoryImplTest {
     }
 
     @Test
-    fun searchPlate_connectFailure_returnsUnreachableError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+    fun searchPlate_connectFailure_returnsNetworkError() = runTest(mainDispatcherRule.dispatcher.scheduler) {
         val repository = createRepository(
             api = FakePlateApiService(throwable = ConnectException("connection refused"))
         )
@@ -137,7 +142,7 @@ class PlateRepositoryImplTest {
         val result = repository.searchPlate("34ABC123")
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
+        assertTrue((result as AppResult.Error).error is AppError.Network)
     }
 
     private fun createRepository(api: FakePlateApiService): PlateRepositoryImpl = PlateRepositoryImpl(
@@ -158,5 +163,19 @@ class PlateRepositoryImplTest {
             throwable?.let { throw it }
             return response ?: error("Response must be provided for this test case.")
         }
+
+        override suspend fun followPlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun unfollowPlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun getMyLists(): DataResultResponse<MyPlateListsDto> =
+            DataResultResponse(message = null, success = true, data = MyPlateListsDto(savedPlates = null, alarmPlates = null))
+        override suspend fun savePlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun unsavePlate(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun createAlarm(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun removeAlarm(plateCode: String): ResultResponse = ResultResponse(null, true)
+        override suspend fun createRemovalRequest(
+            plateId: Long,
+            request: AddPlateRemovalRequestRequest
+        ): DataResultResponse<PlateRemovalRequestDto> =
+            throw UnsupportedOperationException("not used in tests")
     }
 }

@@ -8,7 +8,7 @@ data class PlateDetailDto(
     @SerializedName("cityName") val cityName: String?,
     @SerializedName("ratingAverage") val ratingAverage: Double,
     @SerializedName("reviewCount") val reviewCount: Long,
-    @SerializedName("todaySearchCount") val todaySearchCount: Long,
+    @SerializedName("weeklySearchCount") val weeklySearchCount: Long,
     @SerializedName("todayReviewCount") val todayReviewCount: Long,
     @SerializedName("todayReportCount") val todayReportCount: Long,
     @SerializedName("todayWeightedReportScore") val todayWeightedReportScore: Double,

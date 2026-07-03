@@ -1,10 +1,13 @@
 package com.mefy.platemate.presentation.features.main.platedetail.review
 
 import androidx.lifecycle.SavedStateHandle
-import com.mefy.platemate.core.common.AppResult
+import androidx.navigation.toRoute
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.review.AddPlateReviewUseCase
 import com.mefy.platemate.domain.usecase.review.GetReportTypesUseCase
+import com.mefy.platemate.domain.usecase.review.UpdatePlateReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
+import com.mefy.platemate.presentation.navigation.ReviewDestination
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
@@ -24,13 +27,24 @@ class ReviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchPlateUseCase: SearchPlateUseCase,
     private val addPlateReviewUseCase: AddPlateReviewUseCase,
+    private val updatePlateReviewUseCase: UpdatePlateReviewUseCase,
     private val getReportTypesUseCase: GetReportTypesUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
-    private val plateCode: String = checkNotNull(savedStateHandle["plateCode"])
+    private val route: ReviewDestination = savedStateHandle.toRoute()
+    private val plateCode: String = route.plateCode
+    private val editReviewId: Long = route.reviewId
+    private val isEditMode: Boolean = editReviewId > 0
 
-    private val _uiState = MutableStateFlow(ReviewUiState(plateCode = plateCode))
+    private val _uiState = MutableStateFlow(
+        ReviewUiState(
+            plateCode = plateCode,
+            isEditMode = isEditMode,
+            overallRating = if (isEditMode) route.initialRating else 0,
+            comment = if (isEditMode) route.initialComment else ""
+        )
+    )
     val uiState: StateFlow<ReviewUiState> = _uiState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<ReviewUiEffect>()
@@ -122,6 +136,11 @@ class ReviewViewModel @Inject constructor(
 
         _uiState.update { it.copy(isSubmitting = true) }
 
+        if (isEditMode) {
+            submitEdit(state)
+            return
+        }
+
         launch {
             val comment = state.comment.ifBlank { null }
             val selectedCodes = state.tags
@@ -147,6 +166,20 @@ class ReviewViewModel @Inject constructor(
                             submitResult = ReviewSubmitResult.Error(result.error.toUiText())
                         )
                     }
+                }
+            }
+        }
+    }
+
+    private fun submitEdit(state: ReviewUiState) {
+        launch {
+            val comment = state.comment.ifBlank { null }
+            when (val result = updatePlateReviewUseCase(editReviewId, state.overallRating, comment)) {
+                is AppResult.Success -> _uiState.update {
+                    it.copy(isSubmitting = false, submitResult = ReviewSubmitResult.Success)
+                }
+                is AppResult.Error -> _uiState.update {
+                    it.copy(isSubmitting = false, submitResult = ReviewSubmitResult.Error(result.error.toUiText()))
                 }
             }
         }

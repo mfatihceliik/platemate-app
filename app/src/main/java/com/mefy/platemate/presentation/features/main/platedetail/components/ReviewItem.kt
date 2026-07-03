@@ -12,15 +12,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.platedetail.PlateReviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -29,87 +39,104 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ReviewItem(
-    review: PlateReviewUiModel
+    review: PlateReviewUiModel,
+    onAvatarClick: () -> Unit = {},
+    onReportClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dims.spacing.s4),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-        verticalAlignment = Alignment.Top
-    ) {
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.avatarSmall)
-                .clip(CircleShape)
-                .background(colors.primaryContainer),
-            contentAlignment = Alignment.Center
+    PMCard(modifier = Modifier.fillMaxWidth(), padding = androidx.compose.foundation.layout.PaddingValues(dims.spacing.s12)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            PMText(
-                text = review.initials,
-                fontSize = dims.fontSize.md,
-                fontWeight = FontWeight.Bold,
-                color = colors.onPrimaryContainer
-            )
-        }
+            Box(
+                modifier = Modifier
+                    .size(dims.sizing.avatarSmall)
+                    .clip(CircleShape)
+                    .background(colors.primaryContainer)
+                    .debouncedClickable(onClick = onAvatarClick),
+                contentAlignment = Alignment.Center
+            ) {
+                PMText(
+                    text = review.initials,
+                    fontSize = dims.fontSize.md,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.onPrimaryContainer
+                )
+            }
 
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 PMText(
                     text = review.displayName ?: review.username,
-                    fontSize = dims.fontSize.md,
+                    style = PMTextStyle.Body,
+                    fontWeight = FontWeight.SemiBold,
                     color = colors.textPrimary
                 )
                 PMText(
                     text = review.timeAgo,
+                    style = PMTextStyle.Note,
                     color = colors.textLabel
                 )
             }
 
-            PMRatingStars(
-                rating = review.rating,
-                starSize = dims.sizing.iconSm
-            )
-
-            if (!review.comment.isNullOrBlank()) {
-                PMText(
-                    text = review.comment,
-                    color = colors.textSecondary
-                )
+            when {
+                review.canEdit -> PMIconButton(onClick = onEditClick, size = dims.sizing.iconSm) {
+                    PMIcon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.review_edit_title),
+                    )
+                }
+                review.canReport -> PMIconButton(onClick = onReportClick, size = dims.sizing.iconSm) {
+                    PMIcon(
+                        imageVector = Icons.Outlined.Flag,
+                        contentDescription = stringResource(R.string.report_review_title),
+                    )
+                }
             }
+        }
 
-            if (review.reportTags.isNotEmpty()) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-                ) {
-                    review.reportTags.forEach { tag ->
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(dims.radius.rFull))
-                                .background(colors.surfaceVariant)
-                                .padding(
-                                    horizontal = dims.spacing.s8,
-                                    vertical = dims.spacing.s4
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            PMText(
-                                text = tag,
-                                fontSize = dims.fontSize.xs,
-                                color = colors.textSecondary
-                            )
-                        }
+        PMRatingStars(
+            rating = review.rating,
+            starSize = dims.sizing.iconSm,
+            modifier = Modifier.padding(top = dims.spacing.s8)
+        )
+
+        if (!review.comment.isNullOrBlank()) {
+            PMText(
+                text = review.comment,
+                style = PMTextStyle.Body,
+                color = colors.textSecondary,
+                modifier = Modifier.padding(top = dims.spacing.s8)
+            )
+        }
+
+        if (review.reportTags.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.padding(top = dims.spacing.s10),
+                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            ) {
+                review.reportTags.forEach { tag ->
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(dims.radius.r8))
+                            .background(colors.surfaceVariant)
+                            .padding(horizontal = dims.spacing.s10, vertical = dims.spacing.s4),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        PMText(
+                            text = tag,
+                            style = PMTextStyle.Note,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.textSecondary
+                        )
                     }
                 }
             }
@@ -117,7 +144,7 @@ internal fun ReviewItem(
     }
 }
 
-@Preview(name = "ReviewItem Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(name = "ReviewItem Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun ReviewItemLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
@@ -125,7 +152,7 @@ private fun ReviewItemLightPreview() {
     }
 }
 
-@Preview(name = "ReviewItem Dark", showBackground = true, backgroundColor = 0xFF1E293B)
+@Preview(name = "ReviewItem Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun ReviewItemDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
@@ -138,7 +165,7 @@ private fun ReviewItemPreviewContent() {
     val dims = MaterialTheme.pmDimensions
     Column(
         modifier = Modifier.padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         ReviewItem(
             review = PlateReviewUiModel(
@@ -150,7 +177,8 @@ private fun ReviewItemPreviewContent() {
                 rating = 5,
                 timeAgo = "2 gün önce",
                 comment = "Çok nazik bir sürücü, teşekkür etti.",
-                reportTags = listOf("POLITE", "GAVE_WAY")
+                reportTags = listOf("Olumlu Sürücü", "Yol Verdi"),
+                canReport = true
             )
         )
         ReviewItem(
@@ -162,8 +190,9 @@ private fun ReviewItemPreviewContent() {
                 profilePhotoUrl = null,
                 rating = 4,
                 timeAgo = "3 gün önce",
-                comment = null,
-                reportTags = emptyList()
+                comment = "Kendi yorumum.",
+                reportTags = emptyList(),
+                canEdit = true
             )
         )
     }
