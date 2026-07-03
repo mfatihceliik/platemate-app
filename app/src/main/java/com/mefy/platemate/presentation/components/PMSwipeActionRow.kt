@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.components
 
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.IntOffset
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
@@ -87,78 +88,87 @@ fun PMSwipeActionRow(
         val minOffset = if (endToStartAction != null) -revealPx else 0f
         val maxOffset = if (startToEndAction != null) revealPx else 0f
 
-        val offsetX = remember { Animatable(0f) }
+        var offsetX by remember { mutableFloatStateOf(0f) }
         var rawDrag by remember { mutableFloatStateOf(0f) }
         val scope = rememberCoroutineScope()
 
+        // Positions the row can settle to: closed (0) plus whichever action sides are enabled.
+        val anchors = remember(minOffset, maxOffset) {
+            buildList {
+                if (minOffset < 0f) add(minOffset)
+                add(0f)
+                if (maxOffset > 0f) add(maxOffset)
+            }
+        }
+
         val dragState = rememberDraggableState { delta ->
             rawDrag += delta
-            scope.launch { offsetX.snapTo((offsetX.value + delta).coerceIn(minOffset, maxOffset)) }
+            // Update synchronously (no coroutine per delta) so the row tracks the finger 1:1.
+            offsetX = (offsetX + delta).coerceIn(minOffset, maxOffset)
         }
 
         // ── Behind: fixed-width action buttons, only the swiped side is drawn ──
-        if (offsetX.value < 0f && endToStartAction != null) {
+        if (offsetX < 0f && endToStartAction != null) {
             Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
                 SwipeActionButton(action = endToStartAction, width = revealDp) {
                     onEndToStart?.invoke()
-                    scope.launch { offsetX.animateTo(0f) }
+                    scope.launch { animate(offsetX, 0f) { value, _ -> offsetX = value } }
                 }
             }
         }
-        if (offsetX.value > 0f && startToEndAction != null) {
+        if (offsetX > 0f && startToEndAction != null) {
             Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterStart) {
                 SwipeActionButton(action = startToEndAction, width = revealDp) {
                     onStartToEnd?.invoke()
-                    scope.launch { offsetX.animateTo(0f) }
+                    scope.launch { animate(offsetX, 0f) { value, _ -> offsetX = value } }
                 }
             }
         }
 
         // ── Front: the row itself. Opaque background so the buttons never bleed through at rest. ──
-        val isOpen = offsetX.value != 0f
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .background(backgroundColor)
                 .draggable(
                     state = dragState,
                     orientation = Orientation.Horizontal,
                     enabled = minOffset != 0f || maxOffset != 0f,
-                    onDragStarted = { rawDrag = offsetX.value },
-                    onDragStopped = {
-                        when {
+                    onDragStarted = { rawDrag = offsetX },
+                    onDragStopped = { velocity ->
+                        val target = when {
                             startToEndAction != null && rawDrag >= triggerPx -> {
-                                onStartToEnd?.invoke()
-                                offsetX.animateTo(0f)
+                                onStartToEnd?.invoke(); 0f
                             }
 
                             endToStartAction != null && rawDrag <= -triggerPx -> {
-                                onEndToStart?.invoke()
-                                offsetX.animateTo(0f)
+                                onEndToStart?.invoke(); 0f
                             }
 
-                            minOffset < 0f && offsetX.value <= minOffset / 2f ->
-                                offsetX.animateTo(minOffset)
-
-                            maxOffset > 0f && offsetX.value >= maxOffset / 2f ->
-                                offsetX.animateTo(maxOffset)
-
-                            else -> offsetX.animateTo(0f)
+                            // Settle to the anchor nearest the velocity-projected position, so a
+                            // flick back always closes without needing to drag all the way.
+                            else -> {
+                                val projected = offsetX + velocity * VELOCITY_PROJECTION
+                                anchors.minByOrNull { abs(it - projected) } ?: 0f
+                            }
+                        }
+                        animate(offsetX, target, initialVelocity = velocity) { value, _ ->
+                            offsetX = value
                         }
                     }
                 )
         ) {
             content()
             // While open, a tap anywhere on the row closes it instead of activating the content.
-            if (isOpen) {
+            if (offsetX != 0f) {
                 Box(
                     modifier = Modifier
                         .matchParentSize()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { scope.launch { offsetX.animateTo(0f) } }
+                        ) { scope.launch { animate(offsetX, 0f) { value, _ -> offsetX = value } } }
                 )
             }
         }
@@ -193,6 +203,9 @@ private fun SwipeActionButton(action: PMSwipeAction, width: Dp, onClick: () -> U
 
 private const val REVEAL_FRACTION = 0.25f
 private const val FULL_SWIPE_FRACTION = 0.5f
+
+/** Seconds of velocity projected past the release point when deciding which anchor to settle to. */
+private const val VELOCITY_PROJECTION = 0.05f
 
 @Preview(name = "PMSwipeActionRow", showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
