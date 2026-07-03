@@ -57,16 +57,10 @@ fun MainBottomBar(
     val dims = MaterialTheme.pmDimensions
     val pillShape = RoundedCornerShape(dims.radius.rFull)
 
-    // Gösterge/seçim navigasyondan bağımsız optimistik yerel state ile sürülür: tıklama
-    // anında highlight + kayan gösterge başlar (thread boş → akıcı), gerçek navigasyon
-    // hemen tetiklenir. Local state, parent recompose'unu beklemeden anında highlight verir.
     val selectedState = remember { mutableStateOf(selectedDestination) }
     var selected by selectedState
     LaunchedEffect(selectedDestination) { selected = selectedDestination }
 
-    // onSelect ve sekme başına onClick lambda'ları remember'lanır: aksi halde her
-    // recompose'da yeniden üretilip tüm PMBottomBarItem + CenterFab'i (selected
-    // değişmese bile) recompose'a zorlardı. Stabil lambda → etkilenmeyen sekmeler skip.
     val latestOnSelected by rememberUpdatedState(onDestinationSelected)
     val onSelect = remember {
         { destination: TopLevelDestination ->
@@ -80,9 +74,6 @@ fun MainBottomBar(
         TopLevelDestination.entries.associateWith { d -> { onSelect(d) } }
     }
 
-    // Box yalnız bar (Row) yüksekliğini kaplar; bottombar slotu fazladan yer
-    // ayırmaz. FAB negatif offset ile içeriğin üstüne taşar (slot yüksekliğini
-    // büyütmez), böylece scroll'lu ekranda pill üstünde ölü bant kalmaz.
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -104,7 +95,6 @@ fun MainBottomBar(
                 .clip(pillShape)
                 .background(colors.surface)
                 .border(dims.stroke.st1, colors.outlineVariant, pillShape)
-                //.padding(horizontal = dims.spacing.s8)
         ) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val slotWidth = maxWidth / TopLevelDestination.entries.size
@@ -119,22 +109,15 @@ fun MainBottomBar(
                     label = "indicatorX"
                 )
 
-                // Messages seçiliyken kayan circle gizlenir: orta sekme yükseltilmiş FAB'dir
-                // ve seçimi kendi rengiyle gösterir; circle boş orta yuvada kalmasın diye solar.
                 val circleAlpha by animateFloatAsState(
                     targetValue = if (selected == TopLevelDestination.Messages) 0f else 1f,
                     animationSpec = tween(durationMillis = IndicatorAnimMs, easing = FastOutSlowInEasing),
                     label = "indicatorAlpha"
                 )
 
-                // Kayan seçili gösterge — dikey ortada, seçili ikonun arkasına oturur.
-                // İkon da dikey ortada (PMBottomBarItem) olduğundan circle ikonu birebir
-                // ortalar; etiket alt overlay olduğu için ikonu kaydırmaz.
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
-                        // Deferred read: indicatorX layout fazında okunur → her animasyon
-                        // karesinde Row/sekmeler recompose olmaz, yalnız bu Box re-layout olur.
                         .offset { IntOffset(indicatorX.roundToPx(), 0) }
                         .size(indicatorSize)
                         .graphicsLayer { alpha = circleAlpha }
@@ -148,7 +131,6 @@ fun MainBottomBar(
                 ) {
                     TopLevelDestination.entries.forEach { destination ->
                         if (destination == TopLevelDestination.Messages) {
-                            // Orta yuvayı rezerve et; FAB overlay olarak üstte çizilir.
                             Spacer(Modifier.weight(1f))
                         } else {
                             PMBottomBarItem(
@@ -162,7 +144,6 @@ fun MainBottomBar(
             }
         }
 
-        // 2) Orta (Messages) butonu — diğerleriyle aynı hizada, yalnız s8 yukarıda
         CenterFab(
             selected = selected == TopLevelDestination.Messages,
             onClick = clickHandlers.getValue(TopLevelDestination.Messages),

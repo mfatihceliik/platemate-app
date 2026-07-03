@@ -2,7 +2,9 @@ package com.mefy.platemate.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,17 +23,34 @@ import com.mefy.platemate.presentation.theme.pmColors
 @Composable
 fun PMCircularProgressIndicator(
     modifier: Modifier = Modifier,
-    size: Dp = MaterialTheme.pmDimensions.sizing.progressBarSmall,
-    strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st2,
+    size: Dp = MaterialTheme.pmDimensions.sizing.progressBarMedium,
+    strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st3,
     color: Color = MaterialTheme.pmColors.primary,
     trackColor: Color = Color.Transparent,
+    fillMaxSize: Boolean = false,
 ) {
-    CircularProgressIndicator(
-        modifier = modifier.size(size),
-        color = color,
-        strokeWidth = strokeWidth,
-        trackColor = trackColor,
-    )
+    if (fillMaxSize) {
+        // Full-screen loading: fill the parent and center the spinner. `modifier`
+        // (e.g. padding(innerPadding)) applies to the filling Box.
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(size),
+                color = color,
+                strokeWidth = strokeWidth,
+                trackColor = trackColor,
+            )
+        }
+    } else {
+        CircularProgressIndicator(
+            modifier = modifier.size(size),
+            color = color,
+            strokeWidth = strokeWidth,
+            trackColor = trackColor,
+        )
+    }
 }
 
 @Preview(name = "PMCircularProgressIndicator Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
@@ -73,5 +92,13 @@ private fun PMCircularProgressIndicatorPreviewContent() {
 
         // Custom color
         PMCircularProgressIndicator(color = MaterialTheme.pmColors.secondary)
+    }
+}
+
+@Preview(name = "PMCircularProgressIndicator FullScreen", showBackground = true, backgroundColor = 0xFFF6F8FB, heightDp = 240)
+@Composable
+private fun PMCircularProgressIndicatorFullScreenPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        PMCircularProgressIndicator(fillMaxSize = true)
     }
 }

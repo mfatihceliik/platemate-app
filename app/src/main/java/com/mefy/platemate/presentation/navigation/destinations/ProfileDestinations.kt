@@ -18,9 +18,6 @@ data object ProfileNotificationPreferencesDestination : AppDestination
 data object ProfilePremiumInfoDestination : AppDestination
 
 @Serializable
-data object ProfileSocialLinksDestination : AppDestination
-
-@Serializable
 data object ProfileFriendsDestination : AppDestination
 
 @Serializable
@@ -31,6 +28,9 @@ data object ProfileThemeColorDestination : AppDestination
 
 @Serializable
 data object ProfileLanguageDestination : AppDestination
+
+@Serializable
+data object ProfileSocialLinksDestination : AppDestination
 
 @Serializable
 data class UserProfileDestination(val userId: String) : AppDestination

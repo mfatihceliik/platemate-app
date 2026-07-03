@@ -27,8 +27,8 @@ import com.mefy.platemate.presentation.theme.pmColors
  * Bağlantı kesildiğinde içeriğin üstünde beliren kalıcı ince şerit.
  *
  * Bloklamaz (pasif durum bilgisi); [visible] true olduğu sürece görünür kalır,
- * bağlantı gelince animasyonla kaybolur. Kritik bir işlem sırasında oluşan
- * hata pop-up'ından ([GlobalAppEvent.ShowGlobalDialog]) farklıdır.
+ * bağlantı gelince animasyonla kaybolur. Geçici hata/başarı geri-bildiriminden (üstten inen
+ * banner) ve oturum-bitti bloklayan dialog'undan farklıdır.
  */
 @Composable
 fun OfflineBanner(

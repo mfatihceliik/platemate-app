@@ -66,6 +66,31 @@ fun NavHostController.navigateToReview(plateCode: String) {
     }
 }
 
+fun NavHostController.navigateToPlateActions(plateCode: String) {
+    navigate(PlateActionsDestination(plateCode = plateCode)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToRemovalRequest(plateId: Long, plateCode: String) {
+    navigate(PlateRemovalRequestDestination(plateId = plateId, plateCode = plateCode)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToEditReview(plateCode: String, reviewId: Long, rating: Int, comment: String) {
+    navigate(
+        ReviewDestination(
+            plateCode = plateCode,
+            reviewId = reviewId,
+            initialRating = rating,
+            initialComment = comment
+        )
+    ) {
+        launchSingleTop = true
+    }
+}
+
 fun NavHostController.navigateToEditProfile() {
     navigate(EditProfileDestination) {
         launchSingleTop = true
@@ -90,12 +115,6 @@ fun NavHostController.navigateToProfilePremiumInfo() {
     }
 }
 
-fun NavHostController.navigateToProfileSocialLinks() {
-    navigate(ProfileSocialLinksDestination) {
-        launchSingleTop = true
-    }
-}
-
 fun NavHostController.navigateToProfileChangePassword() {
     navigate(ProfileChangePasswordDestination) {
         launchSingleTop = true
@@ -110,6 +129,12 @@ fun NavHostController.navigateToProfileThemeColor() {
 
 fun NavHostController.navigateToProfileLanguage() {
     navigate(ProfileLanguageDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileSocialLinks() {
+    navigate(ProfileSocialLinksDestination) {
         launchSingleTop = true
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,12 +33,13 @@ fun PMMessageItem(
     name: String,
     preview: String,
     time: String,
-    isUnread: Boolean,
+    unreadCount: Int,
     avatarBg: Color,
     avatarFg: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isUnread = unreadCount > 0
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
@@ -71,6 +73,7 @@ fun PMMessageItem(
             PMText(
                 text = name,
                 color = colors.textPrimary,
+                fontWeight = if (isUnread) FontWeight.Bold else FontWeight.Normal,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -88,15 +91,25 @@ fun PMMessageItem(
         ) {
             Text(
                 text = time,
-                color = colors.textLabel
+                color = if (isUnread) colors.primary else colors.textLabel
             )
             if (isUnread) {
+                // WhatsApp tarzı sayılı rozet; iki+ hanede daireden hap biçimine genişler.
                 Box(
                     modifier = Modifier
-                        .size(dims.sizing.unreadDotSize)
+                        .sizeIn(minWidth = 20.dp, minHeight = 20.dp)
                         .clip(CircleShape)
                         .background(colors.primary)
-                )
+                        .padding(horizontal = dims.spacing.s4),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PMText(
+                        text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                        color = colors.onPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
@@ -109,14 +122,20 @@ private fun PMMessageItemPreview() {
         Column(modifier = Modifier.fillMaxWidth()) {
             PMMessageItem(
                 initials = "AY", name = "Ahmet Y.", preview = "Tesekkurler, cok yardimci oldun!",
-                time = "09:24", isUnread = true,
+                time = "09:24", unreadCount = 3,
                 avatarBg = Color(0xFFEEF2FF), avatarFg = Color(0xFF4F46E5),
                 onClick = {}
             )
             PMMessageItem(
                 initials = "ZK", name = "Zeynep K.", preview = "Plakayi gordum, gercekten nazik biri",
-                time = "Dun", isUnread = false,
+                time = "Dun", unreadCount = 0,
                 avatarBg = Color(0xFFECFEFF), avatarFg = Color(0xFF0891B2),
+                onClick = {}
+            )
+            PMMessageItem(
+                initials = "MC", name = "Mehmet C.", preview = "Cok mesaj birikti burada",
+                time = "Pzt", unreadCount = 128,
+                avatarBg = Color(0xFFF0FDF4), avatarFg = Color(0xFF15803D),
                 onClick = {}
             )
         }

@@ -42,6 +42,9 @@ import com.mefy.platemate.presentation.components.model.PlateCardDensity
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -53,7 +56,8 @@ fun PlateCard(
     density: PlateCardDensity = PlateCardDensity.Compact,
     rank: Int? = null,
     cityName: String? = null,
-    reportTags: List<PlateReportTagUiModel> = emptyList(),
+    // ImmutableList: ham List compiler için unstable → PlateCard hiç skip edilemezdi.
+    reportTags: ImmutableList<PlateReportTagUiModel> = persistentListOf(),
     ratingAverage: Double? = null,
     commentCount: Long? = null,
     action: PlateCardAction = PlateCardAction.None
@@ -393,7 +397,7 @@ private fun PlateCardStandardDarkPreview() {
                 onClick = {},
                 density = PlateCardDensity.Standard,
                 cityName = "Izmir",
-                reportTags = emptyList(),
+                reportTags = persistentListOf(),
                 ratingAverage = 3.5,
                 commentCount = 12,
                 action = PlateCardAction.Bookmarkable(isBookmarked = true, onBookmark = {})
@@ -441,12 +445,12 @@ private fun PlateCardPreviewContainer(
     )
 }
 
-private fun plateCardPreviewTags(count: Int): List<PlateReportTagUiModel> {
+private fun plateCardPreviewTags(count: Int): ImmutableList<PlateReportTagUiModel> {
     val allTags = listOf(
         PlateReportTagUiModel(code = "CUTS", label = "Cuts lanes", severity = "HIGH", colorHex = "#FF6A3D"),
         PlateReportTagUiModel(code = "SPEEDING", label = "Speeding", severity = "MEDIUM", colorHex = "#FFB300"),
         PlateReportTagUiModel(code = "TAILGATING", label = "Tailgating", severity = "MEDIUM", colorHex = "#FFB300"),
         PlateReportTagUiModel(code = "HONKING", label = "Honking", severity = "LOW", colorHex = "#4CAF50")
     )
-    return allTags.take(count)
+    return allTags.take(count).toImmutableList()
 }

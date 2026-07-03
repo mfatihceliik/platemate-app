@@ -10,14 +10,6 @@ import com.mefy.platemate.presentation.common.text.UiText
  */
 object DialogFactory {
 
-    /** Genel hata pop-up'ı (ör. sunucuya ulaşılamadı / çevrimdışı). */
-    fun errorDialog(message: UiText): DialogModel = DialogModel(
-        title = UiText.Resource(R.string.common_error_title),
-        message = message,
-        confirmText = UiText.Resource(R.string.common_ok),
-        variant = DialogVariant.Error
-    )
-
     /** Oturum süresi doldu; onaylanınca yeniden giriş akışına yönlendirir. */
     fun sessionExpiredDialog(onConfirm: () -> Unit): DialogModel = DialogModel(
         title = UiText.Resource(R.string.session_expired_title),

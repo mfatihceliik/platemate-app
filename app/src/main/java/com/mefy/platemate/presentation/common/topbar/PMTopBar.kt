@@ -44,7 +44,16 @@ fun PMTopBar(
     when (config) {
         is PMTopBarConfig.Hidden -> {}
         is PMTopBarConfig.Standard -> PMStandardTopBar(config, modifier, containerColor)
-        is PMTopBarConfig.Custom -> config.content()
+        // Status-bar inset + zemin burada merkezî olarak uygulanır; Custom topbar'lar
+        // (ör. ConversationTopBar) kendi inset'ini yönetmek zorunda kalmaz.
+        is PMTopBarConfig.Custom -> Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(containerColor)
+                .windowInsetsPadding(WindowInsets.statusBars)
+        ) {
+            config.content()
+        }
     }
 }
 

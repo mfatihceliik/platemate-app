@@ -8,6 +8,7 @@ data object MessagesDestination : AppDestination
 @Serializable
 data class ChatDestination(
     val conversationId: String,
+    val otherUserId: Long = 0L,
     val participantName: String = "",
     val initials: String = "",
     val avatarBgArgb: Long = 0xFFEEF2FFL,

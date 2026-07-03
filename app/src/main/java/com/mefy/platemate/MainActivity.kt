@@ -2,10 +2,10 @@ package com.mefy.platemate
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,27 +19,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.core.notification.NotificationIntentFactory
 import com.mefy.platemate.data.local.LanguagePreferenceStore
 import com.mefy.platemate.data.local.ThemePreferenceStore
 import com.mefy.platemate.domain.model.language.AppLanguage
 import com.mefy.platemate.domain.model.theme.AppThemeMode
-import com.mefy.platemate.presentation.navigation.AppNavHost
+import com.mefy.platemate.presentation.common.global.NotificationNavigationBus
+import com.mefy.platemate.presentation.navigation.PlateMateAppRoot
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
+import androidx.core.text.layoutDirection
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var themePreferenceStore: ThemePreferenceStore
     @Inject lateinit var languagePreferenceStore: LanguagePreferenceStore
+    @Inject lateinit var notificationIntentFactory: NotificationIntentFactory
+    @Inject lateinit var notificationNavigationBus: NotificationNavigationBus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        handleNotificationIntent(intent)
         setContent {
             val themeMode by themePreferenceStore.observeThemeMode()
                 .collectAsStateWithLifecycle(initialValue = AppThemeMode.SYSTEM)
@@ -54,6 +62,15 @@ class MainActivity : ComponentActivity() {
                 AppThemeMode.DARK -> true
             }
             val accentColor = Color(accentColorArgb.toInt())
+
+            // Edge-to-edge zaten aktif (enableEdgeToEdge). Sistem-bar ikon kontrastını
+            // uygulama-içi tema değişimine bağla: açık temada koyu ikon, koyu temada açık.
+            val view = LocalView.current
+            SideEffect {
+                val controller = WindowCompat.getInsetsController(window, view)
+                controller.isAppearanceLightStatusBars = !darkTheme
+                controller.isAppearanceLightNavigationBars = !darkTheme
+            }
 
             val currentLang = language ?: AppLanguage.TR
             val locale = remember(currentLang) {
@@ -75,7 +92,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val layoutDirection = remember(currentLang) {
-                when (TextUtils.getLayoutDirectionFromLocale(locale)) {
+                when (locale.layoutDirection) {
                     View.LAYOUT_DIRECTION_RTL -> LayoutDirection.Rtl
                     else -> LayoutDirection.Ltr
                 }
@@ -92,10 +109,22 @@ class MainActivity : ComponentActivity() {
                 LocalLayoutDirection provides layoutDirection
             ) {
                 PlateMateTheme(darkTheme = darkTheme, accentColor = accentColor) {
-                    AppNavHost()
+                    PlateMateAppRoot()
                 }
             }
         }
+    }
+
+    // App zaten açıkken (singleTop) bildirime dokunma buraya düşer.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleNotificationIntent(intent)
+    }
+
+    // Bildirim intent'ini çözüp nav-bus'a koyar; kök composable ana grafik hazırken yönlendirir.
+    private fun handleNotificationIntent(intent: Intent?) {
+        notificationIntentFactory.parse(intent)?.let(notificationNavigationBus::post)
     }
 }
 

@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.navigation
 
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -26,7 +25,6 @@ import com.mefy.platemate.presentation.features.main.settings.themecolor.ThemeCo
 internal fun NavGraphBuilder.settingsGraph(
     navController: NavHostController,
     onShowSnackbar: (String) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     navigation<SettingsGraphDestination>(startDestination = ProfileSettingsHomeDestination) {
         // Sekme kökü: geri butonu yok (onBackClick = null).
@@ -41,7 +39,14 @@ internal fun NavGraphBuilder.settingsGraph(
                 onNavigateToLanguage = { navController.navigateToProfileLanguage() },
                 onNavigateToNotificationPreferences = { navController.navigateToProfileNotificationPreferences() },
                 onNavigateToSocialLinks = { navController.navigateToProfileSocialLinks() },
-                modifier = modifier
+                onNavigateToAdmin = { navController.navigate(AdminHubDestination) },
+            )
+        }
+
+        composable<ProfileSocialLinksDestination> {
+            SocialLinksRoute(
+                viewModel = hiltViewModel<SocialLinksViewModel>(),
+                onNavigateBack = { navController.popBackStack() },
             )
         }
 
@@ -50,7 +55,6 @@ internal fun NavGraphBuilder.settingsGraph(
                 viewModel = hiltViewModel<EditProfileViewModel>(),
                 onNavigateBack = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
-                modifier = modifier
             )
         }
 
@@ -59,7 +63,6 @@ internal fun NavGraphBuilder.settingsGraph(
                 viewModel = hiltViewModel<ChangePasswordViewModel>(),
                 onBackClick = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
-                modifier = modifier
             )
         }
 
@@ -67,7 +70,6 @@ internal fun NavGraphBuilder.settingsGraph(
             ThemeColorRoute(
                 viewModel = hiltViewModel<ThemeColorViewModel>(),
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
             )
         }
 
@@ -75,7 +77,6 @@ internal fun NavGraphBuilder.settingsGraph(
             LanguageRoute(
                 viewModel = hiltViewModel<LanguageViewModel>(),
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
             )
         }
 
@@ -84,7 +85,6 @@ internal fun NavGraphBuilder.settingsGraph(
                 viewModel = hiltViewModel<NotificationPreferencesViewModel>(),
                 onBackClick = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
-                modifier = modifier
             )
         }
 
@@ -92,16 +92,6 @@ internal fun NavGraphBuilder.settingsGraph(
             PremiumInfoRoute(
                 viewModel = hiltViewModel<PremiumInfoViewModel>(),
                 onBackClick = { navController.popBackStack() },
-                modifier = modifier
-            )
-        }
-
-        composable<ProfileSocialLinksDestination> {
-            SocialLinksRoute(
-                viewModel = hiltViewModel<SocialLinksViewModel>(),
-                onBackClick = { navController.popBackStack() },
-                onShowSnackbar = onShowSnackbar,
-                modifier = modifier
             )
         }
     }

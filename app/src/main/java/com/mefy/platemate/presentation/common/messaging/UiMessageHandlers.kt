@@ -2,23 +2,19 @@ package com.mefy.platemate.presentation.common.messaging
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.mefy.platemate.presentation.common.dialog.DialogModel
+import com.mefy.platemate.presentation.common.banner.BannerSeverity
 import com.mefy.platemate.presentation.common.text.UiText
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Ekran-yerel ([com.mefy.platemate.presentation.common.viewmodel.BaseViewModel.uiMessages])
- * snackbar/dialog bildirimlerinin kök seviyedeki tek sink'e (snackbar host + dialog host)
- * bağlanmasını sağlayan işleyiciler.
+ * bildirimlerinin kök seviyedeki tek banner sink'ine bağlanmasını sağlayan işleyici.
  *
- * [com.mefy.platemate.presentation.navigation.AppNavHost] bunları bir kez
- * [LocalUiMessageHandlers] üzerinden sağlar; her ekran yalnızca [HandleUiMessages]
- * çağırarak kendi ViewModel akışını toplar. Böylece param drilling ortadan kalkar ve
- * snackbar her ekranda çalışır.
+ * [com.mefy.platemate.presentation.navigation.AppNavHost] bunu bir kez [LocalUiMessageHandlers]
+ * üzerinden sağlar; her ekran yalnızca [HandleUiMessages] çağırarak kendi ViewModel akışını toplar.
  */
 data class UiMessageHandlers(
-    val onShowSnackbar: (UiText) -> Unit,
-    val onShowDialog: (DialogModel) -> Unit
+    val onShowSnackbar: (UiText, BannerSeverity) -> Unit
 )
 
 val LocalUiMessageHandlers = staticCompositionLocalOf<UiMessageHandlers> {
@@ -31,7 +27,6 @@ fun HandleUiMessages(messages: Flow<UiMessage>) {
     val handlers = LocalUiMessageHandlers.current
     CollectUiMessages(
         messages = messages,
-        onShowSnackbar = handlers.onShowSnackbar,
-        onShowDialog = handlers.onShowDialog
+        onShowSnackbar = handlers.onShowSnackbar
     )
 }

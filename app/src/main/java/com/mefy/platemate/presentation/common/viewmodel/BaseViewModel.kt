@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.presentation.common.dialog.DialogFactory
-import com.mefy.platemate.presentation.common.dialog.DialogModel
+import com.mefy.platemate.presentation.common.banner.BannerSeverity
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.messaging.UiMessage
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
@@ -40,22 +39,14 @@ open class BaseViewModel(
 
     /**
      * Tek hata giriş noktası. UX, hatanın türünden belirlenir:
-     * - [AppError.SessionExpired] -> uygulama-geneli yeniden giriş akışı
-     * - [AppError.Network] / [AppError.Unreachable] -> bloklayan pop-up
-     * - [AppError.Server] -> backend mesajıyla snackbar
+     * - [AppError.SessionExpired] -> uygulama-geneli yeniden giriş akışı (bloklayan dialog)
+     * - [AppError.Network] / [AppError.Api] -> üstten inen kırmızı hata banner'ı
      */
     protected fun handleError(error: AppError) {
         when (error) {
-            AppError.SessionExpired ->
-                globalUiEventBus.emit(GlobalAppEvent.SessionExpired)
-
-            is AppError.Network, is AppError.Unreachable ->
-                globalUiEventBus.emit(
-                    GlobalAppEvent.ShowGlobalDialog(DialogFactory.errorDialog(error.toUiText()))
-                )
-
-            is AppError.Server ->
-                showSnackbar(error.toUiText())
+            AppError.SessionExpired -> globalUiEventBus.emit(GlobalAppEvent.SessionExpired)
+            is AppError.Network -> showError(error.toUiText())
+            is AppError.Api -> showError(error.toUiText())
         }
     }
 
@@ -81,12 +72,19 @@ open class BaseViewModel(
         }
     }
 
-    protected fun showSnackbar(message: UiText) {
-        emitUiMessage(UiMessage.ShowSnackbar(message))
+    /** Kırmızı hata banner'ı. */
+    protected fun showError(message: UiText) {
+        emitUiMessage(UiMessage.ShowSnackbar(message, BannerSeverity.Error))
     }
 
-    protected fun showDialog(dialog: DialogModel) {
-        emitUiMessage(UiMessage.ShowDialog(dialog))
+    /** Yeşil başarı banner'ı. */
+    protected fun showSuccess(message: UiText) {
+        emitUiMessage(UiMessage.ShowSnackbar(message, BannerSeverity.Success))
+    }
+
+    /** Nötr bilgi banner'ı. */
+    protected fun showInfo(message: UiText) {
+        emitUiMessage(UiMessage.ShowSnackbar(message, BannerSeverity.Info))
     }
 
     protected fun emitUiMessage(event: UiMessage) {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
 
@@ -22,12 +23,16 @@ fun debouncedClick(
     onClick: () -> Unit
 ): () -> Unit {
     var lastClickTime by remember { mutableLongStateOf(0L) }
-    
-    return {
-        val now = System.currentTimeMillis()
-        if (now - lastClickTime >= debounceMillis) {
-            lastClickTime = now
-            onClick()
+
+    // Dönen lambda remember'lanır: her recomposition'da yeni referans üretilirse
+    // çağıranın (PMButton/PMCard) onClick kimliği bozulur ve skip iptal olur.
+    return remember(debounceMillis, onClick) {
+        {
+            val now = System.currentTimeMillis()
+            if (now - lastClickTime >= debounceMillis) {
+                lastClickTime = now
+                onClick()
+            }
         }
     }
 }
@@ -52,8 +57,12 @@ fun Modifier.debouncedClickable(
     }
 ) {
     var lastClickTime by remember { mutableLongStateOf(0L) }
-    
-    Modifier.clickable(
+
+    // canFocus = false: tıklamada input-focus alma → focusable'ın bring-into-view kaydırması
+    // olmasın (kısmen ekran dışı satıra basınca "ortalama" davranışını engeller).
+    Modifier
+        .focusProperties { canFocus = false }
+        .clickable(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
@@ -91,8 +100,10 @@ fun Modifier.debouncedClickable(
     }
 ) {
     var lastClickTime by remember { mutableLongStateOf(0L) }
-    
-    Modifier.clickable(
+
+    Modifier
+        .focusProperties { canFocus = false }
+        .clickable(
         interactionSource = interactionSource,
         indication = indication,
         enabled = enabled,
