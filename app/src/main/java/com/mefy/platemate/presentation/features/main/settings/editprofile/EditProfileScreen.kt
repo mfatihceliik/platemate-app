@@ -1,209 +1,229 @@
-package com.mefy.platemate.presentation.features.main.settings.editprofile
+﻿package com.mefy.platemate.presentation.features.main.settings.editprofile
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
+import com.mefy.platemate.presentation.common.text.resolve
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.stringResource
+import coil.compose.rememberAsyncImagePainter
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
+import com.mefy.platemate.presentation.common.spacedByWithFooter
+import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.common.state.ScreenStatus
-import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMLoading
 import com.mefy.platemate.presentation.components.PMCommentField
+import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
 import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarEditSection
-import com.mefy.platemate.presentation.features.main.settings.editprofile.components.DangerZoneSection
-import com.mefy.platemate.presentation.features.main.settings.editprofile.components.EditProfileSaveAction
-import com.mefy.platemate.presentation.features.main.settings.editprofile.components.SocialLinkEditRow
+import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarUrlDialog
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun EditProfileScreen(
+    modifier: Modifier = Modifier,
     state: EditProfileUiState,
     onAction: (EditProfileUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues = PaddingValues()
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    val status = when {
-        state.isLoading -> ScreenStatus.Loading
-        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
-        else -> ScreenStatus.Content
+
+    // Stable, hoisted callbacks: fields/buttons skip recomposition while their data is unchanged.
+    val onSave = remember(onAction) { { onAction(EditProfileUiAction.SaveClicked) } }
+    val onAvatarEdit = remember(onAction) { { onAction(EditProfileUiAction.AvatarEditClicked) } }
+    val onDeleteAccount = remember(onAction) { { onAction(EditProfileUiAction.DeleteAccountClicked) } }
+    val onDisplayNameChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.DisplayNameChanged(v)) } }
+    val onUsernameChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.UsernameChanged(v)) } }
+    val onBioChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.BioChanged(v)) } }
+
+    if (state.showAvatarDialog) {
+        AvatarUrlDialog(
+            url = state.avatarUrlDraft,
+            onUrlChange = { onAction(EditProfileUiAction.AvatarUrlChanged(it)) },
+            onConfirm = { onAction(EditProfileUiAction.AvatarUrlConfirmed) },
+            onDismiss = { onAction(EditProfileUiAction.AvatarDialogDismissed) }
+        )
     }
 
-    PMBaseScreen(
-        modifier = modifier,
-        topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.edit_profile_title),
-            onBackClick = { onAction(EditProfileUiAction.BackClicked) },
-            actions = {
-                EditProfileSaveAction(
-                    isSaving = state.isSaving,
-                    onSaveClick = { onAction(EditProfileUiAction.SaveClicked) }
+    val initials = remember(state.displayName) {
+        state.displayName
+            .split(" ")
+            .take(2)
+            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
+            .joinToString("")
+            .ifEmpty { "?" }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            horizontal = dims.spacing.s16,
+            vertical = dims.spacing.s8
+        ),
+        verticalArrangement = spacedByWithFooter(dims.spacing.s8)
+    ) {
+
+        item {
+            AvatarEditSection(
+                initials = initials,
+                onAvatarClick = onAvatarEdit
+            )
+        }
+
+        item {
+            SectionLabel(
+                text = stringResource(R.string.edit_profile_field_display_name)
+            )
+        }
+
+        item {
+            PMTextField(
+                value = state.displayName,
+                onValueChange = onDisplayNameChange,
+                isError = state.displayNameError != null,
+                errorText = state.displayNameError?.resolve(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            SectionLabel(
+                text = stringResource(R.string.edit_profile_field_username)
+            )
+        }
+
+        item {
+            PMTextField(
+                value = state.username,
+                onValueChange = onUsernameChange,
+                readOnly = true,
+                isError = state.usernameError != null,
+                errorText = state.usernameError?.resolve(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (state.usernameError == null && state.username.isNotEmpty()) {
+                PMText(
+                    text = stringResource(R.string.edit_profile_username_hint, state.username),
+                    style = PMTextStyle.Note,
+                    color = colors.textLabel,
+                    modifier = Modifier.padding(start = dims.spacing.s4)
                 )
             }
-        ),
-        containerColor = colors.surfaceSecondary,
-        status = status,
-        onRetry = { onAction(EditProfileUiAction.RetryClicked) },
-        loading = { innerPadding -> PMLoading(modifier = Modifier.padding(innerPadding)) }
-    ) { innerPadding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                contentPadding = PaddingValues(bottom = dims.spacing.s32)
-            ) {
-                item(key = "avatar") {
-                    val initials = state.displayName
-                        .split(" ")
-                        .take(2)
-                        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-                        .joinToString("")
-                        .ifEmpty { "?" }
+        }
 
-                    AvatarEditSection(
-                        initials = initials,
-                        onAvatarClick = { onAction(EditProfileUiAction.AvatarEditClicked) }
-                    )
-                }
+        item {
+            SectionLabel(
+                text = stringResource(R.string.edit_profile_field_bio)
+            )
+        }
 
-                item(key = "form") {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(colors.surfaceSecondary)
-                            .padding(dims.spacing.s16),
-                        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
-                    ) {
-                        SectionLabel(
-                            text = stringResource(R.string.edit_profile_field_display_name)
-                        )
-                        PMTextField(
-                            value = state.displayName,
-                            onValueChange = { onAction(EditProfileUiAction.DisplayNameChanged(it)) },
-                            isError = state.displayNameError != null,
-                            errorText = state.displayNameError,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+        item {
+            PMCommentField(
+                value = state.bio,
+                onValueChange = onBioChange,
+                maxLength = state.bioMaxLength,
+                placeholder = stringResource(R.string.edit_profile_bio_placeholder),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
-                        SectionLabel(
-                            text = stringResource(R.string.edit_profile_field_username)
-                        )
-                        Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)) {
-                            PMTextField(
-                                value = state.username,
-                                onValueChange = { onAction(EditProfileUiAction.UsernameChanged(it)) },
-                                readOnly = true,
-                                isError = state.usernameError != null,
-                                errorText = state.usernameError,
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            if (state.usernameError == null && state.username.isNotEmpty()) {
-                                PMText(
-                                    text = stringResource(R.string.edit_profile_username_hint, state.username),
-                                    style = PMTextStyle.Note,
-                                    color = colors.textLabel,
-                                    modifier = Modifier.padding(start = dims.spacing.s4)
-                                )
-                            }
-                        }
+        item {
+            SectionLabel(
+                text = stringResource(R.string.edit_profile_field_social)
+            )
+            HorizontalDivider(
+                color = colors.outline,
+            )
+        }
 
-                        SectionLabel(
-                            text = stringResource(R.string.edit_profile_field_bio)
-                        )
-                        PMCommentField(
-                            value = state.bio,
-                            onValueChange = { onAction(EditProfileUiAction.BioChanged(it)) },
-                            maxLength = state.bioMaxLength,
-                            placeholder = stringResource(R.string.edit_profile_bio_placeholder),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = dims.spacing.s4),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-                        ) {
-                            SectionLabel(
-                                text = stringResource(R.string.edit_profile_field_social)
-                            )
-                            HorizontalDivider(
-                                color = colors.outline,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-
-                        SocialLinkEditRow(
-                            platform = "INSTAGRAM",
-                            value = state.instagramUrl,
-                            onValueChange = { onAction(EditProfileUiAction.InstagramChanged(it)) }
-                        )
-                        SocialLinkEditRow(
-                            platform = "X",
-                            value = state.twitterUrl,
-                            onValueChange = { onAction(EditProfileUiAction.TwitterChanged(it)) }
-                        )
-                        SocialLinkEditRow(
-                            platform = "FACEBOOK",
-                            value = state.linkedInUrl,
-                            onValueChange = { onAction(EditProfileUiAction.LinkedInChanged(it)) }
-                        )
-                        DangerZoneSection(
-                            onDeleteAccountClick = { onAction(EditProfileUiAction.DeleteAccountClicked) },
-                            modifier = Modifier.padding(top = dims.spacing.s4)
-                        )
-                    }
-                }
+        items(
+            items = state.availablePlatforms,
+            key = { it.id }
+        ) { platform ->
+            val interactionSource = remember {
+                MutableInteractionSource()
             }
+            //val focused by interactionSource.collectIsFocusedAsState()
+            PMRowItem(
+                leadingIconPainter = rememberAsyncImagePainter(
+                    model = platform.iconUrl,
+                    error = painterResource(R.drawable.ic_link),
+                    placeholder = painterResource(R.drawable.ic_link)
+                ),
+                leadingIconTint = platform.iconTint,
+                leadingContainerColor = platform.backgroundColor
+            ) {
+                PMTextField(
+                    value = state.socialLinks[platform.code].orEmpty(),
+                    onValueChange = {
+                        onAction(
+                            EditProfileUiAction.SocialLinkChanged(
+                                platform.code,
+                                it
+                            )
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
+                )
+            }
+        }
+
+        item {
+            PMButton(
+                text = stringResource(R.string.edit_profile_save),
+                onClick = onSave,
+                enabled = state.isSaving,
+                modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+            )
         }
     }
 }
+
+
 
 private val previewState = EditProfileUiState(
     isLoading = false,
     isSaving = false,
     displayName = "Ahmet Yılmaz",
     username = "ahmetyilmaz",
-    bio = "İstanbul sürücüsü. Saygılı ve temkinli araç kullanırım.",
-    instagramUrl = "https://instagram.com/ahmet",
-    twitterUrl = "",
-    linkedInUrl = ""
+    bio = "İstanbul sürücüsüyüm. Saygılı ve temkinli araç kullanırım.",
+    availablePlatforms = listOf(
+        SocialPlatform(1, "INSTAGRAM", "Instagram", null, androidx.compose.ui.graphics.Color(0xFFFDF2F8), androidx.compose.ui.graphics.Color(0xFFDB2777)),
+        SocialPlatform(2, "X", "X", null, androidx.compose.ui.graphics.Color(0xFFF1F5F9), androidx.compose.ui.graphics.Color(0xFF0F172A))
+    )
 )
 
 @Preview(name = "EditProfileScreen Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun EditProfileScreenLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        EditProfileScreen(state = previewState, onAction = {})
+        EditProfileScreen(state = previewState, onAction = {},)
     }
 }
 
@@ -211,6 +231,6 @@ private fun EditProfileScreenLightPreview() {
 @Composable
 private fun EditProfileScreenDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        EditProfileScreen(state = previewState, onAction = {})
+        EditProfileScreen(state = previewState, onAction = {},)
     }
 }

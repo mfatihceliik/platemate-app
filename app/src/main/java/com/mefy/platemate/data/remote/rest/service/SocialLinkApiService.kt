@@ -1,10 +1,13 @@
 package com.mefy.platemate.data.remote.rest.service
 
+import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.data.remote.dto.social.AddSocialLinkRequest
+import com.mefy.platemate.data.remote.dto.social.SocialPlatformDto
 import com.mefy.platemate.data.remote.dto.social.UpdateSocialLinkRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -18,5 +21,8 @@ interface SocialLinkApiService {
 
     @DELETE("api/social-links/{id}")
     suspend fun deleteSocialLink(@Path("id") id: Long): ResultResponse
+
+    @GET("api/social-platforms")
+    suspend fun getSocialPlatforms(): DataResultResponse<List<SocialPlatformDto>>
 }
 

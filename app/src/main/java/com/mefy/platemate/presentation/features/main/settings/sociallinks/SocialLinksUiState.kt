@@ -2,26 +2,20 @@ package com.mefy.platemate.presentation.features.main.settings.sociallinks
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
+import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform
 
 @Immutable
 data class SocialLinksUiState(
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
-    val links: List<SocialLinkEditorUiModel> = emptyList(),
-    val selectedPlatform: String = DEFAULT_PLATFORM,
-    val newUrl: String = "",
+    val links: List<ProfileSocialLinkUiModel> = emptyList(),
+    val availablePlatforms: List<SocialPlatform> = emptyList(),
+    // Yeni link ekleme formu.
+    val selectedPlatformId: String? = null,
+    val urlInput: String = "",
     val isSubmitting: Boolean = false
 ) {
-    companion object {
-        const val DEFAULT_PLATFORM = "INSTAGRAM"
-    }
+    val isAddEnabled: Boolean
+        get() = selectedPlatformId != null && urlInput.isNotBlank() && !isSubmitting
 }
-
-@Immutable
-data class SocialLinkEditorUiModel(
-    val id: Long,
-    val platform: String,
-    val url: String,
-    val isSaving: Boolean = false,
-    val isDeleting: Boolean = false
-)

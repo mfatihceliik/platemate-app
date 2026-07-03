@@ -1,11 +1,10 @@
 package com.mefy.platemate.presentation.features.main.settings.sociallinks
 
 sealed interface SocialLinksUiAction {
-    data class ExistingUrlChanged(val id: Long, val url: String) : SocialLinksUiAction
-    data class UpdateClicked(val id: Long) : SocialLinksUiAction
-    data class DeleteClicked(val id: Long) : SocialLinksUiAction
-    data class NewPlatformSelected(val platform: String) : SocialLinksUiAction
-    data class NewUrlChanged(val url: String) : SocialLinksUiAction
-    data object AddClicked : SocialLinksUiAction
+    data object BackClicked : SocialLinksUiAction
     data object RetryClicked : SocialLinksUiAction
+    data class PlatformSelected(val platformId: String) : SocialLinksUiAction
+    data class UrlChanged(val value: String) : SocialLinksUiAction
+    data object AddClicked : SocialLinksUiAction
+    data class DeleteClicked(val linkId: Long) : SocialLinksUiAction
 }

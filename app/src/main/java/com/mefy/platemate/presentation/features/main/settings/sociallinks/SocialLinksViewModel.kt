@@ -1,16 +1,22 @@
 package com.mefy.platemate.presentation.features.main.settings.sociallinks
 
 import com.mefy.platemate.R
-import com.mefy.platemate.core.common.AppResult
-import com.mefy.platemate.presentation.common.error.toUiText
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.profile.SocialMediaLink
-import com.mefy.platemate.domain.usecase.settings.GetSettingsUseCase
+import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
+import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.sociallink.AddSocialLinkUseCase
 import com.mefy.platemate.domain.usecase.sociallink.DeleteSocialLinkUseCase
-import com.mefy.platemate.domain.usecase.sociallink.UpdateSocialLinkUseCase
+import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
+import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
+import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackBg
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackTint
+import com.mefy.platemate.presentation.features.main.settings.editprofile.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,24 +25,18 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class SocialLinksViewModel @Inject constructor(
-    private val getSettingsUseCase: GetSettingsUseCase,
+    private val observeSessionUseCase: ObserveSessionUseCase,
+    private val getProfileUseCase: GetProfileUseCase,
+    private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
     private val addSocialLinkUseCase: AddSocialLinkUseCase,
-    private val updateSocialLinkUseCase: UpdateSocialLinkUseCase,
     private val deleteSocialLinkUseCase: DeleteSocialLinkUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
-
-    companion object {
-        val supportedPlatforms: List<String> = listOf(
-            "INSTAGRAM",
-            "X",
-            "FACEBOOK"
-        )
-    }
 
     private val _uiState = MutableStateFlow(SocialLinksUiState())
     val uiState: StateFlow<SocialLinksUiState> = _uiState.asStateFlow()
@@ -45,61 +45,52 @@ class SocialLinksViewModel @Inject constructor(
     val uiEffect: SharedFlow<SocialLinksUiEffect> = _uiEffect.asSharedFlow()
 
     init {
-        load()
+        loadLinks()
     }
 
     fun onAction(action: SocialLinksUiAction) {
         when (action) {
-            is SocialLinksUiAction.ExistingUrlChanged -> {
-                _uiState.update { state ->
-                    state.copy(
-                        links = state.links.map { link ->
-                            if (link.id == action.id) link.copy(url = action.url) else link
-                        }
-                    )
-                }
-            }
+            SocialLinksUiAction.BackClicked ->
+                _uiEffect.emitUiEffect(SocialLinksUiEffect.NavigateBack)
 
-            is SocialLinksUiAction.NewPlatformSelected -> {
-                _uiState.update { it.copy(selectedPlatform = action.platform) }
-            }
+            SocialLinksUiAction.RetryClicked -> loadLinks()
 
-            is SocialLinksUiAction.NewUrlChanged -> {
-                _uiState.update { it.copy(newUrl = action.url) }
-            }
+            is SocialLinksUiAction.PlatformSelected ->
+                _uiState.update { it.copy(selectedPlatformId = action.platformId) }
 
-            is SocialLinksUiAction.UpdateClicked -> updateLink(action.id)
-            is SocialLinksUiAction.DeleteClicked -> deleteLink(action.id)
+            is SocialLinksUiAction.UrlChanged ->
+                _uiState.update { it.copy(urlInput = action.value) }
+
             SocialLinksUiAction.AddClicked -> addLink()
-            SocialLinksUiAction.RetryClicked -> load()
+            is SocialLinksUiAction.DeleteClicked -> deleteLink(action.linkId)
         }
     }
 
-    private fun load() {
+    private fun loadLinks() {
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-        launch(onError = {
-            _uiState.update { state -> state.copy(isLoading = false, errorMessage = UiText.Resource(R.string.common_error_unknown)) }
-            handleError(it)
+        launch(onError = { error ->
+            _uiState.update { it.copy(isLoading = false, errorMessage = UiText.Resource(R.string.common_error_unknown)) }
+            handleError(error)
         }) {
-            when (val result = getSettingsUseCase()) {
-                is AppResult.Success -> {
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            links = result.data.socialMediaLinks.mapNotNull { link ->
-                                val id = link.id ?: return@mapNotNull null
-                                SocialLinkEditorUiModel(
-                                    id = id,
-                                    platform = link.platform,
-                                    url = link.url
-                                )
-                            }
-                        )
-                    }
+            val userId = observeSessionUseCase().first()?.userId
+            if (userId == null) {
+                _uiState.update { it.copy(isLoading = false, errorMessage = UiText.Resource(R.string.common_error_unknown)) }
+                return@launch
+            }
+            val platforms = when (val platformsResult = getSocialPlatformsUseCase()) {
+                is AppResult.Success -> platformsResult.data.map { it.toUiModel() }
+                is AppResult.Error -> emptyList()
+            }
+            when (val result = getProfileUseCase(userId)) {
+                is AppResult.Success -> _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        availablePlatforms = platforms,
+                        links = result.data.socialMediaLinks.map { link -> toUiModel(link, platforms) }
+                    )
                 }
-
-                is AppResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toUiText()) }
+                is AppResult.Error -> _uiState.update {
+                    it.copy(isLoading = false, availablePlatforms = platforms, errorMessage = result.error.toUiText())
                 }
             }
         }
@@ -107,108 +98,51 @@ class SocialLinksViewModel @Inject constructor(
 
     private fun addLink() {
         val state = _uiState.value
-        val url = state.newUrl.trim()
-        if (url.isEmpty() || state.isSubmitting) return
+        val platformId = state.selectedPlatformId ?: return
+        val url = state.urlInput.trim()
+        if (url.isBlank() || state.isSubmitting) return
 
         _uiState.update { it.copy(isSubmitting = true) }
-        launch(onError = ::handleError) {
-            when (val result = addSocialLinkUseCase(state.selectedPlatform, url)) {
+        launch(onError = { error ->
+            _uiState.update { it.copy(isSubmitting = false) }
+            handleError(error)
+        }) {
+            when (val result = addSocialLinkUseCase(platformId, url)) {
                 is AppResult.Success -> {
-                    _uiState.update { it.copy(newUrl = "", isSubmitting = false) }
-                    load()
-                    _uiEffect.emitUiEffect(
-                        SocialLinksUiEffect.ShowSnackbar(UiText.Resource(R.string.profile_social_link_added))
-                    )
+                    _uiState.update { it.copy(isSubmitting = false, selectedPlatformId = null, urlInput = "") }
+                    showSuccess(UiText.Resource(R.string.profile_social_link_added))
+                    loadLinks()
                 }
-
                 is AppResult.Error -> {
-                    handleError(result.error)
                     _uiState.update { it.copy(isSubmitting = false) }
+                    showError(result.error.toUiText())
                 }
             }
         }
     }
 
-    private fun updateLink(id: Long) {
-        val state = _uiState.value
-        val link = state.links.firstOrNull { it.id == id } ?: return
-
-        _uiState.update {
-            it.copy(
-                links = it.links.map { item ->
-                    if (item.id == id) item.copy(isSaving = true) else item
-                }
-            )
-        }
-
+    private fun deleteLink(linkId: Long) {
         launch(onError = ::handleError) {
-            when (
-                val result = updateSocialLinkUseCase(
-                    SocialMediaLink(
-                        id = link.id,
-                        platform = link.platform,
-                        url = link.url.trim()
-                    )
-                )
-            ) {
+            when (val result = deleteSocialLinkUseCase(linkId)) {
                 is AppResult.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            links = it.links.map { item ->
-                                if (item.id == id) item.copy(isSaving = false) else item
-                            }
-                        )
-                    }
-                    _uiEffect.emitUiEffect(
-                        SocialLinksUiEffect.ShowSnackbar(UiText.Resource(R.string.profile_settings_saved))
-                    )
+                    showSuccess(UiText.Resource(R.string.profile_social_link_deleted))
+                    loadLinks()
                 }
-
-                is AppResult.Error -> {
-                    handleError(result.error)
-                    _uiState.update {
-                        it.copy(
-                            links = it.links.map { item ->
-                                if (item.id == id) item.copy(isSaving = false) else item
-                            }
-                        )
-                    }
-                }
+                is AppResult.Error -> showError(result.error.toUiText())
             }
         }
     }
 
-    private fun deleteLink(id: Long) {
-        _uiState.update {
-            it.copy(
-                links = it.links.map { item ->
-                    if (item.id == id) item.copy(isDeleting = true) else item
-                }
-            )
-        }
-
-        launch(onError = ::handleError) {
-            when (val result = deleteSocialLinkUseCase(id)) {
-                is AppResult.Success -> {
-                    _uiState.update { state ->
-                        state.copy(links = state.links.filterNot { it.id == id })
-                    }
-                    _uiEffect.emitUiEffect(
-                        SocialLinksUiEffect.ShowSnackbar(UiText.Resource(R.string.profile_social_link_deleted))
-                    )
-                }
-
-                is AppResult.Error -> {
-                    handleError(result.error)
-                    _uiState.update {
-                        it.copy(
-                            links = it.links.map { item ->
-                                if (item.id == id) item.copy(isDeleting = false) else item
-                            }
-                        )
-                    }
-                }
-            }
-        }
+    private fun toUiModel(link: SocialMediaLink, platforms: List<SocialPlatform>): ProfileSocialLinkUiModel {
+        // Bilinmeyen platform jenerik link görünümüne düşer; !! ile çökmek yerine fallback.
+        val platform = platforms.find { it.code.equals(link.platform, ignoreCase = true) }
+        return ProfileSocialLinkUiModel(
+            id = link.id,
+            platform = link.platform,
+            url = link.url,
+            iconUrl = platform?.iconUrl,
+            backgroundColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
+            iconTint = platform?.iconTint ?: SocialPlatformFallbackTint
+        )
     }
 }
