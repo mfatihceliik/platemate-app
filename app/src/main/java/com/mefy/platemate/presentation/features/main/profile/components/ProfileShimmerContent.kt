@@ -25,7 +25,7 @@ import com.valentinilk.shimmer.defaultShimmerTheme
 import com.valentinilk.shimmer.rememberShimmer
 
 @Composable
-fun ProfileShimmerContent(
+internal fun ProfileShimmerContent(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions

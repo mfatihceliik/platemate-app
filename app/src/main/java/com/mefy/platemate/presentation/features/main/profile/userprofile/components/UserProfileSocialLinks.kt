@@ -1,61 +1,67 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.settings.sociallinks.components.getPlatformInfo
+import coil.compose.rememberAsyncImagePainter
+import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun UserProfileSocialLinks(
     modifier: Modifier = Modifier,
-    links: List<UserProfileSocialLinkUiModel>,
-    onLinkClick: (UserProfileSocialLinkUiModel) -> Unit,
+    links: List<ProfileSocialLinkUiModel>,
+    onLinkClick: (ProfileSocialLinkUiModel) -> Unit,
 ) {
     if (links.isEmpty()) return
     val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val iconShape = MaterialTheme.shapes.small
+    MaterialTheme.pmColors
+    MaterialTheme.shapes.small
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically
+    PMCard(
+        modifier = Modifier.fillMaxWidth(),
+        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
     ) {
-        links.forEach { link ->
-            val info = getPlatformInfo(link.platform)
-            Row(
-                modifier = Modifier
-                    .size(dims.sizing.avatarIconInner)
-                    .clip(iconShape)
-                    .background(colors.surface)
-                    .border(dims.stroke.st1, colors.outline, iconShape)
-                    .debouncedClickable { onLinkClick(link) },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(info.iconRes),
-                    contentDescription = info.displayName,
-                    tint = info.iconTint,
-                    modifier = Modifier.size(dims.sizing.iconMd)
-                )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(
+                dims.spacing.s8,
+                Alignment.CenterHorizontally
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items(items = links, key = { it.id ?: it.platform }) { link ->
+                PMIconButton(
+                    onClick = { onLinkClick(link) },
+
+                    ) {
+                    PMIcon(
+                        painter = rememberAsyncImagePainter(
+                            model = link.iconUrl,
+                            error = painterResource(R.drawable.ic_link),
+                            placeholder = painterResource(R.drawable.ic_link)
+                        ),
+                        size = dims.sizing.iconHuge,
+                        contentDescription = link.platform,
+                        tint = link.iconTint,
+                        containerColor = link.backgroundColor
+                    )
+                }
             }
         }
     }
@@ -66,15 +72,19 @@ internal fun UserProfileSocialLinks(
 private fun UserProfileSocialLinksLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
-                UserProfileSocialLinkUiModel(platform = "INSTAGRAM", url = ""),
-                UserProfileSocialLinkUiModel(platform = "X", url = ""),
-                UserProfileSocialLinkUiModel(platform = "WEBSITE", url = "")
+                ProfileSocialLinkUiModel(
+                    id = 1, platform = "INSTAGRAM", url = "", iconUrl = null, backgroundColor = Color(0xFFFDF2F8), iconTint = Color(0xFFDB2777)
+                ),
+                ProfileSocialLinkUiModel(
+                    id = 2, platform = "X", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                ),
+                ProfileSocialLinkUiModel(
+                    id = 3, platform = "GITHUB", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                )
             ),
-            onLinkClick = {},
-            modifier = Modifier.padding(dims.spacing.s16)
+            onLinkClick = {}
         )
     }
 }
@@ -84,15 +94,20 @@ private fun UserProfileSocialLinksLightPreview() {
 private fun UserProfileSocialLinksDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+        MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
-                UserProfileSocialLinkUiModel(platform = "INSTAGRAM", url = ""),
-                UserProfileSocialLinkUiModel(platform = "X", url = ""),
-                UserProfileSocialLinkUiModel(platform = "WEBSITE", url = "")
+                ProfileSocialLinkUiModel(
+                    id = 1, platform = "INSTAGRAM", url = "", iconUrl = null, backgroundColor = Color(0xFFFDF2F8), iconTint = Color(0xFFDB2777)
+                ),
+                ProfileSocialLinkUiModel(
+                    id = 2, platform = "X", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                ),
+                ProfileSocialLinkUiModel(
+                    id = 3, platform = "GITHUB", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                )
             ),
-            onLinkClick = {},
-            modifier = Modifier.padding(dims.spacing.s16)
+            onLinkClick = {}
         )
     }
 }

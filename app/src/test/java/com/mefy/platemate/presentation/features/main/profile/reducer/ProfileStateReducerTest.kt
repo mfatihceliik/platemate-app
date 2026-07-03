@@ -1,5 +1,6 @@
 package com.mefy.platemate.presentation.features.main.profile.reducer
 
+import androidx.compose.ui.graphics.Color
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.main.profile.ProfileUiState
 import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiData
@@ -41,7 +42,16 @@ class ProfileStateReducerTest {
                 ProfileStatUiModel(valueText = "12", labelResId = R.string.profile_stat_friends)
             ),
             statusSummary = ProfileStatusSummaryUiModel(approved = 10, pendingReview = 2, rejected = 1),
-            socialLinks = listOf(ProfileSocialLinkUiModel(id = 1, platform = "INSTAGRAM", url = "x")),
+            socialLinks = listOf(
+                ProfileSocialLinkUiModel(
+                    id = 1,
+                    platform = "INSTAGRAM",
+                    url = "x",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFFDF2F8),
+                    iconTint = Color(0xFFDB2777)
+                )
+            ),
             activities = listOf(
                 FriendRequestNotificationItem(
                     id = "friend_1",

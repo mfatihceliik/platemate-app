@@ -11,20 +11,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -85,11 +81,10 @@ internal fun UserProfileReviewCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
-                Icon(
+                PMIcon(
                     imageVector = Icons.Filled.Star,
-                    contentDescription = null,
                     tint = colors.star,
-                    modifier = Modifier.size(dims.spacing.s12)
+                    size = dims.sizing.iconSm,
                 )
                 PMText(
                     text = if (review.rating % 1 == 0f) review.rating.toInt().toString()

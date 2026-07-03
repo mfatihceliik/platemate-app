@@ -30,7 +30,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun ProfileHeaderSection(
+internal fun ProfileHeaderSection(
     header: ProfileHeaderUiModel,
     accountSummary: ProfileAccountSummaryUiModel,
     modifier: Modifier = Modifier
@@ -70,6 +70,7 @@ fun ProfileHeaderSection(
             }
 
             Column(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {

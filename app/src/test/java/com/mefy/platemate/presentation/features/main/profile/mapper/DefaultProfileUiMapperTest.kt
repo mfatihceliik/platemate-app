@@ -25,7 +25,7 @@ class DefaultProfileUiMapperTest {
 
     @Test
     fun mapProfile_mapsSummaryStatsAndMergedActivities() {
-        val mapped = mapper.mapProfile(sampleProfile())
+        val mapped = mapper.mapProfile(sampleProfile(), emptyList())
 
         assertEquals("caner", mapped.header.username)
         assertEquals("caner@platemate.com", mapped.accountSummary.email)
@@ -41,7 +41,7 @@ class DefaultProfileUiMapperTest {
 
     @Test
     fun mapProfile_normalizesBlankEmailForUiFallback() {
-        val mapped = mapper.mapProfile(sampleProfile(email = "   "))
+        val mapped = mapper.mapProfile(sampleProfile(email = "   "), emptyList())
         assertEquals("", mapped.accountSummary.email)
     }
 

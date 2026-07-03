@@ -24,7 +24,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun StatusCountPill(
+internal fun StatusCountPill(
     label: String,
     value: String,
     dotColor: Color,

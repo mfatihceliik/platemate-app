@@ -1,32 +1,42 @@
 package com.mefy.platemate.presentation.features.main.profile.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.padding
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.model.PMCardVariant
+import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun FriendRequestActivityCard(
+internal fun FriendRequestActivityCard(
     item: FriendRequestNotificationItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -34,48 +44,79 @@ fun FriendRequestActivityCard(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
+    val initials = remember(item.username) {
+        item.username
+            .split(" ")
+            .take(2)
+            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
+            .joinToString("")
+            .ifEmpty { "?" }
+    }
+    val avatarBrush = remember(colors.primary, colors.tertiary) {
+        Brush.linearGradient(listOf(colors.primary, colors.tertiary))
+    }
+
     PMCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
-        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
+        variant = PMCardVariant.Large,
+        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Gradient daire avatar
+            Box(
+                modifier = Modifier
+                    .size(dims.sizing.avatarMedium)
+                    .clip(CircleShape)
+                    .background(avatarBrush)
+                    .border(dims.stroke.st2, colors.primaryContainerBorder, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                PMText(
+                    text = initials,
+                    style = PMTextStyle.Title,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = colors.onPrimary
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 PMText(
                     text = stringResource(R.string.profile_friend_request_title, item.username),
                     fontSize = dims.fontSize.md,
                     color = colors.textPrimary,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    overflow = TextOverflow.Ellipsis
                 )
-                Icon(
-                    imageVector = Icons.Filled.ChevronRight,
-                    contentDescription = null,
-                    tint = colors.textLabel,
-                    modifier = Modifier.size(dims.spacing.s16)
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    StatusBadge(
+                        text = item.statusCode,
+                        background = colors.tertiaryContainer,
+                        foreground = colors.onTertiaryContainer
+                    )
+                    PMText(
+                        text = item.createdAtText,
+                        fontSize = dims.fontSize.sm,
+                        color = colors.textLabel
+                    )
+                }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PMText(
-                    text = item.statusCode,
-                    fontSize = dims.fontSize.sm,
-                    color = colors.primary
-                )
-                PMText(
-                    text = item.createdAtText,
-                    fontSize = dims.fontSize.sm,
-                    color = colors.textLabel
-                )
-            }
+
+            PMIcon(
+                imageVector = Icons.Filled.ChevronRight,
+                tint = colors.textLabel,
+                size = dims.sizing.iconSm
+            )
         }
     }
 }

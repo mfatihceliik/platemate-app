@@ -9,11 +9,3 @@ data class ProfileFriendsUiState(
     val errorMessage: UiText? = null,
     val friends: List<ProfileFriendUiModel> = emptyList()
 )
-
-@Immutable
-data class ProfileFriendUiModel(
-    val id: Long,
-    val username: String,
-    val status: String,
-    val createdAtText: String
-)

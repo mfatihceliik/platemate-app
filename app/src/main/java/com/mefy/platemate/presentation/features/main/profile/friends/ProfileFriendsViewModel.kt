@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.features.main.profile.friends
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.social.GetFriendsUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus

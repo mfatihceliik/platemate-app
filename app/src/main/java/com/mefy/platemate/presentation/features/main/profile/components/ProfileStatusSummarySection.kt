@@ -19,7 +19,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun ProfileStatusSummarySection(
+internal fun ProfileStatusSummarySection(
     statusSummary: ProfileStatusSummaryUiModel,
     modifier: Modifier = Modifier
 ) {
