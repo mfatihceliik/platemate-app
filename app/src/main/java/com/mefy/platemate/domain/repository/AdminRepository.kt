@@ -1,0 +1,48 @@
+package com.mefy.platemate.domain.repository
+
+import com.mefy.platemate.core.common.pagination.PagedResult
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.domain.model.admin.AppSettings
+import com.mefy.platemate.domain.model.admin.CommentReport
+import com.mefy.platemate.domain.model.admin.HiddenPlate
+import com.mefy.platemate.domain.model.admin.PendingComment
+import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
+import com.mefy.platemate.domain.model.admin.ReportTypeAdmin
+import com.mefy.platemate.domain.model.admin.ReportTypeInput
+import com.mefy.platemate.domain.model.admin.SocialPlatformAdmin
+import com.mefy.platemate.domain.model.admin.SocialPlatformInput
+
+interface AdminRepository {
+    suspend fun getPendingComments(page: Int, size: Int): AppResult<PagedResult<PendingComment>>
+    suspend fun approveComment(commentId: Long): AppResult<Unit>
+    suspend fun rejectComment(commentId: Long, reason: String?): AppResult<Unit>
+    suspend fun removeComment(commentId: Long, reason: String?): AppResult<Unit>
+
+    suspend fun getCommentReports(page: Int, size: Int): AppResult<PagedResult<CommentReport>>
+    suspend fun reviewCommentReport(reportId: Long, statusCode: String, adminNote: String?): AppResult<Unit>
+
+    suspend fun getPlateRemovalRequests(page: Int, size: Int): AppResult<PagedResult<PlateRemovalRequest>>
+    suspend fun reviewPlateRemovalRequest(requestId: Long, statusCode: String, adminNote: String?): AppResult<Unit>
+
+    suspend fun getHiddenPlates(page: Int, size: Int): AppResult<PagedResult<HiddenPlate>>
+    suspend fun restorePlate(plateId: Long): AppResult<Unit>
+    suspend fun hidePlate(plateId: Long, reason: String): AppResult<Unit>
+
+    suspend fun getAppSettings(): AppResult<AppSettings>
+    suspend fun updateAppSettings(
+        nonPremiumPlateFollowLimit: Int,
+        nonPremiumPlateAlarmLimit: Int,
+        preApprovalMessageLimit: Int,
+        commentReportThreshold: Int
+    ): AppResult<Unit>
+
+    suspend fun getReportTypes(): AppResult<List<ReportTypeAdmin>>
+    suspend fun addReportType(input: ReportTypeInput): AppResult<Unit>
+    suspend fun updateReportType(id: Long, input: ReportTypeInput): AppResult<Unit>
+    suspend fun setReportTypeActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getSocialPlatformsAdmin(): AppResult<List<SocialPlatformAdmin>>
+    suspend fun addSocialPlatform(input: SocialPlatformInput): AppResult<Unit>
+    suspend fun updateSocialPlatform(id: Long, input: SocialPlatformInput): AppResult<Unit>
+    suspend fun setSocialPlatformActive(id: Long, active: Boolean): AppResult<Unit>
+}
