@@ -1,12 +1,13 @@
-package com.mefy.platemate.data.repository
+﻿package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.mapper.UserAuthSessionMapper
+import com.mefy.platemate.data.remote.dto.auth.ChangePasswordRequest
 import com.mefy.platemate.data.remote.dto.auth.LoginRequest
 import com.mefy.platemate.data.remote.dto.auth.RefreshTokenRequest
 import com.mefy.platemate.data.remote.dto.auth.RegisterRequest
@@ -15,6 +16,7 @@ import com.mefy.platemate.data.remote.dto.user.UserRoleCode
 import com.mefy.platemate.data.remote.rest.service.AuthApiService
 import com.mefy.platemate.data.remote.rest.service.AuthTokenApiService
 import com.mefy.platemate.domain.model.auth.AuthSession
+import com.mefy.platemate.domain.repository.FcmTokenRepository
 import com.mefy.platemate.testutil.MainDispatcherRule
 import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -157,8 +159,14 @@ class AuthRepositoryImplTest {
         authTokenApiService = authTokenApi,
         sessionStore = sessionStore,
         userAuthSessionMapper = UserAuthSessionMapper(),
+        fcmTokenRepository = FakeFcmTokenRepository(),
         appDispatchers = testDispatchers()
     )
+
+    private class FakeFcmTokenRepository : FcmTokenRepository {
+        override suspend fun registerToken(token: String): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun unregisterToken(token: String): AppResult<Unit> = AppResult.Success(Unit)
+    }
 
     private fun testDispatchers(): AppDispatchers = AppDispatchers(
         main = mainDispatcherRule.dispatcher,
@@ -215,6 +223,10 @@ class AuthRepositoryImplTest {
         }
 
         override suspend fun login(request: LoginRequest): DataResultResponse<UserDto> {
+            throw UnsupportedOperationException("Not used in this test")
+        }
+
+        override suspend fun changePassword(request: ChangePasswordRequest): ResultResponse {
             throw UnsupportedOperationException("Not used in this test")
         }
     }

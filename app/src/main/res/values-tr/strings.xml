@@ -12,6 +12,84 @@
     <string name="common_error_empty_data">Sunucudan veri alınamadı.</string>
     <string name="common_error_http">Sunucuda bir sorun oluştu. Lütfen tekrar deneyin.</string>
     <string name="common_error_unknown">Bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="conversation_request_message">Bu kişi sana mesaj göndermek istiyor. Sohbete başlamak için isteği onayla.</string>
+    <string name="conversation_request_accept">Onayla</string>
+    <string name="conversation_request_decline">Reddet</string>
+    <string name="conversation_online">Çevrimiçi</string>
+    <string name="conversation_offline">Çevrimdışı</string>
+    <plurals name="conversation_unread_divider">
+        <item quantity="one">%1$d okunmamış mesaj</item>
+        <item quantity="other">%1$d okunmamış mesaj</item>
+    </plurals>
+    <string name="chatdetail_block">Kullanıcıyı engelle</string>
+    <string name="chatdetail_unblock">Engeli kaldır</string>
+    <string name="user_profile_report_submitted">Şikayet gönderildi.</string>
+    <string name="notification_channel_message">Mesajlar</string>
+    <string name="notification_channel_friend">Arkadaşlık</string>
+    <string name="notification_channel_plate_review">Plaka Yorumları</string>
+    <string name="notification_channel_new_follower">Takipçiler</string>
+    <string name="notification_channel_system">Genel</string>
+    <string name="common_confirm">Onayla</string>
+    <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_moderation_title">Bekleyen Yorumlar</string>
+    <string name="admin_moderation_empty">Bekleyen yorum yok.</string>
+    <string name="admin_comment_by">%1$s tarafından</string>
+    <string name="admin_comment_report_count">%1$d şikayet</string>
+    <string name="admin_comment_approve">Onayla</string>
+    <string name="admin_comment_reject">Reddet</string>
+    <string name="admin_comment_remove">Kaldır</string>
+    <string name="admin_comment_approved">Yorum onaylandı.</string>
+    <string name="admin_comment_rejected">Yorum reddedildi.</string>
+    <string name="admin_comment_removed">Yorum kaldırıldı.</string>
+    <string name="admin_reason_dialog_reject_title">Reddetme nedeni (opsiyonel)</string>
+    <string name="admin_reason_dialog_remove_title">Kaldırma nedeni (opsiyonel)</string>
+    <string name="admin_reason_hint">Neden…</string>
+    <string name="admin_comment_reports_title">Yorum Şikayetleri</string>
+    <string name="admin_plate_removal_title">Kaldırma Talepleri</string>
+    <string name="admin_hidden_plates_title">Gizli Plakalar</string>
+    <string name="admin_reports_empty">Yorum şikayeti yok.</string>
+    <string name="admin_removal_empty">Kaldırma talebi yok.</string>
+    <string name="admin_hidden_plates_empty">Gizli plaka yok.</string>
+    <string name="admin_report_accept">Kabul Et</string>
+    <string name="admin_report_reject">Reddet</string>
+    <string name="admin_report_reviewed">Şikayet değerlendirildi.</string>
+    <string name="admin_request_accept">Onayla</string>
+    <string name="admin_request_reject">Reddet</string>
+    <string name="admin_request_reviewed">Talep değerlendirildi.</string>
+    <string name="admin_plate_restore">Geri Yükle</string>
+    <string name="admin_plate_restored">Plaka geri yüklendi.</string>
+    <string name="admin_settings_title">Limitler</string>
+    <string name="admin_settings_follow_limit">Premium olmayan plaka takip limiti</string>
+    <string name="admin_settings_alarm_limit">Premium olmayan plaka alarm limiti</string>
+    <string name="admin_settings_message_limit">Onay öncesi mesaj limiti</string>
+    <string name="admin_settings_report_threshold">Yorum şikayet eşiği</string>
+    <string name="admin_settings_saved">Ayarlar kaydedildi.</string>
+    <string name="admin_report_types_title">İhbar Tipleri</string>
+    <string name="admin_report_types_empty">İhbar tipi yok.</string>
+    <string name="admin_report_type_add">Ekle</string>
+    <string name="admin_report_type_add_title">Yeni İhbar Tipi</string>
+    <string name="admin_report_type_edit_title">İhbar Tipini Düzenle</string>
+    <string name="admin_report_type_saved">İhbar tipi kaydedildi.</string>
+    <string name="admin_report_type_field_code">Kod</string>
+    <string name="admin_report_type_field_label">Etiket</string>
+    <string name="admin_report_type_field_description">Açıklama</string>
+    <string name="admin_report_type_field_icon">İkon anahtarı</string>
+    <string name="admin_report_type_field_severity">Önem</string>
+    <string name="admin_report_type_field_color">Renk (#RRGGBB)</string>
+    <string name="admin_report_type_field_weight">Ağırlık</string>
+    <string name="admin_report_type_field_sort">Sıra</string>
+    <string name="admin_social_platforms_title">Sosyal Medya Platformları</string>
+    <string name="admin_social_platforms_empty">Sosyal medya platformu yok.</string>
+    <string name="admin_social_platform_add">Ekle</string>
+    <string name="admin_social_platform_add_title">Yeni Sosyal Medya Platformu</string>
+    <string name="admin_social_platform_edit_title">Sosyal Medya Platformunu Düzenle</string>
+    <string name="admin_social_platform_saved">Sosyal medya platformu kaydedildi.</string>
+    <string name="admin_social_platform_field_code">Kod</string>
+    <string name="admin_social_platform_field_label">Etiket</string>
+    <string name="admin_social_platform_field_icon_url">İkon URL</string>
+    <string name="admin_social_platform_field_bg_color">Arka plan rengi (#RRGGBB)</string>
+    <string name="admin_social_platform_field_tint_color">İkon rengi (#RRGGBB)</string>
+    <string name="admin_social_platform_field_sort">Sıra</string>
     <string name="common_error_title">Hata</string>
     <string name="common_error_state_title">Bir şeyler ters gitti</string>
     <string name="common_retry">Tekrar dene</string>
@@ -265,6 +343,8 @@
     <string name="profile_notif_section_review">DEĞERLENDİRME</string>
     <string name="profile_notif_messaging_open">Mesajlaşmayı Etkinleştir</string>
     <string name="profile_notif_messaging_open_desc">Diğer kullanıcılar sana mesaj gönderebilir</string>
+    <string name="profile_notif_online_visibility">Çevrimiçi Durumunu Göster</string>
+    <string name="profile_notif_online_visibility_desc">Çevrimiçi olduğunu başkalarına göster. Kapalıysa sen de onlarınkini göremezsin.</string>
     <string name="profile_notif_message_alerts">Mesaj Bildirimleri</string>
     <string name="profile_notif_message_alerts_desc">Yeni mesaj geldiğinde bildirim al</string>
     <string name="profile_notif_friend_add">Arkadaşlık İsteği</string>
@@ -312,6 +392,16 @@
     <!-- Report User -->
     <string name="report_user_title">Kullanıcıyı Şikayet Et</string>
     <string name="report_user_submit">Şikayet Et</string>
+    <string name="report_review_title">Yorumu Şikayet Et</string>
+    <string name="report_review_description_hint">Açıklama ekle (isteğe bağlı)</string>
+    <string name="report_review_success">Yorum şikayet edildi.</string>
+    <string name="comment_report_reason_hate_speech">Nefret söylemi</string>
+    <string name="comment_report_reason_insult">Hakaret</string>
+    <string name="comment_report_reason_false_information">Yanlış bilgi</string>
+    <string name="comment_report_reason_personal_data">Kişisel veri paylaşımı</string>
+    <string name="comment_report_reason_threat">Tehdit</string>
+    <string name="comment_report_reason_spam">Spam</string>
+    <string name="comment_report_reason_other">Diğer</string>
     <string name="report_reason_inappropriate_content">Uygunsuz İçerik</string>
     <string name="report_reason_inappropriate_content_desc">Rahatsız edici veya itiraz çekici içerik paylaşıyor</string>
     <string name="report_reason_spam">Spam veya Sahte Hesap</string>
@@ -323,6 +413,11 @@
 
     <!-- Edit Profile -->
     <string name="edit_profile_title">Profili Düzenle</string>
+    <string name="edit_profile_saved">Profil güncellendi.</string>
+    <string name="edit_profile_validation_display_name_required">Ad Soyad boş bırakılamaz.</string>
+    <string name="edit_profile_validation_username_required">Kullanıcı adı boş bırakılamaz.</string>
+    <string name="edit_profile_avatar_dialog_title">Profil fotoğrafı URL\'si</string>
+    <string name="edit_profile_avatar_dialog_hint">https://…</string>
     <string name="edit_profile_save">Kaydet</string>
     <string name="edit_profile_change_photo">Fotoğrafı Değiştir</string>
     <string name="edit_profile_delete_account">Hesabı Sil</string>
@@ -337,6 +432,12 @@
     <!-- Messages -->
     <string name="messages_empty_title">Henüz mesajınız yok</string>
     <string name="messages_empty_subtitle">Sohbet başlatmak için bir kullanıcıya mesaj gönderin</string>
+    <string name="messages_delete_confirm_title">Sohbeti sil?</string>
+    <string name="messages_delete_confirm_message">Bu sohbet sadece senin için silinir. Karşı taraf tekrar mesaj atarsa yeniden görünür.</string>
+    <string name="messages_mark_read">Okundu</string>
+    <string name="common_delete">Sil</string>
+    <string name="conversation_empty_title">Konuşmaya başlayın</string>
+    <string name="conversation_empty_subtitle">İlk mesajınızı göndererek sohbeti başlatın</string>
 
     <!-- Chat Detail -->
     <string name="chatdetail_title">Sohbet Bilgileri</string>
@@ -345,12 +446,35 @@
     <string name="chatdetail_delete_chat">Sohbeti Sil</string>
     <string name="chatdetail_report">Şikayet Et</string>
     <string name="chatdetail_action_message">Mesaj</string>
-    <string name="chatdetail_action_plate">Plaka</string>
+    <string name="chatdetail_action_profile">Profil</string>
     <string name="chatdetail_action_block">Engelle</string>
 
     <!-- Plate Detail -->
     <string name="platedetail_title">Plaka Detayı</string>
     <string name="platedetail_bookmark">Kaydet</string>
+    <string name="platedetail_follow">Takip Et</string>
+    <string name="platedetail_alarm">Alarm</string>
+    <string name="platedetail_menu">İşlemler</string>
+    <string name="platedetail_action_save">Plakayı kaydet</string>
+    <string name="platedetail_action_unsave">Kayıtlardan çıkar</string>
+    <string name="platedetail_action_alarm">Alarm kur</string>
+    <string name="platedetail_action_remove_alarm">Alarmı kaldır</string>
+    <string name="platedetail_action_report">Plakayı raporla</string>
+    <string name="platedetail_report_title">Plakayı raporla</string>
+    <string name="platedetail_report_submit">Raporu gönder</string>
+    <string name="platedetail_report_success">Plaka raporlandı.</string>
+    <string name="platedetail_actions_title">Plaka işlemleri</string>
+    <string name="removal_request_title">Kaldırma talebi</string>
+    <string name="removal_request_reason_label">Sebep</string>
+    <string name="removal_request_description_hint">Bu plakanın neden kaldırılması gerektiğini açıklayın</string>
+    <string name="removal_request_submit">Talebi gönder</string>
+    <string name="removal_request_success">Kaldırma talebi gönderildi.</string>
+    <string name="removal_reason_plate_belongs_to_me">Bu plaka bana ait</string>
+    <string name="removal_reason_false_information">Yanlış bilgi</string>
+    <string name="removal_reason_privacy_request">Gizlilik talebi</string>
+    <string name="removal_reason_harassment">Taciz</string>
+    <string name="removal_reason_legal_request">Yasal talep</string>
+    <string name="removal_reason_other">Diğer</string>
     <string name="platedetail_first_review">İlk Değerlendirmeyi Yap</string>
     <string name="platedetail_review">Değerlendir</string>
     <string name="platedetail_tags_title">ETİKETLER</string>
@@ -366,6 +490,8 @@
 
     <!-- Review -->
     <string name="review_title">Değerlendir</string>
+    <string name="review_edit_title">Yorumu Düzenle</string>
+    <string name="review_edit_submit">Güncelle</string>
     <string name="review_anonymous_checkbox">Anonim olarak değerlendir</string>
     <string name="review_submit_button">Değerlendirmeyi Paylaş</string>
     <string name="review_section_overall">GENEL PUAN</string>
@@ -395,6 +521,7 @@
     <string name="search_recent_title">Son Aramalar</string>
     <string name="search_section_recent">SON ARAMALAR</string>
     <string name="search_section_saved">KAYDEDİLEN PLAKALAR</string>
+    <string name="search_section_alarms">ALARMLI PLAKALAR</string>
     <string name="search_saved_title">Kaydedilen Plakalar</string>
     <string name="search_saved_see_all">Tümü</string>
     <string name="search_recent_clear">Tümünü Temizle</string>

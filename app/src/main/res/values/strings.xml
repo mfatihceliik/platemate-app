@@ -12,6 +12,84 @@
     <string name="common_error_empty_data">No data received from server.</string>
     <string name="common_error_http">Something went wrong on the server. Please try again.</string>
     <string name="common_error_unknown">Something went wrong. Please try again.</string>
+    <string name="conversation_request_message">This person wants to message you. Accept the request to start chatting.</string>
+    <string name="conversation_request_accept">Accept</string>
+    <string name="conversation_request_decline">Decline</string>
+    <string name="conversation_online">Online</string>
+    <string name="conversation_offline">Offline</string>
+    <plurals name="conversation_unread_divider">
+        <item quantity="one">%1$d unread message</item>
+        <item quantity="other">%1$d unread messages</item>
+    </plurals>
+    <string name="chatdetail_block">Block user</string>
+    <string name="chatdetail_unblock">Unblock user</string>
+    <string name="user_profile_report_submitted">Report submitted.</string>
+    <string name="notification_channel_message">Messages</string>
+    <string name="notification_channel_friend">Friends</string>
+    <string name="notification_channel_plate_review">Plate Reviews</string>
+    <string name="notification_channel_new_follower">Followers</string>
+    <string name="notification_channel_system">General</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_moderation_title">Pending Comments</string>
+    <string name="admin_moderation_empty">No pending comments.</string>
+    <string name="admin_comment_by">by %1$s</string>
+    <string name="admin_comment_report_count">%1$d reports</string>
+    <string name="admin_comment_approve">Approve</string>
+    <string name="admin_comment_reject">Reject</string>
+    <string name="admin_comment_remove">Remove</string>
+    <string name="admin_comment_approved">Comment approved.</string>
+    <string name="admin_comment_rejected">Comment rejected.</string>
+    <string name="admin_comment_removed">Comment removed.</string>
+    <string name="admin_reason_dialog_reject_title">Rejection reason (optional)</string>
+    <string name="admin_reason_dialog_remove_title">Removal reason (optional)</string>
+    <string name="admin_reason_hint">Reason…</string>
+    <string name="admin_comment_reports_title">Comment Reports</string>
+    <string name="admin_plate_removal_title">Removal Requests</string>
+    <string name="admin_hidden_plates_title">Hidden Plates</string>
+    <string name="admin_reports_empty">No comment reports.</string>
+    <string name="admin_removal_empty">No removal requests.</string>
+    <string name="admin_hidden_plates_empty">No hidden plates.</string>
+    <string name="admin_report_accept">Accept</string>
+    <string name="admin_report_reject">Reject</string>
+    <string name="admin_report_reviewed">Report reviewed.</string>
+    <string name="admin_request_accept">Approve</string>
+    <string name="admin_request_reject">Reject</string>
+    <string name="admin_request_reviewed">Request reviewed.</string>
+    <string name="admin_plate_restore">Restore</string>
+    <string name="admin_plate_restored">Plate restored.</string>
+    <string name="admin_settings_title">Limits</string>
+    <string name="admin_settings_follow_limit">Non-premium plate follow limit</string>
+    <string name="admin_settings_alarm_limit">Non-premium plate alarm limit</string>
+    <string name="admin_settings_message_limit">Pre-approval message limit</string>
+    <string name="admin_settings_report_threshold">Comment report threshold</string>
+    <string name="admin_settings_saved">Settings saved.</string>
+    <string name="admin_report_types_title">Report Types</string>
+    <string name="admin_report_types_empty">No report types.</string>
+    <string name="admin_report_type_add">Add</string>
+    <string name="admin_report_type_add_title">New Report Type</string>
+    <string name="admin_report_type_edit_title">Edit Report Type</string>
+    <string name="admin_report_type_saved">Report type saved.</string>
+    <string name="admin_report_type_field_code">Code</string>
+    <string name="admin_report_type_field_label">Label</string>
+    <string name="admin_report_type_field_description">Description</string>
+    <string name="admin_report_type_field_icon">Icon key</string>
+    <string name="admin_report_type_field_severity">Severity</string>
+    <string name="admin_report_type_field_color">Color (#RRGGBB)</string>
+    <string name="admin_report_type_field_weight">Weight</string>
+    <string name="admin_report_type_field_sort">Sort order</string>
+    <string name="admin_social_platforms_title">Social Platforms</string>
+    <string name="admin_social_platforms_empty">No social platforms.</string>
+    <string name="admin_social_platform_add">Add</string>
+    <string name="admin_social_platform_add_title">New Social Platform</string>
+    <string name="admin_social_platform_edit_title">Edit Social Platform</string>
+    <string name="admin_social_platform_saved">Social platform saved.</string>
+    <string name="admin_social_platform_field_code">Code</string>
+    <string name="admin_social_platform_field_label">Label</string>
+    <string name="admin_social_platform_field_icon_url">Icon URL</string>
+    <string name="admin_social_platform_field_bg_color">Background color (#RRGGBB)</string>
+    <string name="admin_social_platform_field_tint_color">Icon tint color (#RRGGBB)</string>
+    <string name="admin_social_platform_field_sort">Sort order</string>
     <string name="common_error_title">Error</string>
     <string name="common_error_state_title">Something went wrong</string>
     <string name="common_retry">Retry</string>
@@ -265,6 +343,8 @@
     <string name="profile_notif_section_review">REVIEW</string>
     <string name="profile_notif_messaging_open">Enable Messaging</string>
     <string name="profile_notif_messaging_open_desc">Other users can send you messages</string>
+    <string name="profile_notif_online_visibility">Show Online Status</string>
+    <string name="profile_notif_online_visibility_desc">Show others when you are online. If off, you also can\'t see theirs.</string>
     <string name="profile_notif_message_alerts">Message Notifications</string>
     <string name="profile_notif_message_alerts_desc">Notify when a new message arrives</string>
     <string name="profile_notif_friend_add">Friend Request</string>
@@ -312,6 +392,16 @@
     <!-- Report User -->
     <string name="report_user_title">Report User</string>
     <string name="report_user_submit">Submit Report</string>
+    <string name="report_review_title">Report Comment</string>
+    <string name="report_review_description_hint">Add a description (optional)</string>
+    <string name="report_review_success">Comment reported.</string>
+    <string name="comment_report_reason_hate_speech">Hate speech</string>
+    <string name="comment_report_reason_insult">Insult</string>
+    <string name="comment_report_reason_false_information">False information</string>
+    <string name="comment_report_reason_personal_data">Personal data sharing</string>
+    <string name="comment_report_reason_threat">Threat</string>
+    <string name="comment_report_reason_spam">Spam</string>
+    <string name="comment_report_reason_other">Other</string>
     <string name="report_reason_inappropriate_content">Inappropriate Content</string>
     <string name="report_reason_inappropriate_content_desc">Shares disturbing or objectionable content</string>
     <string name="report_reason_spam">Spam or Fake Account</string>
@@ -323,6 +413,11 @@
 
     <!-- Edit Profile -->
     <string name="edit_profile_title">Edit Profile</string>
+    <string name="edit_profile_saved">Profile updated.</string>
+    <string name="edit_profile_validation_display_name_required">Display name cannot be empty.</string>
+    <string name="edit_profile_validation_username_required">Username cannot be empty.</string>
+    <string name="edit_profile_avatar_dialog_title">Profile photo URL</string>
+    <string name="edit_profile_avatar_dialog_hint">https://…</string>
     <string name="edit_profile_save">Save</string>
     <string name="edit_profile_change_photo">Change Photo</string>
     <string name="edit_profile_delete_account">Delete Account</string>
@@ -337,6 +432,12 @@
     <!-- Messages -->
     <string name="messages_empty_title">No messages yet</string>
     <string name="messages_empty_subtitle">Send a message to a user to start a conversation</string>
+    <string name="messages_delete_confirm_title">Delete conversation?</string>
+    <string name="messages_delete_confirm_message">This only deletes the conversation for you. If they message you again, it will reappear.</string>
+    <string name="messages_mark_read">Read</string>
+    <string name="common_delete">Delete</string>
+    <string name="conversation_empty_title">Start the conversation</string>
+    <string name="conversation_empty_subtitle">Send your first message to begin the chat</string>
 
     <!-- Chat Detail -->
     <string name="chatdetail_title">Chat Info</string>
@@ -345,12 +446,35 @@
     <string name="chatdetail_delete_chat">Delete Chat</string>
     <string name="chatdetail_report">Report</string>
     <string name="chatdetail_action_message">Message</string>
-    <string name="chatdetail_action_plate">Plate</string>
+    <string name="chatdetail_action_profile">Profile</string>
     <string name="chatdetail_action_block">Block</string>
 
     <!-- Plate Detail -->
     <string name="platedetail_title">Plate Detail</string>
     <string name="platedetail_bookmark">Save</string>
+    <string name="platedetail_follow">Follow</string>
+    <string name="platedetail_alarm">Alarm</string>
+    <string name="platedetail_menu">Actions</string>
+    <string name="platedetail_action_save">Save plate</string>
+    <string name="platedetail_action_unsave">Remove from saved</string>
+    <string name="platedetail_action_alarm">Set alarm</string>
+    <string name="platedetail_action_remove_alarm">Remove alarm</string>
+    <string name="platedetail_action_report">Report plate</string>
+    <string name="platedetail_report_title">Report plate</string>
+    <string name="platedetail_report_submit">Submit report</string>
+    <string name="platedetail_report_success">Plate reported.</string>
+    <string name="platedetail_actions_title">Plate actions</string>
+    <string name="removal_request_title">Removal request</string>
+    <string name="removal_request_reason_label">Reason</string>
+    <string name="removal_request_description_hint">Explain why this plate should be removed</string>
+    <string name="removal_request_submit">Submit request</string>
+    <string name="removal_request_success">Removal request submitted.</string>
+    <string name="removal_reason_plate_belongs_to_me">This plate belongs to me</string>
+    <string name="removal_reason_false_information">False information</string>
+    <string name="removal_reason_privacy_request">Privacy request</string>
+    <string name="removal_reason_harassment">Harassment</string>
+    <string name="removal_reason_legal_request">Legal request</string>
+    <string name="removal_reason_other">Other</string>
     <string name="platedetail_first_review">Be the First to Review</string>
     <string name="platedetail_review">Review</string>
     <string name="platedetail_tags_title">TAGS</string>
@@ -366,6 +490,8 @@
 
     <!-- Review -->
     <string name="review_title">Review</string>
+    <string name="review_edit_title">Edit Comment</string>
+    <string name="review_edit_submit">Update</string>
     <string name="review_anonymous_checkbox">Review anonymously</string>
     <string name="review_submit_button">Share Review</string>
     <string name="review_section_overall">OVERALL RATING</string>
@@ -395,6 +521,7 @@
     <string name="search_recent_title">Recent Searches</string>
     <string name="search_section_recent">RECENT SEARCHES</string>
     <string name="search_section_saved">SAVED PLATES</string>
+    <string name="search_section_alarms">ALARM PLATES</string>
     <string name="search_saved_title">Saved Plates</string>
     <string name="search_saved_see_all">All</string>
     <string name="search_recent_clear">Clear All</string>

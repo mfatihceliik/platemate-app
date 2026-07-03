@@ -32,7 +32,7 @@ class ProfileScreenTest {
     fun shimmerVisible_whenInitialLoading() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                ProfileScreen(state = sampleState(isInitialLoading = true), onAction = {})
+                ProfileScreen(state = sampleState(isInitialLoading = true), onAction = {},)
             }
         }
 
@@ -43,7 +43,7 @@ class ProfileScreenTest {
     fun contentState_displaysHeaderAndActivityCards() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                ProfileScreen(state = sampleState(isInitialLoading = false), onAction = {})
+                ProfileScreen(state = sampleState(isInitialLoading = false), onAction = {},)
             }
         }
 
@@ -62,7 +62,7 @@ class ProfileScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 ProfileScreen(
                     state = sampleState(isInitialLoading = false),
-                    onAction = { lastAction = it }
+                    onAction = { lastAction = it },
                 )
             }
         }
@@ -84,7 +84,7 @@ class ProfileScreenTest {
                             isPremiumActive = true
                         )
                     ),
-                    onAction = {}
+                    onAction = {},
                 )
             }
         }

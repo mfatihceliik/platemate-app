@@ -2,7 +2,7 @@ package com.mefy.platemate.presentation.common.viewmodel
 
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.dialog.DialogModel
+import com.mefy.platemate.presentation.common.banner.BannerSeverity
 import com.mefy.platemate.presentation.common.messaging.UiMessage
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.common.global.GlobalAppEvent
@@ -18,7 +18,6 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,63 +28,63 @@ class BaseViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun showSnackbar_emitsCommonSnackbarEvent() = runTest {
+    fun showInfo_emitsInfoSnackbarMessage() = runTest {
         val viewModel = TestBaseViewModel()
         val eventDeferred = async { viewModel.uiMessages.first() }
         runCurrent()
 
-        viewModel.triggerSnackbar(UiText.Dynamic("Hello"))
+        viewModel.triggerInfo(UiText.Dynamic("Hello"))
         advanceUntilIdle()
 
         assertEquals(
-            UiMessage.ShowSnackbar(UiText.Dynamic("Hello")),
+            UiMessage.ShowSnackbar(UiText.Dynamic("Hello"), BannerSeverity.Info),
             eventDeferred.await()
         )
     }
 
     @Test
-    fun showDialog_emitsCommonDialogEvent() = runTest {
-        val viewModel = TestBaseViewModel()
-        val dialog = DialogModel(
-            title = UiText.Dynamic("Title"),
-            message = UiText.Dynamic("Message"),
-            confirmText = UiText.Dynamic("OK")
-        )
-        val eventDeferred = async { viewModel.uiMessages.first() }
-        runCurrent()
-
-        viewModel.triggerDialog(dialog)
-        advanceUntilIdle()
-
-        assertEquals(UiMessage.ShowDialog(dialog), eventDeferred.await())
-    }
-
-    @Test
-    fun emitErrorSnackbar_mapsAppErrorToSnackbarEvent() = runTest {
+    fun showSuccess_emitsSuccessSnackbarMessage() = runTest {
         val viewModel = TestBaseViewModel()
         val eventDeferred = async { viewModel.uiMessages.first() }
         runCurrent()
 
-        viewModel.triggerError(AppError.Server(message = null))
+        viewModel.triggerSuccess(UiText.Dynamic("Done"))
         advanceUntilIdle()
 
         assertEquals(
-            UiMessage.ShowSnackbar(UiText.Resource(R.string.common_error_unknown)),
+            UiMessage.ShowSnackbar(UiText.Dynamic("Done"), BannerSeverity.Success),
             eventDeferred.await()
         )
     }
 
     @Test
-    fun handleError_connectivityFailure_emitsGlobalDialog() = runTest {
-        val bus = DefaultGlobalUiEventBus()
-        val viewModel = TestBaseViewModel(bus)
-        val eventDeferred = async { bus.events.first() }
+    fun handleError_apiError_emitsErrorSnackbar() = runTest {
+        val viewModel = TestBaseViewModel()
+        val eventDeferred = async { viewModel.uiMessages.first() }
         runCurrent()
 
-        viewModel.triggerHandled(AppError.Unreachable())
+        viewModel.triggerHandled(AppError.Api(message = null))
         advanceUntilIdle()
 
-        assertTrue(eventDeferred.await() is GlobalAppEvent.ShowGlobalDialog)
+        assertEquals(
+            UiMessage.ShowSnackbar(UiText.Resource(R.string.common_error_unknown), BannerSeverity.Error),
+            eventDeferred.await()
+        )
+    }
+
+    @Test
+    fun handleError_networkError_emitsErrorSnackbar() = runTest {
+        val viewModel = TestBaseViewModel()
+        val eventDeferred = async { viewModel.uiMessages.first() }
+        runCurrent()
+
+        viewModel.triggerHandled(AppError.Network())
+        advanceUntilIdle()
+
+        assertEquals(
+            BannerSeverity.Error,
+            (eventDeferred.await() as UiMessage.ShowSnackbar).severity
+        )
     }
 
     @Test
@@ -132,16 +131,12 @@ class BaseViewModelTest {
         globalUiEventBus: GlobalUiEventBus = DefaultGlobalUiEventBus()
     ) : BaseViewModel(globalUiEventBus = globalUiEventBus) {
 
-        fun triggerSnackbar(message: UiText) {
-            showSnackbar(message)
+        fun triggerInfo(message: UiText) {
+            showInfo(message)
         }
 
-        fun triggerDialog(dialog: DialogModel) {
-            showDialog(dialog)
-        }
-
-        fun triggerError(error: AppError) {
-            handleError(error)
+        fun triggerSuccess(message: UiText) {
+            showSuccess(message)
         }
 
         fun triggerHandled(error: AppError) {
@@ -154,4 +149,3 @@ class BaseViewModelTest {
         ) = launch(onError = onError, block = block)
     }
 }
-

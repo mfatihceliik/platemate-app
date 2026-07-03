@@ -26,7 +26,7 @@ class NavChromeRulesTest {
         assertFalse(DiscoverDetailDestination::class.shouldShowBottomBarForRouteClass())
         assertFalse(ChatDestination::class.shouldShowBottomBarForRouteClass())
         assertFalse(EditProfileDestination::class.shouldShowBottomBarForRouteClass())
-        assertFalse(WelcomeDestination::class.shouldShowBottomBarForRouteClass())
+        assertFalse(OnboardingDestination::class.shouldShowBottomBarForRouteClass())
         assertFalse(LoginDestination::class.shouldShowBottomBarForRouteClass())
         assertFalse(RegisterDestination::class.shouldShowBottomBarForRouteClass())
         assertFalse(SessionGateDestination::class.shouldShowBottomBarForRouteClass())

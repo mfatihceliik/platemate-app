@@ -4,11 +4,13 @@ import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.data.remote.interceptor.AuthInterceptor
 import com.mefy.platemate.data.remote.interceptor.LanguageInterceptor
 import com.mefy.platemate.data.remote.interceptor.TokenAuthenticator
+import com.mefy.platemate.data.remote.rest.service.AdminApiService
 import com.mefy.platemate.data.remote.rest.service.AuthApiService
 import com.mefy.platemate.data.remote.rest.service.AuthTokenApiService
 import com.mefy.platemate.data.remote.rest.service.ChatApiService
 import com.mefy.platemate.data.remote.rest.service.DiscoveryApiService
 import com.mefy.platemate.data.remote.rest.service.FcmTokenApiService
+import com.mefy.platemate.data.remote.rest.service.FollowApiService
 
 import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import com.mefy.platemate.data.remote.rest.service.ProfileApiService
@@ -18,6 +20,8 @@ import com.mefy.platemate.data.remote.rest.service.SocialApiService
 import com.mefy.platemate.data.remote.rest.service.SocialLinkApiService
 import com.mefy.platemate.data.remote.rest.service.SubscriptionApiService
 import com.mefy.platemate.data.remote.rest.service.UserApiService
+import com.mefy.platemate.data.remote.rest.service.UserBlockApiService
+import com.mefy.platemate.data.remote.rest.service.UserReportApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,7 +64,7 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .authenticator(tokenAuthenticator)
             // Tüm-çağrı süresi sınırı: sunucu ~10sn'de yanıt vermezse istek
-            // SocketTimeout ile düşer -> AppError.Unreachable -> pop-up.
+            // SocketTimeout ile düşer -> AppError.Network -> pop-up.
             .callTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
@@ -126,6 +130,26 @@ object NetworkModule {
     @Singleton
     fun provideUserApiService(retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserBlockApiService(retrofit: Retrofit): UserBlockApiService =
+        retrofit.create(UserBlockApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFollowApiService(retrofit: Retrofit): FollowApiService =
+        retrofit.create(FollowApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserReportApiService(retrofit: Retrofit): UserReportApiService =
+        retrofit.create(UserReportApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAdminApiService(retrofit: Retrofit): AdminApiService =
+        retrofit.create(AdminApiService::class.java)
 
     @Provides
     @Singleton

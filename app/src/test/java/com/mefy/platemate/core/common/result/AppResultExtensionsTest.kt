@@ -1,6 +1,5 @@
-package com.mefy.platemate.core.common
+package com.mefy.platemate.core.common.result
 
-import com.mefy.platemate.core.error.AppError
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -23,40 +22,13 @@ class AppResultExtensionsTest {
     }
 
     @Test
-    fun fold_returnsMappedOutputForSuccessAndError() {
-        val successOutput = AppResult.Success("ok").fold(
-            onSuccess = { "S:$it" },
-            onError = { "E:${it.message}" }
-        )
-        val errorOutput = AppResult.Error(AppError.Server("bad")).fold(
-            onSuccess = { "S:$it" },
-            onError = { "E:${it.message}" }
-        )
-
-        assertEquals("S:ok", successOutput)
-        assertEquals("E:bad", errorOutput)
-    }
-
-    @Test
-    fun mapError_transformsErrorOnly() {
-        val result = AppResult.Error(AppError.Server("x")).mapError {
-            AppError.Server("mapped")
-        }
-
-        assertEquals(AppResult.Error(AppError.Server("mapped")), result)
-    }
-
-    @Test
-    fun onSuccess_and_onError_runOnlyForMatchingBranch() {
+    fun onSuccess_runsOnlyForSuccessBranch() {
         var successSideEffect = false
-        var errorSideEffect = false
 
         AppResult.Success(1)
             .onSuccess { successSideEffect = true }
-            .onError { errorSideEffect = true }
 
         assertTrue(successSideEffect)
-        assertTrue(!errorSideEffect)
     }
 
     @Test

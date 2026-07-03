@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "PlateMate"
 include(":app")
+include(":baselineprofile")
  
