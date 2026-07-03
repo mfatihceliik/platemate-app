@@ -77,7 +77,7 @@ internal fun DiscoverShimmerContent(modifier: Modifier = Modifier) {
             )
         }
 
-        items(3) {
+        items(3, contentType = { "shimmer_row" }) {
             PMCard(
                 modifier = Modifier.fillMaxWidth(),
                 padding = PaddingValues(dims.spacing.s12),

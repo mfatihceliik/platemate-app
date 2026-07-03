@@ -119,14 +119,20 @@ class DefaultDiscoverUiMapper @Inject constructor(
         rank: Int,
         filter: DiscoverFilterUi,
         isBookmarked: Boolean
-    ): PlateDetailUiModel = PlateDetailUiModel(
-        id = "${plate.plateCode}_${filter.name}",
-        rank = rank,
-        plateCode = formatTurkishPlateInputUseCase(plate.plateCode),
-        reportTags = mapReportTags(plate.topReportType),
-        cityName = CityNameResolver.resolveCityName(cityName = plate.cityName, plateCode = plate.plateCode),
-        ratingAverage = plate.ratingAverage,
-        commentCount = plate.reviewCount,
-        isBookmarked = isBookmarked
-    )
+    ): PlateDetailUiModel {
+        val formattedPlateCode = formatTurkishPlateInputUseCase(plate.plateCode)
+        return PlateDetailUiModel(
+            id = "${plate.plateCode}_${filter.name}",
+            rank = rank,
+            plateCode = formattedPlateCode,
+            reportTags = mapReportTags(plate.topReportType),
+            cityName = CityNameResolver.resolveCityName(cityName = plate.cityName, plateCode = plate.plateCode),
+            ratingAverage = plate.ratingAverage,
+            commentCount = plate.reviewCount,
+            searchCount = plate.weeklySearchCount,
+            isBookmarked = isBookmarked,
+            cityCode = formattedPlateCode.take(2),
+            ratingText = String.format("%.1f", plate.ratingAverage)
+        )
+    }
 }

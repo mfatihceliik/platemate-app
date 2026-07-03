@@ -11,6 +11,7 @@ import com.mefy.platemate.domain.model.discovery.TopCityPlate
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -18,7 +19,8 @@ import org.junit.Test
 class DefaultDiscoverUiMapperTest {
 
     private val mapper = DefaultDiscoverUiMapper(
-        formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase()
+        formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
+        validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
     )
 
     @Test
@@ -39,8 +41,8 @@ class DefaultDiscoverUiMapperTest {
     fun mapTabPlates_appliesFilterAndRanksFromOne() {
         val tabs = sampleDiscoveryHome().tabs
 
-        val careless = mapper.mapTabPlates(tabs, DiscoverFilterUi.Careless)
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
+        val careless = mapper.mapTabPlates(tabs, DiscoverFilterUi.Careless, emptySet())
+        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
 
         assertEquals(1, careless.size)
         assertEquals(1, careless.first().rank)
@@ -64,7 +66,7 @@ class DefaultDiscoverUiMapperTest {
             newPlates = emptyList()
         )
 
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
+        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
 
         assertEquals("\u0130stanbul", trend.first().cityName)
     }
@@ -78,7 +80,7 @@ class DefaultDiscoverUiMapperTest {
             newPlates = emptyList()
         )
 
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend)
+        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
 
         assertEquals("Ankara", trend.first().cityName)
     }
@@ -145,7 +147,7 @@ class DefaultDiscoverUiMapperTest {
         cityName = cityName,
         ratingAverage = 4.4,
         reviewCount = 5L,
-        todaySearchCount = 7L,
+        weeklySearchCount = 7L,
         todayReviewCount = 3L,
         todayReportCount = 1L,
         todayWeightedReportScore = 1.5,

@@ -33,7 +33,11 @@ fun DiscoverFilterChips(
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
-        items(DiscoverFilterUi.entries, key = { it.name }) { filter ->
+        items(
+            DiscoverFilterUi.entries,
+            key = { it.name },
+            contentType = { "filter_chip" }
+        ) { filter ->
             val isSelected = selectedFilter == filter
             val bg = if (isSelected) colors.primary else colors.surfaceVariant
             val fg = if (isSelected) colors.onPrimary else colors.textSecondary

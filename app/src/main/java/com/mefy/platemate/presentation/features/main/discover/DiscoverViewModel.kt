@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.features.main.discover
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryHomeUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
@@ -106,7 +106,7 @@ class DiscoverViewModel @Inject constructor(
                     if (refreshing) {
                         // İçerik zaten var; yenileme hatası snackbar ile bildirilir.
                         _uiState.update { it.copy(isRefreshing = false) }
-                        showSnackbar(message)
+                        showError(message)
                     } else {
                         _uiState.update { discoverStateReducer.onLoadError(it, message) }
                     }

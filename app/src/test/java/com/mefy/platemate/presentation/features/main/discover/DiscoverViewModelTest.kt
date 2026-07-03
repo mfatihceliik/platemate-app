@@ -1,6 +1,6 @@
-package com.mefy.platemate.presentation.features.main.discover
+﻿package com.mefy.platemate.presentation.features.main.discover
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.discovery.CityStats
 import com.mefy.platemate.domain.model.discovery.DailyStats
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
@@ -138,6 +138,7 @@ class DiscoverViewModelTest {
         override fun observeSavedPlates(): Flow<List<SavedPlate>> = flowOf(emptyList())
         override fun observeSavedPlateCodes(): Flow<Set<String>> = flowOf(emptySet())
         override suspend fun toggleSaved(plate: SavedPlate): Boolean = true
+        override suspend fun replaceFromRemote(plates: List<SavedPlate>) = Unit
     }
 
     private fun sampleDiscoveryHome(): DiscoveryHome = DiscoveryHome(
@@ -204,7 +205,7 @@ class DiscoverViewModelTest {
         cityName = "Istanbul",
         ratingAverage = 4.4,
         reviewCount = 5L,
-        todaySearchCount = 7L,
+        weeklySearchCount = 7L,
         todayReviewCount = 3L,
         todayReportCount = 1L,
         todayWeightedReportScore = 1.5,
