@@ -59,7 +59,7 @@ class DiscoveryMapper @Inject constructor() : Mapper<DiscoveryHomeResponseDto, D
             cityName = dto.cityName,
             ratingAverage = dto.ratingAverage,
             reviewCount = dto.reviewCount,
-            todaySearchCount = dto.todaySearchCount,
+            weeklySearchCount = dto.weeklySearchCount,
             todayReviewCount = dto.todayReviewCount,
             todayReportCount = dto.todayReportCount,
             todayWeightedReportScore = dto.todayWeightedReportScore,

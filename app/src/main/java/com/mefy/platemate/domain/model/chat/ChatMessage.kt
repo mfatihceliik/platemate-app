@@ -5,8 +5,12 @@ import com.mefy.platemate.domain.model.common.AppDateTime
 data class ChatMessage(
     val id: Long,
     val chatRoomId: Long?,
+    val senderUserId: Long?,
     val senderUsername: String,
     val content: String,
     val sentAt: AppDateTime?,
-    val isRead: Boolean
+    val isRead: Boolean,
+    val status: MessageStatus,
+    val deliveredAt: AppDateTime?,
+    val readAt: AppDateTime?
 )

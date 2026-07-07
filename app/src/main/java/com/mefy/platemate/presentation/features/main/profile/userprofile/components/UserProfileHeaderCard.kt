@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -108,11 +108,10 @@ internal fun UserProfileHeaderCard(
                         color = colors.textPrimary
                     )
                     if (isVerified) {
-                        Icon(
+                        PMIcon(
                             imageVector = Icons.Filled.Verified,
-                            contentDescription = null,
                             tint = colors.primary,
-                            modifier = Modifier.size(dims.spacing.s16)
+                            size = dims.sizing.iconSm,
                         )
                     }
                 }

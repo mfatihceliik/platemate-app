@@ -8,11 +8,10 @@ class RefreshFailureClassifier @Inject constructor() {
 
     @Suppress("UNUSED_PARAMETER")
     fun shouldClearSession(statusCode: Int, rawBody: String?): Boolean {
-        return statusCode == HTTP_UNAUTHORIZED || statusCode == HTTP_FORBIDDEN
+        return statusCode == HTTP_UNAUTHORIZED
     }
 
     private companion object {
         const val HTTP_UNAUTHORIZED = 401
-        const val HTTP_FORBIDDEN = 403
     }
 }

@@ -2,12 +2,12 @@ package com.mefy.platemate.presentation.features.main.profile
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivityUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
 
 @Immutable
 data class ProfileUiState(

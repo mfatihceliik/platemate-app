@@ -14,10 +14,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiType
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
+import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme

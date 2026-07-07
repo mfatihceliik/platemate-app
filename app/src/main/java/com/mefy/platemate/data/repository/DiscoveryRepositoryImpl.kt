@@ -1,8 +1,8 @@
 package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.common.AppResult
-import com.mefy.platemate.core.common.map
-import com.mefy.platemate.core.common.onSuccess
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.core.common.result.map
+import com.mefy.platemate.core.common.result.onSuccess
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.DiscoveryMapper
 import com.mefy.platemate.data.remote.safeApiCall

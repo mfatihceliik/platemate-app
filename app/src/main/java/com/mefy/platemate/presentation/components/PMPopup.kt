@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,18 +42,19 @@ import com.mefy.platemate.presentation.theme.pmDimensions
  */
 @Composable
 fun PMPopup(
+    modifier: Modifier = Modifier,
     title: String,
-    message: String,
-    icon: ImageVector,
-    iconTint: Color,
-    iconContainerColor: Color,
+    message: String? = null,
+    icon: ImageVector? = null,
+    iconTint: Color = Color.Unspecified,
+    iconContainerColor: Color = Color.Transparent,
     primaryText: String,
     onPrimaryClick: () -> Unit,
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
     secondaryText: String? = null,
     onSecondaryClick: (() -> Unit)? = null,
     primaryButtonColors: ButtonColors? = null,
+    content: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
@@ -71,17 +73,19 @@ fun PMPopup(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarXLarge)
-                    .background(iconContainerColor, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                PMIcon(
-                    imageVector = icon,
-                    tint = iconTint,
-                    size = dims.sizing.iconHuge
-                )
+            if (icon != null) {
+                Box(
+                    modifier = Modifier
+                        .size(dims.sizing.avatarXLarge)
+                        .background(iconContainerColor, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PMIcon(
+                        imageVector = icon,
+                        tint = iconTint,
+                        size = dims.sizing.iconHuge
+                    )
+                }
             }
 
             Column(
@@ -95,13 +99,18 @@ fun PMPopup(
                     color = colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
-                PMText(
-                    text = message,
-                    fontSize = dims.fontSize.sm,
-                    color = colors.textSecondary,
-                    textAlign = TextAlign.Center
-                )
+                if (!message.isNullOrBlank()) {
+                    PMText(
+                        text = message,
+                        fontSize = dims.fontSize.sm,
+                        color = colors.textSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
+
+            // İsteğe bağlı içerik (örn. input alanı) — başlık ile butonlar arasında.
+            content?.invoke(this)
 
             Column(
                 modifier = Modifier.fillMaxWidth(),

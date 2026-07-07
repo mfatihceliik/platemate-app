@@ -16,7 +16,7 @@ import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUi
 import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
-fun ReviewResultPopup(
+internal fun ReviewResultPopup(
     result: ReviewSubmitResult,
     onAction: (ReviewUiAction) -> Unit
 ) {

@@ -14,8 +14,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.mefy.platemate.presentation.components.model.PMIconButtonVariant
+import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -80,8 +83,6 @@ fun PMIconButton(
 
     Box(
         modifier = modifier
-            // Minimum dokunma hedefi `size`; içerik (PMIcon) daha büyükse Box büyür,
-            // böylece icon boyutu görünür şekilde etki eder (sabit .size() kırpıyordu).
             .defaultMinSize(minWidth = size, minHeight = size)
             .clip(shape)
             .background(bgColor)
@@ -109,8 +110,8 @@ private fun PMIconButtonIconScope(
     tint: Color,
     content: @Composable () -> Unit,
 ) {
-    androidx.compose.runtime.CompositionLocalProvider(
-        androidx.compose.material3.LocalContentColor provides tint,
+    CompositionLocalProvider(
+        LocalContentColor provides tint,
         content = content,
     )
 }
@@ -142,16 +143,16 @@ private fun PMIconButtonPreviewContent() {
             .padding(dims.spacing.s24),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
-        PMText(text = "Ghost", style = com.mefy.platemate.presentation.components.model.PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(text = "Ghost", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
         PMIconButtonRow(icon = Icons.Filled.Edit, variant = PMIconButtonVariant.Ghost)
 
-        PMText(text = "Filled", style = com.mefy.platemate.presentation.components.model.PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(text = "Filled", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
         PMIconButtonRow(icon = Icons.Filled.Add, variant = PMIconButtonVariant.Filled)
 
-        PMText(text = "Tonal", style = com.mefy.platemate.presentation.components.model.PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(text = "Tonal", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
         PMIconButtonRow(icon = Icons.Filled.Share, variant = PMIconButtonVariant.Tonal)
 
-        PMText(text = "Outlined", style = com.mefy.platemate.presentation.components.model.PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(text = "Outlined", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
         PMIconButtonRow(icon = Icons.Filled.Close, variant = PMIconButtonVariant.Outlined)
     }
 }

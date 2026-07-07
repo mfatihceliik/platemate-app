@@ -26,15 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.model.PMTextFieldVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -46,9 +44,11 @@ fun PMTextField(
     modifier: Modifier = Modifier,
     label: String? = null,
     placeholder: String? = null,
+    variant: PMTextFieldVariant = PMTextFieldVariant.Outlined,
     enabled: Boolean = true,
     readOnly: Boolean = false,
     singleLine: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
     isError: Boolean = false,
     isSuccess: Boolean = false,
     supportingText: String? = null,
@@ -77,13 +77,23 @@ fun PMTextField(
     val backgroundColor = colors.surface
     val textColor = colors.onSurface
 
+    val isChat = variant == PMTextFieldVariant.Chat
+
+    val heightModifier: Modifier = when {
+        isChat -> Modifier.heightIn(min = dims.sizing.chatFieldMinHeight)
+        singleLine -> Modifier.height(dims.sizing.ctaHeightLarge)
+        else -> Modifier
+            .heightIn(min = dims.sizing.ctaHeightLarge)
+            .fillMaxHeight()
+    }
+
     Column(modifier = modifier) {
         if (label != null) {
-            PMText(
+            PMSectionLabel(
                 text = label,
-                style = PMTextStyle.Caption,
-                color = colors.onSurfaceVariant,
-                modifier = Modifier.padding(start = dims.spacing.s4, bottom = dims.spacing.s8)
+                modifier = Modifier.padding(
+                    bottom = dims.spacing.s4
+                )
             )
         }
 
@@ -92,18 +102,11 @@ fun PMTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (singleLine) {
-                        Modifier.height(dims.sizing.ctaHeightLarge)
-                    } else {
-                        Modifier
-                            .heightIn(min = dims.sizing.ctaHeightLarge)
-                            .fillMaxHeight()
-                    }
-                ),
+                .then(heightModifier),
             enabled = enabled,
             readOnly = readOnly,
-            singleLine = singleLine,
+            singleLine = singleLine && !isChat,
+            maxLines = maxLines,
             textStyle = TextStyle(
                 color = textColor,
                 fontSize = dims.fontSize.lg,
@@ -118,19 +121,25 @@ fun PMTextField(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(
-                            if (singleLine) {
-                                Modifier.height(dims.sizing.ctaHeightLarge)
-                            } else {
-                                Modifier
-                                    .heightIn(min = dims.sizing.ctaHeightLarge)
-                                    .fillMaxHeight()
-                            }
+                        .then(heightModifier)
+                        .background(
+                            if (isChat) colors.surfaceVariant else backgroundColor,
+                            RoundedCornerShape(if (isChat) dims.radius.rFull else dims.radius.r16)
                         )
-                        .background(backgroundColor, RoundedCornerShape(dims.radius.r16))
-                        .border(dims.stroke.st2, borderColor, RoundedCornerShape(dims.radius.r12))
-                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
-                    verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top
+                        .then(
+                            if (isChat) Modifier
+                            else Modifier
+                                .border(
+                                    width = dims.stroke.st2,
+                                    color = borderColor,
+                                    shape = RoundedCornerShape(dims.radius.r12)
+                                )
+                        )
+                        .padding(
+                            horizontal = dims.spacing.s16,
+                            vertical = if (isChat) dims.spacing.s10 else dims.spacing.s12
+                        ),
+                    verticalAlignment = if (singleLine || isChat) Alignment.CenterVertically else Alignment.Top
                 ) {
                     if (leadingIcon != null) {
                         leadingIcon()
@@ -157,11 +166,14 @@ fun PMTextField(
         )
 
         if (supportingOrError != null) {
-            PMText(
+            PMSectionLabel(
                 text = supportingOrError,
-                style = PMTextStyle.Caption,
+                style = PMTextStyle.Label,
                 color = if (shouldShowError) colors.error else colors.success,
-                modifier = Modifier.padding(start = dims.spacing.s4, top = dims.spacing.s8)
+                modifier = Modifier.padding(
+                    start = dims.spacing.s4,
+                    bottom = dims.spacing.s4
+                )
             )
         }
     }

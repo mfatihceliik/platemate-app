@@ -11,36 +11,46 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPlateCard(
+    id: String,
     rank: Int,
     cityCode: String,
     plateNumber: String,
     rating: String,
-    extra: String,
-    onClick: () -> Unit,
+    commentCount: Long,
+    searchCount: Long,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
+    val cardClick = remember(id, onClick) { { onClick(id) } }
+
     PMCard(
         modifier = modifier,
-        onClick = onClick,
+        onClick = cardClick,
         padding = PaddingValues(dims.spacing.s12)
     ) {
         Row(
@@ -53,12 +63,12 @@ fun PMPlateCard(
                 modifier = Modifier
                     .size(dims.sizing.rankBadgeSize)
                     .clip(RoundedCornerShape(dims.radius.r8))
-                    .background(if (isFirst) MaterialTheme.pmColors.rankFirstBg else MaterialTheme.pmColors.rankOtherBg),
+                    .background(if (isFirst) colors.rankFirstBg else colors.rankOtherBg),
                 contentAlignment = Alignment.Center
             ) {
                 PMText(
                     text = rank.toString(),
-                    color = if (isFirst) MaterialTheme.pmColors.rankFirstFg else MaterialTheme.pmColors.rankOtherFg,
+                    color = if (isFirst) colors.rankFirstFg else colors.rankOtherFg,
                     fontSize = dims.fontSize.md,
                     fontWeight = FontWeight.ExtraBold
                 )
@@ -68,28 +78,51 @@ fun PMPlateCard(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
             ) {
                 Text(
                     text = plateNumber,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.pmColors.textPrimary
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
                 )
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PMIcon(
-                        imageVector = Icons.Filled.Star,
-                        tint = MaterialTheme.pmColors.star,
+                    PlateMetric(icon = Icons.Filled.Star, value = rating, iconTint = colors.star)
+                    PlateMetric(
+                        icon = Icons.AutoMirrored.Outlined.Chat,
+                        value = NumberFormatter.formatCompact(commentCount),
+                        iconTint = colors.textTertiary
                     )
-                    PMText(
-                        text = "$rating · $extra",
-                        color = MaterialTheme.pmColors.textTertiary
-                    )
+                    if (searchCount > 0) {
+                        PlateMetric(
+                            icon = Icons.Outlined.Search,
+                            value = NumberFormatter.formatCompact(searchCount),
+                            iconTint = colors.primary
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PlateMetric(icon: ImageVector, value: String, iconTint: Color) {
+    val dims = MaterialTheme.pmDimensions
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconSm, tint = iconTint)
+        PMText(
+            text = value,
+            fontSize = dims.fontSize.sm,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.pmColors.textSecondary
+        )
     }
 }
 
@@ -105,9 +138,9 @@ private fun PMPlateCardPreview() {
                 .padding(dims.spacing.s16),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            PMPlateCard(rank = 1, cityCode = "34", plateNumber = "34 EK 0682", rating = "4.8", extra = "12.4B", onClick = {}, modifier = Modifier.fillMaxWidth())
-            PMPlateCard(rank = 2, cityCode = "06", plateNumber = "06 ABC 123", rating = "4.6", extra = "9.1B", onClick = {}, modifier = Modifier.fillMaxWidth())
-            PMPlateCard(rank = 3, cityCode = "35", plateNumber = "35 T 4421", rating = "4.3", extra = "6.7B", onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "1", rank = 1, cityCode = "34", plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "2", rank = 2, cityCode = "06", plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "3", rank = 3, cityCode = "35", plateNumber = "35 T 4421", rating = "4.3", commentCount = 6, searchCount = 0, onClick = {}, modifier = Modifier.fillMaxWidth())
         }
     }
 }

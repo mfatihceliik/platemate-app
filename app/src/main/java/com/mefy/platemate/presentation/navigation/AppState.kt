@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.navigation
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavDestination
@@ -8,34 +7,27 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.mefy.platemate.presentation.common.banner.BannerSeverity
+import com.mefy.platemate.presentation.common.banner.InAppBannerController
+import com.mefy.platemate.presentation.common.banner.bannerFor
 import kotlin.reflect.KClass
 
 @Stable
 class AppState(
     val navController: NavHostController,
-    val snackbarHostState: SnackbarHostState,
-    private val coroutineScope: CoroutineScope
+    val bannerController: InAppBannerController
 ) {
 
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
-    val currentTopLevelDestination: TopLevelDestination?
-        @Composable get() = currentDestination.toTopLevelDestinationOrNull()
-
-    val shouldShowBottomBar: Boolean
-        @Composable get() = currentDestination.isTopLevelStartDestination()
-
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         navController.navigateToTopLevelDestination(topLevelDestination)
     }
 
-    fun showSnackbar(message: String) {
-        coroutineScope.launch {
-            snackbarHostState.showSnackbar(message)
-        }
+    /** Üstten inen banner ile kısa mesaj gösterir (eski snackbar yerine). */
+    fun showMessage(message: String, severity: BannerSeverity = BannerSeverity.Info) {
+        bannerController.show(bannerFor(message, severity))
     }
 }
 

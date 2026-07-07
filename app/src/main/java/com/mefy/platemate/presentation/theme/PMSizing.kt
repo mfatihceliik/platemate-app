@@ -12,10 +12,11 @@ data class PMSizing(
     val avatarXLarge: Dp = 72.dp,
     val avatarHero: Dp = 90.dp,
     val avatarIconInner: Dp = 40.dp,
-    val mainBottomBarHeight: Dp = 88.dp,
-    val mainBottomBarContentHeight: Dp = 64.dp,
+    val mainBottomBarHeight: Dp = 108.dp,
+    val mainBottomBarContentHeight: Dp = 84.dp,
+    val gridHeight: Dp = 144.dp,
     val progressBarSmall: Dp = 24.dp,
-    val progressBarMedium: Dp = 48.dp,
+    val progressBarMedium: Dp = 32.dp,
     val plateBadgeSmall: Dp = 40.dp,
     val plateBadgeMedium: Dp = 44.dp,
     val plateBadgeLarge: Dp = 64.dp,
@@ -41,4 +42,9 @@ data class PMSizing(
     val iconHuge: Dp = 32.dp,
     val settingsRowIcon: Dp = 36.dp,
     val platformRowIcon: Dp = 40.dp,
+    // Chat composer: circular +/send buttons and the pill input's min height.
+    val chatComposerButton: Dp = 40.dp,
+    val chatFieldMinHeight: Dp = 42.dp,
+    // Scroll-to-bottom button overlaid on the conversation list.
+    val scrollToBottomButton: Dp = 40.dp,
 )

@@ -17,5 +17,6 @@ data class PlateSearchResponseDto(
     @SerializedName("totalWeightedReportScore") val totalWeightedReportScore: Long?,
     @SerializedName("score") val score: Double?,
     @SerializedName("lastActivityAt") val lastActivityAt: String?,
-    @SerializedName("recentReviews") val recentReviews: List<PlateDetailReviewItemDto>?
+    @SerializedName("recentReviews") val recentReviews: List<PlateDetailReviewItemDto>?,
+    @SerializedName("following") val following: Boolean?
 )

@@ -1,6 +1,6 @@
-package com.mefy.platemate.data.repository
+﻿package com.mefy.platemate.data.repository
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.mapper.DiscoveryMapper

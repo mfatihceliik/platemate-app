@@ -1,8 +1,8 @@
 package com.mefy.platemate.presentation.features.auth.login
 
 import com.mefy.platemate.R
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
 import com.mefy.platemate.domain.usecase.auth.LoginUseCase
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -70,7 +70,7 @@ class LoginViewModel @Inject constructor(
         if (state.isSubmitEnabled) return false
 
         _uiState.update(loginStateReducer::onInvalidSubmit)
-        showSnackbar(UiText.Resource(R.string.auth_login_form_invalid))
+        showError(UiText.Resource(R.string.auth_login_form_invalid))
         return true
     }
 
@@ -92,7 +92,7 @@ class LoginViewModel @Inject constructor(
 
     private fun onSubmitError(error: AppError) {
         handleError(error)
-        val fieldErrors = (error as? AppError.Server)?.fieldErrors.orEmpty()
+        val fieldErrors = (error as? AppError.Api)?.fieldErrors.orEmpty()
         _uiState.update { current ->
             loginStateReducer.onSubmitError(
                 state = current,

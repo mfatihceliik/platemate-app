@@ -2,134 +2,165 @@ package com.mefy.platemate.presentation.features.main.messages.conversation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.common.state.ScreenStatus
-import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMLoading
-import com.mefy.platemate.presentation.features.main.messages.conversation.components.ConversationTopBar
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.mefy.platemate.domain.model.chat.MessageStatus
+import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.DateSeparator
-import com.mefy.platemate.presentation.features.main.messages.conversation.components.MessageInputBar
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ReceivedBubble
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.ScrollToBottomButton
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.SentBubble
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.UnreadMessagesSeparator
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.rememberRelativeDateLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ConversationScreen(
+    modifier: Modifier = Modifier,
     state: ConversationUiState,
     onAction: (ConversationUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues = PaddingValues(),
+    // Route'taki composer overlay'inin ölçülen yüksekliği: son mesaj barın arkasında
+    // kalmasın diye liste alt boşluğu ve "en alta in" butonu bu kadar yukarı itilir.
+    bottomOverlayInset: Dp = 0.dp
 ) {
     val dims = MaterialTheme.pmDimensions
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val showScrollDown by remember { derivedStateOf { listState.canScrollForward } }
+    val density = LocalDensity.current
+    val imeInsets = WindowInsets.ime
+    val items = state.items
 
-    LaunchedEffect(state.items.size) {
-        if (state.items.isNotEmpty()) {
-            listState.scrollToItem(state.items.lastIndex)
+    var initialScrollDone by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(items.size, state.firstUnreadIndex) {
+        if (items.isEmpty()) return@LaunchedEffect
+        if (!initialScrollDone) {
+            listState.scrollToItem(state.firstUnreadIndex ?: items.lastIndex)
+            initialScrollDone = true
+        } else {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val nearBottom = lastVisible >= items.lastIndex - 3
+            val lastIsMine =
+                (items.lastOrNull() as? ConversationListItem.Message)?.model?.isMine == true
+            if (nearBottom || lastIsMine) {
+                listState.animateScrollToItem(items.lastIndex)
+            }
         }
     }
 
-    PMBaseScreen(
-        modifier = modifier,
-        topBarConfig = PMTopBarConfig.Custom {
-            ConversationTopBar(
-                participantName = state.participantName,
-                initials = state.initials,
-                avatarBg = state.avatarBg,
-                avatarFg = state.avatarFg,
-                onBackClick = { onAction(ConversationUiAction.BackClicked) },
-                onInfoClick = { onAction(ConversationUiAction.InfoClicked) }
-            )
-        },
-        containerColor = MaterialTheme.pmColors.surface,
-        status = when {
-            state.isLoading -> ScreenStatus.Loading
-            state.errorMessage != null -> ScreenStatus.Error(state.errorMessage)
-            else -> ScreenStatus.Content
-        },
-        onRetry = { onAction(ConversationUiAction.RetryClicked) },
-        loading = { innerPadding -> PMLoading(modifier = Modifier.padding(innerPadding)) },
-        bottomBar = {
-            if (state.errorMessage == null) {
-                MessageInputBar(
-                    text = state.inputText,
-                    onTextChange = { onAction(ConversationUiAction.InputChanged(it)) },
-                    onSend = { onAction(ConversationUiAction.SendClicked) }
-                )
+    LaunchedEffect(listState) {
+        var wasAtBottom = !listState.canScrollForward
+        var prevImeBottom = 0
+        snapshotFlow { imeInsets.getBottom(density) to listState.canScrollForward }
+            .collect { (imeBottomPx, canScrollForward) ->
+                if (imeBottomPx == 0) {
+                    wasAtBottom = !canScrollForward
+                } else if (imeBottomPx > prevImeBottom && wasAtBottom) {
+                    val last = listState.layoutInfo.totalItemsCount - 1
+                    if (last >= 0) listState.scrollToItem(last)
+                }
+                prevImeBottom = imeBottomPx
             }
-        }
-    ) { innerPadding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(
-                    horizontal = dims.spacing.s12,
-                    vertical = dims.spacing.s8
-                ),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
-            ) {
-                itemsIndexed(
-                    items = state.items,
-                    key = { index, item ->
-                        when (item) {
-                            is ConversationListItem.DateHeader -> "date_${item.label}"
-                            is ConversationListItem.Message -> "msg_${item.model.id}_$index"
-                        }
-                    }
-                ) { _, item ->
-                    when (item) {
-                        is ConversationListItem.DateHeader ->
-                            DateSeparator(label = item.label)
+    }
 
-                        is ConversationListItem.Message -> {
-                            val msg = item.model
-                            if (msg.isMine) {
-                                SentBubble(
-                                    content = msg.content,
-                                    time = msg.time,
-                                    isRead = msg.isRead
-                                )
-                            } else {
-                                ReceivedBubble(
-                                    initials = state.initials,
-                                    avatarBg = state.avatarBg,
-                                    avatarFg = state.avatarFg,
-                                    content = msg.content,
-                                    time = msg.time
-                                )
-                            }
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = dims.spacing.s12,
+                end = dims.spacing.s12,
+                top = dims.spacing.s8,
+                bottom = dims.spacing.s8 + bottomOverlayInset
+            ),
+            verticalArrangement = spacedByWithFooter(dims.spacing.s16) //Arrangement.spacedBy(dims.spacing.s12)
+        ) {
+            items(
+                items = items,
+                key = { item ->
+                    when (item) {
+                        is ConversationListItem.DateHeader -> "date_${item.isoDate}"
+                        is ConversationListItem.Message -> "msg_${item.model.id}"
+                        is ConversationListItem.UnreadDivider -> "unread_divider"
+                    }
+                },
+                contentType = { item ->
+                    when (item) {
+                        is ConversationListItem.DateHeader -> "date"
+                        is ConversationListItem.Message -> "message"
+                        is ConversationListItem.UnreadDivider -> "unread_divider"
+                    }
+                }
+            ) { item ->
+                when (item) {
+                    is ConversationListItem.DateHeader ->
+                        DateSeparator(label = rememberRelativeDateLabel(item.isoDate))
+
+                    is ConversationListItem.UnreadDivider ->
+                        UnreadMessagesSeparator(count = item.count)
+
+                    is ConversationListItem.Message -> {
+                        val msg = item.model
+                        if (msg.isMine) {
+                            SentBubble(
+                                content = msg.content,
+                                time = msg.time,
+                                status = msg.status
+                            )
+                        } else {
+                            ReceivedBubble(
+                                initials = state.initials,
+                                avatarBg = state.avatarBg,
+                                avatarFg = state.avatarFg,
+                                content = msg.content,
+                                time = msg.time
+                            )
                         }
                     }
                 }
             }
         }
+
+        ScrollToBottomButton(
+            visible = showScrollDown,
+            onClick = { scope.launch { listState.animateScrollToItem(items.lastIndex) } },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = dims.spacing.s16, bottom = bottomOverlayInset + dims.spacing.s16)
+        )
     }
 }
 
@@ -141,14 +172,14 @@ private val previewState = ConversationUiState(
     avatarFg = Color(0xFF0E7490),
     inputText = "",
     items = listOf(
-        ConversationListItem.DateHeader(label = "Bugün"),
+        ConversationListItem.DateHeader(isoDate = "2026-07-04"),
         ConversationListItem.Message(
             ChatMessageUiModel(
                 id = 1L,
-                content = "Merhaba, plakamı gördünüz mü?",
+                content = "Merhaba, plakamı gördünüz mü",
                 time = "10:42",
                 isMine = false,
-                isRead = true
+                status = MessageStatus.READ
             )
         ),
         ConversationListItem.Message(
@@ -157,7 +188,7 @@ private val previewState = ConversationUiState(
                 content = "Evet, 34 EK 0682 değil mi?",
                 time = "10:43",
                 isMine = true,
-                isRead = true
+                status = MessageStatus.READ
             )
         ),
         ConversationListItem.Message(
@@ -166,7 +197,7 @@ private val previewState = ConversationUiState(
                 content = "Evet aynen o! Teşekkürler.",
                 time = "10:44",
                 isMine = false,
-                isRead = true
+                status = MessageStatus.READ
             )
         ),
         ConversationListItem.Message(
@@ -175,7 +206,7 @@ private val previewState = ConversationUiState(
                 content = "Rica ederim, iyi günler!",
                 time = "10:45",
                 isMine = true,
-                isRead = false
+                status = MessageStatus.SENT
             )
         ),
     )

@@ -9,13 +9,13 @@ import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -32,7 +32,7 @@ class ProfileScreenTest {
     fun shimmerVisible_whenInitialLoading() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                ProfileScreen(state = sampleState(isInitialLoading = true), onAction = {})
+                ProfileScreen(state = sampleState(isInitialLoading = true), onAction = {},)
             }
         }
 
@@ -43,7 +43,7 @@ class ProfileScreenTest {
     fun contentState_displaysHeaderAndActivityCards() {
         composeRule.setContent {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
-                ProfileScreen(state = sampleState(isInitialLoading = false), onAction = {})
+                ProfileScreen(state = sampleState(isInitialLoading = false), onAction = {},)
             }
         }
 
@@ -62,7 +62,7 @@ class ProfileScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 ProfileScreen(
                     state = sampleState(isInitialLoading = false),
-                    onAction = { lastAction = it }
+                    onAction = { lastAction = it },
                 )
             }
         }
@@ -84,7 +84,7 @@ class ProfileScreenTest {
                             isPremiumActive = true
                         )
                     ),
-                    onAction = {}
+                    onAction = {},
                 )
             }
         }

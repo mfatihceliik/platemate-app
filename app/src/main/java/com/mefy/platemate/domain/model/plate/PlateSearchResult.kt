@@ -16,5 +16,6 @@ data class PlateSearchResult(
     val totalReportCount: Long,
     val score: Double,
     val lastActivityAt: String,
-    val topReportTypes: List<ReportType>
+    val topReportTypes: List<ReportType>,
+    val isFollowing: Boolean = false
 )

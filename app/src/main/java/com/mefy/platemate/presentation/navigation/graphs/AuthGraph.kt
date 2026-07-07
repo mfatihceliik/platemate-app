@@ -6,8 +6,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.mefy.platemate.presentation.common.dialog.DialogModel
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.login.LoginRoute
 import com.mefy.platemate.presentation.features.auth.login.LoginViewModel
 import com.mefy.platemate.presentation.features.auth.register.RegisterRoute
@@ -19,8 +17,6 @@ internal fun NavGraphBuilder.authGraph(
     onNavigateAfterRegister: () -> Unit,
     onNavigateToRegister: (String?) -> Unit,
     onNavigateToLogin: (String?) -> Unit,
-    onShowSnackbar: (UiText) -> Unit,
-    onShowDialog: (DialogModel) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -42,8 +38,6 @@ internal fun NavGraphBuilder.authGraph(
                 prefillEmail = destination.prefillIdentifier,
                 onNavigateAfterLogin = onNavigateAfterLogin,
                 onNavigateToRegisterClick = onNavigateToRegister,
-                onShowSnackbar = onShowSnackbar,
-                onShowDialog = onShowDialog,
                 onBackClick = onBackClick,
                 modifier = modifier
             )
@@ -58,8 +52,6 @@ internal fun NavGraphBuilder.authGraph(
                 prefillIdentifier = destination.prefillIdentifier,
                 onNavigateAfterRegister = onNavigateAfterRegister,
                 onNavigateToLoginClick = onNavigateToLogin,
-                onShowSnackbar = onShowSnackbar,
-                onShowDialog = onShowDialog,
                 onBackClick = onBackClick,
                 modifier = modifier
             )

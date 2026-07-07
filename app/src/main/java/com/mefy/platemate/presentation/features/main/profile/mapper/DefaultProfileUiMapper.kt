@@ -6,17 +6,23 @@ import com.mefy.platemate.domain.model.profile.ProfileFriendRequest
 import com.mefy.platemate.domain.model.profile.SocialMediaLink
 import com.mefy.platemate.domain.model.profile.UserProfile
 import com.mefy.platemate.domain.model.review.Review
+import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivityUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
+import com.mefy.platemate.presentation.features.uimodel.toUiModel
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatform as SocialPlatformUiModel
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,12 +32,16 @@ class DefaultProfileUiMapper @Inject constructor(
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase
 ) : ProfileUiMapper {
+    private companion object {
+        const val UNKNOWN_STATUS = "UNKNOWN"
+    }
 
-    override fun mapProfile(profile: UserProfile): ProfileUiData {
+    override fun mapProfile(profile: UserProfile, platforms: List<SocialPlatform>): ProfileUiData {
         val plateActivities = profile.plateReviews.map(::mapReviewActivity)
         val friendActivities = profile.friendRequests.map(::mapFriendRequestActivity)
         val mergedActivities = (plateActivities + friendActivities)
             .sortedByDescending(ProfileActivityUiModel::sortKey)
+        val uiPlatforms = platforms.map { it.toUiModel() }
 
         return ProfileUiData(
             header = ProfileHeaderUiModel(username = profile.username),
@@ -52,7 +62,7 @@ class DefaultProfileUiMapper @Inject constructor(
                 )
             ),
             statusSummary = profile.reviewStatusCounts.toStatusSummaryUi(),
-            socialLinks = profile.socialMediaLinks.map(::mapSocialLink),
+            socialLinks = profile.socialMediaLinks.map { link -> mapSocialLink(link, uiPlatforms) },
             activities = mergedActivities
         )
     }
@@ -88,11 +98,19 @@ class DefaultProfileUiMapper @Inject constructor(
         )
     }
 
-    private fun mapSocialLink(link: SocialMediaLink): ProfileSocialLinkUiModel = ProfileSocialLinkUiModel(
-        id = link.id,
-        platform = link.platform,
-        url = link.url
-    )
+    private fun mapSocialLink(link: SocialMediaLink, platforms: List<SocialPlatformUiModel>): ProfileSocialLinkUiModel {
+        // Bilinmeyen platform jenerik link görünümüne düşer; !! ile çökmek yerine fallback.
+        val platform = platforms.find { it.code.equals(link.platform, ignoreCase = true) }
+
+        return ProfileSocialLinkUiModel(
+            id = link.id,
+            platform = link.platform,
+            url = link.url,
+            iconUrl = platform?.iconUrl,
+            backgroundColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
+            iconTint = platform?.iconTint ?: SocialPlatformFallbackTint
+        )
+    }
 
     private fun ReviewStatusTotals.toStatusSummaryUi(): ProfileStatusSummaryUiModel =
         ProfileStatusSummaryUiModel(
@@ -104,7 +122,7 @@ class DefaultProfileUiMapper @Inject constructor(
             removedByLegalRequest = removedByLegalRequest
         )
 
-    private fun formatRating(value: Double): String = String.format(Locale.US, "%.1f", value)
+    private fun formatRating(value: Double): String = NumberFormatter.formatRating(value)
 
     private fun formatIsoDate(rawIsoDate: String?): String {
         val value = rawIsoDate?.trim().orEmpty()
@@ -112,7 +130,5 @@ class DefaultProfileUiMapper @Inject constructor(
         return value.take(10)
     }
 
-    private companion object {
-        const val UNKNOWN_STATUS = "UNKNOWN"
-    }
+
 }

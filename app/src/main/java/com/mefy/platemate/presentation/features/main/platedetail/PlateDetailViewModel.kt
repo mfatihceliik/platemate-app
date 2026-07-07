@@ -1,18 +1,18 @@
 package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.lifecycle.SavedStateHandle
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.R
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.plate.PlateDetailReview
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
-import com.mefy.platemate.domain.model.search.SavedPlate
-import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
-import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
-import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
+import com.mefy.platemate.domain.usecase.review.ReportReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
-import com.mefy.platemate.presentation.common.text.CityNameResolver
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
+import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,16 +21,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class PlateDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchPlateUseCase: SearchPlateUseCase,
-    private val observeSavedPlateCodesUseCase: ObserveSavedPlateCodesUseCase,
-    private val toggleSavedPlateUseCase: ToggleSavedPlateUseCase,
-    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
+    private val reportReviewUseCase: ReportReviewUseCase,
+    private val observeSessionUseCase: ObserveSessionUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -42,48 +41,90 @@ class PlateDetailViewModel @Inject constructor(
     private val _uiEffect = MutableSharedFlow<PlateDetailUiEffect>()
     val uiEffect: SharedFlow<PlateDetailUiEffect> = _uiEffect.asSharedFlow()
 
-    private var latestPlate: PlateSearchResult? = null
-
     init {
-        observeBookmark()
         loadPlateDetail()
     }
 
     fun onAction(action: PlateDetailUiAction) {
         when (action) {
             PlateDetailUiAction.BackClicked -> launch { _uiEffect.emit(PlateDetailUiEffect.NavigateBack) }
-            PlateDetailUiAction.BookmarkClicked -> onBookmarkClicked()
+            PlateDetailUiAction.MenuClicked -> launch {
+                _uiEffect.emit(PlateDetailUiEffect.NavigateToActions(normalizedPlateCode))
+            }
             PlateDetailUiAction.ReviewClicked -> launch {
                 _uiEffect.emit(PlateDetailUiEffect.NavigateToReview(_uiState.value.plateCode))
             }
             PlateDetailUiAction.RetryClicked -> loadPlateDetail()
-        }
-    }
-
-    private fun observeBookmark() {
-        launch {
-            observeSavedPlateCodesUseCase().collectLatest { codes ->
-                _uiState.update { it.copy(isBookmarked = codes.contains(normalizedPlateCode)) }
+            is PlateDetailUiAction.AvatarClicked -> launch {
+                _uiEffect.emit(PlateDetailUiEffect.NavigateToUserProfile(action.userId))
             }
+            is PlateDetailUiAction.EditReviewClicked -> onEditReviewClicked(action.reviewId)
+            is PlateDetailUiAction.ReportReviewClicked -> onReportReviewClicked(action.reviewId)
+            is PlateDetailUiAction.ReportReasonSelected -> onReportReasonSelected(action.reason)
+            is PlateDetailUiAction.ReportDescriptionChanged -> onReportDescriptionChanged(action.description)
+            PlateDetailUiAction.ReportSubmitClicked -> onReportSubmitClicked()
+            PlateDetailUiAction.ReportDismissed -> _uiState.update { it.copy(reviewReport = null) }
         }
     }
 
-    private fun onBookmarkClicked() {
-        val plate = latestPlate ?: return
+    private fun onEditReviewClicked(reviewId: Long) {
+        val review = _uiState.value.reviews.firstOrNull { it.id == reviewId } ?: return
         launch {
-            val savedPlate = SavedPlate(
-                normalizedPlateCode = normalizedPlateCode,
-                formattedPlateCode = formatTurkishPlateInputUseCase(plate.plateCode),
-                cityName = CityNameResolver.resolveCityName(
-                    cityName = plate.cityName,
-                    plateCode = plate.plateCode
-                ),
-                ratingAverage = plate.ratingAverage,
-                commentCount = plate.reviewCount,
-                reportTypes = plate.topReportTypes,
-                savedAt = System.currentTimeMillis()
+            _uiEffect.emit(
+                PlateDetailUiEffect.NavigateToEditReview(
+                    plateCode = _uiState.value.plateCode,
+                    reviewId = review.id,
+                    rating = review.rating,
+                    comment = review.comment.orEmpty()
+                )
             )
-            toggleSavedPlateUseCase(savedPlate)
+        }
+    }
+
+    private fun onReportReviewClicked(reviewId: Long) {
+        val review = _uiState.value.reviews.firstOrNull { it.id == reviewId } ?: return
+        _uiState.update {
+            it.copy(
+                reviewReport = ReviewReportUiState(
+                    reviewId = review.id,
+                    reviewerName = review.displayName ?: review.username,
+                    initials = review.initials
+                )
+            )
+        }
+    }
+
+    private fun onReportReasonSelected(reason: CommentReportReason) {
+        _uiState.update { state ->
+            state.reviewReport?.let { state.copy(reviewReport = it.copy(selectedReason = reason)) } ?: state
+        }
+    }
+
+    private fun onReportDescriptionChanged(description: String) {
+        _uiState.update { state ->
+            state.reviewReport?.let { state.copy(reviewReport = it.copy(description = description)) } ?: state
+        }
+    }
+
+    private fun onReportSubmitClicked() {
+        val report = _uiState.value.reviewReport ?: return
+        val reason = report.selectedReason ?: return
+        if (report.isSubmitting) return
+
+        _uiState.update { it.copy(reviewReport = report.copy(isSubmitting = true)) }
+        launch {
+            when (val result = reportReviewUseCase(report.reviewId, reason.code, report.description)) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(reviewReport = null) }
+                    showSuccess(UiText.Resource(R.string.report_review_success))
+                }
+                is AppResult.Error -> {
+                    _uiState.update { state ->
+                        state.reviewReport?.let { state.copy(reviewReport = it.copy(isSubmitting = false)) } ?: state
+                    }
+                    showError(result.error.toUiText())
+                }
+            }
         }
     }
 
@@ -93,7 +134,6 @@ class PlateDetailViewModel @Inject constructor(
             when (val result = searchPlateUseCase(normalizedPlateCode)) {
                 is AppResult.Success -> {
                     val plate = result.data
-                    latestPlate = plate
 
                     val breakdown = plate.ratingDistribution.map { dist ->
                         RatingBreakdownItem(
@@ -110,7 +150,8 @@ class PlateDetailViewModel @Inject constructor(
                         )
                     }
 
-                    val reviews = plate.recentReviews.map { it.toUiModel() }
+                    val currentUserId = observeSessionUseCase().first()?.userId ?: 0L
+                    val reviews = plate.recentReviews.map { it.toUiModel(currentUserId) }
 
                     _uiState.update {
                         it.copy(
@@ -133,7 +174,7 @@ class PlateDetailViewModel @Inject constructor(
         }
     }
 
-    private fun PlateDetailReview.toUiModel(): PlateReviewUiModel {
+    private fun PlateDetailReview.toUiModel(currentUserId: Long): PlateReviewUiModel {
         val name = displayName ?: username
         val initials = name
             .split(" ")
@@ -155,7 +196,10 @@ class PlateDetailViewModel @Inject constructor(
             rating = rating,
             timeAgo = timeText,
             comment = comment,
-            reportTags = reportTags
+            reportTags = reportTags,
+            userId = userId,
+            canReport = userId != currentUserId,
+            canEdit = userId == currentUserId
         )
     }
 }

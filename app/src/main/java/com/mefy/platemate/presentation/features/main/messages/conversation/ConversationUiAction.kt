@@ -6,4 +6,11 @@ sealed interface ConversationUiAction {
     data object InfoClicked : ConversationUiAction
     data object BackClicked : ConversationUiAction
     data object RetryClicked : ConversationUiAction
+    data object AcceptRequestClicked : ConversationUiAction
+    data object DeclineRequestClicked : ConversationUiAction
+
+    // Yaşam döngüsü: "okundu" yalnızca ekran gerçekten görünürken (RESUMED) gönderilir;
+    // uygulama arka plandayken sokete mesaj düşerse karşıya yanlış "görüldü" gitmez.
+    data object ScreenResumed : ConversationUiAction
+    data object ScreenPaused : ConversationUiAction
 }

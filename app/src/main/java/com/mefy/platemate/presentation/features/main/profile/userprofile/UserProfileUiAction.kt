@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile
 
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.ReportReason
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
 
 sealed interface UserProfileUiAction {
     data object BackClicked : UserProfileUiAction

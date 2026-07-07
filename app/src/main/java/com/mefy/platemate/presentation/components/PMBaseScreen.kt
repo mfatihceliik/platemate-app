@@ -3,14 +3,19 @@ package com.mefy.platemate.presentation.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.mefy.platemate.R
@@ -28,22 +33,58 @@ import com.mefy.platemate.presentation.theme.pmColors
  * tekrar yazmadan kazanır ve durum geçişlerinde titreme (flicker) olmaz.
  * [status] = null olduğunda yalnızca [content] çizilir (geriye-dönük uyumlu; auth/form
  * ekranları için).
+ *
+ * Padding sözleşmesi: [content]/[loading]/[empty]'e geçen [PaddingValues] kozmetik bir
+ * kenar boşluğu DEĞİL; floating alt-bar + sistem inset boşluğudur ([LocalScaffoldPadding]).
+ * Ekran bunu kendi tüketim biçimine göre uygular: liste ekranları `contentPadding` olarak
+ * (içerik hap-barın altından kayar, zemin sürekli kalır), statik/scroll ekranlar `.padding`
+ * olarak. Kendi yatay/dikey gutter'ını (s12/s16 vb.) ekran ayrıca ekler. Bu yüzden base
+ * sabit bir tüm-köşe padding'i dayatmaz — full-bleed listeleri ve per-screen gutter'ları korur.
  */
 @Composable
 fun PMBaseScreen(
     modifier: Modifier = Modifier,
     topBarConfig: PMTopBarConfig = PMTopBarConfig.Hidden,
     containerColor: Color = MaterialTheme.pmColors.background,
-    topBarContainerColor: Color = containerColor,
+    topBarContainerColor: Color = MaterialTheme.pmColors.background,
+    applyImePadding: Boolean = false,
     bottomBar: @Composable () -> Unit = {},
+    // İçerik alanının ALTINA hizalı, içeriğin/empty'nin ÜZERİNE binen kalıcı katman
+    // (ör. sohbet composer'ı). bottomBar'dan farkı: content'i aşağı itmez, üstüne çizer;
+    // böylece durum (Content/Empty) değişse de kalır ve arkasındaki içerik görünür.
+    // BoxScope alıcısıdır → çağıran `Modifier.align(...)` kullanabilir. Default {} → diğer
+    // ekranlar etkilenmez.
+    contentBottomOverlay: @Composable BoxScope.() -> Unit = {},
     status: ScreenStatus? = null,
     onRetry: () -> Unit = {},
+    keepTopBarWhileLoading: Boolean = false,
+    isRefreshing: Boolean = false,
+    onRefresh: (() -> Unit)? = null,
     loading: @Composable (PaddingValues) -> Unit = {},
     empty: @Composable (PaddingValues) -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val scaffoldPadding = LocalScaffoldPadding.current
+    // Padding giriş anında dondurulur: alt bar görünürlüğü destinasyonun saf fonksiyonu
+    // (NavChromeRulesTest) ve bu ekranın destinasyonu ömrü boyunca değişmez. Canlı okunursa
+    // navigasyon anında (çıkış animasyonu bitmeden) padding 108dp→0 düşer ve çıkan ekranın
+    // içeriği aşağı kayar. Giren ekran backstack güncellendikten sonra compose olduğu için
+    // her zaman doğru güncel değeri yakalar.
+    val liveScaffoldPadding = LocalScaffoldPadding.current
+    val scaffoldPadding = remember { liveScaffoldPadding }
     val isOnline = LocalIsOnline.current
+
+    // [onRefresh] verildiğinde içerik aşağı-çekerek-yenile ile sarılır. Indicator, içerik
+    // alanının (topbar'ın ALTINDA) üst-ortasına küçük boşlukla yerleşir; böylece dikişten
+    // çıkar gibi görünmez. Yalnızca gerçek içerik sarılır (loading/error/empty değil).
+    val renderContent: @Composable (PaddingValues) -> Unit = { padding ->
+        if (onRefresh != null) {
+            PMPullToRefresh(isRefreshing = isRefreshing, onRefresh = onRefresh) {
+                content(padding)
+            }
+        } else {
+            content(padding)
+        }
+    }
 
     // Çevrimdışıyken tüm veri ekranları (status != null) tam-ekran bağlantı hatasına
     // geçer; bağlantı dönünce gerçek duruma otomatik çözülür. Form/auth ekranları
@@ -56,12 +97,25 @@ fun PMBaseScreen(
 
     // Yükleme (shimmer) ve hata durumunda topbar + ekran-içi alt bar gizlenir; iskelet/
     // hata tam ekran görünür. Sekme nav barı AppNavHost'tan gelir, etkilenmez.
-    val hideChrome = effectiveStatus == ScreenStatus.Loading || effectiveStatus is ScreenStatus.Error
+    // [keepTopBarWhileLoading] = true iken yüklemede topbar görünür kalır (yalnızca hata
+    // chrome'u gizler); böylece yükleme→içerik geçişinde topbar zıplaması/boş ekran hissi olmaz.
+    val hideChrome = (effectiveStatus == ScreenStatus.Loading && !keepTopBarWhileLoading) ||
+            effectiveStatus is ScreenStatus.Error
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(containerColor)
+            .then(
+                // Klavyeli ekranlar (ör. konuşma) opt-in eder: kök, (ime − navbar) kadar kalkar;
+                // alt bar kendi navbar boşluğunu ekler → toplam tam ime yüksekliği. Kapalıyken 0.
+                // windowInsetsPadding uyguladığını consume eder → alt bileşenlerde çifte padding olmaz.
+                if (applyImePadding) {
+                    Modifier.windowInsetsPadding(WindowInsets.ime.exclude(WindowInsets.navigationBars))
+                } else {
+                    Modifier
+                }
+            )
     ) {
         if (!hideChrome) {
             PMTopBar(config = topBarConfig, containerColor = topBarContainerColor)
@@ -77,13 +131,13 @@ fun PMBaseScreen(
                 )
         ) {
             if (effectiveStatus == null) {
-                content(scaffoldPadding)
+                renderContent(scaffoldPadding)
             } else {
                 Crossfade(targetState = effectiveStatus, label = "screen_status") { current ->
                     when (current) {
                         ScreenStatus.Loading -> loading(scaffoldPadding)
                         ScreenStatus.Empty -> empty(scaffoldPadding)
-                        ScreenStatus.Content -> content(scaffoldPadding)
+                        ScreenStatus.Content -> renderContent(scaffoldPadding)
                         is ScreenStatus.Error -> PMErrorState(
                             message = current.message,
                             onRetry = onRetry,
@@ -91,6 +145,11 @@ fun PMBaseScreen(
                         )
                     }
                 }
+            }
+            // Content ve Empty durumlarının ÜZERİNE binen kalıcı alt katman; yükleme/hata
+            // chrome'unda (hideChrome) gizli — o durumlarda tam-ekran iskelet/hata görünür.
+            if (!hideChrome) {
+                contentBottomOverlay()
             }
         }
         if (!hideChrome) {

@@ -1,9 +1,11 @@
 package com.mefy.platemate.presentation.features.main.profile
 
 import com.mefy.platemate.R
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
+import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.update
 class ProfileViewModel @Inject constructor(
     observeSessionUseCase: ObserveSessionUseCase,
     private val getProfileUseCase: GetProfileUseCase,
+    private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
     private val profileUiMapper: ProfileUiMapper,
     private val profileStateReducer: ProfileStateReducer,
     globalUiEventBus: GlobalUiEventBus
@@ -93,9 +96,13 @@ class ProfileViewModel @Inject constructor(
                 handleError(throwable)
             }
         ) {
+            val platforms: List<SocialPlatform> = when (val platformsResult = getSocialPlatformsUseCase()) {
+                is AppResult.Success -> platformsResult.data
+                is AppResult.Error -> emptyList()
+            }
             when (val result = getProfileUseCase(userId = userId)) {
                 is AppResult.Success -> {
-                    val mapped = profileUiMapper.mapProfile(result.data)
+                    val mapped = profileUiMapper.mapProfile(result.data, platforms)
                     _uiState.update { current ->
                         profileStateReducer.onProfileLoaded(current, mapped)
                     }
@@ -115,9 +122,9 @@ class ProfileViewModel @Inject constructor(
             LoadMode.INITIAL -> _uiState.update { profileStateReducer.onLoadFailed(it, message) }
             LoadMode.REFRESH -> {
                 _uiState.update(profileStateReducer::onRefreshFailed)
-                showSnackbar(message)
+                showError(message)
             }
-            LoadMode.SILENT -> showSnackbar(message)
+            LoadMode.SILENT -> showError(message)
         }
     }
 

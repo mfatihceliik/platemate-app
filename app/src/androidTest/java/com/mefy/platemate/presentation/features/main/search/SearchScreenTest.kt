@@ -1,16 +1,14 @@
 package com.mefy.platemate.presentation.features.main.search
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import org.junit.Assert.assertEquals
@@ -30,7 +28,7 @@ class SearchScreenTest {
             PlateMateTheme(darkTheme = true, dynamicColor = false) {
                 SearchScreen(
                     state = SearchUiState(),
-                    onAction = {}
+                    onAction = {},
                 )
             }
         }
@@ -49,7 +47,7 @@ class SearchScreenTest {
                     state = SearchUiState(
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
-                    onAction = { action -> lastAction = action }
+                    onAction = { action -> lastAction = action },
                 )
             }
         }
@@ -72,7 +70,7 @@ class SearchScreenTest {
                     state = SearchUiState(
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
-                    onAction = { action -> lastAction = action }
+                    onAction = { action -> lastAction = action },
                 )
             }
         }

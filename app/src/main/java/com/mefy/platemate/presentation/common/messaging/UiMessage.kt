@@ -1,14 +1,16 @@
 package com.mefy.platemate.presentation.common.messaging
 
-import com.mefy.platemate.presentation.common.dialog.DialogModel
+import com.mefy.platemate.presentation.common.banner.BannerSeverity
 import com.mefy.platemate.presentation.common.text.UiText
 
 /**
- * Ekran-yerel (per-ViewModel) UI bildirimi: ekran açıkken gösterilecek snackbar
- * veya dialog. Uygulama-geneli kritik olaylar için bkz.
+ * Ekran-yerel (per-ViewModel) UI bildirimi: ekran açıkken üstten inen banner ile gösterilir.
+ * Uygulama-geneli kritik olaylar (oturum bitti) için bkz.
  * [com.mefy.platemate.presentation.common.global.GlobalAppEvent].
  */
 sealed interface UiMessage {
-    data class ShowSnackbar(val message: UiText) : UiMessage
-    data class ShowDialog(val dialog: DialogModel) : UiMessage
+    data class ShowSnackbar(
+        val message: UiText,
+        val severity: BannerSeverity = BannerSeverity.Info
+    ) : UiMessage
 }

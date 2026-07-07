@@ -18,7 +18,7 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun ProfileBadge(
+internal fun ProfileBadge(
     text: String,
     backgroundColor: Color,
     textColor: Color,

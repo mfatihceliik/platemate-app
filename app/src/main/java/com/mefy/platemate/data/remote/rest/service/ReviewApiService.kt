@@ -5,6 +5,7 @@ import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.data.remote.dto.plate.PlateReviewDto
 import com.mefy.platemate.data.remote.dto.plate.AddPlateReviewRequest
 import com.mefy.platemate.core.common.result.ResultResponse
+import com.mefy.platemate.data.remote.dto.report.AddCommentReportRequest
 import com.mefy.platemate.data.remote.dto.report.PlateReportTypeDto
 import com.mefy.platemate.data.remote.dto.review.ReviewResponseDto
 import com.mefy.platemate.data.remote.dto.review.UpdatePlateReviewRequest
@@ -41,5 +42,11 @@ interface ReviewApiService {
 
     @DELETE("api/plates/reviews/{id}")
     suspend fun deleteReview(@Path("id") id: Long): ResultResponse
+
+    @POST("api/comments/{commentId}/reports")
+    suspend fun reportComment(
+        @Path("commentId") commentId: Long,
+        @Body request: AddCommentReportRequest
+    ): ResultResponse
 }
 

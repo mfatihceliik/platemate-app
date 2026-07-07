@@ -2,6 +2,7 @@ package com.mefy.platemate.data.mapper
 
 import com.mefy.platemate.data.remote.dto.user.UserDto
 import com.mefy.platemate.domain.model.auth.AuthSession
+import com.mefy.platemate.domain.model.auth.UserRole
 import javax.inject.Inject
 
 class UserAuthSessionMapper @Inject constructor() {
@@ -12,7 +13,8 @@ class UserAuthSessionMapper @Inject constructor() {
             userId = input.id,
             username = input.username,
             token = accessToken,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
+            role = UserRole.fromString(input.roleCode?.name)
         )
     }
 }

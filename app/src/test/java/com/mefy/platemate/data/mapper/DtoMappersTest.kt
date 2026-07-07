@@ -194,7 +194,7 @@ class DtoMappersTest {
                             cityName = "Kutahya",
                             ratingAverage = 4.2,
                             reviewCount = 11,
-                            todaySearchCount = 2,
+                            weeklySearchCount = 2,
                             todayReviewCount = 3,
                             todayReportCount = 1,
                             todayWeightedReportScore = 5.0,

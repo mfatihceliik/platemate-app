@@ -1,7 +1,7 @@
 package com.mefy.platemate.presentation.features.main.search.reducer
 
 import com.mefy.platemate.presentation.features.main.search.SearchUiState
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import javax.inject.Inject
 
 class SearchStateReducer @Inject constructor() {
@@ -46,6 +46,7 @@ class SearchStateReducer @Inject constructor() {
         recentSearches: List<SearchRecentUiModel>,
         bookmarkedPlates: List<SearchRecentUiModel>
     ): SearchUiState = state.copy(
+        isInitialLoading = false,
         recentSearches = recentSearches,
         bookmarkedPlates = bookmarkedPlates
     )

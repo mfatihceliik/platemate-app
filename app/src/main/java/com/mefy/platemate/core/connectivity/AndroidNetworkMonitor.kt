@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import com.mefy.platemate.core.coroutine.AppDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.callbackFlow
 
 /**
@@ -26,7 +26,8 @@ import kotlinx.coroutines.flow.callbackFlow
  */
 @Singleton
 class AndroidNetworkMonitor @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    appDispatchers: AppDispatchers
 ) : NetworkMonitor {
 
     override val isOnline: Flow<Boolean> = callbackFlow {
@@ -77,11 +78,11 @@ class AndroidNetworkMonitor @Inject constructor(
     }
         .distinctUntilChanged()
         .conflate()
-        .flowOn(Dispatchers.IO)
+        .flowOn(appDispatchers.io)
 
     override fun isCurrentlyOnline(): Boolean {
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager?
                 ?: return false
         return connectivityManager.isCurrentlyOnline()
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMSwitch
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -24,7 +25,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
-fun ProfilePreferenceToggleCard(
+internal fun ProfilePreferenceToggleCard(
     title: String,
     description: String,
     checked: Boolean,
@@ -54,7 +55,7 @@ fun ProfilePreferenceToggleCard(
                         .weight(1f)
                         .padding(end = spacing.s8)
                 )
-                Switch(
+                PMSwitch(
                     checked = checked,
                     onCheckedChange = onCheckedChange
                 )

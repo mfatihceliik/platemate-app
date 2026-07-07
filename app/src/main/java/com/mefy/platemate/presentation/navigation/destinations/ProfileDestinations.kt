@@ -18,9 +18,6 @@ data object ProfileNotificationPreferencesDestination : AppDestination
 data object ProfilePremiumInfoDestination : AppDestination
 
 @Serializable
-data object ProfileSocialLinksDestination : AppDestination
-
-@Serializable
 data object ProfileFriendsDestination : AppDestination
 
 @Serializable

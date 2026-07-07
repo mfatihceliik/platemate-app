@@ -1,91 +1,72 @@
 package com.mefy.platemate.presentation.features.main.settings.changepassword
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMPasswordField
-import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.main.settings.changepassword.components.ValidationChecklist
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun ChangePasswordScreen(
+    modifier: Modifier = Modifier,
     state: ChangePasswordUiState,
     onAction: (ChangePasswordUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues = PaddingValues()
 ) {
-    val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
+    val onSubmit = remember(onAction) { { onAction(ChangePasswordUiAction.SubmitClicked) } }
+    val onCurrentChange = remember(onAction) { { v: String -> onAction(ChangePasswordUiAction.CurrentPasswordChanged(v)) } }
+    val onNewChange = remember(onAction) { { v: String -> onAction(ChangePasswordUiAction.NewPasswordChanged(v)) } }
+    val onConfirmChange = remember(onAction) { { v: String -> onAction(ChangePasswordUiAction.ConfirmPasswordChanged(v)) } }
 
-    PMBaseScreen(
-        modifier = modifier,
-        topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_change_password_title),
-            onBackClick = { onAction(ChangePasswordUiAction.BackClicked) }
-        ),
-        containerColor = colors.background,
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
-            ) {
-                PMButton(
-                    text = stringResource(R.string.profile_change_password_submit),
-                    onClick = { onAction(ChangePasswordUiAction.SubmitClicked) },
-                    enabled = state.isSubmitEnabled,
-                    loading = state.isSubmitting,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(dims.spacing.s16),
+        verticalArrangement = spacedByWithFooter(dims.spacing.s8)
+    ) {
+        item {
+            PMSectionLabel(text = stringResource(R.string.profile_change_password_desc))
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
-        ) {
-            PMText(
-                text = stringResource(R.string.profile_change_password_desc),
-                color = colors.textSecondary,
-            )
 
+        item {
             PMPasswordField(
                 value = state.currentPassword,
-                onValueChange = { onAction(ChangePasswordUiAction.CurrentPasswordChanged(it)) },
+                onValueChange = onCurrentChange,
                 label = stringResource(R.string.profile_change_password_current),
                 modifier = Modifier.fillMaxWidth()
             )
+        }
 
+        item {
             PMPasswordField(
                 value = state.newPassword,
-                onValueChange = { onAction(ChangePasswordUiAction.NewPasswordChanged(it)) },
+                onValueChange = onNewChange,
                 label = stringResource(R.string.profile_change_password_new),
                 modifier = Modifier.fillMaxWidth()
             )
+        }
 
+        item {
             PMPasswordField(
                 value = state.confirmPassword,
-                onValueChange = { onAction(ChangePasswordUiAction.ConfirmPasswordChanged(it)) },
+                onValueChange = onConfirmChange,
                 label = stringResource(R.string.profile_change_password_confirm),
                 placeholder = stringResource(R.string.profile_change_password_confirm_placeholder),
                 isError = state.confirmPassword.isNotEmpty() && !state.passwordsMatch,
@@ -95,8 +76,20 @@ fun ChangePasswordScreen(
                 showToggle = false,
                 modifier = Modifier.fillMaxWidth()
             )
+        }
 
+        item {
             ValidationChecklist(state = state)
+        }
+        
+        item {
+            PMButton(
+                text = stringResource(R.string.profile_change_password_submit),
+                onClick = onSubmit,
+                enabled = state.isSubmitEnabled,
+                loading = state.isSubmitting,
+                modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+            )
         }
     }
 }
@@ -111,7 +104,7 @@ private fun ChangePasswordPreview() {
                 newPassword = "NewPass1",
                 confirmPassword = ""
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }

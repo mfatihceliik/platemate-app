@@ -17,13 +17,19 @@ import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
-import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailUiState
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-internal fun PlateInfoRow(state: PlateDetailUiState) {
+internal fun PlateInfoRow(
+    plateCode: String,
+    cityCode: String,
+    cityName: String,
+    ratingAverage: Double,
+    reviewCount: Long
+) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
@@ -33,7 +39,7 @@ internal fun PlateInfoRow(state: PlateDetailUiState) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMPlateBadge(
-            cityCode = state.cityCode,
+            cityCode = cityCode,
             size = PlateBadgeSize.Large
         )
 
@@ -42,32 +48,32 @@ internal fun PlateInfoRow(state: PlateDetailUiState) {
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
         ) {
             PMText(
-                text = state.plateCode,
+                text = plateCode,
                 fontSize = dims.fontSize.xl,
                 fontWeight = FontWeight.ExtraBold,
                 color = colors.textPrimary
             )
             PMText(
-                text = state.cityName,
+                text = cityName,
                 color = colors.textTertiary
             )
         }
 
-        if (state.reviewCount > 0) {
+        if (reviewCount > 0) {
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 PMText(
-                    text = String.format("%.1f", state.ratingAverage),
+                    text = NumberFormatter.formatRating(ratingAverage),
                     fontSize = dims.fontSize.lg,
                     color = colors.textPrimary
                 )
                 PMRatingStars(
-                    rating = state.ratingAverage.toInt(),
+                    rating = ratingAverage.toInt(),
                 )
                 PMText(
-                    text = stringResource(R.string.platedetail_review_count, state.reviewCount),
+                    text = stringResource(R.string.platedetail_review_count, reviewCount),
                     color = colors.textLabel
                 )
             }
@@ -118,25 +124,19 @@ private fun PlateInfoRowPreviewContent() {
     ) {
         // Puanlı
         PlateInfoRow(
-            state = PlateDetailUiState(
-                isLoading = false,
-                plateCode = "34 EK 0682",
-                cityCode = "34",
-                cityName = "İstanbul",
-                ratingAverage = 4.6,
-                reviewCount = 127
-            )
+            plateCode = "34 EK 0682",
+            cityCode = "34",
+            cityName = "İstanbul",
+            ratingAverage = 4.6,
+            reviewCount = 127
         )
         // Puansız
         PlateInfoRow(
-            state = PlateDetailUiState(
-                isLoading = false,
-                plateCode = "06 ABC 123",
-                cityCode = "06",
-                cityName = "Ankara",
-                ratingAverage = 0.0,
-                reviewCount = 0
-            )
+            plateCode = "06 ABC 123",
+            cityCode = "06",
+            cityName = "Ankara",
+            ratingAverage = 0.0,
+            reviewCount = 0
         )
     }
 }

@@ -3,6 +3,7 @@ package com.mefy.platemate.data.remote.rest.service
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.data.remote.dto.settings.SettingsOverviewDto
+import com.mefy.platemate.data.remote.dto.settings.UpdateAppearanceRequest
 import com.mefy.platemate.data.remote.dto.settings.UpdateSettingsRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,5 +20,11 @@ interface SettingsApiService {
     suspend fun updateSettings(
         @Path("userId") userId: Long,
         @Body request: UpdateSettingsRequest
+    ): ResultResponse
+
+    @PUT("api/settings/{userId}/appearance")
+    suspend fun updateAppearance(
+        @Path("userId") userId: Long,
+        @Body request: UpdateAppearanceRequest
     ): ResultResponse
 }

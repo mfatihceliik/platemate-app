@@ -7,5 +7,5 @@ sealed interface ProfileSettingsUiEffect {
     data object NavigateToThemeColor : ProfileSettingsUiEffect
     data object NavigateToLanguage : ProfileSettingsUiEffect
     data object NavigateToNotificationPreferences : ProfileSettingsUiEffect
-    data object NavigateToSocialLinks : ProfileSettingsUiEffect
+    data object NavigateToAdmin : ProfileSettingsUiEffect
 }

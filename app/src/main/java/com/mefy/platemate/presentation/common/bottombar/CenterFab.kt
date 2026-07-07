@@ -27,11 +27,6 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Merkez ([TopLevelDestination.Messages]) butonu: dolu daire. Varsayılan gri
- * (chipBg) dolgu + gri ikon; seçilince diğer sekmelerle aynı renk
- * (primaryContainer dolgu + primary ikon). Tıklamada gri ripple yok.
- */
 @Composable
 internal fun CenterFab(
     selected: Boolean,

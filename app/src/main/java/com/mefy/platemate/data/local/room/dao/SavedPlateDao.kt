@@ -38,4 +38,7 @@ interface SavedPlateDao {
         """
     )
     suspend fun deleteByNormalizedPlate(userId: Long, normalizedPlateCode: String): Int
+
+    @Query("DELETE FROM saved_plates WHERE user_id = :userId")
+    suspend fun deleteAllForUser(userId: Long)
 }

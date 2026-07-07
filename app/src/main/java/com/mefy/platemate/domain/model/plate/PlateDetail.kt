@@ -7,7 +7,7 @@ data class PlateDetail(
     val cityName: String?,
     val ratingAverage: Double,
     val reviewCount: Long,
-    val todaySearchCount: Long,
+    val weeklySearchCount: Long,
     val todayReviewCount: Long,
     val todayReportCount: Long,
     val todayWeightedReportScore: Double,

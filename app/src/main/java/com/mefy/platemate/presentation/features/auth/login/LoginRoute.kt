@@ -2,13 +2,10 @@ package com.mefy.platemate.presentation.features.auth.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.mefy.platemate.presentation.common.messaging.CollectUiMessages
-import com.mefy.platemate.presentation.common.dialog.DialogModel
-import com.mefy.platemate.presentation.common.text.UiText
-import kotlinx.coroutines.flow.Flow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 
 @Composable
 fun LoginRoute(
@@ -16,12 +13,10 @@ fun LoginRoute(
     prefillEmail: String?,
     onNavigateAfterLogin: () -> Unit,
     onNavigateToRegisterClick: (String) -> Unit,
-    onShowSnackbar: (UiText) -> Unit,
-    onShowDialog: (DialogModel) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(prefillEmail) {
         if (!prefillEmail.isNullOrBlank()) {
@@ -29,16 +24,15 @@ fun LoginRoute(
         }
     }
 
-    CollectLoginUiEffect(
-        effects = viewModel.uiEffect,
-        onNavigateAfterLogin = onNavigateAfterLogin
-    )
+    LaunchedEffect(viewModel.uiEffect) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                LoginUiEffect.NavigateAfterLogin -> onNavigateAfterLogin()
+            }
+        }
+    }
 
-    CollectUiMessages(
-        messages = viewModel.uiMessages,
-        onShowSnackbar = onShowSnackbar,
-        onShowDialog = onShowDialog
-    )
+    HandleUiMessages(viewModel.uiMessages)
 
     LoginScreen(
         state = state,
@@ -49,18 +43,4 @@ fun LoginRoute(
         onBackClick = onBackClick,
         modifier = modifier
     )
-}
-
-@Composable
-private fun CollectLoginUiEffect(
-    effects: Flow<LoginUiEffect>,
-    onNavigateAfterLogin: () -> Unit
-) {
-    LaunchedEffect(effects) {
-        effects.collect { effect ->
-            when (effect) {
-                LoginUiEffect.NavigateAfterLogin -> onNavigateAfterLogin()
-            }
-        }
-    }
 }

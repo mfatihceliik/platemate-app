@@ -1,6 +1,6 @@
-package com.mefy.platemate.presentation.features.sessiongate
+﻿package com.mefy.platemate.presentation.features.sessiongate
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.repository.AuthRepository
@@ -127,19 +127,22 @@ class SessionGateViewModelTest {
         var refreshCallCount: Int = 0
 
         override suspend fun login(email: String, password: String): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun register(
             username: String,
             email: String,
             password: String
         ): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun refreshSession(): AppResult<AuthSession> {
             refreshCallCount++
             return refreshResult
         }
+
+        override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> =
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun logout() = Unit
     }

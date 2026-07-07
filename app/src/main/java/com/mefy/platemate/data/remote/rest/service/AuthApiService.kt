@@ -1,11 +1,14 @@
 package com.mefy.platemate.data.remote.rest.service
 
 import com.mefy.platemate.core.common.result.DataResultResponse
+import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.data.remote.dto.user.UserDto
+import com.mefy.platemate.data.remote.dto.auth.ChangePasswordRequest
 import com.mefy.platemate.data.remote.dto.auth.LoginRequest
 import com.mefy.platemate.data.remote.dto.auth.RegisterRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface AuthApiService {
     @POST("api/auth/register")
@@ -13,4 +16,7 @@ interface AuthApiService {
 
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): DataResultResponse<UserDto>
+
+    @PUT("api/auth/change-password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest): ResultResponse
 }

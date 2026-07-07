@@ -12,6 +12,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PMCardVariant
@@ -59,7 +60,9 @@ fun PMCard(
         }
     } else {
         Card(
-            modifier = modifier,
+            // canFocus = false: tıklamada input-focus alma → focusable'ın bring-into-view
+            // kaydırması olmasın (kısmen ekran dışı kartta "ortalama" davranışını engeller).
+            modifier = modifier.focusProperties { canFocus = false },
             onClick = safeOnClick!!,
             enabled = enabled,
             shape = shape,

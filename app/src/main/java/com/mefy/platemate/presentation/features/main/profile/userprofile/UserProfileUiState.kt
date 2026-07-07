@@ -2,9 +2,9 @@ package com.mefy.platemate.presentation.features.main.profile.userprofile
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.ReportReason
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
+import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 
 @Immutable
 data class UserProfileUiState(
@@ -22,7 +22,7 @@ data class UserProfileUiState(
     val reviewCount: Int = 0,
     val followerCount: String = "0",
     val followingCount: Int = 0,
-    val socialLinks: List<UserProfileSocialLinkUiModel> = emptyList(),
+    val socialLinks: List<ProfileSocialLinkUiModel> = emptyList(),
     val approvedReviews: List<UserProfileReviewUiModel> = emptyList(),
     val showReportSheet: Boolean = false,
     val selectedReportReason: ReportReason? = null,

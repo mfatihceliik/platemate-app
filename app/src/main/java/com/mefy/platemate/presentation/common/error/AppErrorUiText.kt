@@ -7,14 +7,15 @@ import com.mefy.platemate.presentation.common.text.UiText
 /**
  * [AppError] -> kullanıcıya gösterilecek metin. Tek eşleme noktası.
  *
- * `Server` backend mesajını olduğu gibi gösterir (LanguageInterceptor sayesinde
+ * `Api` backend mesajını olduğu gibi gösterir (LanguageInterceptor sayesinde
  * yerelleştirilmiş gelir); boşsa genel mesaja düşer.
  */
 fun AppError.toUiText(): UiText = when (this) {
-    is AppError.Network -> UiText.Resource(R.string.common_error_network)
-    is AppError.Unreachable -> UiText.Resource(R.string.common_error_server_unavailable)
-    AppError.SessionExpired -> UiText.Resource(R.string.common_error_unauthorized)
-    is AppError.Server ->
+    is AppError.Network ->
+        if (isOffline) UiText.Resource(R.string.common_error_network)
+        else UiText.Resource(R.string.common_error_server_unavailable)
+    is AppError.Api ->
         message?.takeIf { it.isNotBlank() }?.let { UiText.Dynamic(it) }
             ?: UiText.Resource(R.string.common_error_unknown)
+    AppError.SessionExpired -> UiText.Resource(R.string.common_error_unauthorized)
 }

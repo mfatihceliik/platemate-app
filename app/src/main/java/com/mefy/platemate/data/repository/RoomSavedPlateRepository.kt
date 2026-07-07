@@ -4,6 +4,9 @@ import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.local.room.dao.SavedPlateDao
 import com.mefy.platemate.data.local.room.entity.SavedPlateEntity
 import com.mefy.platemate.data.local.room.model.RecentSearchReportTypeLocal
+import com.mefy.platemate.data.remote.rest.service.PlateApiService
+import com.mefy.platemate.data.remote.safeResultCall
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.domain.repository.SavedPlateRepository
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomSavedPlateRepository @Inject constructor(
     private val savedPlateDao: SavedPlateDao,
+    private val plateApiService: PlateApiService,
     private val sessionStore: SessionStore
 ) : SavedPlateRepository {
 
@@ -44,10 +48,31 @@ class RoomSavedPlateRepository @Inject constructor(
             normalizedPlateCode = plate.normalizedPlateCode
         )
 
-        if (deletedCount > 0) return false
+        // Optimistic local toggle, then mirror to backend; revert local on failure.
+        return if (deletedCount > 0) {
+            val remote = safeResultCall { plateApiService.unsavePlate(plate.normalizedPlateCode) }
+            if (remote is AppResult.Error) {
+                savedPlateDao.upsert(mapToEntity(userId = userId, plate = plate))
+                true
+            } else {
+                false
+            }
+        } else {
+            savedPlateDao.upsert(mapToEntity(userId = userId, plate = plate))
+            val remote = safeResultCall { plateApiService.savePlate(plate.normalizedPlateCode) }
+            if (remote is AppResult.Error) {
+                savedPlateDao.deleteByNormalizedPlate(userId, plate.normalizedPlateCode)
+                false
+            } else {
+                true
+            }
+        }
+    }
 
-        savedPlateDao.upsert(mapToEntity(userId = userId, plate = plate))
-        return true
+    override suspend fun replaceFromRemote(plates: List<SavedPlate>) {
+        val userId = sessionStore.session.first()?.userId ?: return
+        savedPlateDao.deleteAllForUser(userId)
+        plates.forEach { plate -> savedPlateDao.upsert(mapToEntity(userId = userId, plate = plate)) }
     }
 
     private fun mapToDomain(entity: SavedPlateEntity): SavedPlate = SavedPlate(

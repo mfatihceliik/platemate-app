@@ -1,7 +1,7 @@
 package com.mefy.platemate.presentation.features.main.search.reducer
 
 import com.mefy.platemate.presentation.features.main.search.SearchUiState
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

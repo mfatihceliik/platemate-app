@@ -1,6 +1,6 @@
-package com.mefy.platemate.presentation.features.main.profile
+﻿package com.mefy.platemate.presentation.features.main.profile
 
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.pagination.ReviewStatusTotals
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.domain.model.auth.AuthSession
@@ -9,12 +9,15 @@ import com.mefy.platemate.domain.model.profile.SocialMediaLink
 import com.mefy.platemate.domain.model.profile.UserProfile
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.settings.UserSettings
+import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.repository.ProfileRepository
+import com.mefy.platemate.domain.repository.SocialLinkRepository
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
+import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.profile.mapper.DefaultProfileUiMapper
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
@@ -79,6 +82,7 @@ class ProfileViewModelTest {
     ): ProfileViewModel = ProfileViewModel(
         observeSessionUseCase = ObserveSessionUseCase(authRepository),
         getProfileUseCase = GetProfileUseCase(profileRepository),
+        getSocialPlatformsUseCase = GetSocialPlatformsUseCase(FakeSocialLinkRepository()),
         profileUiMapper = DefaultProfileUiMapper(
             formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
             validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
@@ -95,19 +99,35 @@ class ProfileViewModelTest {
             sessionState.value = AuthSession(userId, "user$userId", "token$userId")
         }
 
-        override suspend fun login(email: String, password: String) = AppResult.Error(AppError.Server("unused"))
+        override suspend fun login(email: String, password: String) = AppResult.Error(AppError.Api("unused"))
         override suspend fun register(username: String, email: String, password: String) =
-            AppResult.Error(AppError.Server("unused"))
-        override suspend fun refreshSession() = AppResult.Error(AppError.Server("unused"))
+            AppResult.Error(AppError.Api("unused"))
+        override suspend fun refreshSession() = AppResult.Error(AppError.Api("unused"))
+        override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> =
+            AppResult.Error(AppError.Api("unused"))
         override suspend fun logout() {
             sessionState.value = null
         }
+    }
+
+    private class FakeSocialLinkRepository : SocialLinkRepository {
+        override suspend fun addSocialLink(platform: String, url: String): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun updateSocialLink(link: SocialMediaLink): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun deleteSocialLink(id: Long): AppResult<Unit> = AppResult.Success(Unit)
+        override suspend fun getSocialPlatforms(): AppResult<List<SocialPlatform>> = AppResult.Success(emptyList())
     }
 
     private class FakeProfileRepository(
         private val profile: UserProfile
     ) : ProfileRepository {
         override suspend fun getProfile(userId: Long): AppResult<UserProfile> = AppResult.Success(profile)
+        override suspend fun updateProfile(
+            userId: Long,
+            displayName: String?,
+            username: String?,
+            bio: String?,
+            profilePhotoUrl: String?
+        ): AppResult<Unit> = AppResult.Success(Unit)
     }
 
     private fun sampleProfile(): UserProfile = UserProfile(

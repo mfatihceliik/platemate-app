@@ -37,8 +37,17 @@ internal fun NavGraphBuilder.profileGraph(
             UserProfileRoute(
                 viewModel = hiltViewModel<UserProfileViewModel>(),
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToChat = { userId ->
-                    // TODO: navigate to chat with userId when messaging supports it
+                onNavigateToChat = { conversationId, otherUserId, participantName, initials, avatarBgArgb, avatarFgArgb ->
+                    navController.navigate(
+                        ChatDestination(
+                            conversationId = conversationId,
+                            otherUserId = otherUserId,
+                            participantName = participantName,
+                            initials = initials,
+                            avatarBgArgb = avatarBgArgb,
+                            avatarFgArgb = avatarFgArgb
+                        )
+                    )
                 },
                 modifier = modifier
             )

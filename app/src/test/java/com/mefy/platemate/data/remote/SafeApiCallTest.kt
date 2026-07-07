@@ -1,7 +1,7 @@
-package com.mefy.platemate.data.remote
+﻿package com.mefy.platemate.data.remote
 
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.google.gson.JsonSyntaxException
@@ -30,19 +30,19 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun safeApiCall_returnsServerError_whenBackendMarksFailure() = runBlocking {
+    fun safeApiCall_returnsApiError_whenBackendMarksFailure() = runBlocking {
         val result = safeApiCall<String> { DataResultResponse(message = "No plate", success = false, data = null) }
 
         assertTrue(result is AppResult.Error)
-        assertEquals(AppError.Server("No plate"), (result as AppResult.Error).error)
+        assertEquals(AppError.Api("No plate"), (result as AppResult.Error).error)
     }
 
     @Test
-    fun safeApiCall_returnsUnreachable_whenSuccessBodyHasNoData() = runBlocking {
+    fun safeApiCall_returnsNetworkError_whenSuccessBodyHasNoData() = runBlocking {
         val result = safeApiCall<String> { DataResultResponse(message = null, success = true, data = null) }
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
+        assertTrue((result as AppResult.Error).error is AppError.Network)
     }
 
     @Test
@@ -56,13 +56,44 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun safeApiCall_mapsHttp403ToSessionExpired() = runBlocking {
-        val errorBody = "Forbidden".toResponseBody("text/plain".toMediaType())
+    fun safeApiCall_mapsHttp403ToApiErrorWithMessage() = runBlocking {
+        val jsonBody = """{"success":false,"message":"You are not authorized to perform this action."}"""
+        val errorBody = jsonBody.toResponseBody("application/json".toMediaType())
         val exception = HttpException(Response.error<String>(403, errorBody))
 
         val result = safeApiCall<String> { throw exception }
 
-        assertEquals(AppResult.Error(AppError.SessionExpired), result)
+        assertTrue(result is AppResult.Error)
+        val error = (result as AppResult.Error).error
+        assertTrue(error is AppError.Api)
+        assertEquals("You are not authorized to perform this action.", (error as AppError.Api).message)
+    }
+
+    @Test
+    fun safeApiCall_extractsErrorCodeFromDataField() = runBlocking {
+        val jsonBody = """{"success":false,"message":"Refresh token is expired.","data":{"code":"REFRESH_EXPIRED"}}"""
+        val errorBody = jsonBody.toResponseBody("application/json".toMediaType())
+        val exception = HttpException(Response.error<String>(400, errorBody))
+
+        val result = safeApiCall<String> { throw exception }
+
+        assertTrue(result is AppResult.Error)
+        val error = (result as AppResult.Error).error
+        assertTrue(error is AppError.Api)
+        assertEquals("REFRESH_EXPIRED", (error as AppError.Api).errorCode)
+    }
+
+    @Test
+    fun safeApiCall_excludesCodeKeyFromFieldErrors() = runBlocking {
+        val jsonBody = """{"success":false,"message":"Error","data":{"code":"REFRESH_EXPIRED","email":"invalid"}}"""
+        val errorBody = jsonBody.toResponseBody("application/json".toMediaType())
+        val exception = HttpException(Response.error<String>(400, errorBody))
+
+        val result = safeApiCall<String> { throw exception }
+
+        val error = (result as AppResult.Error).error as AppError.Api
+        assertEquals("REFRESH_EXPIRED", error.errorCode)
+        assertEquals(mapOf("email" to "invalid"), error.fieldErrors)
     }
 
     @Test
@@ -78,7 +109,7 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun safeApiCall_maps4xxErrorBodyEnvelopeToServerError() = runBlocking {
+    fun safeApiCall_maps4xxErrorBodyEnvelopeToApiError() = runBlocking {
         val errorBody = """
             {
               "success": false,
@@ -95,56 +126,56 @@ class SafeApiCallTest {
 
         assertTrue(result is AppResult.Error)
         val error = (result as AppResult.Error).error
-        assertTrue(error is AppError.Server)
-        val serverError = error as AppError.Server
-        assertEquals("Validation failed", serverError.message)
-        assertEquals("Must be at least 1", serverError.fieldErrors?.get("rating"))
-        assertEquals("Cannot be blank", serverError.fieldErrors?.get("comment"))
+        assertTrue(error is AppError.Api)
+        val apiError = error as AppError.Api
+        assertEquals("Validation failed", apiError.message)
+        assertEquals("Must be at least 1", apiError.fieldErrors?.get("rating"))
+        assertEquals("Cannot be blank", apiError.fieldErrors?.get("comment"))
     }
 
     @Test
-    fun safeApiCall_mapsHttp5xxToUnreachable() = runBlocking {
+    fun safeApiCall_mapsHttp5xxToNetworkError() = runBlocking {
         val errorBody = "not-json".toResponseBody("application/json".toMediaType())
         val exception = HttpException(Response.error<String>(500, errorBody))
 
         val result = safeApiCall<String> { throw exception }
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
+        assertTrue((result as AppResult.Error).error is AppError.Network)
     }
 
     @Test
-    fun safeApiCall_mapsConnectExceptionToUnreachableWithCause() = runBlocking {
+    fun safeApiCall_mapsConnectExceptionToNetworkErrorWithCause() = runBlocking {
         val connectException = ConnectException("Connection refused")
 
         val result = safeApiCall<String> { throw connectException }
 
         assertTrue(result is AppResult.Error)
         val error = (result as AppResult.Error).error
-        assertTrue(error is AppError.Unreachable)
-        assertEquals(connectException, (error as AppError.Unreachable).cause)
+        assertTrue(error is AppError.Network)
+        assertEquals(connectException, (error as AppError.Network).cause)
     }
 
     @Test
-    fun safeApiCall_mapsSocketTimeoutToUnreachable() = runBlocking {
-        // Sunucu kapalı/yanıt vermiyor -> bağlantı zaman aşımı; sunucuya ulaşılamadı.
+    fun safeApiCall_mapsSocketTimeoutToNetworkError() = runBlocking {
         val timeoutException = SocketTimeoutException("connect timed out")
 
         val result = safeApiCall<String> { throw timeoutException }
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
+        assertTrue((result as AppResult.Error).error is AppError.Network)
     }
 
     @Test
-    fun safeApiCall_mapsUnknownHostToNetworkError() = runBlocking {
-        // DNS çözülemiyor -> cihaz büyük olasılıkla çevrimdışı; ağ hatası say.
+    fun safeApiCall_mapsUnknownHostToNetworkErrorOffline() = runBlocking {
         val unknownHostException = UnknownHostException("no DNS")
 
         val result = safeApiCall<String> { throw unknownHostException }
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Network)
+        val error = (result as AppResult.Error).error
+        assertTrue(error is AppError.Network)
+        assertTrue((error as AppError.Network).isOffline)
     }
 
     @Test
@@ -160,38 +191,38 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun safeApiCall_mapsUnknownExceptionToUnreachableWithCause() = runBlocking {
+    fun safeApiCall_mapsUnknownExceptionToNetworkErrorWithCause() = runBlocking {
         val illegalStateException = IllegalStateException("Boom")
 
         val result = safeApiCall<String> { throw illegalStateException }
 
         assertTrue(result is AppResult.Error)
         val error = (result as AppResult.Error).error
-        assertTrue(error is AppError.Unreachable)
-        assertEquals(illegalStateException, (error as AppError.Unreachable).cause)
+        assertTrue(error is AppError.Network)
+        assertEquals(illegalStateException, (error as AppError.Network).cause)
     }
 
     @Test
-    fun safeApiCall_mapsParseFailureToUnreachable() = runBlocking {
+    fun safeApiCall_mapsParseFailureToNetworkError() = runBlocking {
         val parsingException = JsonSyntaxException("Malformed response payload")
 
         val result = safeApiCall<String> { throw parsingException }
 
         assertTrue(result is AppResult.Error)
-        assertTrue((result as AppResult.Error).error is AppError.Unreachable)
+        assertTrue((result as AppResult.Error).error is AppError.Network)
     }
 
     @Test
-    fun safeMessageCall_returnsUnit_whenBackendSucceeds() = runBlocking {
-        val result = safeMessageCall { ResultResponse(message = "done", success = true) }
+    fun safeResultCall_returnsUnit_whenBackendSucceeds() = runBlocking {
+        val result = safeResultCall { ResultResponse(message = "done", success = true) }
 
         assertEquals(AppResult.Success(Unit), result)
     }
 
     @Test
-    fun safeMessageCall_returnsServerError_whenBackendFails() = runBlocking {
-        val result = safeMessageCall { ResultResponse(message = "failed", success = false) }
+    fun safeResultCall_returnsApiError_whenBackendFails() = runBlocking {
+        val result = safeResultCall { ResultResponse(message = "failed", success = false) }
 
-        assertEquals(AppResult.Error(AppError.Server("failed")), result)
+        assertEquals(AppResult.Error(AppError.Api("failed")), result)
     }
 }

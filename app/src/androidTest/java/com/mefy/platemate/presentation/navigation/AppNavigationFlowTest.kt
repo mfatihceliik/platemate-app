@@ -39,19 +39,19 @@ class AppNavigationFlowTest {
     private val appContext = ApplicationProvider.getApplicationContext<android.content.Context>()
 
     @Test
-    fun authGraph_startsWithWelcome() {
+    fun authGraph_startsWithOnboarding() {
         composeRule.setContent {
             navController = rememberTestNavController()
             TestNavHost(navController = navController, startDestination = AuthGraphDestination)
         }
 
         composeRule.runOnIdle {
-            assertTrue(navController.currentBackStackEntry?.destination?.hasRoute<WelcomeDestination>() == true)
+            assertTrue(navController.currentBackStackEntry?.destination?.hasRoute<OnboardingDestination>() == true)
         }
     }
 
     @Test
-    fun welcome_createAccount_navigatesToRegister() {
+    fun onboarding_createAccount_navigatesToRegister() {
         val createAccountText = appContext.getString(R.string.welcome_create_account)
 
         composeRule.setContent {
@@ -67,7 +67,7 @@ class AppNavigationFlowTest {
     }
 
     @Test
-    fun welcome_signIn_navigatesToLogin() {
+    fun onboarding_signIn_navigatesToLogin() {
         val signInText = appContext.getString(R.string.welcome_sign_in)
 
         composeRule.setContent {

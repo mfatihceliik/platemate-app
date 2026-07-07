@@ -2,22 +2,24 @@ package com.mefy.platemate.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,32 +36,68 @@ fun PMIcon(
     contentDescription: String? = null,
     size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
     tint: Color? = null,
+    containerColor: Color? = null
 ) {
     val colors = MaterialTheme.pmColors
+    val dims = MaterialTheme.pmDimensions
 
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint ?: colors.primary,
-        modifier = modifier.size(size),
-    )
+    if (containerColor != null) {
+        Box(
+            modifier = Modifier
+                .size(dims.sizing.settingsRowIcon)
+                .clip(RoundedCornerShape(dims.radius.r10))
+                .background(containerColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = imageVector,
+                tint = tint ?: colors.primary,
+                contentDescription = contentDescription
+            )
+        }
+    } else {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            tint = tint ?: colors.primary,
+            modifier = modifier.size(size),
+        )
+    }
 }
 
 @Composable
 fun PMIcon(
-    painter: Painter,
-    contentDescription: String?,
     modifier: Modifier = Modifier,
+    painter: Painter,
+    contentDescription: String? = null,
     size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
-    tint: Color? = null,
+    tint: Color = Color.Unspecified,
+    containerColor: Color? = null
 ) {
-    val colors = MaterialTheme.pmColors
-    Icon(
-        painter = painter,
-        contentDescription = contentDescription,
-        tint = tint ?: colors.primary,
-        modifier = modifier.size(size),
-    )
+    val dims = MaterialTheme.pmDimensions
+
+    if (containerColor != null) {
+        Box(
+            modifier = Modifier
+                .size(dims.sizing.settingsRowIcon)
+                .clip(RoundedCornerShape(dims.radius.r10))
+                .background(containerColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painter,
+                tint = tint,
+                contentDescription = contentDescription
+            )
+        }
+    } else {
+        Icon(
+            painter = painter,
+            contentDescription = contentDescription,
+            tint = tint,
+            modifier = modifier.size(size),
+        )
+    }
 }
 
 @Preview(name = "PMIcon Light", showBackground = true, backgroundColor = 0xFFF6F8FB)

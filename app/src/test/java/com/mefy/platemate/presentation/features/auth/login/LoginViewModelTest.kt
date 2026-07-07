@@ -1,14 +1,15 @@
-package com.mefy.platemate.presentation.features.auth.login
+﻿package com.mefy.platemate.presentation.features.auth.login
 
 import com.mefy.platemate.R
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.common.AppResult
+import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.usecase.auth.LoginUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateEmailFormatUseCase
 import com.mefy.platemate.domain.usecase.auth.ValidateLoginFormUseCase
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
+import com.mefy.platemate.presentation.common.global.GlobalAppEvent
 import com.mefy.platemate.presentation.common.messaging.UiMessage
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.auth.login.reducer.LoginStateReducer
@@ -60,7 +61,7 @@ class LoginViewModelTest {
     fun errorResult_setsErrorState_mapsEmailAndPasswordErrors_andEmitsSnackbar() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.Server(
+                AppError.Api(
                     message = "Login failed",
                     fieldErrors = mapOf(
                         "identifier" to "Use email or username",
@@ -90,10 +91,10 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun serverUnavailableError_setsResourceMessage_andEmitsSnackbar() = runTest {
+    fun networkError_emitsErrorBannerAndResetsLoading() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.Unreachable()
+                AppError.Network()
             )
         )
         val viewModel = createViewModel(repository)
@@ -104,10 +105,10 @@ class LoginViewModelTest {
         viewModel.onAction(LoginUiAction.SubmitClicked)
         advanceUntilIdle()
 
-        val expectedMessage = UiText.Resource(R.string.common_error_server_unavailable)
         val state = viewModel.uiState.value
         assertFalse(state.isLoading)
-        assertEquals(UiMessage.ShowSnackbar(expectedMessage), emittedEvent.await())
+        // Ağ hatası artık global dialog değil, ekran-yerel kırmızı banner ile gösterilir.
+        assertTrue(emittedEvent.await() is UiMessage.ShowSnackbar)
     }
 
     @Test
@@ -186,7 +187,7 @@ class LoginViewModelTest {
     fun emailChange_clearsEmailErrorAndFormMessage() = runTest {
         val repository = FakeAuthRepository(
             loginResult = AppResult.Error(
-                AppError.Server(
+                AppError.Api(
                     message = "Login failed",
                     fieldErrors = mapOf(
                         "email" to "Email format is invalid",
@@ -223,13 +224,16 @@ class LoginViewModelTest {
         assertEquals(0, repository.loginCallCount)
     }
 
-    private fun createViewModel(repository: FakeAuthRepository): LoginViewModel =
+    private fun createViewModel(
+        repository: FakeAuthRepository,
+        globalUiEventBus: DefaultGlobalUiEventBus = DefaultGlobalUiEventBus()
+    ): LoginViewModel =
         LoginViewModel(
             loginUseCase = LoginUseCase(repository),
             loginStateReducer = LoginStateReducer(
                 validateLoginFormUseCase = ValidateLoginFormUseCase(ValidateEmailFormatUseCase())
             ),
-            globalUiEventBus = DefaultGlobalUiEventBus()
+            globalUiEventBus = globalUiEventBus
         )
 
     private fun fillValidForm(viewModel: LoginViewModel) {
@@ -261,10 +265,13 @@ class LoginViewModelTest {
             email: String,
             password: String
         ): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun refreshSession(): AppResult<AuthSession> =
-            AppResult.Error(AppError.Server("Not used in this test"))
+            AppResult.Error(AppError.Api("Not used in this test"))
+
+        override suspend fun changePassword(currentPassword: String, newPassword: String): AppResult<Unit> =
+            AppResult.Error(AppError.Api("Not used in this test"))
 
         override suspend fun logout() = Unit
     }

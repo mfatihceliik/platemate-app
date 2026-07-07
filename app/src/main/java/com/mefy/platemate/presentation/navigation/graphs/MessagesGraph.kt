@@ -63,6 +63,12 @@ internal fun NavGraphBuilder.messagesGraph(
             ChatDetailRoute(
                 viewModel = hiltViewModel<ChatDetailViewModel>(),
                 onNavigateBack = { navController.navigateUp() },
+                onNavigateToUserProfile = { userId ->
+                    navController.navigateToUserProfile(userId.toString())
+                },
+                onNavigateToMessagesList = {
+                    navController.popBackStack(MessagesDestination, inclusive = false)
+                },
                 modifier = modifier
             )
         }

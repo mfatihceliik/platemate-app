@@ -1,14 +1,15 @@
 package com.mefy.platemate.presentation.features.main.profile.reducer
 
+import androidx.compose.ui.graphics.Color
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.main.profile.ProfileUiState
 import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiData
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
 import com.mefy.platemate.presentation.common.text.UiText
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -41,7 +42,16 @@ class ProfileStateReducerTest {
                 ProfileStatUiModel(valueText = "12", labelResId = R.string.profile_stat_friends)
             ),
             statusSummary = ProfileStatusSummaryUiModel(approved = 10, pendingReview = 2, rejected = 1),
-            socialLinks = listOf(ProfileSocialLinkUiModel(id = 1, platform = "INSTAGRAM", url = "x")),
+            socialLinks = listOf(
+                ProfileSocialLinkUiModel(
+                    id = 1,
+                    platform = "INSTAGRAM",
+                    url = "x",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFFDF2F8),
+                    iconTint = Color(0xFFDB2777)
+                )
+            ),
             activities = listOf(
                 FriendRequestNotificationItem(
                     id = "friend_1",

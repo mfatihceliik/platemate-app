@@ -8,13 +8,16 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.domain.model.auth.AuthSession
+import com.mefy.platemate.domain.model.auth.UserRole
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,17 +32,22 @@ private val Context.sessionDataStore by preferencesDataStore(name = "plate_mate_
 
 @Singleton
 class DataStoreSessionStore private constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    ioDispatcher: CoroutineDispatcher
 ) : SessionStore {
 
     @Inject
-    constructor(@ApplicationContext context: Context) : this(context.sessionDataStore)
+    constructor(
+        @ApplicationContext context: Context,
+        appDispatchers: AppDispatchers
+    ) : this(context.sessionDataStore, appDispatchers.io)
 
-    internal constructor(dataStore: DataStore<Preferences>, marker: Unit = Unit) : this(dataStore)
+    internal constructor(dataStore: DataStore<Preferences>, marker: Unit = Unit) :
+            this(dataStore, Dispatchers.IO)
 
     private val cachedToken = AtomicReference<String?>(null)
     private val cachedRefreshToken = AtomicReference<String?>(null)
-    private val cacheScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val cacheScope = CoroutineScope(SupervisorJob() + ioDispatcher)
 
     override val session: Flow<AuthSession?> = dataStore.data
         .catch { throwable ->
@@ -61,7 +69,8 @@ class DataStoreSessionStore private constructor(
                     userId = userId,
                     username = username,
                     token = token,
-                    refreshToken = refreshToken?.takeIf { it.isNotBlank() }
+                    refreshToken = refreshToken?.takeIf { it.isNotBlank() },
+                    role = UserRole.fromString(preferences[ROLE])
                 )
             }
         }
@@ -80,6 +89,7 @@ class DataStoreSessionStore private constructor(
             preferences[USER_ID] = session.userId
             preferences[USERNAME] = session.username
             preferences[TOKEN] = session.token
+            preferences[ROLE] = session.role.name
             if (session.refreshToken.isNullOrBlank()) {
                 preferences.remove(REFRESH_TOKEN)
             } else {
@@ -113,6 +123,7 @@ class DataStoreSessionStore private constructor(
         val USERNAME = stringPreferencesKey("username")
         val TOKEN = stringPreferencesKey("token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        val ROLE = stringPreferencesKey("role")
     }
 }
 

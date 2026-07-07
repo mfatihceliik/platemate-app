@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.NewReleases
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
