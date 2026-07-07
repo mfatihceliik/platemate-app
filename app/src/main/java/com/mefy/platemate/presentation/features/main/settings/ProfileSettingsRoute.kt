@@ -27,7 +27,6 @@ fun ProfileSettingsRoute(
     onNavigateToThemeColor: () -> Unit,
     onNavigateToLanguage: () -> Unit,
     onNavigateToNotificationPreferences: () -> Unit,
-    onNavigateToSocialLinks: () -> Unit,
     onNavigateToAdmin: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,7 +42,6 @@ fun ProfileSettingsRoute(
                 ProfileSettingsUiEffect.NavigateToThemeColor -> onNavigateToThemeColor()
                 ProfileSettingsUiEffect.NavigateToLanguage -> onNavigateToLanguage()
                 ProfileSettingsUiEffect.NavigateToNotificationPreferences -> onNavigateToNotificationPreferences()
-                ProfileSettingsUiEffect.NavigateToSocialLinks -> onNavigateToSocialLinks()
                 ProfileSettingsUiEffect.NavigateToAdmin -> onNavigateToAdmin()
             }
         }

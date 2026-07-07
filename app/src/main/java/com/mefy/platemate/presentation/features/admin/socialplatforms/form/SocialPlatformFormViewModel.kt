@@ -48,7 +48,17 @@ class SocialPlatformFormViewModel @Inject constructor(
             SocialPlatformFormUiAction.BackClicked -> _uiEffect.emitUiEffect(SocialPlatformFormUiEffect.NavigateBack)
             SocialPlatformFormUiAction.SaveClicked -> save()
             is SocialPlatformFormUiAction.CodeChanged -> _uiState.update { it.copy(code = action.value) }
-            is SocialPlatformFormUiAction.LabelChanged -> _uiState.update { it.copy(label = action.value) }
+            is SocialPlatformFormUiAction.LabelChanged -> _uiState.update { state -> 
+                val newLabels = state.labels.toMutableMap()
+                newLabels[action.locale] = action.value
+                state.copy(labels = newLabels) 
+            }
+            is SocialPlatformFormUiAction.AddLabelLanguage -> _uiState.update { state ->
+                if (state.labels.containsKey(action.locale)) return@update state
+                val newLabels = state.labels.toMutableMap()
+                newLabels[action.locale] = ""
+                state.copy(labels = newLabels)
+            }
             is SocialPlatformFormUiAction.IconUrlChanged -> _uiState.update { it.copy(iconUrl = action.value) }
             is SocialPlatformFormUiAction.BackgroundColorHexChanged -> _uiState.update { it.copy(backgroundColorHex = action.value) }
             is SocialPlatformFormUiAction.IconTintColorHexChanged -> _uiState.update { it.copy(iconTintColorHex = action.value) }
@@ -73,7 +83,7 @@ class SocialPlatformFormViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             code = platform.code,
-                            label = platform.label,
+                            labels = platform.labels,
                             iconUrl = platform.iconUrl,
                             backgroundColorHex = platform.backgroundColorHex,
                             iconTintColorHex = platform.iconTintColorHex,
@@ -94,7 +104,7 @@ class SocialPlatformFormViewModel @Inject constructor(
         if (!state.isSaveEnabled) return
         val input = SocialPlatformInput(
             code = state.code.trim(),
-            label = state.label.trim(),
+            labels = state.labels.mapValues { it.value.trim() },
             iconUrl = state.iconUrl.trim(),
             backgroundColorHex = state.backgroundColorHex.trim(),
             iconTintColorHex = state.iconTintColorHex.trim(),

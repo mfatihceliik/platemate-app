@@ -5,6 +5,7 @@ data class SocialPlatform(
     val code: String,
     val label: String,
     val iconUrl: String?,
+    val baseUrl: String?,
     val backgroundColorHex: String?,
     val iconTintColorHex: String?,
     val sortOrder: Int

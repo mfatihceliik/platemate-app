@@ -4,11 +4,17 @@ import com.mefy.platemate.core.mapper.Mapper
 import com.mefy.platemate.data.remote.dto.admin.CommentReportDto
 import com.mefy.platemate.data.remote.dto.admin.PlateAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
+import com.mefy.platemate.data.remote.dto.admin.AccentColorAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateReportTypeAdminDto
+import com.mefy.platemate.data.remote.dto.admin.PremiumFeatureAdminDto
+import com.mefy.platemate.data.remote.dto.admin.PremiumPlanAdminDto
 import com.mefy.platemate.data.remote.dto.admin.SocialPlatformAdminDto
+import com.mefy.platemate.domain.model.admin.AccentColorAdmin
 import com.mefy.platemate.domain.model.admin.CommentReport
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
+import com.mefy.platemate.domain.model.admin.PremiumFeatureAdmin
+import com.mefy.platemate.domain.model.admin.PremiumPlanAdmin
 import com.mefy.platemate.domain.model.admin.ReportTypeAdmin
 import com.mefy.platemate.domain.model.admin.SocialPlatformAdmin
 import javax.inject.Inject
@@ -69,10 +75,44 @@ class SocialPlatformAdminMapper @Inject constructor() : Mapper<SocialPlatformAdm
     override fun map(input: SocialPlatformAdminDto): SocialPlatformAdmin = SocialPlatformAdmin(
         id = input.id,
         code = input.code.orEmpty(),
-        label = input.label.orEmpty(),
+        labels = input.labels.orEmpty(),
         iconUrl = input.iconUrl.orEmpty(),
         backgroundColorHex = input.backgroundColorHex.orEmpty(),
         iconTintColorHex = input.iconTintColorHex.orEmpty(),
+        sortOrder = input.sortOrder ?: 0,
+        active = input.active
+    )
+}
+
+class PremiumPlanAdminMapper @Inject constructor() : Mapper<PremiumPlanAdminDto, PremiumPlanAdmin> {
+    override fun map(input: PremiumPlanAdminDto): PremiumPlanAdmin = PremiumPlanAdmin(
+        id = input.id,
+        period = input.period.orEmpty(),
+        titles = input.titles,
+        descriptions = input.descriptions,
+        amount = input.amount ?: 0.0,
+        currency = input.currency.orEmpty().ifBlank { "TRY" },
+        discountPercent = input.discountPercent,
+        sortOrder = input.sortOrder ?: 0,
+        active = input.active
+    )
+}
+
+class PremiumFeatureAdminMapper @Inject constructor() : Mapper<PremiumFeatureAdminDto, PremiumFeatureAdmin> {
+    override fun map(input: PremiumFeatureAdminDto): PremiumFeatureAdmin = PremiumFeatureAdmin(
+        id = input.id,
+        iconKey = input.iconKey.orEmpty(),
+        titles = input.titles.orEmpty(),
+        subtitles = input.subtitles,
+        sortOrder = input.sortOrder ?: 0,
+        active = input.active
+    )
+}
+
+class AccentColorAdminMapper @Inject constructor() : Mapper<AccentColorAdminDto, AccentColorAdmin> {
+    override fun map(input: AccentColorAdminDto): AccentColorAdmin = AccentColorAdmin(
+        id = input.id,
+        hex = input.hex.orEmpty(),
         sortOrder = input.sortOrder ?: 0,
         active = input.active
     )

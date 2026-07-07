@@ -1,7 +1,7 @@
 package com.mefy.platemate.presentation.features.main.discover.reducer
 
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel

@@ -1,39 +1,39 @@
-﻿package com.mefy.platemate.presentation.features.main.settings.editprofile
+package com.mefy.platemate.presentation.features.main.settings.editprofile
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.mefy.platemate.presentation.common.text.resolve
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.stringResource
-import coil.compose.rememberAsyncImagePainter
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.PMCommentField
-import com.mefy.platemate.presentation.components.PMRowItem
-import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AddSocialLinkForm
+import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AddedSocialLinkRow
 import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarEditSection
-import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarUrlDialog
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -55,14 +55,32 @@ internal fun EditProfileScreen(
     val onDisplayNameChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.DisplayNameChanged(v)) } }
     val onUsernameChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.UsernameChanged(v)) } }
     val onBioChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.BioChanged(v)) } }
+    val onSocialUrlChange = remember(onAction) { { v: String -> onAction(EditProfileUiAction.SocialUrlInputChanged(v)) } }
+    val onAddSocialLink = remember(onAction) { { onAction(EditProfileUiAction.AddSocialLinkClicked) } }
+    val onAvatarUrlConfirmed = remember(onAction) { { onAction(EditProfileUiAction.AvatarUrlConfirmed) } }
+    val onAvatarDialogDismissed = remember(onAction) { { onAction(EditProfileUiAction.AvatarDialogDismissed) } }
+    val onAvatarUrlChanged = remember(onAction) { { v: String -> onAction(EditProfileUiAction.AvatarUrlChanged(v)) } }
 
     if (state.showAvatarDialog) {
-        AvatarUrlDialog(
-            url = state.avatarUrlDraft,
-            onUrlChange = { onAction(EditProfileUiAction.AvatarUrlChanged(it)) },
-            onConfirm = { onAction(EditProfileUiAction.AvatarUrlConfirmed) },
-            onDismiss = { onAction(EditProfileUiAction.AvatarDialogDismissed) }
-        )
+        PMPopup(
+            title = stringResource(R.string.edit_profile_avatar_dialog_title),
+            icon = Icons.Filled.Link,
+            iconTint = colors.primary,
+            iconContainerColor = colors.primaryContainer,
+            primaryText = stringResource(R.string.common_save),
+            onPrimaryClick = onAvatarUrlConfirmed,
+            secondaryText = stringResource(R.string.common_cancel),
+            onSecondaryClick = onAvatarDialogDismissed,
+            onDismissRequest = onAvatarDialogDismissed
+        ) {
+            PMTextField(
+                value = state.avatarUrlDraft,
+                onValueChange = onAvatarUrlChanged,
+                placeholder = stringResource(R.string.edit_profile_avatar_dialog_hint),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 
     val initials = remember(state.displayName) {
@@ -74,9 +92,16 @@ internal fun EditProfileScreen(
             .ifEmpty { "?" }
     }
 
+    // SnapshotStateMap okuması burada yapılır: link eklenince/silinince liste recompose olur.
+    val addedSocialLinks = state.socialLinks.entries.toList()
+
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize(),
+            .padding(innerPadding)
+            .fillMaxSize()
+            // Edge-to-edge'de adjustResize no-op; klavye açılınca liste viewport'u kısalsın ki
+            // odaklanan PMTextField (bringIntoView ile) klavyenin üstüne kaysın, arkasında kalmasın.
+            .imePadding(),
         contentPadding = PaddingValues(
             horizontal = dims.spacing.s16,
             vertical = dims.spacing.s8
@@ -92,14 +117,9 @@ internal fun EditProfileScreen(
         }
 
         item {
-            SectionLabel(
-                text = stringResource(R.string.edit_profile_field_display_name)
-            )
-        }
-
-        item {
             PMTextField(
                 value = state.displayName,
+                label = stringResource(R.string.edit_profile_field_display_name),
                 onValueChange = onDisplayNameChange,
                 isError = state.displayNameError != null,
                 errorText = state.displayNameError?.resolve(),
@@ -109,33 +129,25 @@ internal fun EditProfileScreen(
         }
 
         item {
-            SectionLabel(
-                text = stringResource(R.string.edit_profile_field_username)
-            )
-        }
+            val supportingText = if(state.usernameError == null && state.username.isNotEmpty())
+                stringResource(R.string.edit_profile_username_hint, state.username) else ""
 
-        item {
             PMTextField(
                 value = state.username,
+                label = stringResource(R.string.edit_profile_field_username),
+                supportingText = supportingText,
                 onValueChange = onUsernameChange,
+                enabled = false,
                 readOnly = true,
                 isError = state.usernameError != null,
                 errorText = state.usernameError?.resolve(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth()
             )
-            if (state.usernameError == null && state.username.isNotEmpty()) {
-                PMText(
-                    text = stringResource(R.string.edit_profile_username_hint, state.username),
-                    style = PMTextStyle.Note,
-                    color = colors.textLabel,
-                    modifier = Modifier.padding(start = dims.spacing.s4)
-                )
-            }
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.edit_profile_field_bio)
             )
         }
@@ -151,7 +163,7 @@ internal fun EditProfileScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.edit_profile_field_social)
             )
             HorizontalDivider(
@@ -159,37 +171,31 @@ internal fun EditProfileScreen(
             )
         }
 
-        items(
-            items = state.availablePlatforms,
-            key = { it.id }
-        ) { platform ->
-            val interactionSource = remember {
-                MutableInteractionSource()
+        item {
+            AddSocialLinkForm(
+                url = state.socialUrlInput,
+                errorText = state.socialLinkError?.resolve(),
+                isAddEnabled = state.isAddSocialEnabled,
+                onUrlChange = onSocialUrlChange,
+                onAdd = onAddSocialLink
+            )
+        }
+
+        if (addedSocialLinks.isNotEmpty()) {
+            item {
+                PMSectionLabel(text = stringResource(R.string.edit_profile_social_added))
             }
-            //val focused by interactionSource.collectIsFocusedAsState()
-            PMRowItem(
-                leadingIconPainter = rememberAsyncImagePainter(
-                    model = platform.iconUrl,
-                    error = painterResource(R.drawable.ic_link),
-                    placeholder = painterResource(R.drawable.ic_link)
-                ),
-                leadingIconTint = platform.iconTint,
-                leadingContainerColor = platform.backgroundColor
-            ) {
-                PMTextField(
-                    value = state.socialLinks[platform.code].orEmpty(),
-                    onValueChange = {
-                        onAction(
-                            EditProfileUiAction.SocialLinkChanged(
-                                platform.code,
-                                it
-                            )
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next
-                    ),
+            items(
+                items = addedSocialLinks,
+                key = { it.key }
+            ) { (code, url) ->
+                val platform = state.availablePlatforms.firstOrNull { it.code.equals(code, ignoreCase = true) }
+                AddedSocialLinkRow(
+                    url = url,
+                    iconUrl = platform?.iconUrl,
+                    iconTint = platform?.iconTint ?: SocialPlatformFallbackTint,
+                    containerColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
+                    onRemove = { onAction(EditProfileUiAction.RemoveSocialLinkClicked(code)) }
                 )
             }
         }
@@ -198,13 +204,13 @@ internal fun EditProfileScreen(
             PMButton(
                 text = stringResource(R.string.edit_profile_save),
                 onClick = onSave,
-                enabled = state.isSaving,
+                enabled = state.isDirty && !state.isSaving,
+                loading = state.isSaving,
                 modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
             )
         }
     }
 }
-
 
 
 private val previewState = EditProfileUiState(
@@ -214,16 +220,18 @@ private val previewState = EditProfileUiState(
     username = "ahmetyilmaz",
     bio = "İstanbul sürücüsüyüm. Saygılı ve temkinli araç kullanırım.",
     availablePlatforms = listOf(
-        SocialPlatform(1, "INSTAGRAM", "Instagram", null, androidx.compose.ui.graphics.Color(0xFFFDF2F8), androidx.compose.ui.graphics.Color(0xFFDB2777)),
-        SocialPlatform(2, "X", "X", null, androidx.compose.ui.graphics.Color(0xFFF1F5F9), androidx.compose.ui.graphics.Color(0xFF0F172A))
+        SocialPlatform(1, "INSTAGRAM", "Instagram", null, "https://www.instagram.com/", Color(0xFFFDF2F8), Color(0xFFDB2777)),
+        SocialPlatform(2, "X", "X", null, "https://x.com/", Color(0xFFF1F5F9), Color(0xFF0F172A))
     )
-)
+).apply {
+    socialLinks["INSTAGRAM"] = "https://www.instagram.com/mfatihceliik"
+}
 
 @Preview(name = "EditProfileScreen Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun EditProfileScreenLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        EditProfileScreen(state = previewState, onAction = {},)
+        EditProfileScreen(state = previewState, onAction = {})
     }
 }
 
@@ -231,6 +239,6 @@ private fun EditProfileScreenLightPreview() {
 @Composable
 private fun EditProfileScreenDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        EditProfileScreen(state = previewState, onAction = {},)
+        EditProfileScreen(state = previewState, onAction = {})
     }
 }

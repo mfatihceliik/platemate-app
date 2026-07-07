@@ -42,10 +42,10 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 
-/**
- * One swipe-revealed action (icon + label + colors). Purely descriptive; the meaning of the
- * gesture is decided by the caller via [PMSwipeActionRow]'s callbacks.
- */
+
+private const val REVEAL_FRACTION = 0.25f
+private const val FULL_SWIPE_FRACTION = 0.5f
+private const val VELOCITY_PROJECTION = 0.05f
 @Immutable
 data class PMSwipeAction(
     val icon: ImageVector,
@@ -54,20 +54,6 @@ data class PMSwipeAction(
     val contentColor: Color,
 )
 
-/**
- * A reveal-style swipe row (iOS-Mail behaviour).
- *
- * - Swiping right reveals [startToEndAction] pinned to the leading edge; swiping left reveals
- *   [endToStartAction] pinned to the trailing edge. The reveal is capped at [REVEAL_FRACTION] of
- *   the row width, so only a small button ever shows.
- * - A gentle swipe **holds the button open**; tapping the button fires its callback, tapping the
- *   row closes it.
- * - A decisive **full swipe** (finger travels past [FULL_SWIPE_FRACTION] of the width) fires the
- *   callback directly.
- *
- * The row never removes itself — callbacks drive the list, which updates reactively. A direction is
- * only swipeable when its action is non-null.
- */
 @Composable
 fun PMSwipeActionRow(
     modifier: Modifier = Modifier,
@@ -92,7 +78,6 @@ fun PMSwipeActionRow(
         var rawDrag by remember { mutableFloatStateOf(0f) }
         val scope = rememberCoroutineScope()
 
-        // Positions the row can settle to: closed (0) plus whichever action sides are enabled.
         val anchors = remember(minOffset, maxOffset) {
             buildList {
                 if (minOffset < 0f) add(minOffset)
@@ -103,11 +88,9 @@ fun PMSwipeActionRow(
 
         val dragState = rememberDraggableState { delta ->
             rawDrag += delta
-            // Update synchronously (no coroutine per delta) so the row tracks the finger 1:1.
             offsetX = (offsetX + delta).coerceIn(minOffset, maxOffset)
         }
 
-        // ── Behind: fixed-width action buttons, only the swiped side is drawn ──
         if (offsetX < 0f && endToStartAction != null) {
             Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
                 SwipeActionButton(action = endToStartAction, width = revealDp) {
@@ -125,7 +108,6 @@ fun PMSwipeActionRow(
             }
         }
 
-        // ── Front: the row itself. Opaque background so the buttons never bleed through at rest. ──
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -146,8 +128,6 @@ fun PMSwipeActionRow(
                                 onEndToStart?.invoke(); 0f
                             }
 
-                            // Settle to the anchor nearest the velocity-projected position, so a
-                            // flick back always closes without needing to drag all the way.
                             else -> {
                                 val projected = offsetX + velocity * VELOCITY_PROJECTION
                                 anchors.minByOrNull { abs(it - projected) } ?: 0f
@@ -160,7 +140,6 @@ fun PMSwipeActionRow(
                 )
         ) {
             content()
-            // While open, a tap anywhere on the row closes it instead of activating the content.
             if (offsetX != 0f) {
                 Box(
                     modifier = Modifier
@@ -201,11 +180,7 @@ private fun SwipeActionButton(action: PMSwipeAction, width: Dp, onClick: () -> U
     }
 }
 
-private const val REVEAL_FRACTION = 0.25f
-private const val FULL_SWIPE_FRACTION = 0.5f
 
-/** Seconds of velocity projected past the release point when deciding which anchor to settle to. */
-private const val VELOCITY_PROJECTION = 0.05f
 
 @Preview(name = "PMSwipeActionRow", showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable

@@ -21,6 +21,10 @@
         <item quantity="one">%1$d okunmamış mesaj</item>
         <item quantity="other">%1$d okunmamış mesaj</item>
     </plurals>
+    <string name="conversation_input_placeholder">Mesaj yaz…</string>
+    <string name="conversation_date_today">Bugün</string>
+    <string name="conversation_date_yesterday">Dün</string>
+    <string name="conversation_date_last_weekday">Geçen %1$s</string>
     <string name="chatdetail_block">Kullanıcıyı engelle</string>
     <string name="chatdetail_unblock">Engeli kaldır</string>
     <string name="user_profile_report_submitted">Şikayet gönderildi.</string>
@@ -90,6 +94,37 @@
     <string name="admin_social_platform_field_bg_color">Arka plan rengi (#RRGGBB)</string>
     <string name="admin_social_platform_field_tint_color">İkon rengi (#RRGGBB)</string>
     <string name="admin_social_platform_field_sort">Sıra</string>
+    <string name="admin_premium_plans_title">Premium Planlar</string>
+    <string name="admin_premium_plans_empty">Premium plan yok.</string>
+    <string name="admin_premium_plan_edit_title">Planı Düzenle</string>
+    <string name="admin_premium_plan_saved">Plan kaydedildi.</string>
+    <string name="admin_premium_plan_field_amount">Fiyat</string>
+    <string name="admin_premium_plan_field_currency">Para birimi (ör. TRY)</string>
+    <string name="admin_premium_plan_field_discount">İndirim %% (opsiyonel)</string>
+    <string name="admin_premium_plan_field_sort">Sıra</string>
+    <string name="admin_premium_features_title">Premium Özellikler</string>
+    <string name="admin_premium_features_empty">Premium özellik yok.</string>
+    <string name="admin_premium_feature_add">Ekle</string>
+    <string name="admin_premium_feature_add_title">Yeni Özellik</string>
+    <string name="admin_premium_feature_edit_title">Özelliği Düzenle</string>
+    <string name="admin_premium_feature_saved">Özellik kaydedildi.</string>
+    <string name="admin_premium_feature_field_icon">İkon anahtarı (ör. star, bolt, shield)</string>
+    <string name="admin_premium_feature_field_title_tr">Başlık (Türkçe)</string>
+    <string name="admin_premium_feature_field_title_en">Başlık (İngilizce)</string>
+    <string name="admin_premium_feature_field_subtitle_tr">Alt açıklama (Türkçe, opsiyonel)</string>
+    <string name="admin_premium_feature_field_subtitle_en">Alt açıklama (İngilizce, opsiyonel)</string>
+    <string name="admin_premium_feature_field_sort">Sıra</string>
+    <string name="admin_theme_colors_title">Tema Renkleri</string>
+    <string name="admin_theme_colors">Vurgu renkleri</string>
+    <string name="admin_theme_colors_empty">Vurgu rengi yok.</string>
+    <string name="admin_theme_color_add">Ekle</string>
+    <string name="admin_theme_color_add_title">Yeni Renk</string>
+    <string name="admin_theme_color_edit_title">Rengi Düzenle</string>
+    <string name="admin_theme_color_saved">Renk kaydedildi.</string>
+    <string name="admin_theme_color_field_hex">Hex (#RRGGBB)</string>
+    <string name="admin_theme_color_field_sort">Sıra</string>
+    <string name="admin_theme_grid_size">Grid boyutu (sütun, 1–8)</string>
+    <string name="admin_theme_grid_size_saved">Grid boyutu kaydedildi.</string>
     <string name="common_error_title">Hata</string>
     <string name="common_error_state_title">Bir şeyler ters gitti</string>
     <string name="common_retry">Tekrar dene</string>
@@ -318,6 +353,8 @@
     <string name="profile_theme_preview">ÖNİZLEME</string>
     <string name="profile_theme_accent_color">VURGU RENGİ</string>
     <string name="profile_theme_appearance">GÖRÜNÜM</string>
+    <string name="profile_theme_save_changes">Değişiklikleri kaydet</string>
+    <string name="profile_theme_saved">Tema kaydedildi</string>
     <string name="profile_theme_light">Açık</string>
     <string name="profile_theme_dark">Koyu</string>
     <string name="profile_theme_system">Sistem</string>
@@ -331,6 +368,9 @@
     <string name="profile_premium_monthly_price">₺49/ay</string>
     <string name="profile_premium_yearly_price">₺399/yıl</string>
     <string name="profile_premium_discount">%32 İNDİRİM</string>
+    <string name="premium_period_monthly_suffix">/ay</string>
+    <string name="premium_period_yearly_suffix">/yıl</string>
+    <string name="premium_discount_format">%%%1$d İNDİRİM</string>
     <string name="profile_premium_upgrade">Pro\'ya Yükselt</string>
     <string name="profile_premium_feature_1">Sınırsız plaka değerlendirmesi</string>
     <string name="profile_premium_feature_2">Reklamsız deneyim</string>
@@ -428,6 +468,10 @@
     <string name="edit_profile_field_social">SOSYAL MEDYA</string>
     <string name="edit_profile_username_hint">platemate.app/@%1$s</string>
     <string name="edit_profile_social_add_hint">%1$s ekle…</string>
+    <string name="edit_profile_social_url_placeholder">https://instagram.com/kullaniciadi</string>
+    <string name="edit_profile_social_add">Ekle</string>
+    <string name="edit_profile_social_unsupported">Desteklenmeyen platform</string>
+    <string name="edit_profile_social_added">EKLENENLER</string>
 
     <!-- Messages -->
     <string name="messages_empty_title">Henüz mesajınız yok</string>

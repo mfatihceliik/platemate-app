@@ -42,4 +42,9 @@ data class PMSizing(
     val iconHuge: Dp = 32.dp,
     val settingsRowIcon: Dp = 36.dp,
     val platformRowIcon: Dp = 40.dp,
+    // Chat composer: circular +/send buttons and the pill input's min height.
+    val chatComposerButton: Dp = 40.dp,
+    val chatFieldMinHeight: Dp = 42.dp,
+    // Scroll-to-bottom button overlaid on the conversation list.
+    val scrollToBottomButton: Dp = 40.dp,
 )

@@ -16,13 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -75,7 +76,7 @@ fun SavedPlateCompactCard(
             ) {
                 if (item.ratingAverage > 0) {
                     val ratingText = remember(item.ratingAverage) {
-                        String.format("%.1f", item.ratingAverage)
+                        NumberFormatter.formatRating(item.ratingAverage)
                     }
                     PMIcon(
                         imageVector = Icons.Filled.Star,

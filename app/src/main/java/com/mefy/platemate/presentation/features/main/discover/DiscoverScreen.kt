@@ -19,7 +19,8 @@ import com.mefy.platemate.presentation.components.PMPlateCard
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction.FilterSelected
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverCategoryGrid
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverFilterChips
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -59,7 +60,7 @@ fun DiscoverScreen(
     ) {
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.discover_header_subtitle),
             )
         }
@@ -72,7 +73,7 @@ fun DiscoverScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.discover_section_trending),
             )
         }
@@ -95,7 +96,7 @@ fun DiscoverScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.discover_section_categories),
             )
         }

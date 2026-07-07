@@ -17,6 +17,7 @@ import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -64,7 +65,7 @@ internal fun PlateInfoRow(
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 PMText(
-                    text = String.format("%.1f", ratingAverage),
+                    text = NumberFormatter.formatRating(ratingAverage),
                     fontSize = dims.fontSize.lg,
                     color = colors.textPrimary
                 )

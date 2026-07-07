@@ -83,8 +83,6 @@ fun PMIconButton(
 
     Box(
         modifier = modifier
-            // Minimum dokunma hedefi `size`; içerik (PMIcon) daha büyükse Box büyür,
-            // böylece icon boyutu görünür şekilde etki eder (sabit .size() kırpıyordu).
             .defaultMinSize(minWidth = size, minHeight = size)
             .clip(shape)
             .background(bgColor)

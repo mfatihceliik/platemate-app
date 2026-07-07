@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 
 @StringRes
 internal fun DiscoverFilterUi.toLabelResId(): Int {

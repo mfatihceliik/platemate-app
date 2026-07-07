@@ -42,8 +42,8 @@ internal fun SocialPlatformRow(
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)) {
-            PMText(text = item.label, style = PMTextStyle.Body, fontWeight = FontWeight.Bold, color = colors.textPrimary)
-            PMText(text = "${item.code} · #${item.sortOrder}", style = PMTextStyle.Note, color = colors.textLabel)
+            PMText(text = item.labels["en"].orEmpty().ifBlank { item.labels["tr"].orEmpty() }, style = PMTextStyle.Body, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+            PMText(text = "${item.code} • #${item.sortOrder}", style = PMTextStyle.Note, color = colors.textLabel)
         }
         PMSwitch(checked = item.active, onCheckedChange = { onToggle() })
     }
@@ -54,7 +54,7 @@ internal fun SocialPlatformRow(
 private fun SocialPlatformRowActivePreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         SocialPlatformRow(
-            item = SocialPlatformListItem(id = 1L, code = "INSTAGRAM", label = "Instagram", sortOrder = 1, active = true),
+            item = SocialPlatformListItem(id = 1L, code = "INSTAGRAM", labels = mapOf("tr" to "Instagram", "en" to "Instagram"), sortOrder = 1, active = true),
             onClick = {},
             onToggle = {}
         )
@@ -66,7 +66,7 @@ private fun SocialPlatformRowActivePreview() {
 private fun SocialPlatformRowInactivePreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         SocialPlatformRow(
-            item = SocialPlatformListItem(id = 2L, code = "SNAPCHAT", label = "Snapchat", sortOrder = 6, active = false),
+            item = SocialPlatformListItem(id = 2L, code = "SNAPCHAT", labels = mapOf("tr" to "Snapchat", "en" to "Snapchat"), sortOrder = 6, active = false),
             onClick = {},
             onToggle = {}
         )

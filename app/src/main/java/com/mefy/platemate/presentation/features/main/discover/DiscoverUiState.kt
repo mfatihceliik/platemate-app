@@ -2,9 +2,10 @@ package com.mefy.platemate.presentation.features.main.discover
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 
 @Immutable

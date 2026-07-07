@@ -5,6 +5,8 @@ import com.mefy.platemate.data.remote.interceptor.AuthInterceptor
 import com.mefy.platemate.data.remote.interceptor.LanguageInterceptor
 import com.mefy.platemate.data.remote.interceptor.TokenAuthenticator
 import com.mefy.platemate.data.remote.rest.service.AdminApiService
+import com.mefy.platemate.data.remote.rest.service.PremiumApiService
+import com.mefy.platemate.data.remote.rest.service.ThemeApiService
 import com.mefy.platemate.data.remote.rest.service.AuthApiService
 import com.mefy.platemate.data.remote.rest.service.AuthTokenApiService
 import com.mefy.platemate.data.remote.rest.service.ChatApiService
@@ -150,6 +152,16 @@ object NetworkModule {
     @Singleton
     fun provideAdminApiService(retrofit: Retrofit): AdminApiService =
         retrofit.create(AdminApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePremiumApiService(retrofit: Retrofit): PremiumApiService =
+        retrofit.create(PremiumApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideThemeApiService(retrofit: Retrofit): ThemeApiService =
+        retrofit.create(ThemeApiService::class.java)
 
     @Provides
     @Singleton

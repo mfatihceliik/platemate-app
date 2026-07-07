@@ -90,9 +90,6 @@ class ProfileSettingsViewModel @Inject constructor(
             ProfileSettingsUiAction.NotificationPreferencesClicked ->
                 _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToNotificationPreferences)
 
-            ProfileSettingsUiAction.SocialLinksClicked ->
-                _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToSocialLinks)
-
             ProfileSettingsUiAction.AdminPanelClicked ->
                 _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToAdmin)
 

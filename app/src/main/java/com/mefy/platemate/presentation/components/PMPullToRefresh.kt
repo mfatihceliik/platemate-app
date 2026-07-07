@@ -11,10 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * İçeriği aşağı-çekerek-yenile ile sarar. Indicator üst-ortada, küçük üst boşlukla:
- * topbar'ın hemen altından, dikişe yapışmadan iner.
- */
 @Composable
 fun PMPullToRefresh(
     isRefreshing: Boolean,

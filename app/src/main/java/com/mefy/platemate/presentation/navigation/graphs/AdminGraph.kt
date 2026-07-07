@@ -15,6 +15,18 @@ import com.mefy.platemate.presentation.features.admin.moderation.removal.PlateRe
 import com.mefy.platemate.presentation.features.admin.moderation.removal.PlateRemovalViewModel
 import com.mefy.platemate.presentation.features.admin.moderation.reports.CommentReportsRoute
 import com.mefy.platemate.presentation.features.admin.moderation.reports.CommentReportsViewModel
+import com.mefy.platemate.presentation.features.admin.accentcolors.AccentColorsRoute
+import com.mefy.platemate.presentation.features.admin.accentcolors.AccentColorsViewModel
+import com.mefy.platemate.presentation.features.admin.accentcolors.form.AccentColorFormRoute
+import com.mefy.platemate.presentation.features.admin.accentcolors.form.AccentColorFormViewModel
+import com.mefy.platemate.presentation.features.admin.premiumfeatures.PremiumFeaturesRoute
+import com.mefy.platemate.presentation.features.admin.premiumfeatures.PremiumFeaturesViewModel
+import com.mefy.platemate.presentation.features.admin.premiumfeatures.form.PremiumFeatureFormRoute
+import com.mefy.platemate.presentation.features.admin.premiumfeatures.form.PremiumFeatureFormViewModel
+import com.mefy.platemate.presentation.features.admin.premiumplans.PremiumPlansRoute
+import com.mefy.platemate.presentation.features.admin.premiumplans.PremiumPlansViewModel
+import com.mefy.platemate.presentation.features.admin.premiumplans.form.PremiumPlanFormRoute
+import com.mefy.platemate.presentation.features.admin.premiumplans.form.PremiumPlanFormViewModel
 import com.mefy.platemate.presentation.features.admin.reporttypes.ReportTypesRoute
 import com.mefy.platemate.presentation.features.admin.reporttypes.ReportTypesViewModel
 import com.mefy.platemate.presentation.features.admin.reporttypes.form.ReportTypeFormRoute
@@ -39,6 +51,9 @@ internal fun NavGraphBuilder.adminGraph(
                 onHiddenPlates = { navController.navigate(AdminHiddenPlatesDestination) },
                 onReportTypes = { navController.navigate(AdminReportTypesDestination) },
                 onSocialPlatforms = { navController.navigate(AdminSocialPlatformsDestination) },
+                onPremiumPlans = { navController.navigate(AdminPremiumPlansDestination) },
+                onPremiumFeatures = { navController.navigate(AdminPremiumFeaturesDestination) },
+                onThemeColors = { navController.navigate(AdminAccentColorsDestination) },
                 onSettings = { navController.navigate(AdminSettingsDestination) },
             )
         }
@@ -108,6 +123,57 @@ internal fun NavGraphBuilder.adminGraph(
         composable<AdminSocialPlatformFormDestination> {
             SocialPlatformFormRoute(
                 viewModel = hiltViewModel<SocialPlatformFormViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+            )
+        }
+
+        composable<AdminPremiumPlansDestination> {
+            PremiumPlansRoute(
+                viewModel = hiltViewModel<PremiumPlansViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToForm = { planId ->
+                    navController.navigate(AdminPremiumPlanFormDestination(planId))
+                },
+            )
+        }
+
+        composable<AdminPremiumPlanFormDestination> {
+            PremiumPlanFormRoute(
+                viewModel = hiltViewModel<PremiumPlanFormViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+            )
+        }
+
+        composable<AdminPremiumFeaturesDestination> {
+            PremiumFeaturesRoute(
+                viewModel = hiltViewModel<PremiumFeaturesViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToForm = { featureId ->
+                    navController.navigate(AdminPremiumFeatureFormDestination(featureId ?: -1L))
+                },
+            )
+        }
+
+        composable<AdminPremiumFeatureFormDestination> {
+            PremiumFeatureFormRoute(
+                viewModel = hiltViewModel<PremiumFeatureFormViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+            )
+        }
+
+        composable<AdminAccentColorsDestination> {
+            AccentColorsRoute(
+                viewModel = hiltViewModel<AccentColorsViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToForm = { colorId ->
+                    navController.navigate(AdminAccentColorFormDestination(colorId ?: -1L))
+                },
+            )
+        }
+
+        composable<AdminAccentColorFormDestination> {
+            AccentColorFormRoute(
+                viewModel = hiltViewModel<AccentColorFormViewModel>(),
                 onNavigateBack = { navController.navigateUp() },
             )
         }

@@ -10,7 +10,8 @@ import com.mefy.platemate.domain.usecase.profile.UpdateProfileUseCase
 import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
 import com.mefy.platemate.domain.usecase.user.DeleteAccountUseCase
 import com.mefy.platemate.domain.repository.SocialLinkRepository
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.toUiModel
+import com.mefy.platemate.presentation.features.uimodel.detectPlatform
+import com.mefy.platemate.presentation.features.uimodel.toUiModel
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -63,9 +64,27 @@ class EditProfileViewModel @Inject constructor(
             is EditProfileUiAction.DisplayNameChanged -> _uiState.update { it.copy(displayName = action.value, displayNameError = null) }
             is EditProfileUiAction.UsernameChanged -> _uiState.update { it.copy(username = action.value, usernameError = null) }
             is EditProfileUiAction.BioChanged -> _uiState.update { it.copy(bio = action.value.take(it.bioMaxLength)) }
-            is EditProfileUiAction.SocialLinkChanged -> _uiState.value.socialLinks[action.platformId] = action.value
-
+            is EditProfileUiAction.SocialUrlInputChanged ->
+                _uiState.update { it.copy(socialUrlInput = action.value, socialLinkError = null) }
+            EditProfileUiAction.AddSocialLinkClicked -> addSocialLink()
+            is EditProfileUiAction.RemoveSocialLinkClicked ->
+                _uiState.value.socialLinks.remove(action.platformCode)
         }
+    }
+
+    private fun addSocialLink() {
+        val state = _uiState.value
+        val url = state.socialUrlInput.trim()
+        if (url.isBlank()) return
+
+        val platform = detectPlatform(url, state.availablePlatforms)
+        if (platform == null) {
+            _uiState.update { it.copy(socialLinkError = UiText.Resource(R.string.edit_profile_social_unsupported)) }
+            return
+        }
+        // Map key = platform kodu: aynı platform yeniden eklenirse eski url'in üzerine yazılır.
+        _uiState.value.socialLinks[platform.code] = url
+        _uiState.update { it.copy(socialUrlInput = "", socialLinkError = null) }
     }
     private fun loadProfile() {
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
@@ -89,6 +108,12 @@ class EditProfileViewModel @Inject constructor(
                 is AppResult.Success -> {
                     val profile = result.data
                     loadedLinks = profile.socialMediaLinks
+                    val initialDisplayName = (profile.displayName ?: profile.username).trim()
+                    val initialBio = profile.bio.orEmpty().trim()
+                    val initialPhoto = profile.profilePhotoUrl.orEmpty().trim()
+                    val initialSocial = loadedLinks
+                        .associate { it.platform.uppercase() to it.url.trim() }
+                        .filterValues { it.isNotBlank() }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -97,6 +122,10 @@ class EditProfileViewModel @Inject constructor(
                             bio = profile.bio.orEmpty(),
                             profilePhotoUrl = profile.profilePhotoUrl.orEmpty(),
                             availablePlatforms = platforms,
+                            initialDisplayName = initialDisplayName,
+                            initialBio = initialBio,
+                            initialProfilePhotoUrl = initialPhoto,
+                            initialSocialLinks = initialSocial,
                         )
                     }
                     _uiState.value.socialLinks.clear()
@@ -111,6 +140,11 @@ class EditProfileViewModel @Inject constructor(
     private fun saveProfile() {
         val state = _uiState.value
         if (!validate(state)) return
+        // Değişiklik yoksa istek atma, sadece geri dön.
+        if (!state.isDirty) {
+            _uiEffect.emitUiEffect(EditProfileUiEffect.NavigateBack)
+            return
+        }
         val userId = currentUserId ?: return
 
         _uiState.update { it.copy(isSaving = true) }
@@ -118,39 +152,48 @@ class EditProfileViewModel @Inject constructor(
             _uiState.update { it.copy(isSaving = false) }
             handleError(error)
         }) {
-            val result = updateProfileUseCase(
-                userId = userId,
-                displayName = state.displayName.trim(),
-                username = state.username.trim(),
-                bio = state.bio.trim(),
-                profilePhotoUrl = state.profilePhotoUrl.trim().ifBlank { null }
-            )
-            when (result) {
-                is AppResult.Success -> {
-                    syncSocialLinks(state)
-                    _uiState.update { it.copy(isSaving = false) }
-                    showSuccess(UiText.Resource(R.string.edit_profile_saved))
-                    _uiEffect.emitUiEffect(EditProfileUiEffect.NavigateBack)
-                }
-                is AppResult.Error -> {
+            // Yalnızca profil kısmı değiştiyse PUT at.
+            if (state.isProfileDirty) {
+                val result = updateProfileUseCase(
+                    userId = userId,
+                    displayName = state.displayName.trim(),
+                    username = state.username.trim(),
+                    bio = state.bio.trim(),
+                    profilePhotoUrl = state.profilePhotoUrl.trim().ifBlank { null }
+                )
+                if (result is AppResult.Error) {
                     _uiState.update { it.copy(isSaving = false) }
                     showError(result.error.toUiText())
+                    return@launch
                 }
             }
+            // Yalnızca sosyal kısım değiştiyse senkronla (add/update/delete diff'i).
+            if (state.isSocialDirty) syncSocialLinks(state)
+
+            _uiState.update { it.copy(isSaving = false) }
+            showSuccess(UiText.Resource(R.string.edit_profile_saved))
+            _uiEffect.emitUiEffect(EditProfileUiEffect.NavigateBack)
         }
     }
 
     private suspend fun syncSocialLinks(state: EditProfileUiState) {
-        val desired = state.socialLinks.mapValues { it.value.trim() }
+        val desired = state.socialLinks
+            .mapValues { it.value.trim() }
+            .filterValues { it.isNotBlank() }
+
+        // Upsert: eklenen/güncellenen linkler.
         desired.forEach { (platform, url) ->
-            val existing = loadedLinks.firstOrNull {
-                    it.platform.equals(platform, true)
-                }
+            val existing = loadedLinks.firstOrNull { it.platform.equals(platform, true) }
             when {
-                url.isNotBlank() && existing == null -> socialLinkRepository.addSocialLink(platform, url)
-                url.isNotBlank() && existing != null && existing.url != url -> socialLinkRepository.updateSocialLink(existing.copy(url = url))
-                url.isBlank() && existing?.id != null -> socialLinkRepository.deleteSocialLink(existing.id)
+                existing == null -> socialLinkRepository.addSocialLink(platform, url)
+                existing.url != url -> socialLinkRepository.updateSocialLink(existing.copy(url = url))
             }
+        }
+
+        // Silme: kullanıcının kaldırdığı (artık desired'da olmayan) sunucu linkleri.
+        loadedLinks.forEach { link ->
+            val stillWanted = desired.keys.any { it.equals(link.platform, true) }
+            if (!stillWanted && link.id != null) socialLinkRepository.deleteSocialLink(link.id)
         }
     }
 

@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.main.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
@@ -32,8 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.spacedByWithFooter
@@ -46,7 +42,7 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.settings.components.ChevronIcon
 import com.mefy.platemate.presentation.features.main.settings.components.ProBadge
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -61,38 +57,12 @@ fun ProfileSettingsScreen(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    /*val verticalArrangement = remember {
-        object : Arrangement.Vertical {
-            override fun Density.arrange(
-                totalSize: Int,
-                sizes: IntArray,
-                outPositions: IntArray
-            ) {
-                var currentOffset = 0
-                // 8.dp'lik boşluğun piksel karşılığını alıyoruz
-                val bottomPaddingPx = 8.dp.roundToPx()
-
-                sizes.forEachIndexed { index, size ->
-                    if (index == sizes.lastIndex) {
-                        // Son elemanı en alttan 8.dp yukarıda konumlandırıyoruz
-                        outPositions[index] = totalSize - size - bottomPaddingPx
-                    } else {
-                        outPositions[index] = currentOffset
-                        currentOffset += size
-                    }
-                }
-            }
-        }
-    }*/
-
     // Stable, hoisted callbacks: rows/buttons skip recomposition while data is unchanged.
     val onChangePassword =
         remember(onAction) { { onAction(ProfileSettingsUiAction.ChangePasswordClicked) } }
     val onEditProfile =
         remember(onAction) { { onAction(ProfileSettingsUiAction.EditProfileClicked) } }
     val onPremium = remember(onAction) { { onAction(ProfileSettingsUiAction.PremiumClicked) } }
-    val onSocialLinks =
-        remember(onAction) { { onAction(ProfileSettingsUiAction.SocialLinksClicked) } }
     val onThemeColor =
         remember(onAction) { { onAction(ProfileSettingsUiAction.ThemeColorClicked) } }
     val onLanguage = remember(onAction) { { onAction(ProfileSettingsUiAction.LanguageClicked) } }
@@ -102,172 +72,161 @@ fun ProfileSettingsScreen(
         remember(onAction) { { onAction(ProfileSettingsUiAction.AdminPanelClicked) } }
     val onSignOut = remember(onAction) { { onAction(ProfileSettingsUiAction.SignOutClicked) } }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f),
-            contentPadding = PaddingValues(
-                horizontal = dims.spacing.s16,
-                vertical = dims.spacing.s8
-            ),
-            verticalArrangement = spacedByWithFooter()
-        ) {
-            item {
-                SectionLabel(text = stringResource(R.string.profile_settings_section_account))
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_change_password_title),
-                    leadingIcon = Icons.Filled.Lock,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Top,
-                    onClick = onChangePassword
-                )
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_settings_edit_profile),
-                    leadingIcon = Icons.Filled.Person,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Middle,
-                    onClick = onEditProfile
-                )
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_setting_social_links),
-                    leadingIcon = Icons.Filled.Share,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Middle,
-                    onClick = onSocialLinks
-                )
-            }
-            item {
-                PMRowItem(
-                    title = if (state.premiumActive) {
-                        stringResource(R.string.profile_setting_premium_info)
-                    } else {
-                        stringResource(R.string.profile_settings_premium_go)
-                    },
-                    leadingIcon = Icons.Filled.Star,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Bottom,
-                    onClick = onPremium,
-                    trailing = if (!state.premiumActive) {
-                        {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-                            ) {
-                                ProBadge()
-                                ChevronIcon()
-                            }
-                        }
-                    } else {
-                        null
-                    })
-            }
 
-            item {
-                SectionLabel(text = stringResource(R.string.profile_settings_section_app))
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_settings_theme_color),
-                    leadingIcon = Icons.Filled.Palette,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Top,
-                    onClick = onThemeColor,
-                    trailing = {
+    LazyColumn(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            horizontal = dims.spacing.s16,
+            vertical = dims.spacing.s8
+        ),
+        verticalArrangement = spacedByWithFooter()
+    ) {
+        item {
+            PMSectionLabel(text = stringResource(R.string.profile_settings_section_account))
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_settings_edit_profile),
+                leadingIcon = Icons.Filled.Person,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Top,
+                onClick = onEditProfile
+            )
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_change_password_title),
+                leadingIcon = Icons.Filled.Lock,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Middle,
+                onClick = onChangePassword
+            )
+        }
+        item {
+            PMRowItem(
+                title = if (state.premiumActive) {
+                    stringResource(R.string.profile_setting_premium_info)
+                } else {
+                    stringResource(R.string.profile_settings_premium_go)
+                },
+                leadingIcon = Icons.Filled.Star,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Bottom,
+                onClick = onPremium,
+                trailing = if (!state.premiumActive) {
+                    {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(dims.sizing.iconMd)
-                                    .clip(CircleShape)
-                                    .background(colors.primary)
-                            )
+                            ProBadge()
                             ChevronIcon()
                         }
-                    })
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_setting_language),
-                    leadingIcon = Icons.Filled.Language,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    trailingText = state.languageLabel.resolve(),
-                    position = PMRowPosition.Middle,
-                    onClick = onLanguage
-                )
-            }
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_setting_notification_preferences),
-                    leadingIcon = Icons.Filled.Notifications,
-                    leadingIconTint = colors.primary,
-                    leadingContainerColor = colors.primaryContainer,
-                    position = PMRowPosition.Bottom,
-                    onClick = onNotificationPrefs
-                )
-            }
-
-            if (state.isAdmin) {
-                item {
-                    SectionLabel(text = stringResource(R.string.admin_panel_title))
+                    }
+                } else {
+                    null
                 }
-                item {
-                    PMRowItem(
-                        title = stringResource(R.string.admin_moderation_title),
-                        leadingIcon = Icons.Filled.AdminPanelSettings,
-                        leadingIconTint = colors.primary,
-                        leadingContainerColor = colors.primaryContainer,
-                        position = PMRowPosition.Single,
-                        onClick = onAdminPanel
+            )
+        }
+
+        item {
+            PMSectionLabel(text = stringResource(R.string.profile_settings_section_app))
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_settings_theme_color),
+                leadingIcon = Icons.Filled.Palette,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Top,
+                onClick = onThemeColor,
+                trailing = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(dims.sizing.iconMd)
+                                .clip(CircleShape)
+                                .background(colors.primary)
+                        )
+                        ChevronIcon()
+                    }
+                })
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_setting_language),
+                leadingIcon = Icons.Filled.Language,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                trailingText = state.languageLabel.resolve(),
+                position = PMRowPosition.Middle,
+                onClick = onLanguage
+            )
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_setting_notification_preferences),
+                leadingIcon = Icons.Filled.Notifications,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Bottom,
+                onClick = onNotificationPrefs
+            )
+        }
+
+        if (state.isAdmin) {
+            item {
+                PMSectionLabel(text = stringResource(R.string.admin_panel_title))
+            }
+            item {
+                PMRowItem(
+                    title = stringResource(R.string.admin_moderation_title),
+                    leadingIcon = Icons.Filled.AdminPanelSettings,
+                    leadingIconTint = colors.primary,
+                    leadingContainerColor = colors.primaryContainer,
+                    position = PMRowPosition.Single,
+                    onClick = onAdminPanel
+                )
+            }
+        }
+
+        item {
+            PMButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dims.spacing.s8),
+                text = stringResource(R.string.profile_setting_sign_out),
+                onClick = onSignOut,
+                colors = ButtonColors(
+                    containerColor = colors.error.copy(alpha = .40f), //.errorContainer,
+                    contentColor = colors.error,
+                    disabledContentColor = colors.disabled,
+                    disabledContainerColor = colors.disabled
+                ),
+                leadingIcon = {
+                    PMIcon(
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        tint = colors.error
                     )
                 }
-            }
+            )
 
-            item {
-                PMButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = dims.spacing.s8),
-                    text = stringResource(R.string.profile_setting_sign_out),
-                    onClick = onSignOut,
-                    colors = ButtonColors(
-                        containerColor = colors.error.copy(alpha = .40f), //.errorContainer,
-                        contentColor = colors.error,
-                        disabledContentColor = colors.disabled,
-                        disabledContainerColor = colors.disabled
-                    ),
-                    leadingIcon = {
-                        PMIcon(
-                            imageVector = Icons.AutoMirrored.Filled.Logout, tint = colors.error
-                        )
-                    })
-
-                PMText(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = stringResource(R.string.profile_settings_version, BuildConfig.VERSION_NAME),
-                    style = PMTextStyle.Note,
-                    color = colors.textLabel,
-                    textAlign = TextAlign.Center
-                )
-            }
+            PMText(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = stringResource(R.string.profile_settings_version, BuildConfig.VERSION_NAME),
+                style = PMTextStyle.Note,
+                color = colors.textLabel,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

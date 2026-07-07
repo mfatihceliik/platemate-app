@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.padding
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions

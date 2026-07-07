@@ -2,7 +2,7 @@ package com.mefy.platemate.presentation.features.main.search
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 
 @Immutable
 data class SearchUiState(

@@ -8,11 +8,12 @@ import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.common.text.CityNameResolver
-import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiType
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
+import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import javax.inject.Inject
@@ -132,7 +133,7 @@ class DefaultDiscoverUiMapper @Inject constructor(
             searchCount = plate.weeklySearchCount,
             isBookmarked = isBookmarked,
             cityCode = formattedPlateCode.take(2),
-            ratingText = String.format("%.1f", plate.ratingAverage)
+            ratingText = NumberFormatter.formatRating(plate.ratingAverage)
         )
     }
 }

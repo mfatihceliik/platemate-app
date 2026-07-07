@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCategoryCard
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCategoryUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverCategoryUi
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlin.collections.chunked

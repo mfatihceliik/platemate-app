@@ -12,7 +12,16 @@ import com.mefy.platemate.data.remote.dto.admin.PlateAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
 import com.mefy.platemate.data.remote.dto.admin.PlateReportTypeAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateReportTypeRequest
+import com.mefy.platemate.data.remote.dto.admin.AccentColorAdminDto
+import com.mefy.platemate.data.remote.dto.admin.AccentColorRequest
+import com.mefy.platemate.data.remote.dto.admin.ThemeGridSizeRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdateAccentColorActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.PlateReviewAdminDto
+import com.mefy.platemate.data.remote.dto.admin.PremiumFeatureAdminDto
+import com.mefy.platemate.data.remote.dto.admin.PremiumFeatureRequest
+import com.mefy.platemate.data.remote.dto.admin.PremiumPlanAdminDto
+import com.mefy.platemate.data.remote.dto.admin.PremiumPlanRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdatePremiumActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.SocialPlatformAdminDto
 import com.mefy.platemate.data.remote.dto.admin.SocialPlatformRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateAppSettingsRequest
@@ -135,4 +144,61 @@ interface AdminApiService {
         @Path("id") id: Long,
         @Body request: UpdateSocialPlatformActiveRequest
     ): ResultResponse
+
+    // --- Premium plans (edit-only) ---
+    @GET("api/admin/premium/plans")
+    suspend fun getPremiumPlans(): DataResultResponse<List<PremiumPlanAdminDto>>
+
+    @PUT("api/admin/premium/plans/{id}")
+    suspend fun updatePremiumPlan(
+        @Path("id") id: Long,
+        @Body request: PremiumPlanRequest
+    ): DataResultResponse<PremiumPlanAdminDto>
+
+    @PATCH("api/admin/premium/plans/{id}/active")
+    suspend fun setPremiumPlanActive(
+        @Path("id") id: Long,
+        @Body request: UpdatePremiumActiveRequest
+    ): ResultResponse
+
+    // --- Premium features (CRUD) ---
+    @GET("api/admin/premium/features")
+    suspend fun getPremiumFeatures(): DataResultResponse<List<PremiumFeatureAdminDto>>
+
+    @POST("api/admin/premium/features")
+    suspend fun addPremiumFeature(@Body request: PremiumFeatureRequest): DataResultResponse<PremiumFeatureAdminDto>
+
+    @PUT("api/admin/premium/features/{id}")
+    suspend fun updatePremiumFeature(
+        @Path("id") id: Long,
+        @Body request: PremiumFeatureRequest
+    ): DataResultResponse<PremiumFeatureAdminDto>
+
+    @PATCH("api/admin/premium/features/{id}/active")
+    suspend fun setPremiumFeatureActive(
+        @Path("id") id: Long,
+        @Body request: UpdatePremiumActiveRequest
+    ): ResultResponse
+
+    // --- Theme accent colors (CRUD) + grid size ---
+    @GET("api/admin/theme/colors")
+    suspend fun getAccentColors(): DataResultResponse<List<AccentColorAdminDto>>
+
+    @POST("api/admin/theme/colors")
+    suspend fun addAccentColor(@Body request: AccentColorRequest): DataResultResponse<AccentColorAdminDto>
+
+    @PUT("api/admin/theme/colors/{id}")
+    suspend fun updateAccentColor(
+        @Path("id") id: Long,
+        @Body request: AccentColorRequest
+    ): DataResultResponse<AccentColorAdminDto>
+
+    @PATCH("api/admin/theme/colors/{id}/active")
+    suspend fun setAccentColorActive(
+        @Path("id") id: Long,
+        @Body request: UpdateAccentColorActiveRequest
+    ): ResultResponse
+
+    @PUT("api/admin/theme/grid-size")
+    suspend fun updateThemeGridSize(@Body request: ThemeGridSizeRequest): ResultResponse
 }

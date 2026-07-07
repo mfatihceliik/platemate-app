@@ -6,7 +6,13 @@ import com.mefy.platemate.domain.model.admin.AppSettings
 import com.mefy.platemate.domain.model.admin.CommentReport
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PendingComment
+import com.mefy.platemate.domain.model.admin.AccentColorAdmin
+import com.mefy.platemate.domain.model.admin.AccentColorInput
 import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
+import com.mefy.platemate.domain.model.admin.PremiumFeatureAdmin
+import com.mefy.platemate.domain.model.admin.PremiumFeatureInput
+import com.mefy.platemate.domain.model.admin.PremiumPlanAdmin
+import com.mefy.platemate.domain.model.admin.PremiumPlanInput
 import com.mefy.platemate.domain.model.admin.ReportTypeAdmin
 import com.mefy.platemate.domain.model.admin.ReportTypeInput
 import com.mefy.platemate.domain.model.admin.SocialPlatformAdmin
@@ -45,4 +51,19 @@ interface AdminRepository {
     suspend fun addSocialPlatform(input: SocialPlatformInput): AppResult<Unit>
     suspend fun updateSocialPlatform(id: Long, input: SocialPlatformInput): AppResult<Unit>
     suspend fun setSocialPlatformActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getPremiumPlansAdmin(): AppResult<List<PremiumPlanAdmin>>
+    suspend fun updatePremiumPlan(id: Long, input: PremiumPlanInput): AppResult<Unit>
+    suspend fun setPremiumPlanActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getPremiumFeaturesAdmin(): AppResult<List<PremiumFeatureAdmin>>
+    suspend fun addPremiumFeature(input: PremiumFeatureInput): AppResult<Unit>
+    suspend fun updatePremiumFeature(id: Long, input: PremiumFeatureInput): AppResult<Unit>
+    suspend fun setPremiumFeatureActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getAccentColorsAdmin(): AppResult<List<AccentColorAdmin>>
+    suspend fun addAccentColor(input: AccentColorInput): AppResult<Unit>
+    suspend fun updateAccentColor(id: Long, input: AccentColorInput): AppResult<Unit>
+    suspend fun setAccentColorActive(id: Long, active: Boolean): AppResult<Unit>
+    suspend fun updateThemeGridSize(gridSize: Int): AppResult<Unit>
 }

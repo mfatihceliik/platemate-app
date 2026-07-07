@@ -22,21 +22,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-import androidx.compose.material3.Icon
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-
 
 @Composable
 internal fun ChatDetailUserCard(
@@ -62,7 +57,6 @@ internal fun ChatDetailUserCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
-        // Avatar + isim: dokununca kullanıcının profiline gider.
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(dims.radius.r12))
@@ -94,7 +88,9 @@ internal fun ChatDetailUserCard(
             )
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        ) {
             QuickAction(
                 label = stringResource(R.string.chatdetail_action_message),
                 icon = Icons.Outlined.ChatBubbleOutline,
@@ -117,40 +113,6 @@ internal fun ChatDetailUserCard(
                 onClick = onBlockClick
             )
         }
-    }
-}
-
-@Composable
-private fun QuickAction(
-    label: String,
-    icon: ImageVector,
-    bg: Color,
-    tint: Color,
-    onClick: () -> Unit
-) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.avatarIconInner)
-                .clip(RoundedCornerShape(dims.radius.r12))
-                .background(bg)
-                .debouncedClickable(onClick = onClick),
-            contentAlignment = Alignment.Center
-        ) {
-            PMIcon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = tint,
-                size = dims.sizing.iconLg
-            )
-        }
-        PMText(text = label, style = PMTextStyle.Note, color = colors.textLabel)
     }
 }
 

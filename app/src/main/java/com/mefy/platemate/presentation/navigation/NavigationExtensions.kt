@@ -133,12 +133,6 @@ fun NavHostController.navigateToProfileLanguage() {
     }
 }
 
-fun NavHostController.navigateToProfileSocialLinks() {
-    navigate(ProfileSocialLinksDestination) {
-        launchSingleTop = true
-    }
-}
-
 fun NavHostController.navigateToUserProfile(userId: String) {
     navigate(UserProfileDestination(userId = userId)) {
         launchSingleTop = true

@@ -12,8 +12,7 @@ sealed interface EditProfileUiAction {
     data class DisplayNameChanged(val value: String) : EditProfileUiAction
     data class UsernameChanged(val value: String) : EditProfileUiAction
     data class BioChanged(val value: String) : EditProfileUiAction
-    data class SocialLinkChanged(
-        val platformId: String,
-        val value: String
-    ) : EditProfileUiAction
+    data class SocialUrlInputChanged(val value: String) : EditProfileUiAction
+    data object AddSocialLinkClicked : EditProfileUiAction
+    data class RemoveSocialLinkClicked(val platformCode: String) : EditProfileUiAction
 }

@@ -24,8 +24,9 @@ import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
+import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -88,7 +89,7 @@ internal fun UserProfileReviewCard(
                 )
                 PMText(
                     text = if (review.rating % 1 == 0f) review.rating.toInt().toString()
-                           else String.format("%.1f", review.rating),
+                           else NumberFormatter.formatRating(review.rating.toDouble()),
                     style = PMTextStyle.Body,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary

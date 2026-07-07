@@ -16,13 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMCommentField
-import com.mefy.platemate.presentation.components.PMTagChip
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUiState.Companion.REVIEW_COMMENT_MAX_LENGTH
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.OverallRatingSection
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.PlateInfoCard
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.ReviewResultPopup
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -48,7 +48,7 @@ fun ReviewScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.review_section_overall)
             )
         }
@@ -62,7 +62,7 @@ fun ReviewScreen(
 
         if (!state.isEditMode) {
             item {
-                SectionLabel(
+                PMSectionLabel(
                     text = stringResource(R.string.review_section_tags)
                 )
             }
@@ -73,17 +73,18 @@ fun ReviewScreen(
                     verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
                 ) {
                     state.tags.forEach { tag ->
-                        PMTagChip(
-                            text = tag.label,
-                            isSelected = tag.isSelected,
-                            onClick = { onAction(ReviewUiAction.TagToggled(tag.code)) })
+                        PMChip(
+                            label = tag.label,
+                            selected = tag.isSelected,
+                            onClick = { onAction(ReviewUiAction.TagToggled(tag.code)) }
+                        )
                     }
                 }
             }
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.review_section_experience)
             )
         }

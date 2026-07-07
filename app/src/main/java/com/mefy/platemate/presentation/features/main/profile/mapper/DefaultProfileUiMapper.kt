@@ -9,19 +9,20 @@ import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivityUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackBg
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackTint
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.toUiModel
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform as SocialPlatformUiModel
+import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
+import com.mefy.platemate.presentation.features.uimodel.toUiModel
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatform as SocialPlatformUiModel
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -121,7 +122,7 @@ class DefaultProfileUiMapper @Inject constructor(
             removedByLegalRequest = removedByLegalRequest
         )
 
-    private fun formatRating(value: Double): String = String.format(Locale.US, "%.1f", value)
+    private fun formatRating(value: Double): String = NumberFormatter.formatRating(value)
 
     private fun formatIsoDate(rawIsoDate: String?): String {
         val value = rawIsoDate?.trim().orEmpty()

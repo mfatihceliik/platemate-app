@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.ReportReason
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions

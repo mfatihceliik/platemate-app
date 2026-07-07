@@ -2,9 +2,9 @@ package com.mefy.platemate.presentation.features.main.profile.userprofile
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.ReportReason
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
+import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 
 @Immutable
 data class UserProfileUiState(

@@ -93,7 +93,7 @@ class SocialPlatformsViewModel @Inject constructor(
 private fun SocialPlatformAdmin.toListItem(): SocialPlatformListItem = SocialPlatformListItem(
     id = id,
     code = code,
-    label = label,
+    labels = labels,
     sortOrder = sortOrder,
     active = active
 )

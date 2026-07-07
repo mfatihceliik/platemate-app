@@ -1,32 +1,23 @@
 package com.mefy.platemate.presentation.features.main.settings.notifications
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMRowPosition
 import com.mefy.platemate.presentation.components.PMSwitch
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -39,183 +30,144 @@ fun NotificationPreferencesScreen(
 ) {
 
     val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.colorScheme
 
     val onSave = remember(onAction) { { onAction(NotificationPreferencesUiAction.SaveClicked) } }
+    val onMessagingChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.MessagingChanged(v)) } }
+    val onOnlineVisibilityChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.OnlineVisibilityChanged(v)) } }
+    val onMessageNotificationsChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.MessageNotificationsChanged(v)) } }
+    val onFriendNotificationsChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.FriendNotificationsChanged(v)) } }
+    val onNewFollowerChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.NewFollowerChanged(v)) } }
+    val onPlateReviewChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.PlateReviewChanged(v)) } }
+    val onReviewReplyChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.ReviewReplyChanged(v)) } }
 
-    val onMessagingChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.MessagingChanged(v))
-        }
-    }
+    LazyColumn(
+        modifier = modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            horizontal = dims.spacing.s16, vertical = dims.spacing.s8
+        ),
+        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
 
-    val onOnlineVisibilityChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.OnlineVisibilityChanged(v))
-        }
-    }
-
-    val onMessageNotificationsChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.MessageNotificationsChanged(v))
-        }
-    }
-
-    val onFriendNotificationsChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.FriendNotificationsChanged(v))
-        }
-    }
-
-    val onNewFollowerChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.NewFollowerChanged(v))
-        }
-    }
-
-    val onPlateReviewChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.PlateReviewChanged(v))
-        }
-    }
-
-    val onReviewReplyChanged = remember(onAction) {
-        { v: Boolean ->
-            onAction(NotificationPreferencesUiAction.ReviewReplyChanged(v))
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = modifier.weight(1f),
-            contentPadding = PaddingValues(
-                horizontal = dims.spacing.s16, vertical = dims.spacing.s8
-            ),
-            verticalArrangement = spacedByWithFooter()
+        item {
+            PMSectionLabel(
+                text = stringResource(R.string.profile_notif_section_messaging)
+            )
+        }
 
-        ) {
-            item {
-                SectionLabel(
-                    text = stringResource(R.string.profile_notif_section_messaging)
-                )
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_messaging_open),
+                subtitle = stringResource(R.string.profile_notif_messaging_open_desc),
+                position = PMRowPosition.Top,
+                trailing = {
+                    PMSwitch(
+                        checked = state.messagingEnabled, onCheckedChange = onMessagingChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_messaging_open),
-                    subtitle = stringResource(R.string.profile_notif_messaging_open_desc),
-                    position = PMRowPosition.Top,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.messagingEnabled, onCheckedChange = onMessagingChanged
-                        )
-                    })
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_online_visibility),
+                subtitle = stringResource(R.string.profile_notif_online_visibility_desc),
+                position = PMRowPosition.Middle,
+                trailing = {
+                    PMSwitch(
+                        checked = state.onlineVisibilityEnabled,
+                        onCheckedChange = onOnlineVisibilityChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_online_visibility),
-                    subtitle = stringResource(R.string.profile_notif_online_visibility_desc),
-                    position = PMRowPosition.Middle,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.onlineVisibilityEnabled,
-                            onCheckedChange = onOnlineVisibilityChanged
-                        )
-                    })
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_message_alerts),
+                subtitle = stringResource(R.string.profile_notif_message_alerts_desc),
+                position = PMRowPosition.Bottom,
+                trailing = {
+                    PMSwitch(
+                        checked = state.messageNotificationsEnabled,
+                        onCheckedChange = onMessageNotificationsChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_message_alerts),
-                    subtitle = stringResource(R.string.profile_notif_message_alerts_desc),
-                    position = PMRowPosition.Bottom,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.messageNotificationsEnabled,
-                            onCheckedChange = onMessageNotificationsChanged
-                        )
-                    })
-            }
+        item {
+            PMSectionLabel(
+                text = stringResource(R.string.profile_notif_section_social)
+            )
+        }
 
-            item {
-                SectionLabel(
-                    text = stringResource(R.string.profile_notif_section_social)
-                )
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_friend_add),
+                subtitle = stringResource(R.string.profile_notif_friend_add_desc),
+                position = PMRowPosition.Top,
+                trailing = {
+                    PMSwitch(
+                        checked = state.friendNotificationsEnabled,
+                        onCheckedChange = onFriendNotificationsChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_friend_add),
-                    subtitle = stringResource(R.string.profile_notif_friend_add_desc),
-                    position = PMRowPosition.Top,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.friendNotificationsEnabled,
-                            onCheckedChange = onFriendNotificationsChanged
-                        )
-                    })
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_new_follower),
+                subtitle = stringResource(R.string.profile_notif_new_follower_desc),
+                position = PMRowPosition.Bottom,
+                trailing = {
+                    PMSwitch(
+                        checked = state.newFollowerEnabled,
+                        onCheckedChange = onNewFollowerChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_new_follower),
-                    subtitle = stringResource(R.string.profile_notif_new_follower_desc),
-                    position = PMRowPosition.Bottom,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.newFollowerEnabled,
-                            onCheckedChange = onNewFollowerChanged
-                        )
-                    })
-            }
+        item {
+            PMSectionLabel(
+                text = stringResource(R.string.profile_notif_section_review)
+            )
+        }
 
-            item {
-                SectionLabel(
-                    text = stringResource(R.string.profile_notif_section_review)
-                )
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_plate_review),
+                subtitle = stringResource(R.string.profile_notif_plate_review_desc),
+                position = PMRowPosition.Top,
+                trailing = {
+                    PMSwitch(
+                        checked = state.plateReviewEnabled,
+                        onCheckedChange = onPlateReviewChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_plate_review),
-                    subtitle = stringResource(R.string.profile_notif_plate_review_desc),
-                    position = PMRowPosition.Top,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.plateReviewEnabled,
-                            onCheckedChange = onPlateReviewChanged
-                        )
-                    })
-            }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_review_reply),
+                subtitle = stringResource(R.string.profile_notif_review_reply_desc),
+                position = PMRowPosition.Bottom,
+                trailing = {
+                    PMSwitch(
+                        checked = state.reviewReplyEnabled,
+                        onCheckedChange = onReviewReplyChanged
+                    )
+                })
+        }
 
-            item {
-                PMRowItem(
-                    title = stringResource(R.string.profile_notif_review_reply),
-                    subtitle = stringResource(R.string.profile_notif_review_reply_desc),
-                    position = PMRowPosition.Bottom,
-                    trailing = {
-                        PMSwitch(
-                            checked = state.reviewReplyEnabled,
-                            onCheckedChange = onReviewReplyChanged
-                        )
-                    })
-            }
-
-            item {
-                PMButton(
-                    text = stringResource(R.string.common_save),
-                    onClick = onSave,
-                    enabled = state.hasChanges,
-                    loading = state.isSaving,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
-                )
-            }
+        item {
+            PMButton(
+                text = stringResource(R.string.common_save),
+                onClick = onSave,
+                enabled = state.hasChanges,
+                loading = state.isSaving,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dims.spacing.s16)
+            )
         }
     }
 }

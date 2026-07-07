@@ -1,7 +1,6 @@
 package com.mefy.platemate.presentation.features.main.settings.themecolor.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,21 +35,13 @@ internal fun AppearanceTab(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    // Smooth toggle: animate the selected pill's surface, content tint and lift.
-    val containerColor by animateColorAsState(
-        targetValue = if (isSelected) colors.surface else Color.Transparent,
-        label = "appearanceTabContainer"
-    )
-    val contentColor by animateColorAsState(
-        targetValue = if (isSelected) colors.primary else colors.textSecondary,
-        label = "appearanceTabContent"
-    )
-    val elevation by animateDpAsState(
-        targetValue = if (isSelected) dims.stroke.st2 else dims.spacing.s0,
-        label = "appearanceTabElevation"
-    )
+    // Instant color change instead of animation to prevent flickering when theme changes globally.
+    val containerColor = if (isSelected) colors.surface else Color.Transparent
+    val contentColor = if (isSelected) colors.primary else colors.textSecondary
+    val elevation = if (isSelected) dims.stroke.st2 else dims.spacing.s0
 
     val shape = RoundedCornerShape(dims.radius.r10)
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
@@ -58,7 +49,11 @@ internal fun AppearanceTab(
             .shadow(elevation = elevation, shape = shape, clip = false)
             .clip(shape)
             .background(containerColor)
-            .debouncedClickable(onClick = onClick),
+            .debouncedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

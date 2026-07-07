@@ -17,8 +17,6 @@ import com.mefy.platemate.presentation.features.main.settings.notifications.Noti
 import com.mefy.platemate.presentation.features.main.settings.notifications.NotificationPreferencesViewModel
 import com.mefy.platemate.presentation.features.main.settings.premium.PremiumInfoRoute
 import com.mefy.platemate.presentation.features.main.settings.premium.PremiumInfoViewModel
-import com.mefy.platemate.presentation.features.main.settings.sociallinks.SocialLinksRoute
-import com.mefy.platemate.presentation.features.main.settings.sociallinks.SocialLinksViewModel
 import com.mefy.platemate.presentation.features.main.settings.themecolor.ThemeColorRoute
 import com.mefy.platemate.presentation.features.main.settings.themecolor.ThemeColorViewModel
 
@@ -38,15 +36,7 @@ internal fun NavGraphBuilder.settingsGraph(
                 onNavigateToThemeColor = { navController.navigateToProfileThemeColor() },
                 onNavigateToLanguage = { navController.navigateToProfileLanguage() },
                 onNavigateToNotificationPreferences = { navController.navigateToProfileNotificationPreferences() },
-                onNavigateToSocialLinks = { navController.navigateToProfileSocialLinks() },
                 onNavigateToAdmin = { navController.navigate(AdminHubDestination) },
-            )
-        }
-
-        composable<ProfileSocialLinksDestination> {
-            SocialLinksRoute(
-                viewModel = hiltViewModel<SocialLinksViewModel>(),
-                onNavigateBack = { navController.popBackStack() },
             )
         }
 

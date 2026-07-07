@@ -20,19 +20,6 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Multi-line, growable text field with a live character counter and a
- * "max reached" warning. The single source of truth for comment/bio style
- * inputs across the app (review comment, profile bio, …).
- *
- * The counter turns red and the warning appears once [value] hits [maxLength].
- * Enforcing the hard limit (truncating input) is the caller/ViewModel's job —
- * this composable only reflects state, matching the review comment use case.
- *
- * @param maxLength character limit shown in the counter (e.g. 240 review, 160 bio).
- * @param placeholder hint shown when empty.
- * @param height fixed field height; the inner field fills it and wraps text.
- */
 @Composable
 fun PMCommentField(
     value: String,

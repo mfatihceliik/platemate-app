@@ -33,7 +33,7 @@ import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.platedetail.ReviewReportUiState
-import com.mefy.platemate.presentation.features.main.platedetail.model.CommentReportReason
+import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 

@@ -23,6 +23,9 @@ fun AdminHubRoute(
     onHiddenPlates: () -> Unit,
     onReportTypes: () -> Unit,
     onSocialPlatforms: () -> Unit,
+    onPremiumPlans: () -> Unit,
+    onPremiumFeatures: () -> Unit,
+    onThemeColors: () -> Unit,
     onSettings: () -> Unit,
 ) {
     PMBaseScreen(
@@ -38,6 +41,9 @@ fun AdminHubRoute(
             onHiddenPlates = onHiddenPlates,
             onReportTypes = onReportTypes,
             onSocialPlatforms = onSocialPlatforms,
+            onPremiumPlans = onPremiumPlans,
+            onPremiumFeatures = onPremiumFeatures,
+            onThemeColors = onThemeColors,
             onSettings = onSettings,
             contentPadding = contentPadding
         )

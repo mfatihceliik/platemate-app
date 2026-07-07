@@ -21,6 +21,10 @@
         <item quantity="one">%1$d unread message</item>
         <item quantity="other">%1$d unread messages</item>
     </plurals>
+    <string name="conversation_input_placeholder">Write a message…</string>
+    <string name="conversation_date_today">Today</string>
+    <string name="conversation_date_yesterday">Yesterday</string>
+    <string name="conversation_date_last_weekday">Last %1$s</string>
     <string name="chatdetail_block">Block user</string>
     <string name="chatdetail_unblock">Unblock user</string>
     <string name="user_profile_report_submitted">Report submitted.</string>
@@ -90,6 +94,37 @@
     <string name="admin_social_platform_field_bg_color">Background color (#RRGGBB)</string>
     <string name="admin_social_platform_field_tint_color">Icon tint color (#RRGGBB)</string>
     <string name="admin_social_platform_field_sort">Sort order</string>
+    <string name="admin_premium_plans_title">Premium Plans</string>
+    <string name="admin_premium_plans_empty">No premium plans.</string>
+    <string name="admin_premium_plan_edit_title">Edit Plan</string>
+    <string name="admin_premium_plan_saved">Plan saved.</string>
+    <string name="admin_premium_plan_field_amount">Price</string>
+    <string name="admin_premium_plan_field_currency">Currency (e.g. TRY)</string>
+    <string name="admin_premium_plan_field_discount">Discount %% (optional)</string>
+    <string name="admin_premium_plan_field_sort">Sort order</string>
+    <string name="admin_premium_features_title">Premium Features</string>
+    <string name="admin_premium_features_empty">No premium features.</string>
+    <string name="admin_premium_feature_add">Add</string>
+    <string name="admin_premium_feature_add_title">New Feature</string>
+    <string name="admin_premium_feature_edit_title">Edit Feature</string>
+    <string name="admin_premium_feature_saved">Feature saved.</string>
+    <string name="admin_premium_feature_field_icon">Icon key (e.g. star, bolt, shield)</string>
+    <string name="admin_premium_feature_field_title_tr">Title (Turkish)</string>
+    <string name="admin_premium_feature_field_title_en">Title (English)</string>
+    <string name="admin_premium_feature_field_subtitle_tr">Subtitle (Turkish, optional)</string>
+    <string name="admin_premium_feature_field_subtitle_en">Subtitle (English, optional)</string>
+    <string name="admin_premium_feature_field_sort">Sort order</string>
+    <string name="admin_theme_colors_title">Theme Colors</string>
+    <string name="admin_theme_colors">Accent colors</string>
+    <string name="admin_theme_colors_empty">No accent colors.</string>
+    <string name="admin_theme_color_add">Add</string>
+    <string name="admin_theme_color_add_title">New Color</string>
+    <string name="admin_theme_color_edit_title">Edit Color</string>
+    <string name="admin_theme_color_saved">Color saved.</string>
+    <string name="admin_theme_color_field_hex">Hex (#RRGGBB)</string>
+    <string name="admin_theme_color_field_sort">Sort order</string>
+    <string name="admin_theme_grid_size">Grid size (columns, 1–8)</string>
+    <string name="admin_theme_grid_size_saved">Grid size saved.</string>
     <string name="common_error_title">Error</string>
     <string name="common_error_state_title">Something went wrong</string>
     <string name="common_retry">Retry</string>
@@ -318,6 +353,8 @@
     <string name="profile_theme_preview">PREVIEW</string>
     <string name="profile_theme_accent_color">ACCENT COLOR</string>
     <string name="profile_theme_appearance">APPEARANCE</string>
+    <string name="profile_theme_save_changes">Save changes</string>
+    <string name="profile_theme_saved">Theme saved</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
     <string name="profile_theme_system">System</string>
@@ -331,6 +368,9 @@
     <string name="profile_premium_monthly_price">₺49/mo</string>
     <string name="profile_premium_yearly_price">₺399/yr</string>
     <string name="profile_premium_discount">32% OFF</string>
+    <string name="premium_period_monthly_suffix">/mo</string>
+    <string name="premium_period_yearly_suffix">/yr</string>
+    <string name="premium_discount_format">%1$d%% OFF</string>
     <string name="profile_premium_upgrade">Upgrade to Pro</string>
     <string name="profile_premium_feature_1">Unlimited plate reviews</string>
     <string name="profile_premium_feature_2">Ad-free experience</string>
@@ -428,6 +468,10 @@
     <string name="edit_profile_field_social">SOCIAL MEDIA</string>
     <string name="edit_profile_username_hint">platemate.app/@%1$s</string>
     <string name="edit_profile_social_add_hint">Add %1$s…</string>
+    <string name="edit_profile_social_url_placeholder">https://instagram.com/username</string>
+    <string name="edit_profile_social_add">Add</string>
+    <string name="edit_profile_social_unsupported">Unsupported platform</string>
+    <string name="edit_profile_social_added">ADDED</string>
 
     <!-- Messages -->
     <string name="messages_empty_title">No messages yet</string>

@@ -56,8 +56,8 @@ internal fun SocialPlatformsScreen(
 private val socialPlatformsPreviewState = SocialPlatformsUiState(
     isLoading = false,
     items = listOf(
-        SocialPlatformListItem(id = 1L, code = "INSTAGRAM", label = "Instagram", sortOrder = 1, active = true),
-        SocialPlatformListItem(id = 2L, code = "SNAPCHAT", label = "Snapchat", sortOrder = 6, active = false)
+        SocialPlatformListItem(id = 1L, code = "INSTAGRAM", labels = mapOf("tr" to "Instagram", "en" to "Instagram"), sortOrder = 1, active = true),
+        SocialPlatformListItem(id = 2L, code = "SNAPCHAT", labels = mapOf("tr" to "Snapchat", "en" to "Snapchat"), sortOrder = 6, active = false)
     )
 )
 

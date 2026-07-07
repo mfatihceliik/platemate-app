@@ -51,9 +51,7 @@ internal fun ConversationEmptyState(
         ) {
             PMIcon(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
-                contentDescription = null,
-                tint = colors.textLabel,
-                modifier = Modifier.size(dims.sizing.iconXl)
+                size = dims.sizing.iconXl,
             )
         }
 

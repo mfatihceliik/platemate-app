@@ -1,59 +1,30 @@
-﻿package com.mefy.platemate.presentation.features.main.settings.premium
+package com.mefy.platemate.presentation.features.main.settings.premium
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.common.state.ScreenStatus
-import com.mefy.platemate.presentation.components.PMBaseScreen
-import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.features.main.settings.premium.components.PricingSection
+import com.mefy.platemate.presentation.features.main.settings.premium.components.HeroSection
+import com.mefy.platemate.domain.model.premium.PremiumFeature
+import com.mefy.platemate.domain.model.premium.PremiumPeriod
+import com.mefy.platemate.domain.model.premium.PremiumPlan
+import com.mefy.platemate.presentation.common.spacedByWithFooter
+import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-
-private val AmberLight = Color(0xFFFEF3C7)
-private val LightCyan = Color(0xFFA5F3FC)
-
-private val PremiumFeatureRes = listOf(
-    R.string.profile_premium_feature_1,
-    R.string.profile_premium_feature_2,
-    R.string.profile_premium_feature_3,
-    R.string.profile_premium_feature_4,
-    R.string.profile_premium_feature_5,
-    R.string.profile_premium_feature_6
-)
 
 @Composable
 fun PremiumInfoScreen(
@@ -61,145 +32,56 @@ fun PremiumInfoScreen(
     state: PremiumInfoUiState,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = MaterialTheme.colorScheme
     val dims = MaterialTheme.pmDimensions
 
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
             .padding(innerPadding)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            .fillMaxSize(),
+        contentPadding = PaddingValues(dims.spacing.s16),
+        verticalArrangement =spacedByWithFooter(dims.spacing.s0)
     ) {
-        // Hero section
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarHero)
-                    .clip(RoundedCornerShape(dims.radius.r18))
-                    .background(AmberLight),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = null,
-                    tint = colors.star,
-                    modifier = Modifier.size(dims.sizing.avatarIconInner)
-                )
-            }
-            PMText(
-                text = stringResource(R.string.profile_premium_headline),
-                style = PMTextStyle.Headline,
-                fontWeight = FontWeight.ExtraBold,
-                color = colors.textPrimary
-            )
-            PMText(
-                text = stringResource(R.string.profile_premium_subtitle),
-                style = PMTextStyle.Note,
-                color = colors.textSecondary,
-                textAlign = TextAlign.Center
+        item {
+            HeroSection(modifier = Modifier.padding(bottom = dims.spacing.s16))
+        }
+
+        item {
+            PricingSection(
+                monthly = state.plans.firstOrNull { it.period == PremiumPeriod.MONTHLY },
+                yearly = state.plans.firstOrNull { it.period == PremiumPeriod.YEARLY },
+                modifier = Modifier.padding(bottom = dims.spacing.s16)
             )
         }
 
-        // Feature list
-        Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)) {
-            PremiumFeatureRes.forEach { featureRes ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(dims.sizing.iconXl)
-                            .clip(CircleShape)
-                            .background(AmberLight),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            tint = colors.star,
-                            modifier = Modifier.size(dims.sizing.iconLg)
-                        )
-                    }
-                    PMText(
-                        text = stringResource(featureRes),
-                        style = PMTextStyle.Body,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textSecondary
-                    )
-                }
-            }
+        items(
+            items = state.features,
+            key = { it.id }
+        ) { feature ->
+            PMRowItem(
+                title = feature.title,
+                subtitle = feature.subtitle,
+                leadingIcon = premiumFeatureIcon(feature.iconKey),
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+            )
         }
 
-        // Pricing cards
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
-        ) {
-            // Monthly card
-            Column(
+        item {
+            PMButton(
+                text = stringResource(R.string.profile_premium_upgrade),
+                onClick = {},
+                leadingIcon = {
+                    PMIcon(
+                        imageVector = Icons.Filled.Star,
+                        tint = Color.White,
+                        size = dims.sizing.iconMd,
+                    )
+                },
                 modifier = Modifier
-                    .weight(1f)
-                    .background(colors.surface, MaterialTheme.shapes.large)
-                    .border(dims.stroke.st1, colors.cardBorder, MaterialTheme.shapes.large)
-                    .padding(dims.spacing.s12),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-            ) {
-                PMText(
-                    text = stringResource(R.string.profile_premium_monthly),
-                    style = PMTextStyle.Note,
-                    fontWeight = FontWeight.SemiBold,
-                    color = colors.textSecondary
-                )
-                PMText(
-                    text = stringResource(R.string.profile_premium_monthly_price),
-                    style = PMTextStyle.Headline,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = colors.textPrimary
-                )
-            }
-
-            // Yearly card (highlighted)
-            Box(modifier = Modifier.weight(1f)) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colors.primaryDark, MaterialTheme.shapes.large)
-                        .padding(dims.spacing.s12),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-                ) {
-                    PMText(
-                        text = stringResource(R.string.profile_premium_yearly),
-                        style = PMTextStyle.Note,
-                        fontWeight = FontWeight.SemiBold,
-                        color = LightCyan
-                    )
-                    PMText(
-                        text = stringResource(R.string.profile_premium_yearly_price),
-                        style = PMTextStyle.Headline,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
-                    )
-                }
-                PMText(
-                    text = stringResource(R.string.profile_premium_discount),
-                    style = PMTextStyle.Note,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(end = dims.spacing.s12)
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(colors.star)
-                        .padding(horizontal = dims.spacing.s8, vertical = dims.spacing.s4)
-                )
-            }
+                    .fillMaxSize()
+                    .padding(vertical = dims.spacing.s16)
+            )
         }
     }
 }
@@ -209,7 +91,18 @@ fun PremiumInfoScreen(
 private fun PremiumPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         PremiumInfoScreen(
-            state = PremiumInfoUiState(isLoading = false),
+            state = PremiumInfoUiState(
+                isLoading = false,
+                plans = listOf(
+                    PremiumPlan(1, PremiumPeriod.MONTHLY, 49.0, "TRY", null),
+                    PremiumPlan(2, PremiumPeriod.YEARLY, 399.0, "TRY", 32)
+                ),
+                features = listOf(
+                    PremiumFeature(1, "reviews", "Sınırsız plaka değerlendirmesi", null),
+                    PremiumFeature(2, "adfree", "Reklamsız deneyim", "Hiç reklam görme"),
+                    PremiumFeature(3, "stats", "Detaylı profil istatistikleri", null)
+                )
+            )
         )
     }
 }

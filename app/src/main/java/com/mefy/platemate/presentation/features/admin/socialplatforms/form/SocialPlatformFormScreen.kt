@@ -17,8 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.features.admin.components.AddLanguageRow
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -44,32 +45,37 @@ internal fun SocialPlatformFormScreen(
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_code))
+                PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_code))
                 FormField(state.code, !state.isEdit) { onAction(SocialPlatformFormUiAction.CodeChanged(it)) }
             }
 
+            state.labels.forEach { (locale, value) ->
+                item {
+                    PMSectionLabel(text = "Label (${locale.uppercase()})")
+                    FormField(value) { onAction(SocialPlatformFormUiAction.LabelChanged(locale, it)) }
+                }
+            }
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_label))
-                FormField(state.label) { onAction(SocialPlatformFormUiAction.LabelChanged(it)) }
+                AddLanguageRow(onAdd = { onAction(SocialPlatformFormUiAction.AddLabelLanguage(it)) })
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_icon_url))
+                PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_icon_url))
                 FormField(state.iconUrl) { onAction(SocialPlatformFormUiAction.IconUrlChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_bg_color))
+                PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_bg_color))
                 FormField(state.backgroundColorHex) { onAction(SocialPlatformFormUiAction.BackgroundColorHexChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_tint_color))
+                PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_tint_color))
                 FormField(state.iconTintColorHex) { onAction(SocialPlatformFormUiAction.IconTintColorHexChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_social_platform_field_sort))
+                PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_sort))
                 FormField(state.sortOrder, keyboardType = KeyboardType.Number) {
                     onAction(SocialPlatformFormUiAction.SortOrderChanged(it))
                 }
@@ -99,7 +105,7 @@ private val socialPlatformFormPreviewState = SocialPlatformFormUiState(
     isLoading = false,
     isEdit = true,
     code = "INSTAGRAM",
-    label = "Instagram",
+    labels = mapOf("tr" to "Instagram", "en" to "Instagram"),
     iconUrl = "https://cdn.example.com/icons/instagram.png",
     backgroundColorHex = "#FDF2F8",
     iconTintColorHex = "#DB2777",

@@ -17,14 +17,14 @@ import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.CityNameResolver
-import com.mefy.platemate.presentation.common.text.formatCompactCount
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatform
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackBg
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.SocialPlatformFallbackTint
-import com.mefy.platemate.presentation.features.main.settings.editprofile.model.toUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
+import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
+import com.mefy.platemate.presentation.features.uimodel.toUiModel
 import com.mefy.platemate.presentation.navigation.UserProfileDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -169,7 +169,7 @@ class UserProfileViewModel @Inject constructor(
             isOnline = false,
             isFollowing = profile.isFollowing,
             reviewCount = profile.reviewCount,
-            followerCount = formatCompactCount(profile.followerCount.toLong()),
+            followerCount = NumberFormatter.formatCompact(profile.followerCount.toLong()),
             followingCount = profile.followingCount,
             socialLinks = profile.socialMediaLinks.map { link ->
                 // Bilinmeyen platformlar jenerik link ikonuna düşer (kendi profilinden farklı

@@ -10,8 +10,8 @@ import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.settings.UserSettings
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

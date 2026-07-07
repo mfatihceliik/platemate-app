@@ -21,18 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.mefy.platemate.presentation.components.IconWithText
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMCardVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
+import com.mefy.platemate.presentation.components.util.reviewStatusStyle
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -88,6 +90,7 @@ internal fun PlateReviewActivityCard(
                         )
                         PMText(
                             text = item.plateCode,
+                            fontSize = dims.fontSize.md,
                             style = PMTextStyle.Title,
                             color = colors.textPrimary
                         )
@@ -97,21 +100,46 @@ internal fun PlateReviewActivityCard(
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
                     ) {
-                        ReviewStatusBadge(
-                            status = item.reviewStatus
-                        )
-                        IconWithText(
-                            modifier = Modifier.padding(horizontal = dims.spacing.s4),
-                            icon = Icons.Filled.Star,
-                            text = String.format("%.1f", item.ratingAverage),
-                            color = colors.primary
-                        )
-                        IconWithText(
-                            modifier = Modifier.padding(horizontal = dims.spacing.s4),
-                            icon = Icons.Filled.ChatBubble,
-                            text = item.commentCount.toString(),
-                            color = colors.primary
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val style = reviewStatusStyle(item.reviewStatus, colors)
+                            PMChip(
+                                label = stringResource(style.label),
+                                containerColor = style.background,
+                                accentColor = style.foreground
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PMIcon(
+                                imageVector = Icons.Filled.Star,
+                                size = dims.sizing.iconSm
+                            )
+                            PMText(
+                                text = NumberFormatter.formatRating(item.ratingAverage),
+                                fontSize = dims.fontSize.md
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PMIcon(
+                                imageVector = Icons.Filled.ChatBubble,
+                                size = dims.sizing.iconSm
+                            )
+                            PMText(
+                                text = item.commentCount.toString(),
+                                fontSize = dims.fontSize.md
+                            )
+                        }
                     }
                 }
 

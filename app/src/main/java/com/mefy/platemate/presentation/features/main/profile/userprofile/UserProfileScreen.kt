@@ -26,8 +26,8 @@ import com.mefy.platemate.presentation.features.main.profile.userprofile.compone
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileHeaderCard
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileReviewCard
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileSocialLinks
-import com.mefy.platemate.presentation.features.main.profile.userprofile.model.UserProfileReviewUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions

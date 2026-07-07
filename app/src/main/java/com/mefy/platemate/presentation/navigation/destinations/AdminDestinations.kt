@@ -34,3 +34,21 @@ data object AdminSocialPlatformsDestination : AppDestination
 
 @Serializable
 data class AdminSocialPlatformFormDestination(val platformId: Long = -1L) : AppDestination
+
+@Serializable
+data object AdminPremiumPlansDestination : AppDestination
+
+@Serializable
+data class AdminPremiumPlanFormDestination(val planId: Long = -1L) : AppDestination
+
+@Serializable
+data object AdminPremiumFeaturesDestination : AppDestination
+
+@Serializable
+data class AdminPremiumFeatureFormDestination(val featureId: Long = -1L) : AppDestination
+
+@Serializable
+data object AdminAccentColorsDestination : AppDestination
+
+@Serializable
+data class AdminAccentColorFormDestination(val colorId: Long = -1L) : AppDestination

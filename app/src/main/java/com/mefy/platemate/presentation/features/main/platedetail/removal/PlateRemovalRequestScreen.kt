@@ -29,7 +29,7 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.platedetail.removal.model.PlateRemovalReason
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -75,7 +75,7 @@ internal fun PlateRemovalRequestScreen(
                 color = colors.textPrimary
             )
 
-            SectionLabel(text = stringResource(R.string.removal_request_reason_label))
+            PMSectionLabel(text = stringResource(R.string.removal_request_reason_label))
             PlateRemovalReason.entries.forEach { reason ->
                 ReasonRow(
                     label = stringResource(reason.labelRes),
@@ -84,7 +84,7 @@ internal fun PlateRemovalRequestScreen(
                 )
             }
 
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.removal_request_description_hint),
                 modifier = Modifier.padding(top = dims.spacing.s8)
             )

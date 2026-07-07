@@ -17,11 +17,6 @@ import com.mefy.platemate.presentation.common.text.resolve
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Genel ekran-içi hata yer tutucusu: ikon + başlık + [message] + "Tekrar dene".
- * Tüm veri ekranları [PMBaseScreen] üzerinden bunu kullanır; [message] gerçek hata
- * metnini ([com.mefy.platemate.presentation.common.error.toUiText]) taşır.
- */
 @Composable
 fun PMErrorState(
     message: UiText,

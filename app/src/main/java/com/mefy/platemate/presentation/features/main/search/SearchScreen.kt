@@ -36,7 +36,7 @@ import com.mefy.platemate.presentation.features.main.search.components.AlarmPlat
 import com.mefy.platemate.presentation.features.main.search.components.RecentChip
 import com.mefy.platemate.presentation.features.main.search.components.SavedPlateCompactCard
 import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -54,15 +54,9 @@ fun SearchScreen(
     val dims = MaterialTheme.pmDimensions
 
     // Stable, paylaşılan callback'ler: chip/kart'lar veri değişmedikçe skip etsin.
-    val onRecentClick = remember(onAction) {
-        { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) }
-    }
-    val onSavedBookmark = remember(onAction) {
-        { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) }
-    }
-    val onAlarmRemove = remember(onAction) {
-        { norm: String -> onAction(SearchUiAction.AlarmPlateRemoveClicked(norm)) }
-    }
+    val onRecentClick = remember(onAction) { { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) } }
+    val onSavedBookmark = remember(onAction) { { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) } }
+    val onAlarmRemove = remember(onAction) { { norm: String -> onAction(SearchUiAction.AlarmPlateRemoveClicked(norm)) } }
 
     LazyColumn(
         state = lazyListState,

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,7 +76,7 @@ fun PMMessageItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
+            PMText(
                 text = preview,
                 color = colors.textTertiary,
                 maxLines = 1,
@@ -89,7 +88,7 @@ fun PMMessageItem(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
-            Text(
+            PMText(
                 text = time,
                 color = if (isUnread) colors.primary else colors.textLabel
             )

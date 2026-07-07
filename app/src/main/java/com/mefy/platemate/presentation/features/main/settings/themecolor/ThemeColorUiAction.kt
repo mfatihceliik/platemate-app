@@ -6,5 +6,6 @@ import com.mefy.platemate.domain.model.theme.AppThemeMode
 sealed interface ThemeColorUiAction {
     data class ColorSelected(val color: Color) : ThemeColorUiAction
     data class ThemeModeSelected(val mode: AppThemeMode) : ThemeColorUiAction
+    data object SaveClicked : ThemeColorUiAction
     data object BackClicked : ThemeColorUiAction
 }

@@ -1,16 +1,16 @@
 package com.mefy.platemate.presentation.features.main.discover.reducer
 
-import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
+import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverCityStatUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiModel
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverMetricUiType
-import com.mefy.platemate.presentation.features.main.discover.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
+import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
+import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DiscoverStateReducerTest {
@@ -39,7 +39,7 @@ class DiscoverStateReducerTest {
             recentActivities = listOf(
                 DiscoverRecentActivityUiModel(
                     id = "id",
-                    type = com.mefy.platemate.domain.model.discovery.RecentActivityActionType.REVIEW_ADDED,
+                    type = RecentActivityActionType.REVIEW_ADDED,
                     actorName = "fatih",
                     actionText = "REVIEW_ADDED",
                     plateCode = "34ABC123",

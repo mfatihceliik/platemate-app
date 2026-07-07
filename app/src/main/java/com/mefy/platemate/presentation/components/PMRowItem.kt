@@ -39,59 +39,18 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Where a row sits inside a visual group of rows. Drives the rounded-corner shape so a
- * flush (zero-gap) stack of [PMRowItem]s reads as one continuous grouped card — no wrapper
- * composable required. Adjacent rows' straight borders overlap into a single full-width
- * hairline separator; the outer corners round via [Top]'s top and [Bottom]'s bottom.
- */
-enum class PMRowPosition { Single, Top, Middle, Bottom }
-
-/**
- * Maps a `(index, count)` pair to a [PMRowPosition] for dynamically built lists:
- * single item → [PMRowPosition.Single], first → [Top][PMRowPosition.Top],
- * last → [Bottom][PMRowPosition.Bottom], otherwise [Middle][PMRowPosition.Middle].
- */
+enum class PMRowPosition {
+    Single,
+    Top,
+    Middle,
+    Bottom
+}
 fun pmRowPositionOf(index: Int, count: Int): PMRowPosition = when {
     count <= 1 -> PMRowPosition.Single
     index == 0 -> PMRowPosition.Top
     index == count - 1 -> PMRowPosition.Bottom
     else -> PMRowPosition.Middle
 }
-
-/**
- * A reusable, list-friendly row that draws its own card frame (surface fill + hairline
- * border) with a [position]-aware rounded shape.
- *
- * Anatomy (left → right):
- * ```
- * ┌─────────────────────────────────────────────┐
- * │ [icon]  Title                  [trailing] ›  │
- * │         Subtitle                             │
- * └─────────────────────────────────────────────┘
- * ```
- *
- * Render standalone as [PMRowPosition.Single], or stack several flush (no vertical gap)
- * with [Top]/[Middle]/[Bottom] positions to form a grouped settings card.
- *
- * @param title primary label (single line, ellipsized).
- * @param subtitle optional secondary line below the title.
- * @param leadingIcon optional icon shown at the start.
- * @param leadingIconPainter alternative to [leadingIcon] for non-vector sources (e.g. a
- *   remote-loaded Coil painter); takes precedence over [leadingIcon] when both are set.
- * @param leadingIconTint icon color; defaults to [PMColors.primary].
- * @param leadingContainerColor when set, the icon is drawn inside a rounded, tinted square
- *   container (settings-row style). When null the icon is plain.
- * @param trailingText optional value text shown before the chevron (e.g. "English").
- * @param showChevron force-show/hide the trailing chevron. When null, the chevron is shown
- *   automatically if [onClick] is provided.
- * @param enabled visual + interaction enabled state.
- * @param position placement within a visual group; controls corner rounding. Defaults to
- *   [PMRowPosition.Single] (standalone rounded card).
- * @param onClick optional debounced click handler for the whole row.
- * @param trailing optional fully-custom trailing slot (e.g. a [PMSwitch]). Takes precedence
- *   over [trailingText] / chevron.
- */
 @Composable
 fun PMRowItem(
     modifier: Modifier = Modifier,
@@ -224,26 +183,6 @@ private fun PMRowItemBody(
                     }
                 }
             }
-
-            /*Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)) {
-                PMText(
-                    text = title,
-                    style = PMTextStyle.Body,
-                    fontWeight = FontWeight.SemiBold,
-                    color = titleColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (subtitle != null) {
-                    PMText(
-                        text = subtitle,
-                        style = PMTextStyle.Caption,
-                        color = colors.textTertiary,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }*/
         }
 
         // ── Trailing ─────────────────────────────────────

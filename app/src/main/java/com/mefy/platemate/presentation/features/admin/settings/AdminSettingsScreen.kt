@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -51,22 +51,22 @@ internal fun AdminSettingsScreen(
                 .weight(1f)
         ) {
             item {
-                SectionLabel(text = stringResource(R.string.admin_settings_follow_limit))
+                PMSectionLabel(text = stringResource(R.string.admin_settings_follow_limit))
                 NumberField(value = state.followLimit, onValueChange = { onAction(AdminSettingsUiAction.FollowLimitChanged(it)) })
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_settings_alarm_limit))
+                PMSectionLabel(text = stringResource(R.string.admin_settings_alarm_limit))
                 NumberField(value = state.alarmLimit, onValueChange = { onAction(AdminSettingsUiAction.AlarmLimitChanged(it)) })
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_settings_message_limit))
+                PMSectionLabel(text = stringResource(R.string.admin_settings_message_limit))
                 NumberField(value = state.messageLimit, onValueChange = { onAction(AdminSettingsUiAction.MessageLimitChanged(it)) })
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_settings_report_threshold))
+                PMSectionLabel(text = stringResource(R.string.admin_settings_report_threshold))
                 NumberField(value = state.reportThreshold, onValueChange = { onAction(AdminSettingsUiAction.ReportThresholdChanged(it)) }, imeAction = ImeAction.Done)
             }
         }

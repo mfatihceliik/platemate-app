@@ -12,7 +12,7 @@ import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.features.main.discover.DiscoverFilterUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

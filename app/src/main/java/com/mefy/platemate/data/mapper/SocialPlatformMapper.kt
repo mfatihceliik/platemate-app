@@ -11,6 +11,7 @@ class SocialPlatformMapper @Inject constructor() : Mapper<SocialPlatformDto, Soc
         code = input.code.orEmpty(),
         label = input.label.orEmpty(),
         iconUrl = input.iconUrl,
+        baseUrl = input.baseUrl,
         backgroundColorHex = input.backgroundColorHex,
         iconTintColorHex = input.iconTintColorHex,
         sortOrder = input.sortOrder ?: 0

@@ -29,7 +29,6 @@ import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.navigation.ChatDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.Calendar
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -372,7 +371,9 @@ class ConversationViewModel @Inject constructor(
         messages.forEach { message ->
             val date = message.sentAt?.iso8601?.take(10) ?: ""
             if (date.isNotEmpty() && date != lastDate) {
-                result.add(ConversationListItem.DateHeader(date.toRelativeDateLabel()))
+                // Raw yyyy-MM-dd; the UI (rememberRelativeDateLabel) resolves the localized,
+                // view-time-relative label (Today / Yesterday / weekday / date).
+                result.add(ConversationListItem.DateHeader(date))
                 lastDate = date
             }
             if (message.id == unreadAnchorMessageId) {
@@ -393,25 +394,4 @@ class ConversationViewModel @Inject constructor(
         isMine = isMine(),
         status = status
     )
-}
-
-private fun String.toRelativeDateLabel(): String {
-    if (isEmpty()) return ""
-    val cal = Calendar.getInstance()
-    val today = "%04d-%02d-%02d".format(
-        cal.get(Calendar.YEAR),
-        cal.get(Calendar.MONTH) + 1,
-        cal.get(Calendar.DAY_OF_MONTH)
-    )
-    cal.add(Calendar.DAY_OF_MONTH, -1)
-    val yesterday = "%04d-%02d-%02d".format(
-        cal.get(Calendar.YEAR),
-        cal.get(Calendar.MONTH) + 1,
-        cal.get(Calendar.DAY_OF_MONTH)
-    )
-    return when (this) {
-        today -> "Bugün"
-        yesterday -> "Dün"
-        else -> this
-    }
 }

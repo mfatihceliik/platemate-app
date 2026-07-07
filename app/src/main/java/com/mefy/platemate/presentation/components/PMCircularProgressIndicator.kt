@@ -30,8 +30,6 @@ fun PMCircularProgressIndicator(
     fillMaxSize: Boolean = false,
 ) {
     if (fillMaxSize) {
-        // Full-screen loading: fill the parent and center the spinner. `modifier`
-        // (e.g. padding(innerPadding)) applies to the filling Box.
         Box(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -81,16 +79,9 @@ private fun PMCircularProgressIndicatorPreviewContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
-        // Small — inline / button use
         PMCircularProgressIndicator(size = dims.sizing.iconMd, strokeWidth = dims.stroke.st2)
-
-        // Default — list / card loading
         PMCircularProgressIndicator()
-
-        // Large — full-screen loading overlay
         PMCircularProgressIndicator(size = dims.sizing.avatarMedium, strokeWidth = dims.stroke.st3)
-
-        // Custom color
         PMCircularProgressIndicator(color = MaterialTheme.pmColors.secondary)
     }
 }

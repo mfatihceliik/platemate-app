@@ -17,7 +17,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions

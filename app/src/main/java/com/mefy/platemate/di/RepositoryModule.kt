@@ -10,6 +10,8 @@ import com.mefy.platemate.data.repository.ChatRepositoryImpl
 import com.mefy.platemate.data.repository.ProfileRepositoryImpl
 import com.mefy.platemate.data.repository.PlateRepositoryImpl
 import com.mefy.platemate.data.repository.PlateReviewRepositoryImpl
+import com.mefy.platemate.data.repository.PremiumRepositoryImpl
+import com.mefy.platemate.data.repository.ThemeRepositoryImpl
 import com.mefy.platemate.data.repository.DiscoveryRepositoryImpl
 import com.mefy.platemate.data.repository.FcmTokenRepositoryImpl
 import com.mefy.platemate.data.repository.FollowRepositoryImpl
@@ -32,6 +34,8 @@ import com.mefy.platemate.domain.repository.UserReportRepository
 import com.mefy.platemate.domain.repository.PlateRepository
 import com.mefy.platemate.domain.repository.ProfileRepository
 import com.mefy.platemate.domain.repository.PlateReviewRepository
+import com.mefy.platemate.domain.repository.PremiumRepository
+import com.mefy.platemate.domain.repository.ThemeRepository
 import com.mefy.platemate.domain.repository.AlarmPlateRepository
 import com.mefy.platemate.domain.repository.RecentSearchRepository
 import com.mefy.platemate.domain.repository.SavedPlateRepository
@@ -61,6 +65,14 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindReviewRepository(impl: PlateReviewRepositoryImpl): PlateReviewRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPremiumRepository(impl: PremiumRepositoryImpl): PremiumRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindThemeRepository(impl: ThemeRepositoryImpl): ThemeRepository
 
     @Binds
     @Singleton

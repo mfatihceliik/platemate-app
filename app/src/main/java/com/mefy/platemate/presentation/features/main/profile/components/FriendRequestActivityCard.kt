@@ -27,10 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMCardVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -99,11 +100,13 @@ internal fun FriendRequestActivityCard(
                     horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StatusBadge(
-                        text = item.statusCode,
-                        background = colors.tertiaryContainer,
-                        foreground = colors.onTertiaryContainer
+                    PMChip(
+                        label = item.statusCode,
+                        contentColor = colors.onTertiaryContainer,
+                        containerColor = colors.tertiaryContainer
+
                     )
+
                     PMText(
                         text = item.createdAtText,
                         fontSize = dims.fontSize.sm,

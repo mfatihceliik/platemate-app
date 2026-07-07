@@ -12,7 +12,7 @@ import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
-import com.mefy.platemate.presentation.features.main.platedetail.model.CommentReportReason
+import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow

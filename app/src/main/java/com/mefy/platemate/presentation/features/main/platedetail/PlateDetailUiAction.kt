@@ -1,6 +1,6 @@
 package com.mefy.platemate.presentation.features.main.platedetail
 
-import com.mefy.platemate.presentation.features.main.platedetail.model.CommentReportReason
+import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 
 sealed interface PlateDetailUiAction {
     data object BackClicked : PlateDetailUiAction

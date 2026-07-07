@@ -6,7 +6,7 @@ import com.mefy.platemate.domain.model.search.AlarmPlate
 import com.mefy.platemate.domain.model.search.RecentSearch
 import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.presentation.common.text.CityNameResolver
-import com.mefy.platemate.presentation.features.main.search.model.SearchRecentUiModel
+import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -1,15 +1,14 @@
 package com.mefy.platemate.presentation.features.main.settings.themecolor.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -17,24 +16,35 @@ internal fun AccentColorGrid(
     colors: List<Color>,
     selectedColor: Color,
     onColorSelected: (Color) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    gridSize: Int = 4
 ) {
     val dims = MaterialTheme.pmDimensions
-    val gridSize = 4
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(gridSize),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+    Column(
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-        userScrollEnabled = false,
-        modifier = modifier.height(dims.sizing.gridHeight)
+        modifier = modifier.fillMaxWidth()
     ) {
-        items(colors, key = { it.value.toLong() }) { color ->
-            AccentColorChip(
-                color = color,
-                isSelected = color == selectedColor,
-                onClick = { onColorSelected(color) }
-            )
+        colors.chunked(gridSize.coerceAtLeast(1)).forEach { rowColors ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                rowColors.forEach { color ->
+                    AccentColorChip(
+                        color = color,
+                        isSelected = color == selectedColor,
+                        onClick = { onColorSelected(color) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                // Fill empty spaces to maintain alignment
+                val emptySpaces = gridSize - rowColors.size
+                repeat(emptySpaces) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }

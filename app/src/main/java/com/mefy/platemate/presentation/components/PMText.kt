@@ -17,11 +17,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
-import java.util.Locale
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnit.Companion
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.util.resolve
 
 @Composable
 fun PMText(
@@ -36,8 +35,8 @@ fun PMText(
     textAlign: TextAlign? = null
 ) {
     val colors = MaterialTheme.pmColors
-    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.pmColors.onSurface) {
-        MaterialTheme.pmColors.textLabel
+    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
+        colors.textLabel
     } else {
         color
     }
@@ -62,9 +61,9 @@ fun PMText(
 
 @Composable
 fun PMText(
+    modifier: Modifier = Modifier,
     text: AnnotatedString,
     style: PMTextStyle = PMTextStyle.Body,
-    modifier: Modifier = Modifier,
     fontWeight: FontWeight? = null,
     fontSize: TextUnit = MaterialTheme.pmDimensions.fontSize.sm,
     color: Color = MaterialTheme.pmColors.onSurface,
@@ -72,8 +71,9 @@ fun PMText(
     overflow: TextOverflow = TextOverflow.Clip,
     textAlign: TextAlign? = null
 ) {
-    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == MaterialTheme.pmColors.onSurface) {
-        MaterialTheme.pmColors.textLabel
+    val colors = MaterialTheme.pmColors
+    val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
+        colors.textLabel
     } else {
         color
     }
@@ -88,8 +88,8 @@ fun PMText(
     }
 
     Text(
-        text = resolvedText,
         modifier = modifier,
+        text = resolvedText,
         style = style.resolve(MaterialTheme.typography),
         fontWeight = fontWeight,
         fontSize = fontSize,

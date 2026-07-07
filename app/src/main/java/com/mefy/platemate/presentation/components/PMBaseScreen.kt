@@ -3,6 +3,7 @@ package com.mefy.platemate.presentation.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -48,6 +49,12 @@ fun PMBaseScreen(
     topBarContainerColor: Color = MaterialTheme.pmColors.background,
     applyImePadding: Boolean = false,
     bottomBar: @Composable () -> Unit = {},
+    // İçerik alanının ALTINA hizalı, içeriğin/empty'nin ÜZERİNE binen kalıcı katman
+    // (ör. sohbet composer'ı). bottomBar'dan farkı: content'i aşağı itmez, üstüne çizer;
+    // böylece durum (Content/Empty) değişse de kalır ve arkasındaki içerik görünür.
+    // BoxScope alıcısıdır → çağıran `Modifier.align(...)` kullanabilir. Default {} → diğer
+    // ekranlar etkilenmez.
+    contentBottomOverlay: @Composable BoxScope.() -> Unit = {},
     status: ScreenStatus? = null,
     onRetry: () -> Unit = {},
     keepTopBarWhileLoading: Boolean = false,
@@ -138,6 +145,11 @@ fun PMBaseScreen(
                         )
                     }
                 }
+            }
+            // Content ve Empty durumlarının ÜZERİNE binen kalıcı alt katman; yükleme/hata
+            // chrome'unda (hideChrome) gizli — o durumlarda tam-ekran iskelet/hata görünür.
+            if (!hideChrome) {
+                contentBottomOverlay()
             }
         }
         if (!hideChrome) {

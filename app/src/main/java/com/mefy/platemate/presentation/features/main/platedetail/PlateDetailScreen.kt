@@ -20,11 +20,11 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMRatingBar
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.features.main.platedetail.components.PlateInfoRow
 import com.mefy.platemate.presentation.features.main.platedetail.components.ReviewItem
 import com.mefy.platemate.presentation.features.main.platedetail.components.ReviewReportBottomSheet
-import com.mefy.platemate.presentation.features.main.platedetail.components.TagChipWithCount
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -80,7 +80,7 @@ fun PlateDetailScreen(
 
         if (state.hasTags) {
             item {
-                SectionLabel(
+                PMSectionLabel(
                     text = stringResource(R.string.platedetail_tags_title),
                 )
             }
@@ -91,8 +91,12 @@ fun PlateDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
                 ) {
                     state.tags.forEach { tag ->
-                        TagChipWithCount(label = tag.label, count = tag.count)
+                        PMChip(
+                            label = tag.label,
+                            count = tag.count
+                        )
                     }
+
                 }
             }
 
@@ -103,7 +107,7 @@ fun PlateDetailScreen(
 
         if (state.hasReviews) {
             item {
-                SectionLabel(
+                PMSectionLabel(
                     text = stringResource(R.string.platedetail_reviews_title)
                 )
             }

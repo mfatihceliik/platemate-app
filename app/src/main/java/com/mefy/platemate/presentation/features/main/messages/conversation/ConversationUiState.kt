@@ -6,8 +6,9 @@ import com.mefy.platemate.domain.model.chat.MessageStatus
 import com.mefy.platemate.presentation.common.text.UiText
 
 sealed interface ConversationListItem {
+    /** Day boundary as a stable `yyyy-MM-dd`; the UI resolves it to a localized label. */
     @Immutable
-    data class DateHeader(val label: String) : ConversationListItem
+    data class DateHeader(val isoDate: String) : ConversationListItem
 
     @Immutable
     data class Message(val model: ChatMessageUiModel) : ConversationListItem

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -45,8 +46,6 @@ fun PMPlateCard(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    // Wrap the id-aware callback once, keyed on stable inputs, so PMCard's
-    // () -> Unit stays referentially stable across recompositions.
     val cardClick = remember(id, onClick) { { onClick(id) } }
 
     PMCard(
@@ -94,13 +93,13 @@ fun PMPlateCard(
                     PlateMetric(icon = Icons.Filled.Star, value = rating, iconTint = colors.star)
                     PlateMetric(
                         icon = Icons.AutoMirrored.Outlined.Chat,
-                        value = formatCount(commentCount),
+                        value = NumberFormatter.formatCompact(commentCount),
                         iconTint = colors.textTertiary
                     )
                     if (searchCount > 0) {
                         PlateMetric(
                             icon = Icons.Outlined.Search,
-                            value = formatCount(searchCount),
+                            value = NumberFormatter.formatCompact(searchCount),
                             iconTint = colors.primary
                         )
                     }
@@ -125,18 +124,6 @@ private fun PlateMetric(icon: ImageVector, value: String, iconTint: Color) {
             color = MaterialTheme.pmColors.textSecondary
         )
     }
-}
-
-/** Compact count: 1234 -> "1.2B" (bin), 1_200_000 -> "1.2M". */
-private fun formatCount(value: Long): String = when {
-    value >= 1_000_000 -> trimZero(value / 1_000_000.0) + "M"
-    value >= 1_000 -> trimZero(value / 1_000.0) + "B"
-    else -> value.toString()
-}
-
-private fun trimZero(value: Double): String {
-    val rounded = (value * 10).toLong() / 10.0
-    return if (rounded % 1.0 == 0.0) rounded.toLong().toString() else String.format("%.1f", rounded)
 }
 
 @Preview(name = "PMTrendCard", showBackground = true, backgroundColor = 0xFFF6F8FB)

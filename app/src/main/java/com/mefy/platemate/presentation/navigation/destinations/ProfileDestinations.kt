@@ -30,7 +30,4 @@ data object ProfileThemeColorDestination : AppDestination
 data object ProfileLanguageDestination : AppDestination
 
 @Serializable
-data object ProfileSocialLinksDestination : AppDestination
-
-@Serializable
 data class UserProfileDestination(val userId: String) : AppDestination

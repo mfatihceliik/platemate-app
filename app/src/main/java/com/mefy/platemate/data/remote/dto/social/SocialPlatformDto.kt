@@ -7,6 +7,7 @@ data class SocialPlatformDto(
     @SerializedName("code") val code: String?,
     @SerializedName("label") val label: String?,
     @SerializedName("iconUrl") val iconUrl: String?,
+    @SerializedName("baseUrl") val baseUrl: String? = null,
     @SerializedName("backgroundColorHex") val backgroundColorHex: String?,
     @SerializedName("iconTintColorHex") val iconTintColorHex: String?,
     @SerializedName("sortOrder") val sortOrder: Int?

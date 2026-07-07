@@ -16,9 +16,8 @@ import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMPasswordField
 import com.mefy.platemate.presentation.features.main.settings.changepassword.components.ValidationChecklist
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
@@ -43,7 +42,7 @@ fun ChangePasswordScreen(
         verticalArrangement = spacedByWithFooter(dims.spacing.s8)
     ) {
         item {
-            SectionLabel(text = stringResource(R.string.profile_change_password_desc))
+            PMSectionLabel(text = stringResource(R.string.profile_change_password_desc))
         }
 
         item {

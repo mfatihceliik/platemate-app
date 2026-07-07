@@ -11,10 +11,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,6 +41,9 @@ internal fun AdminHubScreen(
     onHiddenPlates: () -> Unit,
     onReportTypes: () -> Unit,
     onSocialPlatforms: () -> Unit,
+    onPremiumPlans: () -> Unit,
+    onPremiumFeatures: () -> Unit,
+    onThemeColors: () -> Unit,
     onSettings: () -> Unit,
 ) {
     val dims = MaterialTheme.pmDimensions
@@ -116,6 +122,36 @@ internal fun AdminHubScreen(
 
         item {
             PMRowItem(
+                title = stringResource(R.string.admin_premium_plans_title),
+                leadingIcon = Icons.Filled.WorkspacePremium,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                onClick = onPremiumPlans
+            )
+        }
+
+        item {
+            PMRowItem(
+                title = stringResource(R.string.admin_premium_features_title),
+                leadingIcon = Icons.Filled.Star,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                onClick = onPremiumFeatures
+            )
+        }
+
+        item {
+            PMRowItem(
+                title = stringResource(R.string.admin_theme_colors_title),
+                leadingIcon = Icons.Filled.Palette,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                onClick = onThemeColors
+            )
+        }
+
+        item {
+            PMRowItem(
                 title = stringResource(R.string.admin_settings_title),
                 leadingIcon = Icons.Filled.Tune,
                 leadingIconTint = colors.primary,
@@ -138,6 +174,9 @@ private fun AdminHubScreenLightPreview() {
             onHiddenPlates = {},
             onReportTypes = {},
             onSocialPlatforms = {},
+            onPremiumPlans = {},
+            onPremiumFeatures = {},
+            onThemeColors = {},
             onSettings = {},
             contentPadding = PaddingValues(0.dp)
         )
@@ -155,6 +194,9 @@ private fun AdminHubScreenDarkPreview() {
             onHiddenPlates = {},
             onReportTypes = {},
             onSocialPlatforms = {},
+            onPremiumPlans = {},
+            onPremiumFeatures = {},
+            onThemeColors = {},
             onSettings = {},
             contentPadding = PaddingValues(0.dp)
         )

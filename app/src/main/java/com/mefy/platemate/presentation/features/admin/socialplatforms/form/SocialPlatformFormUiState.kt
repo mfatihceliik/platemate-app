@@ -8,14 +8,14 @@ data class SocialPlatformFormUiState(
     val isSaving: Boolean = false,
     val isEdit: Boolean = false,
     val code: String = "",
-    val label: String = "",
+    val labels: Map<String, String> = mapOf("tr" to "", "en" to ""),
     val iconUrl: String = "",
     val backgroundColorHex: String = "",
     val iconTintColorHex: String = "",
     val sortOrder: String = ""
 ) {
     val isValid: Boolean
-        get() = code.isNotBlank() && label.isNotBlank() &&
+        get() = code.isNotBlank() && labels["tr"]?.isNotBlank() == true && labels["en"]?.isNotBlank() == true &&
                 (backgroundColorHex.isBlank() || COLOR_REGEX.matches(backgroundColorHex)) &&
                 (iconTintColorHex.isBlank() || COLOR_REGEX.matches(iconTintColorHex)) &&
                 sortOrder.toIntOrNull()?.let { it >= 1 } == true

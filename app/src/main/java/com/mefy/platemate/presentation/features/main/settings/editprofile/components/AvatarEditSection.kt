@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -71,7 +71,7 @@ internal fun AvatarEditSection(
             }
             Box(
                 modifier = Modifier
-                    .size(26.dp)
+                    .size(dims.sizing.iconXl)
                     .shadow(elevation = dims.spacing.s4, shape = CircleShape, spotColor = primary.copy(alpha = 0.45f))
                     .clip(CircleShape)
                     .background(primary)
@@ -79,11 +79,11 @@ internal fun AvatarEditSection(
                     .debouncedClickable(onClick = onAvatarClick),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
+                PMIcon(
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = stringResource(R.string.edit_profile_change_photo),
                     tint = Color.White,
-                    modifier = Modifier.size(dims.sizing.avatarIconInner)
+                    size = dims.sizing.avatarIconInner,
                 )
             }
         }

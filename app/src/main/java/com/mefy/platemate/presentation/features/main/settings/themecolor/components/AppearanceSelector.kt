@@ -12,7 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.domain.model.theme.AppThemeMode
-import com.mefy.platemate.presentation.features.main.settings.uimodel.AppearanceMode
+import com.mefy.platemate.presentation.features.uimodel.AppearanceMode
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable

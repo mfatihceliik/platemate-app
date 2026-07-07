@@ -10,14 +10,23 @@ import com.mefy.platemate.data.mapper.CommentReportMapper
 import com.mefy.platemate.data.mapper.HiddenPlateMapper
 import com.mefy.platemate.data.mapper.PendingCommentMapper
 import com.mefy.platemate.data.mapper.PlateRemovalRequestMapper
+import com.mefy.platemate.data.mapper.AccentColorAdminMapper
+import com.mefy.platemate.data.mapper.PremiumFeatureAdminMapper
+import com.mefy.platemate.data.mapper.PremiumPlanAdminMapper
 import com.mefy.platemate.data.mapper.ReportTypeAdminMapper
 import com.mefy.platemate.data.mapper.SocialPlatformAdminMapper
 import com.mefy.platemate.data.remote.dto.admin.AdminCommentModerationRequest
 import com.mefy.platemate.data.remote.dto.admin.AdminReviewRequest
 import com.mefy.platemate.data.remote.dto.admin.HidePlateRequest
+import com.mefy.platemate.data.remote.dto.admin.AccentColorRequest
+import com.mefy.platemate.data.remote.dto.admin.ThemeGridSizeRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdateAccentColorActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.PlateReportTypeRequest
+import com.mefy.platemate.data.remote.dto.admin.PremiumFeatureRequest
+import com.mefy.platemate.data.remote.dto.admin.PremiumPlanRequest
 import com.mefy.platemate.data.remote.dto.admin.SocialPlatformRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateAppSettingsRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdatePremiumActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateReportTypeActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateSocialPlatformActiveRequest
 import com.mefy.platemate.data.remote.rest.service.AdminApiService
@@ -28,6 +37,12 @@ import com.mefy.platemate.domain.model.admin.CommentReport
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PendingComment
 import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
+import com.mefy.platemate.domain.model.admin.AccentColorAdmin
+import com.mefy.platemate.domain.model.admin.AccentColorInput
+import com.mefy.platemate.domain.model.admin.PremiumFeatureAdmin
+import com.mefy.platemate.domain.model.admin.PremiumFeatureInput
+import com.mefy.platemate.domain.model.admin.PremiumPlanAdmin
+import com.mefy.platemate.domain.model.admin.PremiumPlanInput
 import com.mefy.platemate.domain.model.admin.ReportTypeAdmin
 import com.mefy.platemate.domain.model.admin.ReportTypeInput
 import com.mefy.platemate.domain.model.admin.SocialPlatformInput
@@ -44,6 +59,9 @@ class AdminRepositoryImpl @Inject constructor(
     private val appSettingsMapper: AppSettingsMapper,
     private val reportTypeAdminMapper: ReportTypeAdminMapper,
     private val socialPlatformAdminMapper: SocialPlatformAdminMapper,
+    private val premiumPlanAdminMapper: PremiumPlanAdminMapper,
+    private val premiumFeatureAdminMapper: PremiumFeatureAdminMapper,
+    private val accentColorAdminMapper: AccentColorAdminMapper,
     private val appDispatchers: AppDispatchers
 ) : AdminRepository {
 
@@ -187,10 +205,91 @@ class AdminRepositoryImpl @Inject constructor(
 
     private fun SocialPlatformInput.toRequest(): SocialPlatformRequest = SocialPlatformRequest(
         code = code,
-        label = label,
+        labels = labels,
         iconUrl = iconUrl,
         backgroundColorHex = backgroundColorHex,
         iconTintColorHex = iconTintColorHex,
+        sortOrder = sortOrder
+    )
+
+    override suspend fun getPremiumPlansAdmin(): AppResult<List<PremiumPlanAdmin>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getPremiumPlans() }.map { dtos -> dtos.map(premiumPlanAdminMapper::map) }
+        }
+
+    override suspend fun updatePremiumPlan(id: Long, input: PremiumPlanInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.updatePremiumPlan(id, input.toRequest()) }.map { }
+        }
+
+    override suspend fun setPremiumPlanActive(id: Long, active: Boolean): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.setPremiumPlanActive(id, UpdatePremiumActiveRequest(active)) }
+        }
+
+    override suspend fun getPremiumFeaturesAdmin(): AppResult<List<PremiumFeatureAdmin>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getPremiumFeatures() }.map { dtos -> dtos.map(premiumFeatureAdminMapper::map) }
+        }
+
+    override suspend fun addPremiumFeature(input: PremiumFeatureInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.addPremiumFeature(input.toRequest()) }.map { }
+        }
+
+    override suspend fun updatePremiumFeature(id: Long, input: PremiumFeatureInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.updatePremiumFeature(id, input.toRequest()) }.map { }
+        }
+
+    override suspend fun setPremiumFeatureActive(id: Long, active: Boolean): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.setPremiumFeatureActive(id, UpdatePremiumActiveRequest(active)) }
+        }
+
+    private fun PremiumPlanInput.toRequest(): PremiumPlanRequest = PremiumPlanRequest(
+        titles = titles,
+        descriptions = descriptions,
+        amount = amount,
+        currency = currency,
+        discountPercent = discountPercent,
+        sortOrder = sortOrder
+    )
+
+    private fun PremiumFeatureInput.toRequest(): PremiumFeatureRequest = PremiumFeatureRequest(
+        iconKey = iconKey,
+        titles = titles,
+        subtitles = subtitles,
+        sortOrder = sortOrder
+    )
+
+    override suspend fun getAccentColorsAdmin(): AppResult<List<AccentColorAdmin>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getAccentColors() }.map { dtos -> dtos.map(accentColorAdminMapper::map) }
+        }
+
+    override suspend fun addAccentColor(input: AccentColorInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.addAccentColor(input.toRequest()) }.map { }
+        }
+
+    override suspend fun updateAccentColor(id: Long, input: AccentColorInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.updateAccentColor(id, input.toRequest()) }.map { }
+        }
+
+    override suspend fun setAccentColorActive(id: Long, active: Boolean): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.setAccentColorActive(id, UpdateAccentColorActiveRequest(active)) }
+        }
+
+    override suspend fun updateThemeGridSize(gridSize: Int): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.updateThemeGridSize(ThemeGridSizeRequest(gridSize)) }
+        }
+
+    private fun AccentColorInput.toRequest(): AccentColorRequest = AccentColorRequest(
+        hex = hex,
         sortOrder = sortOrder
     )
 }

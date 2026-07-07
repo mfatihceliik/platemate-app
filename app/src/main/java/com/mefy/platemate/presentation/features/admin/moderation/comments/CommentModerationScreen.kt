@@ -8,20 +8,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
+import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.moderation.comments.components.PendingCommentCard
-import com.mefy.platemate.presentation.features.admin.moderation.comments.components.ReasonDialog
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -36,14 +42,38 @@ internal fun CommentModerationScreen(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
+    val onReasonChanged =
+        remember(onAction) { { v: String -> onAction(CommentModerationUiAction.ReasonChanged(v)) } }
+    val onReasonConfirmed =
+        remember(onAction) { { onAction(CommentModerationUiAction.ReasonConfirmed) } }
+    val onReasonDismissed =
+        remember(onAction) { { onAction(CommentModerationUiAction.ReasonDismissed) } }
+
+
     state.reasonDialog?.let { dialog ->
-        ReasonDialog(
-            action = dialog.action,
-            reason = dialog.reason,
-            onReasonChange = { onAction(CommentModerationUiAction.ReasonChanged(it)) },
-            onConfirm = { onAction(CommentModerationUiAction.ReasonConfirmed) },
-            onDismiss = { onAction(CommentModerationUiAction.ReasonDismissed) }
-        )
+        val titleRes = when (dialog.action) {
+            ModerationAction.REJECT -> R.string.admin_reason_dialog_reject_title
+            ModerationAction.REMOVE -> R.string.admin_reason_dialog_remove_title
+        }
+        PMPopup(
+            title = stringResource(titleRes),
+            icon = Icons.Filled.Gavel,
+            iconTint = colors.primary,
+            iconContainerColor = colors.primaryContainer,
+            primaryText = stringResource(R.string.common_confirm),
+            onPrimaryClick = onReasonConfirmed,
+            secondaryText = stringResource(R.string.common_cancel),
+            onSecondaryClick = onReasonDismissed,
+            onDismissRequest = onReasonDismissed
+        ) {
+            PMTextField(
+                value = dialog.reason,
+                onValueChange = onReasonChanged,
+                placeholder = stringResource(R.string.admin_reason_hint),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 
     if (state.isEmpty) {

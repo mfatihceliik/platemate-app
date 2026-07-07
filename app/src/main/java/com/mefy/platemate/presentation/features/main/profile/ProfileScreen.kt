@@ -26,17 +26,17 @@ import com.mefy.platemate.presentation.features.main.profile.components.FriendRe
 import com.mefy.platemate.presentation.features.main.profile.components.PlateReviewActivityCard
 import com.mefy.platemate.presentation.features.main.profile.components.ProfileHeaderSection
 import com.mefy.platemate.presentation.features.main.profile.components.ProfileStatusSummarySection
-import com.mefy.platemate.presentation.features.main.profile.model.FriendRequestNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.PlateReviewNotificationItem
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileAccountSummaryUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileActivityUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileHeaderUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileReviewStatusUi
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
+import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileSocialLinks
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatUiModel
-import com.mefy.platemate.presentation.features.main.profile.model.ProfileStatusSummaryUiModel
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
+import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -103,7 +103,7 @@ fun ProfileScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.profile_section_status_summary)
             )
         }
@@ -132,7 +132,7 @@ fun ProfileScreen(
         }
 
         item {
-            SectionLabel(
+            PMSectionLabel(
                 text = stringResource(R.string.profile_section_recent_notifications)
             )
         }

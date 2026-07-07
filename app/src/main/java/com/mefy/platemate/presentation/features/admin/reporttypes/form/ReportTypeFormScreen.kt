@@ -22,7 +22,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.model.PMButtonStyle
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
-import com.mefy.platemate.presentation.features.main.settings.components.SectionLabel
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -53,7 +53,7 @@ internal fun ReportTypeFormScreen(
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_code))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_code))
                 FormField(state.code, !state.isEdit) {
                     onAction(
                         ReportTypeFormUiAction.CodeChanged(
@@ -64,22 +64,22 @@ internal fun ReportTypeFormScreen(
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_label))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_label))
                 FormField(state.label) { onAction(ReportTypeFormUiAction.LabelChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_description))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_description))
                 FormField(state.description) { onAction(ReportTypeFormUiAction.DescriptionChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_icon))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_icon))
                 FormField(state.iconKey) { onAction(ReportTypeFormUiAction.IconKeyChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_severity))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_severity))
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
@@ -96,12 +96,12 @@ internal fun ReportTypeFormScreen(
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_color))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_color))
                 FormField(state.colorHex) { onAction(ReportTypeFormUiAction.ColorHexChanged(it)) }
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_weight))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_weight))
                 FormField(state.weight, keyboardType = KeyboardType.Number) {
                     onAction(
                         ReportTypeFormUiAction.WeightChanged(it)
@@ -110,7 +110,7 @@ internal fun ReportTypeFormScreen(
             }
 
             item {
-                SectionLabel(text = stringResource(R.string.admin_report_type_field_sort))
+                PMSectionLabel(text = stringResource(R.string.admin_report_type_field_sort))
                 FormField(state.sortOrder, keyboardType = KeyboardType.Number) {
                     onAction(
                         ReportTypeFormUiAction.SortOrderChanged(it)
