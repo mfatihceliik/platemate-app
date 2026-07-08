@@ -95,6 +95,25 @@ internal fun SearchShimmerContent(modifier: Modifier = Modifier) {
             }
         }
 
+        // "Alarmlar" başlığı + yatay kart satırı
+        item {
+            ShimmerBlock(
+                shimmer = shimmer,
+                modifier = Modifier
+                    .fillMaxWidth(0.3f)
+                    .height(dims.spacing.s16),
+                shape = RoundedCornerShape(dims.radius.r8),
+            )
+        }
+
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+                repeat(2) {
+                    SavedCardSkeleton(shimmer = shimmer)
+                }
+            }
+        }
+
         item {
             PMCard(
                 modifier = Modifier.fillMaxWidth(),

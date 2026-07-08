@@ -12,12 +12,18 @@ import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
-fun PMBackButton(onBackClick: () -> Unit) {
-    PMIconButton(onClick = onBackClick) {
+fun PMBackButton(
+
+    onBackClick: () -> Unit
+) {
+    PMIconButton(
+        onClick = onBackClick
+    ) {
         PMIcon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             size = MaterialTheme.pmDimensions.sizing.avatarIconInner,
             contentDescription = stringResource(R.string.common_back),
+
         )
     }
 }

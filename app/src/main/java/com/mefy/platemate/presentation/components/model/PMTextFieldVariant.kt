@@ -9,5 +9,6 @@ package com.mefy.platemate.presentation.components.model
  */
 enum class PMTextFieldVariant {
     Outlined,
-    Chat
+    Chat,
+    Search
 }

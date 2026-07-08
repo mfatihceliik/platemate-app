@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.features.main.messages.conversation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMBackButton
+import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -41,6 +46,7 @@ internal fun ConversationTopBar(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
+    val interactionSource = remember { MutableInteractionSource() }
 
     // Status-bar inset + zemin PMTopBar (Custom yolu) tarafından sağlanır; burada yok.
     // WhatsApp tarzı düz satır: kart/pill yok; avatar + isim + durum alt yazısı,
@@ -53,7 +59,15 @@ internal fun ConversationTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
-        PMBackButton(onBackClick)
+        PMIcon(
+            modifier = Modifier.debouncedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onBackClick
+            ),
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            size = dims.sizing.iconHuge
+        )
 
         Row(
             modifier = Modifier

@@ -16,6 +16,7 @@ import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
 import com.mefy.platemate.presentation.features.main.search.components.SearchShimmerContent
 import com.mefy.platemate.presentation.performance.StartupTrace
 import kotlinx.coroutines.flow.collectLatest
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun SearchRoute(
     viewModel: SearchViewModel,
     onNavigateToSearchDetail: (String) -> Unit,
+    onNavigateToCameraScanner: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,6 +54,7 @@ fun SearchRoute(
     val status = when {
         state.isInitialLoading -> ScreenStatus.Loading
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
+        state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty() && state.alarmPlates.isEmpty() -> ScreenStatus.Empty
         else -> ScreenStatus.Content
     }
 
@@ -69,12 +72,16 @@ fun SearchRoute(
                     .padding(innerPadding)
             )
         },
+        empty = { innerPadding ->
+            SearchEmptyState()
+        },
         onRetry = { onAction(SearchUiAction.RetryClicked) }
     ) { innerPadding ->
         SearchScreen(
             modifier = modifier,
             state = state,
             onAction = viewModel::onAction,
+            onNavigateToCameraScanner = onNavigateToCameraScanner,
             lazyListState = lazyListState,
             innerPadding = innerPadding
         )

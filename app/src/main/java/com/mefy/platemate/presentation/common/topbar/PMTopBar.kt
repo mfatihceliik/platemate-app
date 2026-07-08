@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.common.topbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,18 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Uygulamanın kendi üst barı. Material `TopAppBar` türevlerine bağımlı değildir;
- * yükseklik/hizalama/padding tamamen design-token'larla kontrol edilir.
- *
- * - [PMTopBarConfig.Standard]: başlık (ortalı/sola) + opsiyonel geri + opsiyonel aksiyonlar.
- * - [PMTopBarConfig.Custom]: ekran kendi composable'ını verir (tam serbest).
- * - [PMTopBarConfig.Hidden]: hiçbir şey çizmez.
- */
 @Composable
 fun PMTopBar(
     config: PMTopBarConfig,
@@ -64,6 +60,7 @@ private fun PMStandardTopBar(
     containerColor: Color
 ) {
     val dims = MaterialTheme.pmDimensions
+    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = modifier
@@ -73,15 +70,20 @@ private fun PMStandardTopBar(
             .height(dims.sizing.topBarHeight)
             .padding(horizontal = dims.spacing.s4)
     ) {
-        // Geri butonu (varsa) — sol kenar
         config.onBackClick?.let { onBack ->
             Box(modifier = Modifier.align(Alignment.CenterStart)) {
-                PMBackButton(onBack)
+                PMIcon(
+                    modifier = Modifier.debouncedClickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = onBack
+                    ),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    size = dims.sizing.iconHuge
+                )
             }
         }
 
-        // Başlık. Ortalı/sola hizada; sol-sağ reserve padding ile geri/aksiyon üstüne binmez,
-        // taşarsa ellipsize.
         val titleModifier = when (config.alignment) {
             PMTopBarAlignment.Center -> Modifier
                 .align(Alignment.Center)

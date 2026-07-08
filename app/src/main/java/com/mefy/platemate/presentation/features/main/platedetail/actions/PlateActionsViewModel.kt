@@ -96,7 +96,7 @@ class PlateActionsViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            plateCode = result.data.plateCode,
+                            plateCode = formatTurkishPlateInputUseCase(result.data.plateCode),
                             cityCode = result.data.plateCode.take(2)
                         )
                     }

@@ -71,8 +71,8 @@ class RoomAlarmPlateRepository @Inject constructor(
 
     override suspend fun replaceFromRemote(plates: List<AlarmPlate>) {
         val userId = sessionStore.session.first()?.userId ?: return
-        alarmPlateDao.deleteAllForUser(userId)
-        plates.forEach { plate -> alarmPlateDao.upsert(mapToEntity(userId = userId, plate = plate)) }
+        val entities = plates.map { mapToEntity(userId = userId, plate = it) }
+        alarmPlateDao.replaceAll(userId, entities)
     }
 
     private fun mapToDomain(entity: AlarmPlateEntity): AlarmPlate = AlarmPlate(

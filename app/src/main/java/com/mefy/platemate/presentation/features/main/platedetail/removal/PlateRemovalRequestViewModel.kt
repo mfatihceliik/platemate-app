@@ -6,6 +6,7 @@ import androidx.navigation.toRoute
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.plate.CreatePlateRemovalRequestUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -52,13 +53,14 @@ sealed interface PlateRemovalRequestUiEffect {
 class PlateRemovalRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createPlateRemovalRequestUseCase: CreatePlateRemovalRequestUseCase,
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
     private val route: PlateRemovalRequestDestination = savedStateHandle.toRoute()
     private val plateId: Long = route.plateId
 
-    private val _uiState = MutableStateFlow(PlateRemovalRequestUiState(plateCode = route.plateCode))
+    private val _uiState = MutableStateFlow(PlateRemovalRequestUiState(plateCode = formatTurkishPlateInputUseCase(route.plateCode)))
     val uiState: StateFlow<PlateRemovalRequestUiState> = _uiState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<PlateRemovalRequestUiEffect>()

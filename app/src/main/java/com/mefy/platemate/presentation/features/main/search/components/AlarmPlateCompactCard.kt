@@ -28,6 +28,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun AlarmPlateCompactCard(
+    modifier: Modifier = Modifier,
     item: SearchRecentUiModel,
     onClick: (String) -> Unit,
     onRemoveClick: (String) -> Unit
@@ -36,7 +37,7 @@ fun AlarmPlateCompactCard(
     val dims = MaterialTheme.pmDimensions
 
     PMCard(
-        modifier = Modifier.width(dims.sizing.savedPlateCardWidth),
+        modifier = modifier.width(dims.sizing.savedPlateCardWidth),
         padding = PaddingValues(dims.spacing.s12)
     ) {
         Column(

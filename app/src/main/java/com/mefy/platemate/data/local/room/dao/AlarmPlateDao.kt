@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.mefy.platemate.data.local.room.entity.AlarmPlateEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -41,4 +42,13 @@ interface AlarmPlateDao {
 
     @Query("DELETE FROM alarm_plates WHERE user_id = :userId")
     suspend fun deleteAllForUser(userId: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(entities: List<AlarmPlateEntity>)
+
+    @Transaction
+    suspend fun replaceAll(userId: Long, entities: List<AlarmPlateEntity>) {
+        deleteAllForUser(userId)
+        upsertAll(entities)
+    }
 }

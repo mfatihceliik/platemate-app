@@ -3,6 +3,7 @@ package com.mefy.platemate.presentation.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigation
+import com.mefy.platemate.presentation.navigation.graphs.searchGraph
 
 internal fun NavGraphBuilder.mainGraph(
     navController: NavHostController,

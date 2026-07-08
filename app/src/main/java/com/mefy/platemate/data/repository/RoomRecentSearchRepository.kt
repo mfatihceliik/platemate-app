@@ -32,6 +32,7 @@ class RoomRecentSearchRepository @Inject constructor(
 
     override suspend fun upsertRecent(item: RecentSearch) {
         val userId = sessionStore.session.first()?.userId ?: return
+        recentSearchDao.deleteRecent(userId = userId, normalizedPlateCode = item.normalizedPlateCode)
         recentSearchDao.upsert(mapToEntity(userId = userId, item = item))
         recentSearchDao.trimToLimit(userId = userId, limit = MAX_RECENT_ITEMS)
     }
@@ -90,6 +91,6 @@ class RoomRecentSearchRepository @Inject constructor(
     )
 
     private companion object {
-        const val MAX_RECENT_ITEMS = 10
+        const val MAX_RECENT_ITEMS = 6
     }
 }

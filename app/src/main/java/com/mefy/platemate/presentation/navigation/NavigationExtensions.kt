@@ -60,6 +60,12 @@ fun NavHostController.navigateToSearchDetail(id: String) {
     }
 }
 
+fun NavHostController.navigateToCameraScanner() {
+    navigate(CameraScannerDestination) {
+        launchSingleTop = true
+    }
+}
+
 fun NavHostController.navigateToReview(plateCode: String) {
     navigate(ReviewDestination(plateCode = plateCode)) {
         launchSingleTop = true

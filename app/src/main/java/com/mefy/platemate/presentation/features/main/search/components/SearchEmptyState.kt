@@ -71,6 +71,7 @@ private fun SearchScreenEmptyPreview() {
         SearchScreen(
             state = SearchUiState(),
             onAction = {},
+            onNavigateToCameraScanner = {}
         )
     }
 }

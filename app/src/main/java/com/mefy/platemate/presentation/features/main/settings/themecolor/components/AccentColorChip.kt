@@ -27,19 +27,19 @@ internal fun AccentColorChip(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
+    val shapes = MaterialTheme.shapes
     val colors = MaterialTheme.pmColors
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = modifier
             .height(58.dp)
-            .background(colors.surface, MaterialTheme.shapes.medium)
+            .background(colors.surface, shapes.medium)
             .border(
                 width = if (isSelected) 2.dp else dims.stroke.st1,
                 color = if (isSelected) color else colors.cardBorder,
-                shape = MaterialTheme.shapes.medium
+                shape = shapes.medium
             )
-            // No press ripple on color chips (the selected ring is the only feedback).
             .debouncedClickable(interactionSource = interactionSource, indication = null, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {

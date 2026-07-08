@@ -8,6 +8,7 @@ import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.review.ReportReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -30,6 +31,7 @@ class PlateDetailViewModel @Inject constructor(
     private val searchPlateUseCase: SearchPlateUseCase,
     private val reportReviewUseCase: ReportReviewUseCase,
     private val observeSessionUseCase: ObserveSessionUseCase,
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -156,7 +158,7 @@ class PlateDetailViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            plateCode = plate.plateCode,
+                            plateCode = formatTurkishPlateInputUseCase(plate.plateCode),
                             cityCode = plate.plateCode.take(2),
                             cityName = plate.cityName,
                             ratingAverage = plate.ratingAverage,
