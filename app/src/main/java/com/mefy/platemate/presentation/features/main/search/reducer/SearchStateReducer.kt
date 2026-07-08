@@ -44,10 +44,12 @@ class SearchStateReducer @Inject constructor() {
     fun onDataUpdated(
         state: SearchUiState,
         recentSearches: List<SearchRecentUiModel>,
-        bookmarkedPlates: List<SearchRecentUiModel>
+        bookmarkedPlates: List<SearchRecentUiModel>,
+        alarmPlates: List<SearchRecentUiModel>
     ): SearchUiState = state.copy(
         isInitialLoading = false,
         recentSearches = recentSearches,
-        bookmarkedPlates = bookmarkedPlates
+        bookmarkedPlates = bookmarkedPlates,
+        alarmPlates = alarmPlates
     )
 }

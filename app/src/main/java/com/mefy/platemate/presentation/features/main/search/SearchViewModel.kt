@@ -68,16 +68,18 @@ class SearchViewModel @Inject constructor(
     val uiEffect: SharedFlow<SearchUiEffect> = _uiEffect.asSharedFlow()
     // Mapping arka planda (flowOn Default) yapıldığından, Main'den okunan bu
     // cache'ler @Volatile (görünürlük garantisi).
+    @Suppress("unused")
     @Volatile
     private var latestRecentItems: List<RecentSearch> = emptyList()
+    @Suppress("unused")
     @Volatile
     private var latestSavedPlates: List<com.mefy.platemate.domain.model.search.SavedPlate> = emptyList()
+    @Suppress("unused")
     @Volatile
     private var latestAlarmPlates: List<AlarmPlate> = emptyList()
 
     init {
-        observeRecentSearches()
-        observeAlarmPlates()
+        observeAllData()
         observeConnectivity()
         syncMyLists()
     }
@@ -87,15 +89,7 @@ class SearchViewModel @Inject constructor(
         launch { syncMyPlateListsUseCase() }
     }
 
-    private fun observeAlarmPlates() {
-        launch(onError = { throwable -> handleError(throwable) }) {
-            observeAlarmPlatesUseCase().collectLatest { alarms ->
-                latestAlarmPlates = alarms
-                val mapped = searchUiMapper.mapAlarmPlates(alarms)
-                _uiState.update { it.copy(alarmPlates = mapped) }
-            }
-        }
-    }
+    // Removed observeAlarmPlates()
 
     /** Çevrimdışıyken Search da diğer ekranlar gibi tam-ekran bağlantı hatası gösterir. */
     private fun observeConnectivity() {
@@ -109,23 +103,28 @@ class SearchViewModel @Inject constructor(
     private fun offlineMessage(online: Boolean): UiText? =
         if (online) null else UiText.Resource(R.string.common_error_network)
 
-    private fun observeRecentSearches() {
+    private fun observeAllData() {
         launch(
             onError = { throwable -> handleError(throwable) }
         ) {
             combine(
                 observeRecentSearchesUseCase(),
                 observeSavedPlateCodesUseCase(),
-                observeSavedPlatesUseCase()
-            ) { recentItems, bookmarkedCodes, savedPlates ->
+                observeSavedPlatesUseCase(),
+                observeAlarmPlatesUseCase()
+            ) { recentItems, bookmarkedCodes, savedPlates, alarms ->
                 latestRecentItems = recentItems
                 latestSavedPlates = savedPlates
+                latestAlarmPlates = alarms
+                
                 val mappedRecent = searchUiMapper.mapRecentSearches(recentItems, bookmarkedCodes)
                 val mappedSaved = searchUiMapper.mapSavedPlates(savedPlates)
-                Pair(mappedRecent, mappedSaved)
-            }.flowOn(appDispatchers.default).collectLatest { (mappedRecent, mappedSaved) ->
+                val mappedAlarms = searchUiMapper.mapAlarmPlates(alarms)
+                
+                Triple(mappedRecent, mappedSaved, mappedAlarms)
+            }.flowOn(appDispatchers.default).collectLatest { (mappedRecent, mappedSaved, mappedAlarms) ->
                 _uiState.update { current ->
-                    searchStateReducer.onDataUpdated(current, mappedRecent, mappedSaved)
+                    searchStateReducer.onDataUpdated(current, mappedRecent, mappedSaved, mappedAlarms)
                 }
             }
         }

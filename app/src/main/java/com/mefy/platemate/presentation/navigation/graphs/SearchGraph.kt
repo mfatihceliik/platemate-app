@@ -1,8 +1,11 @@
-package com.mefy.platemate.presentation.navigation
+package com.mefy.platemate.presentation.navigation.graphs
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -15,8 +18,25 @@ import com.mefy.platemate.presentation.features.main.platedetail.removal.PlateRe
 import com.mefy.platemate.presentation.features.main.platedetail.removal.PlateRemovalRequestViewModel
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewRoute
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewViewModel
+import com.mefy.platemate.presentation.features.main.scanner.CameraScannerRoute
+import com.mefy.platemate.presentation.features.main.scanner.ScannerViewModel
 import com.mefy.platemate.presentation.features.main.search.SearchRoute
+import com.mefy.platemate.presentation.features.main.search.SearchUiAction
 import com.mefy.platemate.presentation.features.main.search.SearchViewModel
+import com.mefy.platemate.presentation.navigation.CameraScannerDestination
+import com.mefy.platemate.presentation.navigation.MainGraphDestination
+import com.mefy.platemate.presentation.navigation.PlateActionsDestination
+import com.mefy.platemate.presentation.navigation.PlateRemovalRequestDestination
+import com.mefy.platemate.presentation.navigation.ReviewDestination
+import com.mefy.platemate.presentation.navigation.SearchDestination
+import com.mefy.platemate.presentation.navigation.SearchDetailDestination
+import com.mefy.platemate.presentation.navigation.SearchGraphDestination
+import com.mefy.platemate.presentation.navigation.navigateToCameraScanner
+import com.mefy.platemate.presentation.navigation.navigateToEditReview
+import com.mefy.platemate.presentation.navigation.navigateToPlateActions
+import com.mefy.platemate.presentation.navigation.navigateToRemovalRequest
+import com.mefy.platemate.presentation.navigation.navigateToReview
+import com.mefy.platemate.presentation.navigation.navigateToUserProfile
 
 internal fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
@@ -28,9 +48,22 @@ internal fun NavGraphBuilder.searchGraph(
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(MainGraphDestination)
             }
+            val searchViewModel = hiltViewModel<SearchViewModel>(parentEntry)
+            
+            val scannedPlate by backStackEntry.savedStateHandle.getStateFlow<String?>("scanned_plate", null).collectAsStateWithLifecycle()
+            
+            LaunchedEffect(scannedPlate) {
+                if (!scannedPlate.isNullOrEmpty()) {
+                    searchViewModel.onAction(SearchUiAction.PlateInputChanged(scannedPlate!!))
+                    searchViewModel.onAction(SearchUiAction.SearchClicked)
+                    backStackEntry.savedStateHandle.remove<String>("scanned_plate")
+                }
+            }
+
             SearchRoute(
-                viewModel = hiltViewModel<SearchViewModel>(parentEntry),
+                viewModel = searchViewModel,
                 onNavigateToSearchDetail = onNavigateToSearchDetail,
+                onNavigateToCameraScanner = { navController.navigateToCameraScanner() },
                 modifier = modifier
             )
         }
@@ -74,6 +107,20 @@ internal fun NavGraphBuilder.searchGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onReviewSubmitted = { navController.popBackStack() },
                 modifier = modifier
+            )
+        }
+
+        composable<CameraScannerDestination> {
+            CameraScannerRoute(
+                modifier = modifier,
+                viewModel = hiltViewModel<ScannerViewModel>(),
+                onNavigateBack = { navController.popBackStack() },
+                onPlateFound = { plate ->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("scanned_plate", plate)
+                    navController.popBackStack()
+                },
             )
         }
     }

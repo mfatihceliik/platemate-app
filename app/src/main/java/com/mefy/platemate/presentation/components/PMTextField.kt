@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -41,6 +42,59 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 fun PMTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    variant: PMTextFieldVariant = PMTextFieldVariant.Outlined,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    singleLine: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
+    isError: Boolean = false,
+    isSuccess: Boolean = false,
+    supportingText: String? = null,
+    errorText: String? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
+    val textFieldValue = textFieldValueState.copy(text = value)
+
+    PMTextField(
+        value = textFieldValue,
+        onValueChange = {
+            textFieldValueState = it
+            if (value != it.text) {
+                onValueChange(it.text)
+            }
+        },
+        modifier = modifier,
+        label = label,
+        placeholder = placeholder,
+        variant = variant,
+        enabled = enabled,
+        readOnly = readOnly,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        isError = isError,
+        isSuccess = isSuccess,
+        supportingText = supportingText,
+        errorText = errorText,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        visualTransformation = visualTransformation
+    )
+}
+
+@Composable
+fun PMTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
     placeholder: String? = null,
@@ -74,12 +128,18 @@ fun PMTextField(
         else -> colors.outlineVariant
     }
 
-    val backgroundColor = colors.surface
+    val backgroundColor = when (variant) {
+        PMTextFieldVariant.Chat -> colors.surfaceVariant
+        PMTextFieldVariant.Search -> colors.searchFieldBg
+        else -> colors.surface
+    }
     val textColor = colors.onSurface
 
     val isChat = variant == PMTextFieldVariant.Chat
+    val isSearch = variant == PMTextFieldVariant.Search
 
     val heightModifier: Modifier = when {
+        isSearch -> Modifier.height(dims.sizing.searchBarHeight)
         isChat -> Modifier.heightIn(min = dims.sizing.chatFieldMinHeight)
         singleLine -> Modifier.height(dims.sizing.ctaHeightLarge)
         else -> Modifier
@@ -123,8 +183,12 @@ fun PMTextField(
                         .fillMaxWidth()
                         .then(heightModifier)
                         .background(
-                            if (isChat) colors.surfaceVariant else backgroundColor,
-                            RoundedCornerShape(if (isChat) dims.radius.rFull else dims.radius.r16)
+                            backgroundColor,
+                            when (variant) {
+                                PMTextFieldVariant.Chat -> RoundedCornerShape(dims.radius.rFull)
+                                PMTextFieldVariant.Search -> RoundedCornerShape(dims.radius.r16)
+                                else -> RoundedCornerShape(dims.radius.r16)
+                            }
                         )
                         .then(
                             if (isChat) Modifier
@@ -132,12 +196,15 @@ fun PMTextField(
                                 .border(
                                     width = dims.stroke.st2,
                                     color = borderColor,
-                                    shape = RoundedCornerShape(dims.radius.r12)
+                                    shape = when (variant) {
+                                        PMTextFieldVariant.Search -> RoundedCornerShape(dims.radius.r16)
+                                        else -> RoundedCornerShape(dims.radius.r12)
+                                    }
                                 )
                         )
                         .padding(
                             horizontal = dims.spacing.s16,
-                            vertical = if (isChat) dims.spacing.s10 else dims.spacing.s12
+                            vertical = if (isChat || isSearch) dims.spacing.s10 else dims.spacing.s12
                         ),
                     verticalAlignment = if (singleLine || isChat) Alignment.CenterVertically else Alignment.Top
                 ) {
@@ -147,10 +214,11 @@ fun PMTextField(
                     }
 
                     Box(modifier = Modifier.weight(1f)) {
-                        if (value.isEmpty() && placeholder != null) {
+                        if (value.text.isEmpty() && placeholder != null) {
                             PMText(
                                 text = placeholder,
                                 style = PMTextStyle.Body,
+                                fontSize = dims.fontSize.lg,
                                 color = colors.onSurfaceVariant.copy(alpha = 0.6f)
                             )
                         }

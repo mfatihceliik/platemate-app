@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
@@ -101,24 +102,24 @@ internal fun ProfileHeaderSection(
                     } else {
                         stringResource(R.string.profile_premium_until_format, until)
                     }
-                    ProfileBadge(
-                        text = premiumText,
-                        backgroundColor = colors.primary,
-                        textColor = colors.onPrimary
+                    PMChip(
+                        label = premiumText,
+                        containerColor = colors.primary,
+                        contentColor = colors.onPrimary
                     )
                 } else {
-                    ProfileBadge(
-                        text = stringResource(R.string.profile_premium_inactive),
-                        backgroundColor = colors.surfaceVariant,
-                        textColor = colors.textSecondary
+                    PMChip(
+                        label = stringResource(R.string.profile_premium_inactive),
+                        containerColor = colors.surfaceVariant,
+                        contentColor = colors.textSecondary
                     )
                 }
 
                 if (accountSummary.joinedAtText.isNotBlank() && accountSummary.joinedAtText != "-") {
-                    ProfileBadge(
-                        text = accountSummary.joinedAtText,
-                        backgroundColor = colors.surfaceVariant,
-                        textColor = colors.textSecondary
+                    PMChip(
+                        label = accountSummary.joinedAtText,
+                        containerColor = colors.surfaceVariant,
+                        contentColor = colors.textSecondary
                     )
                 }
             }

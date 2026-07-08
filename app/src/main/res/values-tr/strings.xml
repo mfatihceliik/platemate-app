@@ -583,6 +583,7 @@
     <string name="search_error_retry">Tekrar dene</string>
 
     <!-- Discover -->
+    <string name="scanner_loading_gallery">Resim işleniyor...</string>
     <string name="discover_header_title">Keşfet</string>
     <string name="discover_header_subtitle">Topluluk aktiviteleri ve istatistikler</string>
     <string name="discover_section_trending">Şu An Trend</string>
@@ -653,5 +654,8 @@
     <string name="review_rating_3">Orta</string>
     <string name="review_rating_4">Çok iyi</string>
     <string name="review_rating_5">Mükemmel</string>
+    <string name="scanner_hint">Plakayı dikdörtgenin içine yerleştirin</string>
+    <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
+    <string name="scanner_searching_plate">%1$s\nAranıyor…</string>
 </resources>
 

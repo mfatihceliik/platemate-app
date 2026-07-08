@@ -21,7 +21,7 @@ data class PMSizing(
     val plateBadgeMedium: Dp = 44.dp,
     val plateBadgeLarge: Dp = 64.dp,
     val plateBadgeReview: Dp = 52.dp,
-    val searchBarHeight: Dp = 44.dp,
+    val searchBarHeight: Dp = 52.dp,
     val topBarHeight: Dp = 56.dp,
     val ctaHeight: Dp = 48.dp,
     val ctaHeightLarge: Dp = 52.dp,

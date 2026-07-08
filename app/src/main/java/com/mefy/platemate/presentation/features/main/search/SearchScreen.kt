@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.search
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,17 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMChip
+import com.mefy.platemate.presentation.components.PMDraggableFab
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.search.components.AlarmPlateCompactCard
-import com.mefy.platemate.presentation.features.main.search.components.RecentChip
 import com.mefy.platemate.presentation.features.main.search.components.SavedPlateCompactCard
-import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
 import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -47,6 +49,7 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     state: SearchUiState,
     onAction: (SearchUiAction) -> Unit,
+    onNavigateToCameraScanner: () -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues(),
 ) {
@@ -57,28 +60,46 @@ fun SearchScreen(
     val onRecentClick = remember(onAction) { { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) } }
     val onSavedBookmark = remember(onAction) { { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) } }
     val onAlarmRemove = remember(onAction) { { norm: String -> onAction(SearchUiAction.AlarmPlateRemoveClicked(norm)) } }
+    val onPlateInputChanged = remember(onAction) { { value: String -> onAction(SearchUiAction.PlateInputChanged(value)) } }
+    val onSearchClicked = remember(onAction) { { onAction(SearchUiAction.SearchClicked) } }
+    val onClearRecentClicked = remember(onAction) { { onAction(SearchUiAction.ClearRecentClicked) } }
 
-    LazyColumn(
-        state = lazyListState,
-        modifier = modifier.background(colors.background),
-        contentPadding = PaddingValues(
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(
             start = dims.spacing.s16,
             end = dims.spacing.s16,
             top = dims.spacing.s16,
             bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
         ),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
     ) {
         item {
+
+            val errorText = state.plateInput.isNotBlank() && !state.isPlateValid
+            val isSuccess = state.detectedCityName != null
+
             PMSearchBar(
                 query = state.plateInput,
-                onQueryChange = { onAction(SearchUiAction.PlateInputChanged(it)) },
-                onSearch = { onAction(SearchUiAction.SearchClicked) },
-                enabled = true,
-                modifier = Modifier.fillMaxWidth()
+                onQueryChange = onPlateInputChanged,
+                onSearch = onSearchClicked,
+                isSearchActionEnabled = state.isPlateValid,
+                isLoading = state.isSearching,
+                enabled = !state.isSearching,
+                modifier = Modifier.fillMaxWidth(),
+                supportingText = if(isSuccess) stringResource(R.string.search_detected_city_plate, state.detectedCityName) else null,
+                isSuccess = isSuccess,
+                errorText = if(errorText) stringResource(R.string.search_plate_invalid_format) else null,
+                isError = errorText,
             )
 
-            if (state.plateInput.isNotBlank() && !state.isPlateValid) {
+            /*if (state.plateInput.isNotBlank() && !state.isPlateValid) {
                 PMText(
                     text = stringResource(R.string.search_plate_invalid_format),
                     fontSize = dims.fontSize.sm,
@@ -94,7 +115,7 @@ fun SearchScreen(
                     color = colors.textTertiary,
                     modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
                 )
-            }
+            }*/
         }
 
         if (state.recentSearches.isNotEmpty()) {
@@ -113,9 +134,7 @@ fun SearchScreen(
                         fontSize = dims.fontSize.md,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.primary,
-                        modifier = Modifier.debouncedClickable {
-                            onAction(SearchUiAction.ClearRecentClicked)
-                        }
+                        modifier = Modifier.debouncedClickable(onClick = onClearRecentClicked)
                     )
                 }
 
@@ -127,9 +146,9 @@ fun SearchScreen(
                 ) {
                     state.recentSearches.forEach { item ->
                         key(item.normalizedPlateCode) {
-                            RecentChip(
-                                plateCode = item.plateCode,
-                                onClick = onRecentClick
+                            PMChip(
+                                label = item.plateCode,
+                                onClick = { onRecentClick(item.plateCode) }
                             )
                         }
                     }
@@ -169,6 +188,7 @@ fun SearchScreen(
                         contentType = { "saved_plate" }
                     ) { item ->
                         SavedPlateCompactCard(
+                            modifier = Modifier.animateItem(),
                             item = item,
                             onClick = onRecentClick,
                             onBookmarkClick = onSavedBookmark
@@ -197,18 +217,13 @@ fun SearchScreen(
                         contentType = { "alarm_plate" }
                     ) { item ->
                         AlarmPlateCompactCard(
+                            modifier = Modifier.animateItem(),
                             item = item,
                             onClick = onRecentClick,
                             onRemoveClick = onAlarmRemove
                         )
                     }
                 }
-            }
-        }
-
-        if (state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty() && state.alarmPlates.isEmpty()) {
-            item {
-                SearchEmptyState()
             }
         }
 
@@ -233,6 +248,17 @@ fun SearchScreen(
             }
         }
     }
+
+    PMDraggableFab(
+        onClick = onNavigateToCameraScanner,
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(
+                end = dims.spacing.s16,
+                bottom = innerPadding.calculateBottomPadding() + dims.spacing.s24
+            )
+    )
+}
 }
 
 @Preview(name = "Search Screen Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
@@ -295,6 +321,7 @@ private fun SearchScreenLightPreview() {
                 )
             ),
             onAction = {},
+            onNavigateToCameraScanner = {}
         )
     }
 }
@@ -331,6 +358,7 @@ private fun SearchScreenDarkPreview() {
                 )
             ),
             onAction = {},
+            onNavigateToCameraScanner = {}
         )
     }
 }

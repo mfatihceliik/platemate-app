@@ -28,3 +28,6 @@ data class PlateRemovalRequestDestination(
     val plateId: Long,
     val plateCode: String
 ) : AppDestination
+
+@Serializable
+data object CameraScannerDestination : AppDestination

@@ -6,6 +6,7 @@ import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.review.AddPlateReviewUseCase
 import com.mefy.platemate.domain.usecase.review.GetReportTypesUseCase
 import com.mefy.platemate.domain.usecase.review.UpdatePlateReviewUseCase
+import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.presentation.navigation.ReviewDestination
 import com.mefy.platemate.presentation.common.error.toUiText
@@ -29,6 +30,7 @@ class ReviewViewModel @Inject constructor(
     private val addPlateReviewUseCase: AddPlateReviewUseCase,
     private val updatePlateReviewUseCase: UpdatePlateReviewUseCase,
     private val getReportTypesUseCase: GetReportTypesUseCase,
+    private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -39,7 +41,7 @@ class ReviewViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         ReviewUiState(
-            plateCode = plateCode,
+            plateCode = formatTurkishPlateInputUseCase(plateCode),
             isEditMode = isEditMode,
             overallRating = if (isEditMode) route.initialRating else 0,
             comment = if (isEditMode) route.initialComment else ""

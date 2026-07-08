@@ -21,6 +21,7 @@
         <item quantity="one">%1$d unread message</item>
         <item quantity="other">%1$d unread messages</item>
     </plurals>
+    <string name="conversation_date_last_weekday">Last %1$s</string>
     <string name="chatdetail_block">Block user</string>
     <string name="chatdetail_unblock">Unblock user</string>
     <string name="user_profile_report_submitted">Report submitted.</string>
@@ -579,6 +580,7 @@
     <string name="search_error_retry">Retry</string>
 
     <!-- Discover -->
+    <string name="scanner_loading_gallery">Image is being processed...</string>
     <string name="discover_header_title">Discover</string>
     <string name="discover_header_subtitle">Community activities and statistics</string>
     <string name="discover_section_trending">Trending Now</string>
@@ -649,5 +651,11 @@
     <string name="review_rating_3">Average</string>
     <string name="review_rating_4">Very good</string>
     <string name="review_rating_5">Excellent</string>
+    <string name="conversation_input_placeholder">Write a message…</string>
+    <string name="conversation_date_today">Today</string>
+    <string name="conversation_date_yesterday">Yesterday</string>
+    <string name="scanner_hint">Place the plate inside the rectangle.</string>
+    <string name="scanner_error_not_found">License plate not found. Please select a clearer photo.</string>
+    <string name="scanner_searching_plate">%1$s\nSearching…</string>
 </resources>
 

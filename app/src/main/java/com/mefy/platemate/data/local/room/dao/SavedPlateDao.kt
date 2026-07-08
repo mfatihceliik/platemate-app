@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.mefy.platemate.data.local.room.entity.SavedPlateEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -41,4 +42,13 @@ interface SavedPlateDao {
 
     @Query("DELETE FROM saved_plates WHERE user_id = :userId")
     suspend fun deleteAllForUser(userId: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(entities: List<SavedPlateEntity>)
+
+    @Transaction
+    suspend fun replaceAll(userId: Long, entities: List<SavedPlateEntity>) {
+        deleteAllForUser(userId)
+        upsertAll(entities)
+    }
 }

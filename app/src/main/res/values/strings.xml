@@ -582,6 +582,11 @@
     <string name="search_error_title">An error occurred</string>
     <string name="search_error_retry">Retry</string>
 
+    <!-- Scanner -->
+    <string name="scanner_hint">Plakayı dikdörtgenin içine yerleştirin</string>
+    <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
+    <string name="scanner_loading_gallery">Resim işleniyor...</string>
+
     <!-- Discover -->
     <string name="discover_header_title">Discover</string>
     <string name="discover_header_subtitle">Community activities and statistics</string>
@@ -653,5 +658,6 @@
     <string name="review_rating_3">Average</string>
     <string name="review_rating_4">Very good</string>
     <string name="review_rating_5">Excellent</string>
+    <string name="scanner_searching_plate">%1$s\nSearching…</string>
 </resources>
 

@@ -4,8 +4,14 @@ import javax.inject.Inject
 
 class ValidateTurkishPlateUseCase @Inject constructor() {
 
+    private companion object {
+        val TURKISH_PLATE_REGEX = Regex(
+            pattern = "^(0[1-9]|[1-7][0-9]|8[0-1])(([A-Z])(\\d{4,5})|([A-Z]{2})(\\d{3,4})|([A-Z]{3})(\\d{2,3}))$"
+        )
+    }
+
     fun normalize(plateCode: String): String =
-        plateCode.replace(" ", "").uppercase()
+        plateCode.replace(Regex("[^a-zA-Z0-9]"), "").uppercase()
 
     operator fun invoke(plateCode: String): Boolean {
         val normalizedPlate = normalize(plateCode)
@@ -13,11 +19,5 @@ class ValidateTurkishPlateUseCase @Inject constructor() {
             return false
         }
         return TURKISH_PLATE_REGEX.matches(normalizedPlate)
-    }
-
-    private companion object {
-        val TURKISH_PLATE_REGEX = Regex(
-            pattern = "^(0[1-9]|[1-7][0-9]|8[0-1])(([A-Z])(\\d{4,5})|([A-Z]{2})(\\d{3,4})|([A-Z]{3})(\\d{2,3}))$"
-        )
     }
 }
