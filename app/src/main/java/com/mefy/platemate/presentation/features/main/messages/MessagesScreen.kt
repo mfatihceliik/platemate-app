@@ -12,7 +12,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
@@ -45,7 +44,7 @@ fun MessagesScreen(
                 onSwipeToMarkRead = { onAction(MessagesUiAction.MarkReadSwiped(conversation.roomId)) }
             )
             HorizontalDivider(
-                modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMedium + dims.spacing.s12),
+                modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMd + dims.spacing.s12),
                 color = colors.outlineVariant
             )
         }
@@ -99,30 +98,21 @@ private fun MessagesDarkPreview() {
 private fun previewConversations() = listOf(
     MessageConversationUiModel(
         roomId = 1,
-        initials = "AY",
         name = "Ahmet Y.",
         preview = "Teşekkürler, çok yardımcı oldun!",
         time = "09:24",
-        unreadCount = 3,
-        avatarBg = Color(0xFFEEF2FF),
-        avatarFg = Color(0xFF4F46E5)
+        unreadCount = 3
     ), MessageConversationUiModel(
         roomId = 2,
-        initials = "ZK",
         name = "Zeynep K.",
         preview = "Plakayı gördüm, gerçekten nazik biri",
         time = "Dün",
-        unreadCount = 0,
-        avatarBg = Color(0xFFECFEFF),
-        avatarFg = Color(0xFF0891B2)
+        unreadCount = 0
     ), MessageConversationUiModel(
         roomId = 3,
-        initials = "MC",
         name = "Mehmet C.",
         preview = "Evet, o plakanın sahibiyim ben",
         time = "Pzt",
-        unreadCount = 0,
-        avatarBg = Color(0xFFF0FDF4),
-        avatarFg = Color(0xFF15803D)
+        unreadCount = 0
     )
 )

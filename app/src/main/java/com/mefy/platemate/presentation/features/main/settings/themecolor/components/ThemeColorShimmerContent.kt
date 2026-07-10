@@ -12,8 +12,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.ShimmerBlock
 import com.mefy.platemate.presentation.components.rememberShimmer
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 /** Loading skeleton for the Theme Color screen: preview card, accent grid, appearance selector. */
@@ -45,7 +47,7 @@ internal fun ThemeColorShimmerContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)) {
                     repeat(cols) { col ->
                         if (row * cols + col < swatchCount) {
-                            ShimmerBlock(shimmer, Modifier.size(dims.sizing.plateBadgeMedium), CircleShape)
+                            ShimmerBlock(shimmer, Modifier.size(dims.sizing.plateBadgeMd), CircleShape)
                         }
                     }
                 }
@@ -59,5 +61,21 @@ internal fun ThemeColorShimmerContent(
                 ShimmerBlock(shimmer, Modifier.weight(1f).height(dims.sizing.ctaHeight), RoundedCornerShape(dims.radius.r12))
             }
         }
+    }
+}
+
+@Preview(name = "ThemeColorShimmer Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun ThemeColorShimmerLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        ThemeColorShimmerContent(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Preview(name = "ThemeColorShimmer Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun ThemeColorShimmerDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        ThemeColorShimmerContent(modifier = Modifier.fillMaxWidth())
     }
 }

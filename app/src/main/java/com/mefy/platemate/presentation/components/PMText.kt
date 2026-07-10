@@ -20,7 +20,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.ui.unit.TextUnit
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.resolve
-import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun PMText(
@@ -41,7 +41,7 @@ fun PMText(
         color
     }
     val resolvedText = if (style == PMTextStyle.SectionLabel) {
-        text.uppercase(Locale.getDefault())
+        text.uppercase(LocalLocale.current.platformLocale)
     } else {
         text
     }
@@ -79,7 +79,7 @@ fun PMText(
     }
     val resolvedText = if (style == PMTextStyle.SectionLabel) {
         AnnotatedString(
-            text = text.text.uppercase(java.util.Locale.getDefault()),
+            text = text.text.uppercase(LocalLocale.current.platformLocale),
             spanStyles = text.spanStyles,
             paragraphStyles = text.paragraphStyles
         )

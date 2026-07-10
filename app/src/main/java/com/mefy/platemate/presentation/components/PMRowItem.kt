@@ -143,17 +143,17 @@ private fun PMRowItemBody(
             modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically
         ) {
             if (leadingIconPainter != null) {
-                PMIcon(
+                PMIconContainer(
                     painter = leadingIconPainter,
                     tint = leadingIconTint ?: Color.Unspecified,
-                    containerColor = leadingContainerColor
+                    containerColor = leadingContainerColor ?: colors.primaryContainer
                 )
                 Spacer(modifier = Modifier.width(dims.spacing.s12))
             } else if (leadingIcon != null) {
-                PMIcon(
+                PMIconContainer(
                     imageVector = leadingIcon,
                     tint = leadingIconTint,
-                    containerColor = leadingContainerColor
+                    containerColor = leadingContainerColor ?: colors.primaryContainer
                 )
                 Spacer(modifier = Modifier.width(dims.spacing.s12))
             }

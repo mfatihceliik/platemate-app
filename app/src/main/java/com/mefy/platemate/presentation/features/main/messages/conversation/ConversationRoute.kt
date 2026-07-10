@@ -37,9 +37,6 @@ fun ConversationRoute(
     onNavigateToChatDetail: (
         conversationId: String,
         participantName: String,
-        initials: String,
-        avatarBgArgb: Long,
-        avatarFgArgb: Long
             ) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,9 +51,6 @@ fun ConversationRoute(
                 is ConversationUiEffect.NavigateToChatDetail -> onNavigateToChatDetail(
                     effect.conversationId,
                     effect.participantName,
-                    effect.initials,
-                    effect.avatarBgArgb,
-                    effect.avatarFgArgb
                 )
             }
         }
@@ -95,9 +89,6 @@ fun ConversationRoute(
             ConversationTopBar(
                 modifier = Modifier.wrapContentSize(),
                 participantName = state.participantName,
-                initials = state.initials,
-                avatarBg = state.avatarBg,
-                avatarFg = state.avatarFg,
                 onBackClick = onBackClicked,
                 onInfoClick = onInfoClicked,
                 isOnline = state.isOtherUserOnline

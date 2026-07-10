@@ -3,6 +3,7 @@ package com.mefy.platemate.presentation.common.messaging
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.mefy.platemate.presentation.common.banner.BannerSeverity
+import com.mefy.platemate.presentation.common.dialog.DialogModel
 import com.mefy.platemate.presentation.common.text.UiText
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.Flow
  * üzerinden sağlar; her ekran yalnızca [HandleUiMessages] çağırarak kendi ViewModel akışını toplar.
  */
 data class UiMessageHandlers(
-    val onShowSnackbar: (UiText, BannerSeverity) -> Unit
+    val onShowSnackbar: (UiText, BannerSeverity) -> Unit,
+    val onShowDialog: (DialogModel) -> Unit
 )
 
 val LocalUiMessageHandlers = staticCompositionLocalOf<UiMessageHandlers> {
@@ -27,6 +29,7 @@ fun HandleUiMessages(messages: Flow<UiMessage>) {
     val handlers = LocalUiMessageHandlers.current
     CollectUiMessages(
         messages = messages,
-        onShowSnackbar = handlers.onShowSnackbar
+        onShowSnackbar = handlers.onShowSnackbar,
+        onShowDialog = handlers.onShowDialog
     )
 }

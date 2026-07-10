@@ -17,7 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.accentcolors.components.AccentColorRow
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
@@ -55,7 +55,7 @@ internal fun AccentColorsScreen(
                 PMButton(
                     text = stringResource(R.string.common_save),
                     onClick = { onAction(AccentColorsUiAction.GridSizeSaveClicked) },
-                    style = PMButtonStyle.Outlined,
+                    variant = PMButtonVariant.Outlined,
                     enabled = state.isGridSizeSaveEnabled,
                     loading = state.savingGridSize,
                     modifier = Modifier.padding(top = dims.spacing.s4)

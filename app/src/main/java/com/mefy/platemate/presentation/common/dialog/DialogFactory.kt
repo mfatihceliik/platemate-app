@@ -19,4 +19,15 @@ object DialogFactory {
         variant = DialogVariant.Error,
         onConfirm = onConfirm
     )
+
+    /** Chat silme onay dialog'u. */
+    fun deleteChatConfirmDialog(onConfirm: () -> Unit): DialogModel = DialogModel(
+        title = UiText.Resource(R.string.messages_delete_confirm_title),
+        message = UiText.Resource(R.string.messages_delete_confirm_message),
+        confirmText = UiText.Resource(R.string.common_delete),
+        dismissText = UiText.Resource(R.string.common_cancel),
+        dismissible = true,
+        variant = DialogVariant.Error,
+        onConfirm = onConfirm
+    )
 }

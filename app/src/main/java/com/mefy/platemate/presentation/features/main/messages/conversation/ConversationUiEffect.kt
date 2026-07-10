@@ -5,8 +5,5 @@ sealed interface ConversationUiEffect {
     data class NavigateToChatDetail(
         val conversationId: String,
         val participantName: String,
-        val initials: String,
-        val avatarBgArgb: Long,
-        val avatarFgArgb: Long
     ) : ConversationUiEffect
 }

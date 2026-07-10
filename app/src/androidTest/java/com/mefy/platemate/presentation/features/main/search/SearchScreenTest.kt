@@ -29,6 +29,7 @@ class SearchScreenTest {
                 SearchScreen(
                     state = SearchUiState(),
                     onAction = {},
+                    onNavigateToCameraScanner = {},
                 )
             }
         }
@@ -48,6 +49,7 @@ class SearchScreenTest {
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
                     onAction = { action -> lastAction = action },
+                    onNavigateToCameraScanner = {},
                 )
             }
         }
@@ -71,6 +73,7 @@ class SearchScreenTest {
                         recentSearches = listOf(sampleRecentSearch(isBookmarked = false))
                     ),
                     onAction = { action -> lastAction = action },
+                    onNavigateToCameraScanner = {},
                 )
             }
         }

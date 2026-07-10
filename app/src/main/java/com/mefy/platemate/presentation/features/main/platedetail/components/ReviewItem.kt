@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
@@ -24,13 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.components.PMCard
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.platedetail.PlateReviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -53,21 +50,13 @@ internal fun ReviewItem(
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarSmall)
-                    .clip(CircleShape)
-                    .background(colors.primaryContainer)
-                    .debouncedClickable(onClick = onAvatarClick),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = review.initials,
-                    fontSize = dims.fontSize.md,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.onPrimaryContainer
-                )
-            }
+
+            PMAvatar(
+                onClick = onAvatarClick,
+                displayName = review.displayName ?: review.username,
+                isEditable = false,
+                size = dims.sizing.avatarMd,
+            )
 
             Column(
                 modifier = Modifier.weight(1f),
@@ -87,18 +76,18 @@ internal fun ReviewItem(
             }
 
             when {
-                review.canEdit -> PMIconButton(onClick = onEditClick, size = dims.sizing.iconSm) {
-                    PMIcon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.review_edit_title),
-                    )
-                }
-                review.canReport -> PMIconButton(onClick = onReportClick, size = dims.sizing.iconSm) {
-                    PMIcon(
-                        imageVector = Icons.Outlined.Flag,
-                        contentDescription = stringResource(R.string.report_review_title),
-                    )
-                }
+                review.canEdit -> PMIconButton(
+                    onClick = onEditClick,
+                    size = dims.sizing.iconSm,
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = stringResource(R.string.review_edit_title)
+                )
+                review.canReport -> PMIconButton(
+                    onClick = onReportClick,
+                    size = dims.sizing.iconSm,
+                    imageVector = Icons.Outlined.Flag,
+                    contentDescription = stringResource(R.string.report_review_title)
+                )
             }
         }
 
@@ -172,7 +161,6 @@ private fun ReviewItemPreviewContent() {
                 id = 1,
                 username = "ahmetk",
                 displayName = "Ahmet K.",
-                initials = "AK",
                 profilePhotoUrl = null,
                 rating = 5,
                 timeAgo = "2 gün önce",
@@ -186,7 +174,6 @@ private fun ReviewItemPreviewContent() {
                 id = 2,
                 username = "zeynept",
                 displayName = null,
-                initials = "ZT",
                 profilePhotoUrl = null,
                 rating = 4,
                 timeAgo = "3 gün önce",

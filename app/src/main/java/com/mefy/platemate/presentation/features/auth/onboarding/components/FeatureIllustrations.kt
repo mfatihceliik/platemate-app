@@ -87,7 +87,7 @@ internal fun FeatureIllustration1() {
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(dimensions.spacing.s8)) {
                     repeat(4) {
-                        Icon(Icons.Filled.Star, contentDescription = null, tint = pmColors.star, modifier = Modifier.size(dimensions.spacing.s32))
+                        Icon(Icons.Filled.Star, contentDescription = null, tint = pmColors.iconStar, modifier = Modifier.size(dimensions.spacing.s32))
                     }
                     Icon(Icons.Filled.Star, contentDescription = null, tint = pmColors.starEmpty, modifier = Modifier.size(dimensions.spacing.s32))
                 }
@@ -287,7 +287,7 @@ internal fun FeatureIllustration3() {
                 Column(verticalArrangement = Arrangement.spacedBy(dimensions.spacing.s4)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(dimensions.spacing.s8), verticalAlignment = Alignment.CenterVertically) {
                         PMText(text = stringResource(R.string.illustration_comment_name), style = PMTextStyle.Label, color = pmColors.textPrimary)
-                        PMText(text = "★★★★★", style = PMTextStyle.Caption, color = pmColors.star)
+                        PMText(text = "★★★★★", style = PMTextStyle.Caption, color = pmColors.iconStar)
                     }
                     PMText(text = stringResource(R.string.illustration_comment_text), style = PMTextStyle.Caption, color = pmColors.textSecondary)
                 }

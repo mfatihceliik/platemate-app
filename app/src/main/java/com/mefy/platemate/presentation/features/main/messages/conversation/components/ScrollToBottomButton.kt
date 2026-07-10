@@ -5,21 +5,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.PMIcon
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -43,21 +35,13 @@ internal fun ScrollToBottomButton(
         exit = fadeOut() + scaleOut(),
         modifier = modifier
     ) {
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.scrollToBottomButton)
-                .shadow(dims.spacing.s8, CircleShape)
-                .clip(CircleShape)
-                .background(colors.surface)
-                .debouncedClickable(onClick = onClick),
-            contentAlignment = Alignment.Center
-        ) {
-            PMIcon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                tint = colors.textLabel,
-                size = dims.sizing.iconLg
-            )
-        }
+
+        PMIconButton(
+            imageVector = Icons.Default.KeyboardArrowDown,
+            onClick = onClick,
+            size = dims.sizing.iconLg,
+            containerColor = colors.surface
+        )
     }
 }
 

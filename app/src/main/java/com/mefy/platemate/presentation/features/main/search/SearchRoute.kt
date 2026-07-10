@@ -53,7 +53,6 @@ fun SearchRoute(
     val onAction = viewModel::onAction
     val status = when {
         state.isInitialLoading -> ScreenStatus.Loading
-        state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty() && state.alarmPlates.isEmpty() -> ScreenStatus.Empty
         else -> ScreenStatus.Content
     }

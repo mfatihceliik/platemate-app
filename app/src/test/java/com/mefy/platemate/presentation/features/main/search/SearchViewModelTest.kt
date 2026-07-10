@@ -1,10 +1,9 @@
-﻿package com.mefy.platemate.presentation.features.main.search
+package com.mefy.platemate.presentation.features.main.search
 
 import com.mefy.platemate.data.repository.InMemoryRecentSearchRepository
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
-import com.mefy.platemate.core.connectivity.NetworkMonitor
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
@@ -283,7 +282,6 @@ class SearchViewModelTest {
         validateTurkishPlateUseCase = ValidateTurkishPlateUseCase(),
         searchUiMapper = DefaultSearchUiMapper(),
         searchStateReducer = SearchStateReducer(),
-        networkMonitor = FakeOnlineNetworkMonitor,
         appDispatchers = AppDispatchers(
             main = mainDispatcherRule.dispatcher,
             io = mainDispatcherRule.dispatcher,
@@ -291,11 +289,6 @@ class SearchViewModelTest {
         ),
         globalUiEventBus = DefaultGlobalUiEventBus()
     )
-
-    private object FakeOnlineNetworkMonitor : NetworkMonitor {
-        override val isOnline: Flow<Boolean> = flowOf(true)
-        override fun isCurrentlyOnline(): Boolean = true
-    }
 
     private fun samplePlateSearchResult(
         id: Long = 1L,

@@ -161,7 +161,10 @@ private fun SavedCardSkeleton(shimmer: Shimmer) {
             ) {
                 ShimmerBlock(
                     shimmer = shimmer,
-                    modifier = Modifier.size(dims.sizing.plateBadgeSmall),
+                    modifier = Modifier.size(
+                        width = dims.sizing.plateBadgeSm * 3f,
+                        height = dims.sizing.plateBadgeSm
+                    ),
                     shape = RoundedCornerShape(dims.radius.r8),
                 )
                 ShimmerBlock(
@@ -170,13 +173,6 @@ private fun SavedCardSkeleton(shimmer: Shimmer) {
                     shape = RoundedCornerShape(dims.radius.r8),
                 )
             }
-            ShimmerBlock(
-                shimmer = shimmer,
-                modifier = Modifier
-                    .fillMaxWidth(0.75f)
-                    .height(dims.spacing.s16),
-                shape = RoundedCornerShape(dims.radius.r8),
-            )
             ShimmerBlock(
                 shimmer = shimmer,
                 modifier = Modifier

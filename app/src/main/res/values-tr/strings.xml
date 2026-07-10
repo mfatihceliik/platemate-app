@@ -657,5 +657,6 @@
     <string name="scanner_hint">Plakayı dikdörtgenin içine yerleştirin</string>
     <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
     <string name="scanner_searching_plate">%1$s\nAranıyor…</string>
+    <string name="camera_scanner_screen">Kamera</string>
 </resources>
 

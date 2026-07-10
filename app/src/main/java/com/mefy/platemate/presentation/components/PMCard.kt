@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.model.PMCardVariant
+import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme

@@ -32,7 +32,6 @@ import com.mefy.platemate.presentation.features.main.settings.editprofile.compon
 import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AddedSocialLinkRow
 import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarEditSection
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
-import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -83,15 +82,6 @@ internal fun EditProfileScreen(
         }
     }
 
-    val initials = remember(state.displayName) {
-        state.displayName
-            .split(" ")
-            .take(2)
-            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-            .joinToString("")
-            .ifEmpty { "?" }
-    }
-
     // SnapshotStateMap okuması burada yapılır: link eklenince/silinince liste recompose olur.
     val addedSocialLinks = state.socialLinks.entries.toList()
 
@@ -111,7 +101,7 @@ internal fun EditProfileScreen(
 
         item {
             AvatarEditSection(
-                initials = initials,
+                displayName = state.displayName,
                 onAvatarClick = onAvatarEdit
             )
         }
@@ -194,7 +184,7 @@ internal fun EditProfileScreen(
                     url = url,
                     iconUrl = platform?.iconUrl,
                     iconTint = platform?.iconTint ?: SocialPlatformFallbackTint,
-                    containerColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
+                    //containerColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
                     onRemove = { onAction(EditProfileUiAction.RemoveSocialLinkClicked(code)) }
                 )
             }

@@ -55,7 +55,7 @@ internal fun MessagesShimmerContent(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(dims.sizing.avatarMedium)
+                        .size(dims.sizing.avatarMd)
                         .shimmer(shimmer)
                         .background(colors.skeleton, CircleShape)
                 )

@@ -1,4 +1,4 @@
-package com.mefy.platemate.presentation.navigation
+package com.mefy.platemate.presentation.navigation.graphs
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -13,6 +13,13 @@ import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFrie
 import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFriendsViewModel
 import com.mefy.platemate.presentation.features.main.profile.userprofile.UserProfileRoute
 import com.mefy.platemate.presentation.features.main.profile.userprofile.UserProfileViewModel
+import com.mefy.platemate.presentation.navigation.ChatDestination
+import com.mefy.platemate.presentation.navigation.MainGraphDestination
+import com.mefy.platemate.presentation.navigation.ProfileDestination
+import com.mefy.platemate.presentation.navigation.ProfileFriendsDestination
+import com.mefy.platemate.presentation.navigation.ProfileGraphDestination
+import com.mefy.platemate.presentation.navigation.UserProfileDestination
+import com.mefy.platemate.presentation.navigation.navigateToProfileFriends
 
 internal fun NavGraphBuilder.profileGraph(
     navController: NavHostController,
@@ -37,15 +44,12 @@ internal fun NavGraphBuilder.profileGraph(
             UserProfileRoute(
                 viewModel = hiltViewModel<UserProfileViewModel>(),
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToChat = { conversationId, otherUserId, participantName, initials, avatarBgArgb, avatarFgArgb ->
+                onNavigateToChat = { conversationId, otherUserId, participantName ->
                     navController.navigate(
                         ChatDestination(
                             conversationId = conversationId,
                             otherUserId = otherUserId,
                             participantName = participantName,
-                            initials = initials,
-                            avatarBgArgb = avatarBgArgb,
-                            avatarFgArgb = avatarFgArgb
                         )
                     )
                 },

@@ -25,14 +25,11 @@ internal fun NavGraphBuilder.messagesGraph(
             }
             MessagesRoute(
                 viewModel = hiltViewModel<MessagesViewModel>(parentEntry),
-                onNavigateToChat = { conversationId, participantName, initials, avatarBgArgb, avatarFgArgb ->
+                onNavigateToChat = { conversationId, participantName ->
                     navController.navigate(
                         ChatDestination(
                             conversationId = conversationId,
                             participantName = participantName,
-                            initials = initials,
-                            avatarBgArgb = avatarBgArgb,
-                            avatarFgArgb = avatarFgArgb
                         )
                     )
                 },
@@ -44,14 +41,11 @@ internal fun NavGraphBuilder.messagesGraph(
             ConversationRoute(
                 viewModel = hiltViewModel<ConversationViewModel>(),
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToChatDetail = { conversationId, participantName, initials, avatarBgArgb, avatarFgArgb ->
+                onNavigateToChatDetail = { conversationId, participantName ->
                     navController.navigate(
                         ChatDetailDestination(
                             conversationId = conversationId,
                             participantName = participantName,
-                            initials = initials,
-                            avatarBgArgb = avatarBgArgb,
-                            avatarFgArgb = avatarFgArgb
                         )
                     )
                 },

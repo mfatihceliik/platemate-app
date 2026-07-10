@@ -10,6 +10,7 @@ import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.model.search.RecentSearch
 import com.mefy.platemate.domain.model.search.SavedPlate
+import com.mefy.platemate.data.remote.rest.service.PlateApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -39,7 +40,8 @@ class RoomSavedPlateRepositoryTest {
         sessionStore = FakeSessionStore()
         repository = RoomSavedPlateRepository(
             savedPlateDao = database.savedPlateDao(),
-            sessionStore = sessionStore
+            plateApiService = FakePlateApiService(),
+            sessionStore = sessionStore,
         )
     }
 
@@ -167,5 +169,20 @@ class RoomSavedPlateRepositoryTest {
         override suspend fun getRefreshToken(): String? = state.value?.refreshToken
 
         override fun peekRefreshToken(): String? = state.value?.refreshToken
+    }
+
+    private class FakePlateApiService : PlateApiService {
+        override suspend fun searchPlate(plate: String) = TODO("Not yet implemented")
+        override suspend fun followPlate(plateCode: String) = TODO("Not yet implemented")
+        override suspend fun unfollowPlate(plateCode: String) = TODO("Not yet implemented")
+        override suspend fun getMyLists() = TODO("Not yet implemented")
+        override suspend fun savePlate(plateCode: String) = com.mefy.platemate.core.common.result.ResultResponse(success = true, message = null)
+        override suspend fun unsavePlate(plateCode: String) = com.mefy.platemate.core.common.result.ResultResponse(success = true, message = null)
+        override suspend fun createAlarm(plateCode: String) = TODO("Not yet implemented")
+        override suspend fun removeAlarm(plateCode: String) = TODO("Not yet implemented")
+        override suspend fun createRemovalRequest(
+            plateId: Long,
+            request: com.mefy.platemate.data.remote.dto.plate.AddPlateRemovalRequestRequest
+        ) = TODO("Not yet implemented")
     }
 }

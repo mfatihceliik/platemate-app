@@ -46,13 +46,10 @@ internal fun ConversationRow(
         onEndToStart = onSwipeToDelete
     ) {
         PMMessageItem(
-            initials = conversation.initials,
             name = conversation.name,
             preview = conversation.preview,
             time = conversation.time,
             unreadCount = conversation.unreadCount,
-            avatarBg = conversation.avatarBg,
-            avatarFg = conversation.avatarFg,
             onClick = onClick
         )
     }

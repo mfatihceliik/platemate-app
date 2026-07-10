@@ -11,15 +11,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.components.model.PMIconButtonVariant
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -49,15 +47,10 @@ internal fun AddSocialLinkForm(
                 onClick = onAdd,
                 enabled = isAddEnabled,
                 variant = PMIconButtonVariant.Filled,
-                size = dims.sizing.iconMd,
+                imageVector = Icons.Filled.Add,
+                size = dims.sizing.iconSm,
                 contentDescription = stringResource(R.string.edit_profile_social_add)
-            ) {
-                PMIcon(
-                    imageVector = Icons.Filled.Add,
-                    tint = Color.White,
-                    size = dims.sizing.iconSm
-                )
-            }
+            )
         },
         modifier = modifier.fillMaxWidth()
     )

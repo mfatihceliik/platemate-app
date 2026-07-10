@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -43,6 +44,12 @@ fun ReportTypesRoute(
         }
     }
 
+    val onAction = viewModel::onAction
+
+    val onBackClicked = remember(onAction) { { onAction(ReportTypesUiAction.BackClicked) } }
+    val onAddClicked = remember(onAction) { { onAction(ReportTypesUiAction.AddClicked) } }
+    val onRetryClicked = remember(onAction) { { onAction(ReportTypesUiAction.RetryClicked) } }
+
     val status = when {
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.isLoading -> ScreenStatus.Loading
@@ -52,16 +59,18 @@ fun ReportTypesRoute(
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.admin_report_types_title),
-            onBackClick = { viewModel.onAction(ReportTypesUiAction.BackClicked) },
+            onBackClick = onBackClicked,
             actions = {
-                PMIconButton(onClick = { viewModel.onAction(ReportTypesUiAction.AddClicked) }) {
-                    PMIcon(imageVector = Icons.Filled.Add, contentDescription = stringResource(R.string.admin_report_type_add))
-                }
+                PMIconButton(
+                    onClick = onAddClicked,
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.admin_report_type_add)
+                )
             }
         ),
         status = status,
         keepTopBarWhileLoading = true,
-        onRetry = { viewModel.onAction(ReportTypesUiAction.RetryClicked) },
+        onRetry = onRetryClicked,
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         ReportTypesScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

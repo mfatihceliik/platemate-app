@@ -29,7 +29,6 @@ internal fun AddedSocialLinkRow(
     url: String,
     iconUrl: String?,
     iconTint: Color,
-    containerColor: Color,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -53,7 +52,7 @@ internal fun AddedSocialLinkRow(
                 ),
                 contentDescription = null,
                 tint = iconTint,
-                containerColor = containerColor
+                //containerColor = containerColor
             )
             PMText(
                 text = url,
@@ -65,14 +64,10 @@ internal fun AddedSocialLinkRow(
             )
             PMIconButton(
                 onClick = onRemove,
+                imageVector = Icons.Filled.Close,
+                size = dims.sizing.iconSm,
                 contentDescription = stringResource(R.string.profile_social_delete_button)
-            ) {
-                PMIcon(
-                    imageVector = Icons.Filled.Close,
-                    tint = colors.error,
-                    size = dims.sizing.iconSm
-                )
-            }
+            )
         }
     }
 }

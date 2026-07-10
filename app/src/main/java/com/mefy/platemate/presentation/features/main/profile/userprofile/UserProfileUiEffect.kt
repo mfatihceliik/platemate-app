@@ -6,8 +6,5 @@ sealed interface UserProfileUiEffect {
         val conversationId: String,
         val otherUserId: Long,
         val participantName: String,
-        val initials: String,
-        val avatarBgArgb: Long,
-        val avatarFgArgb: Long
     ) : UserProfileUiEffect
 }

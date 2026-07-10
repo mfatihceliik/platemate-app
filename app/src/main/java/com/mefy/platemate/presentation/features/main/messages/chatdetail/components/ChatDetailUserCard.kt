@@ -3,13 +3,10 @@ package com.mefy.platemate.presentation.features.main.messages.chatdetail.compon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
@@ -21,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.mefy.platemate.R
@@ -30,15 +26,14 @@ import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.components.PMAvatar
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
 internal fun ChatDetailUserCard(
     participantName: String,
-    initials: String,
-    avatarBg: Color,
-    avatarFg: Color,
     onMessageClick: () -> Unit,
     onProfileClick: () -> Unit,
     onBlockClick: () -> Unit,
@@ -65,20 +60,11 @@ internal fun ChatDetailUserCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarXLarge)
-                    .clip(CircleShape)
-                    .background(avatarBg),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = initials,
-                    style = PMTextStyle.Headline,
-                    fontWeight = FontWeight.Bold,
-                    color = avatarFg
-                )
-            }
+
+            PMAvatar(
+                displayName = participantName,
+                size = dims.sizing.avatarLg
+            )
 
             PMText(
                 text = participantName,
@@ -122,9 +108,6 @@ private fun ChatDetailUserCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         ChatDetailUserCard(
             participantName = "Ahmet Yılmaz",
-            initials = "AY",
-            avatarBg = Color(0xFFEEF2FF),
-            avatarFg = Color(0xFF4F46E5),
             onMessageClick = {},
             onProfileClick = {},
             onBlockClick = {}
@@ -138,9 +121,6 @@ private fun ChatDetailUserCardDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         ChatDetailUserCard(
             participantName = "Zeynep Demir",
-            initials = "ZD",
-            avatarBg = Color(0xFF312E81),
-            avatarFg = Color(0xFFC7D2FE),
             onMessageClick = {},
             onProfileClick = {},
             onBlockClick = {}

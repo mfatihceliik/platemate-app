@@ -657,5 +657,6 @@
     <string name="scanner_hint">Place the plate inside the rectangle.</string>
     <string name="scanner_error_not_found">License plate not found. Please select a clearer photo.</string>
     <string name="scanner_searching_plate">%1$s\nSearching…</string>
+    <string name="camera_scanner_screen">Camera</string>
 </resources>
 

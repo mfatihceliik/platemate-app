@@ -37,7 +37,7 @@ fun DialogHost(
         DialogVariant.Info -> {
             icon = Icons.Filled.Info
             iconTint = colors.primary
-            iconContainer = colors.primaryContainer
+            iconContainer = colors.categoryOrangeBg //primaryContainer
         }
     }
 

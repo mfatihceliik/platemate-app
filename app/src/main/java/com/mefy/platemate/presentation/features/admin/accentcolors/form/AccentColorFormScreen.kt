@@ -3,6 +3,7 @@ package com.mefy.platemate.presentation.features.admin.accentcolors.form
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.hexToColor
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -60,9 +63,9 @@ internal fun AccentColorFormScreen(
                         FormField(state.hex) { onAction(AccentColorFormUiAction.HexChanged(it)) }
                     }
                     // Live swatch preview.
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
-                            .size(dims.sizing.plateBadgeSmall)
+                            .size(dims.sizing.plateBadgeSm)
                             .clip(CircleShape)
                             .background(hexToColor(state.hex))
                             .border(dims.stroke.st1, colors.outlineVariant, CircleShape)
@@ -95,3 +98,33 @@ internal fun AccentColorFormScreen(
         }
     }
 }
+
+@Preview(name = "AccentColorForm Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun AccentColorFormLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        AccentColorFormScreen(
+            state = previewState(),
+            onAction = {}
+        )
+    }
+}
+
+@Preview(name = "AccentColorForm Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun AccentColorFormDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        AccentColorFormScreen(
+            state = previewState(),
+            onAction = {}
+        )
+    }
+}
+
+private fun previewState() = AccentColorFormUiState(
+    isLoading = false,
+    isSaving = false,
+    isEdit = true,
+    hex = "#7C3AED",
+    sortOrder = "1"
+)

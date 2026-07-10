@@ -32,9 +32,6 @@ data class ConversationUiState(
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
     val participantName: String = "",
-    val initials: String = "",
-    val avatarBg: Color = Color(0xFFEEF2FF),
-    val avatarFg: Color = Color(0xFF4F46E5),
     val items: List<ConversationListItem> = emptyList(),
     // items içindeki UnreadDivider'ın index'i; ilk açılışta liste buraya kaydırılır.
     val firstUnreadIndex: Int? = null,

@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.common.messaging
 
 import com.mefy.platemate.presentation.common.banner.BannerSeverity
+import com.mefy.platemate.presentation.common.dialog.DialogModel
 import com.mefy.platemate.presentation.common.text.UiText
 
 /**
@@ -12,5 +13,9 @@ sealed interface UiMessage {
     data class ShowSnackbar(
         val message: UiText,
         val severity: BannerSeverity = BannerSeverity.Info
+    ) : UiMessage
+
+    data class ShowDialog(
+        val dialogModel: DialogModel
     ) : UiMessage
 }

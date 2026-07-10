@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,86 +10,183 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.mefy.platemate.presentation.components.model.PMIconButtonVariant
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
+private const val DisabledContainerAlpha = 0.12f
+
 @Composable
 fun PMIconButton(
+    imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     variant: PMIconButtonVariant = PMIconButtonVariant.Ghost,
     enabled: Boolean = true,
     size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
-    shape: Shape = MaterialTheme.shapes.small,
+    iconColor: Color? = null,
+    containerColor: Color? = null,
+    borderColor: Color? = null,
+    shape: Shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r10),
     contentDescription: String? = null,
     debounceClick: Boolean = true,
     debounceMillis: Long = 600L,
-    content: @Composable () -> Unit,
+) {
+    PMIconButtonBase(
+        onClick = onClick,
+        modifier = modifier,
+        variant = variant,
+        enabled = enabled,
+        size = size,
+        iconColor = iconColor,
+        containerColor = containerColor,
+        borderColor = borderColor,
+        shape = shape,
+        contentDescription = contentDescription,
+        debounceClick = debounceClick,
+        debounceMillis = debounceMillis,
+    ) { tint ->
+        PMIcon(
+            imageVector = imageVector,
+            size = size,
+            tint = tint,
+            contentDescription = contentDescription
+        )
+    }
+}
+
+@Composable
+fun PMIconButton(
+    painter: Painter,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    variant: PMIconButtonVariant = PMIconButtonVariant.Ghost,
+    enabled: Boolean = true,
+    size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
+    iconColor: Color? = null,
+    containerColor: Color? = null,
+    borderColor: Color? = null,
+    shape: Shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r10),
+    contentDescription: String? = null,
+    debounceClick: Boolean = true,
+    debounceMillis: Long = 600L,
+) {
+    PMIconButtonBase(
+        onClick = onClick,
+        modifier = modifier,
+        variant = variant,
+        enabled = enabled,
+        size = size,
+        iconColor = iconColor,
+        containerColor = containerColor,
+        borderColor = borderColor,
+        shape = shape,
+        contentDescription = contentDescription,
+        debounceClick = debounceClick,
+        debounceMillis = debounceMillis,
+    ) { tint ->
+        PMIcon(
+            painter = painter,
+            size = size,
+            tint = tint,
+            contentDescription = contentDescription
+        )
+    }
+}
+
+@Composable
+private fun PMIconButtonBase(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    variant: PMIconButtonVariant,
+    enabled: Boolean,
+    size: Dp,
+    iconColor: Color?,
+    containerColor: Color?,
+    borderColor: Color?,
+    shape: Shape,
+    contentDescription: String?,
+    debounceClick: Boolean,
+    debounceMillis: Long,
+    icon: @Composable (tint: Color) -> Unit,
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val primary = MaterialTheme.pmColors.primary
 
     val safeOnClick = if (debounceClick) {
-        debouncedClick(debounceMillis = debounceMillis, onClick = onClick)
+        debouncedClick(
+            debounceMillis = debounceMillis, onClick = onClick
+        )
     } else {
         onClick
     }
 
-    val (bgColor, iconTint, borderColor) = when (variant) {
-        PMIconButtonVariant.Ghost -> Triple(
-            Color.Transparent,
-            if (enabled) MaterialTheme.pmColors.textPrimary else MaterialTheme.pmColors.disabled,
-            Color.Transparent,
-        )
-        PMIconButtonVariant.Filled -> Triple(
-            if (enabled) primary else MaterialTheme.pmColors.disabled,
-            Color.White,
-            Color.Transparent,
-        )
-        PMIconButtonVariant.Tonal -> Triple(
-            if (enabled) MaterialTheme.pmColors.secondaryContainer else MaterialTheme.pmColors.surfaceVariant,
-            if (enabled) MaterialTheme.pmColors.onSecondaryContainer else MaterialTheme.pmColors.disabled,
-            Color.Transparent,
-        )
-        PMIconButtonVariant.Outlined -> Triple(
-            Color.Transparent,
-            if (enabled) MaterialTheme.pmColors.textPrimary else MaterialTheme.pmColors.disabled,
-            if (enabled) MaterialTheme.pmColors.outline else MaterialTheme.pmColors.disabled,
-        )
+    val iconTint = when {
+        !enabled -> colors.disabled
+        iconColor != null -> iconColor
+        else -> when (variant) {
+            PMIconButtonVariant.Ghost -> colors.primary
+            PMIconButtonVariant.Filled -> colors.onPrimary
+            PMIconButtonVariant.Tonal -> colors.onPrimaryContainer
+            PMIconButtonVariant.Outlined -> colors.primary
+        }
+    }
+
+    val resolvedContainerColor = when (variant) {
+        PMIconButtonVariant.Ghost,
+        PMIconButtonVariant.Outlined -> Color.Transparent
+        PMIconButtonVariant.Filled,
+        PMIconButtonVariant.Tonal -> when {
+            !enabled -> colors.disabled.copy(alpha = DisabledContainerAlpha)
+            containerColor != null -> containerColor
+            variant == PMIconButtonVariant.Filled -> colors.primary
+            else -> colors.primaryContainer
+        }
+    }
+
+    val resolvedBorderColor = if (variant == PMIconButtonVariant.Outlined) {
+        if (enabled) borderColor ?: colors.outline else colors.disabled
+    } else {
+        null
+    }
+
+    val minSize = if (variant == PMIconButtonVariant.Ghost) {
+        size
+    } else {
+        size + dims.spacing.s4 * 2
     }
 
     Box(
         modifier = modifier
-            .defaultMinSize(minWidth = size, minHeight = size)
+            .defaultMinSize(minSize, minSize)
             .clip(shape)
-            .background(bgColor)
+            .background(resolvedContainerColor)
             .then(
-                if (variant == PMIconButtonVariant.Outlined) {
-                    Modifier.border(dims.stroke.st1, borderColor, shape)
+                if (resolvedBorderColor != null) {
+                    Modifier.border(
+                        dims.stroke.st1, resolvedBorderColor, shape
+                    )
                 } else {
                     Modifier
                 }
@@ -97,23 +195,11 @@ fun PMIconButton(
                 enabled = enabled,
                 role = Role.Button,
                 onClickLabel = contentDescription,
-                onClick = safeOnClick,
-            ),
-        contentAlignment = Alignment.Center,
+                onClick = safeOnClick
+            ), contentAlignment = Alignment.Center
     ) {
-        PMIconButtonIconScope(tint = iconTint, content = content)
+        icon(iconTint)
     }
-}
-
-@Composable
-private fun PMIconButtonIconScope(
-    tint: Color,
-    content: @Composable () -> Unit,
-) {
-    CompositionLocalProvider(
-        LocalContentColor provides tint,
-        content = content,
-    )
 }
 
 @Preview(name = "PMIconButton Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
@@ -140,19 +226,34 @@ private fun PMIconButtonPreviewContent() {
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.pmColors.background)
-            .padding(dims.spacing.s24),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
+            .padding(dims.spacing.s24), verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
-        PMText(text = "Ghost", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(
+            text = "Ghost",
+            style = PMTextStyle.SectionLabel,
+            color = MaterialTheme.pmColors.textTertiary
+        )
         PMIconButtonRow(icon = Icons.Filled.Edit, variant = PMIconButtonVariant.Ghost)
 
-        PMText(text = "Filled", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(
+            text = "Filled",
+            style = PMTextStyle.SectionLabel,
+            color = MaterialTheme.pmColors.textTertiary
+        )
         PMIconButtonRow(icon = Icons.Filled.Add, variant = PMIconButtonVariant.Filled)
 
-        PMText(text = "Tonal", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
-        PMIconButtonRow(icon = Icons.Filled.Share, variant = PMIconButtonVariant.Tonal)
+        PMText(
+            text = "Tonal",
+            style = PMTextStyle.SectionLabel,
+            color = MaterialTheme.pmColors.textTertiary
+        )
+        PMIconButtonRow(icon = Icons.Filled.Favorite, variant = PMIconButtonVariant.Tonal)
 
-        PMText(text = "Outlined", style = PMTextStyle.SectionLabel, color = MaterialTheme.pmColors.textTertiary)
+        PMText(
+            text = "Outlined",
+            style = PMTextStyle.SectionLabel,
+            color = MaterialTheme.pmColors.textTertiary
+        )
         PMIconButtonRow(icon = Icons.Filled.Close, variant = PMIconButtonVariant.Outlined)
     }
 }
@@ -164,20 +265,16 @@ private fun PMIconButtonRow(icon: ImageVector, variant: PMIconButtonVariant) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         val dims = MaterialTheme.pmDimensions
-        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconSm) {
-            PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconSm)
-        }
-        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconMd) {
-            PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconMd)
-        }
-        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconLg) {
-            PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconLg)
-        }
-        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconXl) {
-            PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconXl)
-        }
-        PMIconButton(onClick = {}, variant = variant, enabled = false) {
-            PMIcon(imageVector = icon, contentDescription = null)
-        }
+        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconXs, imageVector = icon)
+        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconSm, imageVector = icon)
+        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconMd, imageVector = icon)
+        PMIconButton(onClick = {}, variant = variant, size = dims.sizing.iconLg, imageVector = icon)
+        PMIconButton(
+            onClick = {},
+            variant = variant,
+            size = dims.sizing.iconXl,
+            enabled = false,
+            imageVector = icon,
+        )
     }
 }

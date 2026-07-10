@@ -85,7 +85,6 @@ fun DiscoverScreen(
             PMPlateCard(
                 id = detail.id,
                 rank = detail.rank ?: 0,
-                cityCode = detail.cityCode,
                 plateNumber = detail.plateCode,
                 rating = detail.ratingText,
                 commentCount = detail.commentCount,

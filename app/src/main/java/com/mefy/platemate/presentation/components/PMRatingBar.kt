@@ -26,13 +26,13 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMRatingBar(
+    modifier: Modifier = Modifier,
     starNumber: Int,
-    percentage: Float,
-    modifier: Modifier = Modifier
+    percentage: Float
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val barShape = RoundedCornerShape(dims.radius.r4)
+    val barShape = RoundedCornerShape(dims.radius.r12)
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -43,14 +43,13 @@ fun PMRatingBar(
             text = starNumber.toString(),
             fontWeight = FontWeight.SemiBold,
             color = colors.textTertiary,
-            modifier = Modifier.width(dims.spacing.s8),
             textAlign = TextAlign.Center
         )
 
         PMIcon(
             imageVector = Icons.Filled.Star,
-            size = dims.sizing.iconSm,
-            tint = colors.star,
+            size = dims.sizing.iconXs,
+            tint = colors.iconStar,
         )
 
         Box(

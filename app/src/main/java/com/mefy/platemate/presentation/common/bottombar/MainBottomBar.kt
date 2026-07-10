@@ -85,7 +85,7 @@ fun MainBottomBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
-                .height(dims.sizing.mainBottomBarContentHeight)
+                .height(dims.sizing.bottomBarContentHeight)
                 .shadow(
                     elevation = dims.spacing.s16,
                     shape = pillShape,

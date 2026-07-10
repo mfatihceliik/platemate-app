@@ -14,12 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUiState
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -41,19 +39,13 @@ internal fun PlateInfoCard(state: ReviewUiState) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMPlateBadge(
-            cityCode = state.cityCode,
-            size = PlateBadgeSize.Review
+            plate = state.plateCode,
+            size = dims.sizing.plateBadgeMd
         )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
         ) {
-            PMText(
-                text = state.plateCode,
-                fontSize = dims.fontSize.xl,
-                fontWeight = FontWeight.ExtraBold,
-                color = colors.textPrimary
-            )
             PMText(
                 text = if (state.cityName.isNotBlank()) {
                     stringResource(R.string.review_city_review_count, state.cityName, state.reviewCount)

@@ -33,8 +33,8 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMTopBar(
-    config: PMTopBarConfig,
     modifier: Modifier = Modifier,
+    config: PMTopBarConfig,
     containerColor: Color = MaterialTheme.pmColors.surface
 ) {
     when (config) {
@@ -79,7 +79,7 @@ private fun PMStandardTopBar(
                         onClick = onBack
                     ),
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    size = dims.sizing.iconHuge
+                    size = dims.sizing.iconLg
                 )
             }
         }
@@ -99,15 +99,17 @@ private fun PMStandardTopBar(
         PMText(
             text = config.title,
             fontSize = dims.fontSize.xxl,
-            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = titleModifier
+            modifier = titleModifier,
+            maxLines = 1
+
         )
 
         // Aksiyonlar — sağ kenar
         config.actions?.let { actions ->
             Row(
-                modifier = Modifier.align(Alignment.CenterEnd),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 actions()
@@ -136,7 +138,6 @@ private fun PMTopBarDarkPreview() {
 
 @Composable
 private fun PMTopBarPreviewContent() {
-    val colors = MaterialTheme.pmColors
     Column {
         // Geri butonsuz, ortalı (tab ekranı)
         PMTopBar(config = PMTopBarConfig.Standard(title = "PlateMate"))
@@ -153,12 +154,8 @@ private fun PMTopBarPreviewContent() {
                 title = "Plaka Detayı",
                 onBackClick = {},
                 actions = {
-                    PMIconButton(onClick = {}) {
-                        PMIcon(imageVector = Icons.Outlined.Share, tint = colors.textPrimary)
-                    }
-                    PMIconButton(onClick = {}) {
-                        PMIcon(imageVector = Icons.Outlined.MoreVert, tint = colors.textPrimary)
-                    }
+                    PMIconButton(onClick = {}, imageVector = Icons.Outlined.Share)
+                    PMIconButton(onClick = {}, imageVector = Icons.Outlined.MoreVert)
                 }
             )
         )

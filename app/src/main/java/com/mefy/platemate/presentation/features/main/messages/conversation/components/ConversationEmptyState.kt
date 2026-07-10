@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,15 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconContainer
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Konuşma ekranında henüz mesaj yokken (yeni/taslak oda) gösterilen boş-durum.
- * [MessagesEmptyState] desenini taklit eder; tek farkı metinler.
- */
 @Composable
 internal fun ConversationEmptyState(
     modifier: Modifier = Modifier
@@ -44,14 +42,14 @@ internal fun ConversationEmptyState(
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeMedium)
+                .size(dims.sizing.plateBadgeMd)
                 .clip(CircleShape)
                 .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
-            PMIcon(
+            PMIconContainer(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
-                size = dims.sizing.iconXl,
+                iconSize = dims.sizing.iconXl
             )
         }
 

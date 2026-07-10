@@ -27,8 +27,7 @@ internal fun ThemePreviewCard(
         PMPlateCard(
             id = "preview",
             rank = 1,
-            cityCode = "34",
-            plateNumber = "EK 0682",
+            plateNumber = "34 EK 0682",
             rating = "4.8",
             commentCount = 120,
             searchCount = 450,

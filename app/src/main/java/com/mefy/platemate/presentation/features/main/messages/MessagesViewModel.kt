@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.messages
 
-import androidx.compose.ui.graphics.toArgb
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.data.local.NotificationPermissionStore
 import com.mefy.platemate.domain.model.chat.ChatRoom
@@ -8,7 +7,6 @@ import com.mefy.platemate.domain.usecase.chat.LeaveChatUseCase
 import com.mefy.platemate.domain.usecase.chat.MarkMessagesAsReadUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveChatRoomsUseCase
 import com.mefy.platemate.domain.usecase.chat.SyncChatRoomsUseCase
-import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
@@ -125,10 +123,7 @@ class MessagesViewModel @Inject constructor(
             _uiEffect.emit(
                 MessagesUiEffect.NavigateToChat(
                     conversationId = roomId.toString(),
-                    participantName = conversation.name,
-                    initials = conversation.initials,
-                    avatarBgArgb = conversation.avatarBg.toArgb().toLong(),
-                    avatarFgArgb = conversation.avatarFg.toArgb().toLong()
+                    participantName = conversation.name
                 )
             )
         }
@@ -136,17 +131,13 @@ class MessagesViewModel @Inject constructor(
 
     private fun ChatRoom.toUiModel(): MessageConversationUiModel {
         val displayName = otherParticipantName ?: roomName ?: "Chat"
-        val (background, foreground) = AvatarPalette.colorsFor(id)
 
         return MessageConversationUiModel(
             roomId = id,
-            initials = AvatarPalette.initials(displayName),
             name = displayName,
             preview = lastMessageContent ?: "",
             time = lastMessageAt?.iso8601?.substringAfter("T")?.take(5) ?: "",
-            unreadCount = unreadCount,
-            avatarBg = background,
-            avatarFg = foreground
+            unreadCount = unreadCount
         )
     }
 }

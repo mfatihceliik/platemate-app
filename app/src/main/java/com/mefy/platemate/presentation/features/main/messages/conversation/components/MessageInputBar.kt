@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.components.model.PMTextFieldVariant
+import com.mefy.platemate.presentation.components.variant.PMTextFieldVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.pmColors

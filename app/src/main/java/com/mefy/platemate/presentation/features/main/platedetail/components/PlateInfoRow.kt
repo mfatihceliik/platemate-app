@@ -9,14 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.padding
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -25,7 +23,6 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 internal fun PlateInfoRow(
     plateCode: String,
-    cityCode: String,
     cityName: String,
     ratingAverage: Double,
     reviewCount: Long
@@ -39,20 +36,14 @@ internal fun PlateInfoRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMPlateBadge(
-            cityCode = cityCode,
-            size = PlateBadgeSize.Large
+            plate = plateCode,
+            size = dims.sizing.plateBadgeMd
         )
 
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
         ) {
-            PMText(
-                text = plateCode,
-                fontSize = dims.fontSize.xl,
-                fontWeight = FontWeight.ExtraBold,
-                color = colors.textPrimary
-            )
             PMText(
                 text = cityName,
                 color = colors.textTertiary
@@ -125,7 +116,6 @@ private fun PlateInfoRowPreviewContent() {
         // Puanlı
         PlateInfoRow(
             plateCode = "34 EK 0682",
-            cityCode = "34",
             cityName = "İstanbul",
             ratingAverage = 4.6,
             reviewCount = 127
@@ -133,7 +123,6 @@ private fun PlateInfoRowPreviewContent() {
         // Puansız
         PlateInfoRow(
             plateCode = "06 ABC 123",
-            cityCode = "06",
             cityName = "Ankara",
             ratingAverage = 0.0,
             reviewCount = 0

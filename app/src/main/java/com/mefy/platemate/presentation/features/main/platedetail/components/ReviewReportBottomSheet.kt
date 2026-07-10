@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
@@ -34,6 +34,7 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.platedetail.ReviewReportUiState
 import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -90,7 +91,7 @@ internal fun ReviewReportBottomSheet(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(dims.sizing.plateBadgeSmall)
+                            .size(dims.sizing.plateBadgeSm)
                             .clip(CircleShape)
                             .background(colors.primaryContainer),
                         contentAlignment = Alignment.Center
@@ -244,3 +245,38 @@ private fun CommentReasonRow(
         )
     }
 }
+
+@Preview(name = "ReviewReportBottomSheet Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun ReviewReportBottomSheetLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        ReviewReportBottomSheet(
+            report = previewReport().copy(selectedReason = CommentReportReason.entries.first()),
+            onReasonSelected = {},
+            onDescriptionChange = {},
+            onDismiss = {},
+            onSubmit = {}
+        )
+    }
+}
+
+@Preview(name = "ReviewReportBottomSheet Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun ReviewReportBottomSheetDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        ReviewReportBottomSheet(
+            report = previewReport(),
+            onReasonSelected = {},
+            onDescriptionChange = {},
+            onDismiss = {},
+            onSubmit = {}
+        )
+    }
+}
+
+private fun previewReport() = ReviewReportUiState(
+    reviewId = 1L,
+    reviewerName = "Ahmet Yılmaz",
+    initials = "AY",
+    description = ""
+)

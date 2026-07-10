@@ -206,9 +206,8 @@ private fun PMSwipeActionRowPreview() {
                 onEndToStart = {}
             ) {
                 PMMessageItem(
-                    initials = "AY", name = "Ahmet Y.", preview = "Tesekkurler!",
+                    name = "Ahmet Y.", preview = "Tesekkurler!",
                     time = "09:24", unreadCount = 3,
-                    avatarBg = Color(0xFFEEF2FF), avatarFg = Color(0xFF4F46E5),
                     onClick = {}
                 )
             }
@@ -223,9 +222,8 @@ private fun PMSwipeActionRowPreview() {
                 onEndToStart = {}
             ) {
                 PMMessageItem(
-                    initials = "ZK", name = "Zeynep K.", preview = "Gorusuruz",
+                    name = "Zeynep K.", preview = "Gorusuruz",
                     time = "Dun", unreadCount = 0,
-                    avatarBg = Color(0xFFECFEFF), avatarFg = Color(0xFF0891B2),
                     onClick = {}
                 )
             }
