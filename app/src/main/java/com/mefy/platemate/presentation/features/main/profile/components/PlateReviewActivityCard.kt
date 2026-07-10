@@ -7,13 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
@@ -29,9 +30,7 @@ import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMCardVariant
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.components.util.reviewStatusStyle
 import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.ProfileReviewStatusUi
@@ -74,78 +73,27 @@ internal fun PlateReviewActivityCard(
                     ),
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
             ) {
-                // Üst sıra: plaka + durum rozeti
+                // Üst sıra: plaka solda, durum rozeti sağ üst köşede
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        PMPlateBadge(
-                            cityCode = item.plateCode.take(2),
-                            size = PlateBadgeSize.Review
-                        )
-                        PMText(
-                            text = item.plateCode,
-                            fontSize = dims.fontSize.md,
-                            style = PMTextStyle.Title,
-                            color = colors.textPrimary
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val style = reviewStatusStyle(item.reviewStatus, colors)
-                            PMChip(
-                                label = stringResource(style.label),
-                                containerColor = style.background,
-                                accentColor = style.foreground
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            PMIcon(
-                                imageVector = Icons.Filled.Star,
-                                size = dims.sizing.iconSm
-                            )
-                            PMText(
-                                text = NumberFormatter.formatRating(item.ratingAverage),
-                                fontSize = dims.fontSize.md
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            PMIcon(
-                                imageVector = Icons.Filled.ChatBubble,
-                                size = dims.sizing.iconSm
-                            )
-                            PMText(
-                                text = item.commentCount.toString(),
-                                fontSize = dims.fontSize.md
-                            )
-                        }
-                    }
+                    PMPlateBadge(
+                        plate = item.plateCode,
+                        size = dims.sizing.plateBadgeMd
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    val style = reviewStatusStyle(item.reviewStatus, colors)
+                    PMChip(
+                        label = stringResource(style.label),
+                        containerColor = style.background,
+                        accentColor = style.foreground
+                    )
                 }
 
+                // Alt sıra: tarih solda; metrikler + chevron sağda
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PMText(
@@ -153,10 +101,44 @@ internal fun PlateReviewActivityCard(
                         fontSize = dims.fontSize.sm,
                         color = colors.textLabel
                     )
-                    PMIcon(
-                        imageVector = Icons.Filled.ChevronRight,
-                        size = dims.sizing.iconSm
-                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PMIcon(
+                                imageVector = Icons.Filled.Star,
+                                size = dims.sizing.iconSm,
+                                tint = colors.iconStar
+                            )
+                            PMText(
+                                text = NumberFormatter.formatRating(item.ratingAverage),
+                                fontSize = dims.fontSize.md
+                            )
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PMIcon(
+                                imageVector = Icons.AutoMirrored.Outlined.Chat,
+                                tint = colors.iconDefault,
+                                size = dims.sizing.iconSm
+                            )
+                            PMText(
+                                text = item.commentCount.toString(),
+                                fontSize = dims.fontSize.md
+                            )
+                        }
+                        PMIcon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            size = dims.sizing.iconSm
+                        )
+                    }
                 }
             }
         }

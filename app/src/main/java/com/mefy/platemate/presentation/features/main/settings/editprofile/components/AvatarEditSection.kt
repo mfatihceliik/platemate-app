@@ -1,30 +1,20 @@
 package com.mefy.platemate.presentation.features.main.settings.editprofile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -34,7 +24,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun AvatarEditSection(
-    initials: String,
+    displayName: String,
     onAvatarClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,43 +40,11 @@ internal fun AvatarEditSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)
     ) {
-        Box(
-            modifier = Modifier.size(dims.sizing.avatarHero),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarHero)
-                    .clip(CircleShape)
-                    .background(colors.primaryContainer)
-                    .border(dims.stroke.st3, colors.primaryContainerBorder, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = initials,
-                    style = PMTextStyle.Headline,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = colors.onPrimaryContainer
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.iconXl)
-                    .shadow(elevation = dims.spacing.s4, shape = CircleShape, spotColor = primary.copy(alpha = 0.45f))
-                    .clip(CircleShape)
-                    .background(primary)
-                    .border(dims.stroke.st2, colors.surface, CircleShape)
-                    .debouncedClickable(onClick = onAvatarClick),
-                contentAlignment = Alignment.Center
-            ) {
-                PMIcon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(R.string.edit_profile_change_photo),
-                    tint = Color.White,
-                    size = dims.sizing.avatarIconInner,
-                )
-            }
-        }
+        PMAvatar(
+            displayName = displayName,
+            isEditable = true,
+            onEditClick = onAvatarClick
+        )
 
         PMText(
             text = stringResource(R.string.edit_profile_change_photo),
@@ -104,7 +62,7 @@ internal fun AvatarEditSection(
 @Composable
 private fun AvatarEditSectionLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        AvatarEditSection(initials = "AY", onAvatarClick = {})
+        AvatarEditSection(displayName = "Ahmet Yılmaz", onAvatarClick = {})
     }
 }
 
@@ -112,6 +70,6 @@ private fun AvatarEditSectionLightPreview() {
 @Composable
 private fun AvatarEditSectionDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        AvatarEditSection(initials = "AY", onAvatarClick = {})
+        AvatarEditSection(displayName = "Ahmet Yılmaz", onAvatarClick = {})
     }
 }

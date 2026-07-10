@@ -13,7 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
+import com.mefy.platemate.presentation.components.PMBaseScreen
 
 @Composable
 fun CameraScannerRoute(
@@ -67,13 +71,21 @@ fun CameraScannerRoute(
         }
     }
 
-    CameraScannerScreen(
-        hasCameraPermission = hasCameraPermission,
-        onNavigateBack = onNavigateBack,
-        onGalleryClick = {
-            galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        },
+    PMBaseScreen(
         modifier = modifier,
-        viewModel = viewModel
-    )
+        topBarConfig = PMTopBarConfig.Standard(
+            title = stringResource(R.string.camera_scanner_screen),
+            onBackClick = onNavigateBack
+        ),
+    ) { innerPadding ->
+        CameraScannerScreen(
+            modifier = modifier,
+            viewModel = viewModel,
+            innerPadding = innerPadding,
+            hasCameraPermission = hasCameraPermission,
+            onGalleryClick = {
+                galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+        )
+    }
 }

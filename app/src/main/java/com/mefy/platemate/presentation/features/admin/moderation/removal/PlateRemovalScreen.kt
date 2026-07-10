@@ -25,7 +25,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -108,7 +108,7 @@ private fun RemovalCard(
             PMButton(
                 text = stringResource(R.string.admin_request_reject),
                 onClick = onReject,
-                style = PMButtonStyle.Outlined,
+                variant = PMButtonVariant.Outlined,
                 enabled = !isActioning,
                 modifier = Modifier.weight(1f)
             )

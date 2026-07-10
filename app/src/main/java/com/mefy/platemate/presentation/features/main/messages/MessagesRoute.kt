@@ -28,7 +28,10 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun MessagesRoute(
     viewModel: MessagesViewModel,
-    onNavigateToChat: (conversationId: String, participantName: String, initials: String, avatarBgArgb: Long, avatarFgArgb: Long) -> Unit,
+    onNavigateToChat: (
+        conversationId: String,
+        participantName: String
+        ) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,9 +63,6 @@ fun MessagesRoute(
                 is MessagesUiEffect.NavigateToChat -> onNavigateToChat(
                     effect.conversationId,
                     effect.participantName,
-                    effect.initials,
-                    effect.avatarBgArgb,
-                    effect.avatarFgArgb
                 )
             }
         }

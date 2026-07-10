@@ -23,8 +23,8 @@ import com.mefy.platemate.presentation.theme.pmColors
 @Composable
 fun PMCircularProgressIndicator(
     modifier: Modifier = Modifier,
-    size: Dp = MaterialTheme.pmDimensions.sizing.progressBarMedium,
-    strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st3,
+    size: Dp = MaterialTheme.pmDimensions.sizing.circleProgressBarSm,
+    strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st2,
     color: Color = MaterialTheme.pmColors.primary,
     trackColor: Color = Color.Transparent,
     fillMaxSize: Boolean = false,
@@ -71,6 +71,7 @@ private fun PMCircularProgressIndicatorDarkPreview() {
 private fun PMCircularProgressIndicatorPreviewContent() {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -79,10 +80,22 @@ private fun PMCircularProgressIndicatorPreviewContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
     ) {
-        PMCircularProgressIndicator(size = dims.sizing.iconMd, strokeWidth = dims.stroke.st2)
-        PMCircularProgressIndicator()
-        PMCircularProgressIndicator(size = dims.sizing.avatarMedium, strokeWidth = dims.stroke.st3)
-        PMCircularProgressIndicator(color = MaterialTheme.pmColors.secondary)
+        PMCircularProgressIndicator(
+            size = dims.sizing.circleProgressBarXs,
+            strokeWidth = dims.stroke.st2
+        )
+        PMCircularProgressIndicator(
+            size = dims.sizing.circleProgressBarSm,
+            strokeWidth = dims.stroke.st2
+        )
+        PMCircularProgressIndicator(
+            size = dims.sizing.circleProgressBarMd,
+            strokeWidth = dims.stroke.st2
+        )
+        PMCircularProgressIndicator(
+            size = dims.sizing.circleProgressBarLg,
+            strokeWidth = dims.stroke.st2
+        )
     }
 }
 

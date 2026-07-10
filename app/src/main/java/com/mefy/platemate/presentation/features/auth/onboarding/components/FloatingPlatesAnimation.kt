@@ -139,7 +139,7 @@ internal fun FloatingPlatesAnimation() {
         // Stars
         PMIcon(
             imageVector = Icons.Filled.Star,
-            tint = colors.star,
+            tint = colors.iconStar,
             size = dims.sizing.iconLg,
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -150,7 +150,7 @@ internal fun FloatingPlatesAnimation() {
         PMIcon(
             imageVector = Icons.Filled.Star,
             contentDescription = null,
-            tint = colors.star.copy(alpha = 0.7f),
+            tint = colors.iconStar.copy(alpha = 0.7f),
             size = dims.sizing.iconMd,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

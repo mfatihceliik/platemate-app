@@ -1,4 +1,4 @@
-﻿package com.mefy.platemate.data.repository
+package com.mefy.platemate.data.repository
 
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.DataResultResponse
@@ -11,6 +11,7 @@ import com.mefy.platemate.data.mapper.SocialMediaLinkMapper
 import com.mefy.platemate.data.mapper.UserSettingsMapper
 import com.mefy.platemate.data.remote.dto.settings.SettingsOverviewDto
 import com.mefy.platemate.data.remote.dto.settings.UpdateSettingsRequest
+import com.mefy.platemate.data.remote.dto.settings.UpdateAppearanceRequest
 import com.mefy.platemate.data.remote.dto.social.SocialMediaLinkDto
 import com.mefy.platemate.data.remote.dto.user.UserSettingsDto
 import com.mefy.platemate.data.remote.rest.service.SettingsApiService
@@ -152,6 +153,10 @@ class SettingsRepositoryImplTest {
 
         override suspend fun updateSettings(userId: Long, request: UpdateSettingsRequest): ResultResponse {
             lastUpdateRequest = request
+            return ResultResponse(message = null, success = true)
+        }
+
+        override suspend fun updateAppearance(userId: Long, request: UpdateAppearanceRequest): ResultResponse {
             return ResultResponse(message = null, success = true)
         }
     }

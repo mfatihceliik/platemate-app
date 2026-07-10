@@ -17,10 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -36,14 +38,14 @@ internal fun HeroSection(modifier: Modifier = Modifier) {
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.avatarHero)
+                .size(dims.sizing.avatarXl)
                 .clip(RoundedCornerShape(dims.radius.r18))
                 .background(colors.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             PMIcon(
                 imageVector = Icons.Filled.Star,
-                size = dims.sizing.avatarIconInner
+                size = dims.sizing.avatarMd
             )
         }
         PMText(
@@ -58,5 +60,13 @@ internal fun HeroSection(modifier: Modifier = Modifier) {
             color = colors.textSecondary,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HeroSectionPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        HeroSection()
     }
 }

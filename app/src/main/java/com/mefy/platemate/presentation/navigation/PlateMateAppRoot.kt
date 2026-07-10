@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.mefy.platemate.MainActivityViewModel
 import com.mefy.platemate.core.notification.model.AppNotification
-import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.banner.bannerFor
 import com.mefy.platemate.presentation.common.banner.toBanner
 import com.mefy.platemate.presentation.common.dialog.rememberDialogHostState
@@ -45,7 +44,6 @@ import com.mefy.platemate.presentation.theme.pmDimensions
  */
 @Composable
 fun PlateMateAppRoot(
-    modifier: Modifier = Modifier,
     appState: AppState = rememberAppState(),
     viewModel: MainActivityViewModel = hiltViewModel()
 ) {
@@ -70,6 +68,9 @@ fun PlateMateAppRoot(
         UiMessageHandlers(
             onShowSnackbar = { uiText, severity ->
                 appState.bannerController.show(bannerFor(uiText.resolve(context), severity))
+            },
+            onShowDialog = { dialog ->
+                dialogHostState.showDialog(dialog)
             }
         )
     }
@@ -105,7 +106,7 @@ fun PlateMateAppRoot(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         AppShell(
             isOnline = isOnline,
             uiMessageHandlers = commonUiEventHandlers,
@@ -137,14 +138,10 @@ private fun handleInAppNotificationTap(
     when (notification) {
         is AppNotification.Message -> {
             val roomId = notification.roomId ?: return
-            val (background, foreground) = AvatarPalette.colorsFor(roomId)
             navController.navigate(
                 ChatDestination(
                     conversationId = roomId.toString(),
                     participantName = notification.senderName,
-                    initials = AvatarPalette.initials(notification.senderName),
-                    avatarBgArgb = background.toArgb().toLong(),
-                    avatarFgArgb = foreground.toArgb().toLong()
                 )
             )
         }

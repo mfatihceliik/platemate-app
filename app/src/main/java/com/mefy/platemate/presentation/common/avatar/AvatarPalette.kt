@@ -5,6 +5,11 @@ import androidx.compose.ui.graphics.Color
 /**
  * Deterministic avatar background/foreground colors derived from a stable id,
  * plus initials extraction. Shared so every avatar across the app looks consistent.
+ *
+ * Standart avatarlar için [com.mefy.platemate.presentation.components.PMAvatar] kullanın:
+ * initials'ı kendisi türetir ve renkleri tema uyumlu `pmColors.avatar*` alanlarından alır.
+ * Buradaki [colorsFor] yalnızca ViewModel'de renk hesaplayan eski özel avatar çizimleri
+ * (ör. UserProfileHeaderCard) için kalmıştır; light değerleri pmColors ile aynıdır.
  */
 object AvatarPalette {
 

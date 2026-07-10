@@ -1,9 +1,7 @@
 package com.mefy.platemate.presentation.features.main.messages.conversation
 
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import androidx.compose.ui.graphics.Color
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.notification.ActiveConversationTracker
@@ -24,7 +22,6 @@ import com.mefy.platemate.domain.usecase.chat.ObserveUserPresenceUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveRoomMessagesUseCase
 import com.mefy.platemate.domain.usecase.chat.SyncRoomMessagesUseCase
 import com.mefy.platemate.domain.usecase.chat.SendChatMessageUseCase
-import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.navigation.ChatDestination
@@ -69,9 +66,6 @@ class ConversationViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         ConversationUiState(
             participantName = route.participantName,
-            initials = route.initials,
-            avatarBg = Color(route.avatarBgArgb.toInt()),
-            avatarFg = Color(route.avatarFgArgb.toInt())
         )
     )
     val uiState: StateFlow<ConversationUiState> = _uiState.asStateFlow()
@@ -204,14 +198,10 @@ class ConversationViewModel @Inject constructor(
                     // Başlığı otoriter olarak odadan doldur: deeplink'te nav arg'ları (FCM title)
                     // jenerik/eksik olabilir; odadan gelen ad doğru olur.
                     val displayName = room.otherParticipantName ?: room.roomName ?: "Chat"
-                    val (avatarBackground, avatarForeground) = AvatarPalette.colorsFor(roomId)
                     _uiState.update {
                         it.copy(
                             isIncomingRequest = incoming,
                             participantName = displayName,
-                            initials = AvatarPalette.initials(displayName),
-                            avatarBg = avatarBackground,
-                            avatarFg = avatarForeground
                         )
                     }
                 }
@@ -356,9 +346,6 @@ class ConversationViewModel @Inject constructor(
             ConversationUiEffect.NavigateToChatDetail(
                 conversationId = roomId.toString(),
                 participantName = state.participantName,
-                initials = state.initials,
-                avatarBgArgb = state.avatarBg.toArgb().toLong(),
-                avatarFgArgb = state.avatarFg.toArgb().toLong()
             )
         )
     }

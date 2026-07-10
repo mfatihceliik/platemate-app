@@ -22,8 +22,12 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun UserProfileRoute(
-    viewModel: UserProfileViewModel, onNavigateBack: () -> Unit, onNavigateToChat: (
-        conversationId: String, otherUserId: Long, participantName: String, initials: String, avatarBgArgb: Long, avatarFgArgb: Long
+    viewModel: UserProfileViewModel,
+    onNavigateBack: () -> Unit,
+    onNavigateToChat: (
+        conversationId: String,
+        otherUserId: Long,
+        participantName: String,
     ) -> Unit, modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -38,9 +42,6 @@ fun UserProfileRoute(
                     effect.conversationId,
                     effect.otherUserId,
                     effect.participantName,
-                    effect.initials,
-                    effect.avatarBgArgb,
-                    effect.avatarFgArgb
                 )
             }
         }

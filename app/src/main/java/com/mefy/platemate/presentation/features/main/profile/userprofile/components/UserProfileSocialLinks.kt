@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.rememberAsyncImagePainter
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -30,38 +30,29 @@ internal fun UserProfileSocialLinks(
 ) {
     if (links.isEmpty()) return
     val dims = MaterialTheme.pmDimensions
-    MaterialTheme.pmColors
-    MaterialTheme.shapes.small
+
 
     PMCard(
         modifier = Modifier.fillMaxWidth(),
         padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
     ) {
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                dims.spacing.s8,
-                Alignment.CenterHorizontally
-            ),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(
+                dims.spacing.s8, Alignment.CenterHorizontally
+            ), verticalAlignment = Alignment.CenterVertically
         ) {
             items(items = links, key = { it.id ?: it.platform }) { link ->
                 PMIconButton(
                     onClick = { onLinkClick(link) },
-
-                    ) {
-                    PMIcon(
-                        painter = rememberAsyncImagePainter(
-                            model = link.iconUrl,
-                            error = painterResource(R.drawable.ic_link),
-                            placeholder = painterResource(R.drawable.ic_link)
-                        ),
-                        size = dims.sizing.iconHuge,
-                        contentDescription = link.platform,
-                        tint = link.iconTint,
-                        containerColor = link.backgroundColor
-                    )
-                }
+                    variant = PMIconButtonVariant.Tonal,
+                    size = dims.sizing.iconLg,
+                    painter = rememberAsyncImagePainter(
+                        model = link.iconUrl,
+                        error = painterResource(R.drawable.ic_link),
+                        placeholder = painterResource(R.drawable.ic_link)
+                    ),
+                    contentDescription = link.platform,
+                )
             }
         }
     }
@@ -71,21 +62,31 @@ internal fun UserProfileSocialLinks(
 @Composable
 private fun UserProfileSocialLinksLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
         UserProfileSocialLinks(
             links = listOf(
                 ProfileSocialLinkUiModel(
-                    id = 1, platform = "INSTAGRAM", url = "", iconUrl = null, backgroundColor = Color(0xFFFDF2F8), iconTint = Color(0xFFDB2777)
-                ),
-                ProfileSocialLinkUiModel(
-                    id = 2, platform = "X", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
-                ),
-                ProfileSocialLinkUiModel(
-                    id = 3, platform = "GITHUB", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                    id = 1,
+                    platform = "INSTAGRAM",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFFDF2F8),
+                    iconTint = Color(0xFFDB2777)
+                ), ProfileSocialLinkUiModel(
+                    id = 2,
+                    platform = "X",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFF1F5F9),
+                    iconTint = Color(0xFF0F172A)
+                ), ProfileSocialLinkUiModel(
+                    id = 3,
+                    platform = "GITHUB",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFF1F5F9),
+                    iconTint = Color(0xFF0F172A)
                 )
-            ),
-            onLinkClick = {}
-        )
+            ), onLinkClick = {})
     }
 }
 
@@ -93,21 +94,31 @@ private fun UserProfileSocialLinksLightPreview() {
 @Composable
 private fun UserProfileSocialLinksDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
         MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
                 ProfileSocialLinkUiModel(
-                    id = 1, platform = "INSTAGRAM", url = "", iconUrl = null, backgroundColor = Color(0xFFFDF2F8), iconTint = Color(0xFFDB2777)
-                ),
-                ProfileSocialLinkUiModel(
-                    id = 2, platform = "X", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
-                ),
-                ProfileSocialLinkUiModel(
-                    id = 3, platform = "GITHUB", url = "", iconUrl = null, backgroundColor = Color(0xFFF1F5F9), iconTint = Color(0xFF0F172A)
+                    id = 1,
+                    platform = "INSTAGRAM",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFFDF2F8),
+                    iconTint = Color(0xFFDB2777)
+                ), ProfileSocialLinkUiModel(
+                    id = 2,
+                    platform = "X",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFF1F5F9),
+                    iconTint = Color(0xFF0F172A)
+                ), ProfileSocialLinkUiModel(
+                    id = 3,
+                    platform = "GITHUB",
+                    url = "",
+                    iconUrl = null,
+                    backgroundColor = Color(0xFFF1F5F9),
+                    iconTint = Color(0xFF0F172A)
                 )
-            ),
-            onLinkClick = {}
-        )
+            ), onLinkClick = {})
     }
 }

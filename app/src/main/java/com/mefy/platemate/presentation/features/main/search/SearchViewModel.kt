@@ -1,10 +1,8 @@
 package com.mefy.platemate.presentation.features.main.search
 
-import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.error.AppError
-import com.mefy.platemate.core.connectivity.NetworkMonitor
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.model.search.AlarmPlate
 import com.mefy.platemate.domain.model.search.RecentSearch
@@ -22,7 +20,6 @@ import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.UpsertRecentSearchUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
-import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.search.mapper.SearchUiMapper
 import com.mefy.platemate.presentation.features.main.search.reducer.SearchStateReducer
@@ -56,7 +53,6 @@ class SearchViewModel @Inject constructor(
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase,
     private val searchUiMapper: SearchUiMapper,
     private val searchStateReducer: SearchStateReducer,
-    private val networkMonitor: NetworkMonitor,
     private val appDispatchers: AppDispatchers,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
@@ -80,7 +76,6 @@ class SearchViewModel @Inject constructor(
 
     init {
         observeAllData()
-        observeConnectivity()
         syncMyLists()
     }
 
@@ -90,18 +85,6 @@ class SearchViewModel @Inject constructor(
     }
 
     // Removed observeAlarmPlates()
-
-    /** Çevrimdışıyken Search da diğer ekranlar gibi tam-ekran bağlantı hatası gösterir. */
-    private fun observeConnectivity() {
-        launch {
-            networkMonitor.isOnline.collectLatest { online ->
-                _uiState.update { it.copy(errorMessage = offlineMessage(online)) }
-            }
-        }
-    }
-
-    private fun offlineMessage(online: Boolean): UiText? =
-        if (online) null else UiText.Resource(R.string.common_error_network)
 
     private fun observeAllData() {
         launch(
@@ -140,8 +123,7 @@ class SearchViewModel @Inject constructor(
             is SearchUiAction.AlarmPlateRemoveClicked -> onAlarmPlateRemoveClicked(action.normalizedPlateCode)
             is SearchUiAction.RecentDismissClicked -> onRecentDismissClicked(action.normalizedPlateCode)
             SearchUiAction.ClearRecentClicked -> onClearRecentClicked()
-            SearchUiAction.RetryClicked ->
-                _uiState.update { it.copy(errorMessage = offlineMessage(networkMonitor.isCurrentlyOnline())) }
+            SearchUiAction.RetryClicked -> syncMyLists()
         }
     }
 

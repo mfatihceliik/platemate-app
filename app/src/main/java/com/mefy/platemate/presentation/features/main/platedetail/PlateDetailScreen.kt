@@ -51,7 +51,6 @@ fun PlateDetailScreen(
         item {
             PlateInfoRow(
                 plateCode = state.plateCode,
-                cityCode = state.cityCode,
                 cityName = state.cityName,
                 ratingAverage = state.ratingAverage,
                 reviewCount = state.reviewCount
@@ -200,7 +199,6 @@ private fun previewStateWithReviews() = PlateDetailUiState(
             1,
             "ahmetk",
             "Ahmet K.",
-            "AK",
             null,
             5,
             "2024-12-01",
@@ -210,7 +208,6 @@ private fun previewStateWithReviews() = PlateDetailUiState(
             2,
             "zeynept",
             "Zeynep T.",
-            "ZT",
             null,
             4,
             "2024-11-30",
@@ -220,7 +217,6 @@ private fun previewStateWithReviews() = PlateDetailUiState(
             3,
             "muratd",
             "Murat D.",
-            "MD",
             null,
             5,
             "2024-11-28",

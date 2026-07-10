@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -40,9 +41,7 @@ private val SentShape = RoundedCornerShape(
 
 @Composable
 internal fun ReceivedBubble(
-    initials: String,
-    avatarBg: Color,
-    avatarFg: Color,
+    senderName: String,
     content: String,
     time: String,
     modifier: Modifier = Modifier
@@ -55,20 +54,11 @@ internal fun ReceivedBubble(
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
         verticalAlignment = Alignment.Bottom
     ) {
-        Box(
-            modifier = Modifier
-                .size(dims.spacing.s32)
-                .clip(CircleShape)
-                .background(avatarBg),
-            contentAlignment = Alignment.Center
-        ) {
-            PMText(
-                text = initials,
-                style = PMTextStyle.Note,
-                fontWeight = FontWeight.Bold,
-                color = avatarFg
-            )
-        }
+
+        PMAvatar(
+            displayName = senderName,
+            size = dims.sizing.avatarSm
+        )
         Column(
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s4),
             horizontalAlignment = Alignment.Start
@@ -177,9 +167,7 @@ private fun ChatBubblePreviewContent() {
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         ReceivedBubble(
-            initials = "AY",
-            avatarBg = Color(0xFFECFEFF),
-            avatarFg = Color(0xFF0E7490),
+            senderName = "Ahmet Yılmaz",
             content = "Merhaba, plakamı gördünüz mü?",
             time = "10:42"
         )
@@ -189,9 +177,7 @@ private fun ChatBubblePreviewContent() {
             status = MessageStatus.READ
         )
         ReceivedBubble(
-            initials = "AY",
-            avatarBg = Color(0xFFECFEFF),
-            avatarFg = Color(0xFF0E7490),
+            senderName = "Ahmet Yılmaz",
             content = "Evet aynen o! Teşekkürler.",
             time = "10:44"
         )

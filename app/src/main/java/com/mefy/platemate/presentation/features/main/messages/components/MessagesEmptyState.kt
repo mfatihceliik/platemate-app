@@ -40,7 +40,7 @@ internal fun MessagesEmptyState(
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeMedium)
+                .size(dims.sizing.plateBadgeMd)
                 .clip(CircleShape)
                 .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center
@@ -49,7 +49,7 @@ internal fun MessagesEmptyState(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
                 contentDescription = null,
                 tint = colors.textLabel,
-                modifier = Modifier.size(dims.sizing.iconXl)
+                size = dims.sizing.iconXl,
             )
         }
 

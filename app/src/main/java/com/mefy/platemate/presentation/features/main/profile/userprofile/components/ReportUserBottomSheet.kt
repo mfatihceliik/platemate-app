@@ -95,7 +95,7 @@ internal fun ReportUserBottomSheet(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(dims.sizing.plateBadgeSmall)
+                            .size(dims.sizing.plateBadgeSm)
                             .clip(CircleShape)
                             .background(avatarBg)
                             .border(dims.stroke.st1, colors.primaryContainerBorder, CircleShape),

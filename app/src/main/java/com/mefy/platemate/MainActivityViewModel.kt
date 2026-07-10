@@ -29,7 +29,7 @@ class MainActivityViewModel @Inject constructor(
     globalUiEventBus: GlobalUiEventBus,
     inAppNotificationBus: InAppNotificationBus,
     private val notificationNavigationBus: NotificationNavigationBus
-) : BaseViewModel() {
+) : BaseViewModel(globalUiEventBus) {
 
     /** Uygulama-geneli kritik olaylar; [AppNavHost] tek noktadan tüketir. */
     val globalUiEvents: SharedFlow<GlobalAppEvent> = globalUiEventBus.events

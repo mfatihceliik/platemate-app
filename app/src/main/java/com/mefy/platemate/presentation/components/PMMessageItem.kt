@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,13 +26,10 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMMessageItem(
-    initials: String,
     name: String,
     preview: String,
     time: String,
     unreadCount: Int,
-    avatarBg: Color,
-    avatarFg: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,20 +45,11 @@ fun PMMessageItem(
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.avatarMedium)
-                .clip(CircleShape)
-                .background(avatarBg),
-            contentAlignment = Alignment.Center
-        ) {
-            PMText(
-                text = initials,
-                color = avatarFg,
-                fontSize = dims.fontSize.lg,
-                fontWeight = FontWeight.Bold
-            )
-        }
+
+        PMAvatar(
+            displayName = name,
+            size = dims.sizing.avatarMd
+        )
 
         Column(
             modifier = Modifier.weight(1f),
@@ -120,21 +106,18 @@ private fun PMMessageItemPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         Column(modifier = Modifier.fillMaxWidth()) {
             PMMessageItem(
-                initials = "AY", name = "Ahmet Y.", preview = "Tesekkurler, cok yardimci oldun!",
+                name = "Ahmet Y.", preview = "Tesekkurler, cok yardimci oldun!",
                 time = "09:24", unreadCount = 3,
-                avatarBg = Color(0xFFEEF2FF), avatarFg = Color(0xFF4F46E5),
                 onClick = {}
             )
             PMMessageItem(
-                initials = "ZK", name = "Zeynep K.", preview = "Plakayi gordum, gercekten nazik biri",
+                name = "Zeynep K.", preview = "Plakayi gordum, gercekten nazik biri",
                 time = "Dun", unreadCount = 0,
-                avatarBg = Color(0xFFECFEFF), avatarFg = Color(0xFF0891B2),
                 onClick = {}
             )
             PMMessageItem(
-                initials = "MC", name = "Mehmet C.", preview = "Cok mesaj birikti burada",
+                name = "Mehmet C.", preview = "Cok mesaj birikti burada",
                 time = "Pzt", unreadCount = 128,
-                avatarBg = Color(0xFFF0FDF4), avatarFg = Color(0xFF15803D),
                 onClick = {}
             )
         }

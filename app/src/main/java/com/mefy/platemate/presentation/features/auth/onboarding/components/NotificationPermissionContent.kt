@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 
 @Composable
@@ -37,7 +37,6 @@ internal fun NotificationPermissionContent(
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.colorScheme
 
     Column(
         modifier = modifier
@@ -54,7 +53,7 @@ internal fun NotificationPermissionContent(
             // Bell Icon
             Box(
                 modifier = Modifier
-                    .size(dims.sizing.avatarLarge)
+                    .size(dims.sizing.avatarLg)
                     .background(Color(0xFFFEF9C3), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -62,7 +61,6 @@ internal fun NotificationPermissionContent(
                     imageVector = Icons.Filled.Notifications,
                     contentDescription = null,
                     tint = Color(0xFFEAB308),
-                    size = dims.sizing.avatarIconInner,
                 )
             }
 
@@ -92,7 +90,7 @@ internal fun NotificationPermissionContent(
                 BenefitItem(
                     icon = Icons.Filled.Star,
                     iconBg = Color(0xFFFEF3C7),
-                    iconColor = MaterialTheme.pmColors.star,
+                    iconColor = MaterialTheme.pmColors.iconStar,
                     title = stringResource(R.string.onboarding_notif_item1_title),
                     desc = stringResource(R.string.onboarding_notif_item1_desc)
                 )
@@ -123,14 +121,14 @@ internal fun NotificationPermissionContent(
                 text = stringResource(R.string.onboarding_notif_allow),
                 onClick = onAllowClick,
                 modifier = Modifier.fillMaxWidth(),
-                style = PMButtonStyle.Filled
+                variant = PMButtonVariant.Filled
             )
 
             PMButton(
                 text = stringResource(R.string.onboarding_notif_skip),
                 onClick = onSkipClick,
                 modifier = Modifier.fillMaxWidth(),
-                style = PMButtonStyle.Text
+                variant = PMButtonVariant.Text
             )
         }
     }

@@ -46,7 +46,7 @@ internal fun AccentColorRow(
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeSmall)
+                .size(dims.sizing.plateBadgeSm)
                 .clip(CircleShape)
                 .background(hexToColor(item.hex))
                 .border(dims.stroke.st1, colors.outlineVariant, CircleShape)

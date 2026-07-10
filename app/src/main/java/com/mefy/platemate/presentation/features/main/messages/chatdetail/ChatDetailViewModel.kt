@@ -12,6 +12,7 @@ import com.mefy.platemate.domain.usecase.block.UnblockUserUseCase
 import com.mefy.platemate.domain.usecase.chat.GetChatRoomUseCase
 import com.mefy.platemate.domain.usecase.chat.LeaveChatUseCase
 import com.mefy.platemate.domain.usecase.report.ReportUserUseCase
+import com.mefy.platemate.presentation.common.dialog.DialogFactory
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.navigation.ChatDetailDestination
@@ -43,9 +44,6 @@ class ChatDetailViewModel @Inject constructor(
         ChatDetailUiState(
             conversationId = route.conversationId,
             participantName = route.participantName,
-            initials = route.initials,
-            avatarBg = Color(route.avatarBgArgb.toInt()),
-            avatarFg = Color(route.avatarFgArgb.toInt())
         )
     )
     val uiState: StateFlow<ChatDetailUiState> = _uiState.asStateFlow()
@@ -73,9 +71,11 @@ class ChatDetailViewModel @Inject constructor(
             ChatDetailUiAction.NotificationsToggled ->
                 _uiState.update { it.copy(notificationsEnabled = !it.notificationsEnabled) }
 
-            ChatDetailUiAction.DeleteChatClicked -> _uiState.update { it.copy(showDeleteConfirmation = true) }
-            ChatDetailUiAction.DeleteDismissed -> _uiState.update { it.copy(showDeleteConfirmation = false) }
-            ChatDetailUiAction.DeleteConfirmed -> onDeleteChatClicked()
+            ChatDetailUiAction.DeleteChatClicked -> showDialog(
+                DialogFactory.deleteChatConfirmDialog(
+                    onConfirm = { onDeleteChatClicked() }
+                )
+            )
             ChatDetailUiAction.ReportClicked -> onReportClicked()
             ChatDetailUiAction.BlockClicked -> onBlockClicked()
         }
@@ -93,16 +93,16 @@ class ChatDetailViewModel @Inject constructor(
     private fun onDeleteChatClicked() {
         _uiState.update { it.copy(isDeleting = true) }
         launch(onError = { error ->
-            _uiState.update { it.copy(isDeleting = false, showDeleteConfirmation = false) }
+            _uiState.update { it.copy(isDeleting = false) }
             handleError(error)
         }) {
             when (val result = leaveChatUseCase(roomId)) {
                 is AppResult.Success -> {
-                    _uiState.update { it.copy(isDeleting = false, showDeleteConfirmation = false) }
+                    _uiState.update { it.copy(isDeleting = false) }
                     _uiEffect.emitUiEffect(ChatDetailUiEffect.NavigateToMessagesList)
                 }
                 is AppResult.Error -> {
-                    _uiState.update { it.copy(isDeleting = false, showDeleteConfirmation = false) }
+                    _uiState.update { it.copy(isDeleting = false) }
                     showError(result.error.toUiText())
                 }
             }

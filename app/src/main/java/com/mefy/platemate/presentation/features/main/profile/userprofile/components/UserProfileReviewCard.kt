@@ -25,7 +25,7 @@ import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.common.text.NumberFormatter
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -57,20 +57,14 @@ internal fun UserProfileReviewCard(
         ) {
 
             PMPlateBadge(
-                cityCode = review.plateCode,
-                size = PlateBadgeSize.Small
+                plate = review.plateNumber,
+                size = dims.sizing.plateBadgeSm
             )
 
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
-                PMText(
-                    text = review.plateNumber,
-                    style = PMTextStyle.Body,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
                 PMText(
                     text = "${review.city} · ${review.date}",
                     style = PMTextStyle.Note,
@@ -84,7 +78,7 @@ internal fun UserProfileReviewCard(
             ) {
                 PMIcon(
                     imageVector = Icons.Filled.Star,
-                    tint = colors.star,
+                    tint = colors.iconStar,
                     size = dims.sizing.iconSm,
                 )
                 PMText(
@@ -103,20 +97,9 @@ internal fun UserProfileReviewCard(
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
                 review.tags.forEach { tag ->
-                    Box(
-                        modifier = Modifier
-                            .height(dims.spacing.s24)
-                            .background(colors.primaryContainer, MaterialTheme.shapes.extraLarge)
-                            .padding(horizontal = dims.spacing.s10),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        PMText(
-                            text = tag,
-                            style = PMTextStyle.Note,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colors.onPrimaryContainer
-                        )
-                    }
+                    PMChip(
+                        label = tag,
+                    )
                 }
             }
         }

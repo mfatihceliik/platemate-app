@@ -4,7 +4,7 @@ package com.mefy.platemate.core.error
  * Uygulama genelinde tek hata modeli. Yalnızca UX'in ayırt etmesi gereken
  * anlamlı durumlar vardır; her durum tek bir kullanıcı davranışına eşlenir.
  */
-sealed class AppError {
+sealed interface AppError {
 
     /**
      * Ağ/bağlantı hatası: çevrimdışı, zaman aşımı, bağlantı reddi, 5xx
@@ -15,7 +15,7 @@ sealed class AppError {
     data class Network(
         val isOffline: Boolean = false,
         val cause: Throwable? = null
-    ) : AppError()
+    ) : AppError
 
     /**
      * Backend isteği reddetti (`success=false` veya 4xx). Backend mesajını ve varsa
@@ -25,8 +25,8 @@ sealed class AppError {
         val message: String?,
         val errorCode: String? = null,
         val fieldErrors: Map<String, String>? = null
-    ) : AppError()
+    ) : AppError
 
     /** 401 — oturum/token geçersiz. UX: yeniden giriş akışı. */
-    data object SessionExpired : AppError()
+    data object SessionExpired : AppError
 }

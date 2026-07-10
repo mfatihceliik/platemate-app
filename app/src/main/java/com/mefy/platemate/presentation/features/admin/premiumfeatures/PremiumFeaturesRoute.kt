@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -42,6 +43,12 @@ fun PremiumFeaturesRoute(
         }
     }
 
+    val onAction = viewModel::onAction
+
+    val onBackClicked = remember(onAction) { { onAction(PremiumFeaturesUiAction.BackClicked) }}
+    val onAddClicked = remember(onAction) { { onAction(PremiumFeaturesUiAction.AddClicked) }}
+    val onRetryClicked = remember(onAction) { { onAction(PremiumFeaturesUiAction.RetryClicked) }}
+
     val status = when {
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.isLoading -> ScreenStatus.Loading
@@ -51,16 +58,18 @@ fun PremiumFeaturesRoute(
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.admin_premium_features_title),
-            onBackClick = { viewModel.onAction(PremiumFeaturesUiAction.BackClicked) },
+            onBackClick = onBackClicked,
             actions = {
-                PMIconButton(onClick = { viewModel.onAction(PremiumFeaturesUiAction.AddClicked) }) {
-                    PMIcon(imageVector = Icons.Filled.Add, contentDescription = stringResource(R.string.admin_premium_feature_add))
-                }
+                PMIconButton(
+                    onClick = onAddClicked,
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.admin_premium_feature_add)
+                )
             }
         ),
         status = status,
         keepTopBarWhileLoading = true,
-        onRetry = { viewModel.onAction(PremiumFeaturesUiAction.RetryClicked) },
+        onRetry = onRetryClicked,
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         PremiumFeaturesScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

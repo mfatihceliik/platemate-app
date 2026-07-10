@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import kotlinx.coroutines.launch
 
@@ -179,7 +179,7 @@ internal fun FeaturePagerContent(
                                 }
                             },
                             modifier = Modifier.weight(1f),
-                            style = PMButtonStyle.Filled
+                            variant = PMButtonVariant.Filled
                         )
                     }
                 }

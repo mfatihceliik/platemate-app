@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.presentation.common.banner.BannerSeverity
+import com.mefy.platemate.presentation.common.dialog.DialogModel
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.messaging.UiMessage
-import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.common.global.GlobalAppEvent
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -22,9 +22,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 open class BaseViewModel(
-    // Üretimde tüm ViewModel'ler Hilt'ten tek (singleton) örneği enjekte eder; varsayılan
-    // yalnızca birim testlerin no-arg kurabilmesi içindir.
-    private val globalUiEventBus: GlobalUiEventBus = DefaultGlobalUiEventBus()
+    protected val globalUiEventBus: GlobalUiEventBus
 ) : ViewModel() {
 
     private companion object {
@@ -85,6 +83,11 @@ open class BaseViewModel(
     /** Nötr bilgi banner'ı. */
     protected fun showInfo(message: UiText) {
         emitUiMessage(UiMessage.ShowSnackbar(message, BannerSeverity.Info))
+    }
+
+    /** Ekranda kalıcı modal onay / bilgi mesajı gösterir. */
+    protected fun showDialog(dialog: DialogModel) {
+        emitUiMessage(UiMessage.ShowDialog(dialog))
     }
 
     protected fun emitUiMessage(event: UiMessage) {

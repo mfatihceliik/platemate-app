@@ -57,7 +57,8 @@ class SearchStateReducerTest {
         val state = reducer.onDataUpdated(
             state = SearchUiState(),
             recentSearches = recent,
-            bookmarkedPlates = emptyList()
+            bookmarkedPlates = emptyList(),
+            alarmPlates = emptyList()
         )
 
         assertEquals(1, state.recentSearches.size)

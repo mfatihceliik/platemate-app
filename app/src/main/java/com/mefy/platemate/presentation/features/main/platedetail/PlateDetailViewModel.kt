@@ -9,6 +9,7 @@ import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.review.ReportReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
+import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -90,7 +91,7 @@ class PlateDetailViewModel @Inject constructor(
                 reviewReport = ReviewReportUiState(
                     reviewId = review.id,
                     reviewerName = review.displayName ?: review.username,
-                    initials = review.initials
+                    initials = AvatarPalette.initials(review.displayName ?: review.username)
                 )
             )
         }
@@ -177,14 +178,6 @@ class PlateDetailViewModel @Inject constructor(
     }
 
     private fun PlateDetailReview.toUiModel(currentUserId: Long): PlateReviewUiModel {
-        val name = displayName ?: username
-        val initials = name
-            .split(" ")
-            .take(2)
-            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-            .joinToString("")
-            .ifEmpty { "?" }
-
         val timeText = createdAt
             ?.substringBefore("T")
             ?: ""
@@ -193,7 +186,6 @@ class PlateDetailViewModel @Inject constructor(
             id = id,
             username = username,
             displayName = displayName,
-            initials = initials,
             profilePhotoUrl = profilePhotoUrl,
             rating = rating,
             timeAgo = timeText,

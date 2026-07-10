@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.messages.conversation
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -142,9 +140,7 @@ fun ConversationScreen(
                             )
                         } else {
                             ReceivedBubble(
-                                initials = state.initials,
-                                avatarBg = state.avatarBg,
-                                avatarFg = state.avatarFg,
+                                senderName = state.participantName,
                                 content = msg.content,
                                 time = msg.time
                             )
@@ -167,9 +163,6 @@ fun ConversationScreen(
 private val previewState = ConversationUiState(
     isLoading = false,
     participantName = "Ahmet Yılmaz",
-    initials = "AY",
-    avatarBg = Color(0xFFECFEFF),
-    avatarFg = Color(0xFF0E7490),
     inputText = "",
     items = listOf(
         ConversationListItem.DateHeader(isoDate = "2026-07-04"),

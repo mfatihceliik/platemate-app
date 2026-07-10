@@ -27,7 +27,7 @@ fun PMCommentField(
     maxLength: Int,
     modifier: Modifier = Modifier,
     placeholder: String? = null,
-    height: Dp = 150.dp,
+    height: Dp = MaterialTheme.pmDimensions.sizing.commentFieldHeight,
 ) {
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
@@ -55,7 +55,7 @@ fun PMCommentField(
                 color = if (isMaxReached) colors.error else colors.textLabel,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = dims.spacing.s16, bottom = dims.spacing.s12)
+                    .padding(end = dims.spacing.s8, bottom = dims.spacing.s8)
             )
         }
         if (isMaxReached) {
@@ -72,12 +72,13 @@ fun PMCommentField(
 @Preview(name = "PMCommentField Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun PMCommentFieldLightPreview() {
+    val dims = MaterialTheme.pmDimensions
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         PMCommentField(
             value = "Çok nazik bir sürücü, yol verdi.",
             onValueChange = {},
             maxLength = 160,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(dims.spacing.s16)
         )
     }
 }
@@ -85,12 +86,13 @@ private fun PMCommentFieldLightPreview() {
 @Preview(name = "PMCommentField Max", showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun PMCommentFieldMaxPreview() {
+    val dims = MaterialTheme.pmDimensions
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         PMCommentField(
             value = "a".repeat(160),
             onValueChange = {},
             maxLength = 160,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(dims.spacing.s16)
         )
     }
 }

@@ -65,7 +65,7 @@ fun AppShell(
         val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         val dims = MaterialTheme.pmDimensions
         val scaffoldPadding = if (showBottomBar) {
-            PaddingValues(bottom = dims.sizing.mainBottomBarHeight + navBottom)
+            PaddingValues(bottom = dims.sizing.bottomBarHeight + navBottom)
         } else {
             PaddingValues(dims.spacing.s0)
         }

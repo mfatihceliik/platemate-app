@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -32,12 +35,11 @@ import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMDraggableFab
 import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMPlateCompactCard
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.search.components.AlarmPlateCompactCard
-import com.mefy.platemate.presentation.features.main.search.components.SavedPlateCompactCard
 import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -187,11 +189,13 @@ fun SearchScreen(
                         key = { "saved_${it.normalizedPlateCode}" },
                         contentType = { "saved_plate" }
                     ) { item ->
-                        SavedPlateCompactCard(
+                        PMPlateCompactCard(
                             modifier = Modifier.animateItem(),
                             item = item,
+                            trailingIcon = if (item.isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            trailingIconTint = if (item.isBookmarked) colors.primary else colors.iconDefault,
                             onClick = onRecentClick,
-                            onBookmarkClick = onSavedBookmark
+                            onTrailingIconClick = onSavedBookmark
                         )
                     }
                 }
@@ -216,11 +220,13 @@ fun SearchScreen(
                         key = { "alarm_${it.normalizedPlateCode}" },
                         contentType = { "alarm_plate" }
                     ) { item ->
-                        AlarmPlateCompactCard(
+                        PMPlateCompactCard(
                             modifier = Modifier.animateItem(),
                             item = item,
+                            trailingIcon = Icons.Filled.NotificationsActive,
+                            trailingIconTint = colors.primary,
                             onClick = onRecentClick,
-                            onRemoveClick = onAlarmRemove
+                            onTrailingIconClick = onAlarmRemove
                         )
                     }
                 }

@@ -73,6 +73,7 @@ data class PMColors(
     val textSecondary: Color,
     val textTertiary: Color,
     val textLabel: Color,
+    val textWhite: Color,
 
     // ── UI Components ───────────────────────────────────────────
 
@@ -126,12 +127,31 @@ data class PMColors(
     val categoryGreenFg: Color,
     val categoryGreenIcon: Color,
 
+    // ── Avatar ──────────────────────────────────────────────────
+
+    val avatarIndigoBg: Color,
+    val avatarIndigoFg: Color,
+    val avatarTealBg: Color,
+    val avatarTealFg: Color,
+    val avatarGreenBg: Color,
+    val avatarGreenFg: Color,
+    val avatarOrangeBg: Color,
+    val avatarOrangeFg: Color,
+
     // ── Rankings ─────────────────────────────────────────────────
 
     val rankFirstBg: Color,
     val rankFirstFg: Color,
     val rankOtherBg: Color,
     val rankOtherFg: Color,
+
+    // ── Plate Badge ─────────────────────────────────────────────────
+    val plateBadge: Color,
+
+    // ── Icon ─────────────────────────────────────────────────
+    val iconDefault: Color,
+    val iconStar: Color,
+    val iconStarEmpty: Color,
 )
 
 // ─────────────────────────────────────────────────────────────────
@@ -172,10 +192,11 @@ val LightPMColors = PMColors(
     inverseOnSurface = Color(0xFFF1F5F9),
 
     // Text
-    textPrimary = Color(0xFF0F172A),
+    textPrimary = Color(0xFF14161A),
     textSecondary = Color(0xFF475569),
     textTertiary = Color(0xFF64748B),
     textLabel = Color(0xFF94A3B8),
+    textWhite = Color(0xFFF1F5F9),
 
     // UI Components
     searchFieldBg = Color(0xFFEAEFF4),
@@ -223,11 +244,29 @@ val LightPMColors = PMColors(
     categoryGreenFg = Color(0xFF15803D),
     categoryGreenIcon = Color(0xFF22C55E),
 
+    // Avatar
+    avatarIndigoBg = Color(0xFFEEF2FF),
+    avatarIndigoFg = Color(0xFF4F46E5),
+    avatarTealBg = Color(0xFFECFEFF),
+    avatarTealFg = Color(0xFF0891B2),
+    avatarGreenBg = Color(0xFFF0FDF4),
+    avatarGreenFg = Color(0xFF15803D),
+    avatarOrangeBg = Color(0xFFFFF7ED),
+    avatarOrangeFg = Color(0xFFC2410C),
+
     // Rankings
     rankFirstBg = Color(0xFF06B6D4),
     rankFirstFg = Color(0xFFFFFFFF),
     rankOtherBg = Color(0xFFE2E8F0),
     rankOtherFg = Color(0xFF475569),
+
+    // Plate Badge
+    plateBadge = Color(0xFF003399),
+
+    // Icon
+    iconDefault = Color(0xFF64748B),
+    iconStar = Color(0xFFF59E0B),
+    iconStarEmpty = Color(0xFFE2E8F0),
 )
 
 // ─────────────────────────────────────────────────────────────────
@@ -272,6 +311,7 @@ val DarkPMColors = PMColors(
     textSecondary = Color(0xFFCBD5E1),
     textTertiary = Color(0xFF94A3B8),
     textLabel = Color(0xFF64748B),
+    textWhite = Color(0xFFF1F5F9),
 
     // UI Components
     searchFieldBg = Color(0xFF1E293B),
@@ -319,11 +359,29 @@ val DarkPMColors = PMColors(
     categoryGreenFg = Color(0xFF6EE7B7),
     categoryGreenIcon = Color(0xFF34D399),
 
+    // Avatar
+    avatarIndigoBg = Color(0xFF312E81),
+    avatarIndigoFg = Color(0xFFA5B4FC),
+    avatarTealBg = Color(0xFF164E63),
+    avatarTealFg = Color(0xFF67E8F9),
+    avatarGreenBg = Color(0xFF14532D),
+    avatarGreenFg = Color(0xFF6EE7B7),
+    avatarOrangeBg = Color(0xFF78350F),
+    avatarOrangeFg = Color(0xFFFBBF24),
+
     // Rankings
     rankFirstBg = Color(0xFF22D3EE),
     rankFirstFg = Color(0xFF164E63),
     rankOtherBg = Color(0xFF475569),
     rankOtherFg = Color(0xFFCBD5E1),
+
+    // Plate Badge
+    plateBadge = Color(0xFF003399),
+
+    // Icon
+    iconDefault = Color(0xFF64748B),
+    iconStar = Color(0xFFFBBF24),
+    iconStarEmpty = Color(0xFF475569),
 )
 
 // ─────────────────────────────────────────────────────────────────

@@ -42,7 +42,6 @@ data class PlateReviewUiModel(
     val id: Long,
     val username: String,
     val displayName: String?,
-    val initials: String,
     val profilePhotoUrl: String?,
     val rating: Int,
     val timeAgo: String,

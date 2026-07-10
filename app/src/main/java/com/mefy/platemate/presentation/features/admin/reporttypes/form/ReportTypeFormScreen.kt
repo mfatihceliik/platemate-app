@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
 import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -88,7 +88,7 @@ internal fun ReportTypeFormScreen(
                         PMButton(
                             text = option,
                             onClick = { onAction(ReportTypeFormUiAction.SeverityChanged(option)) },
-                            style = if (state.severityCode == option) PMButtonStyle.Filled else PMButtonStyle.Outlined,
+                            variant = if (state.severityCode == option) PMButtonVariant.Filled else PMButtonVariant.Outlined,
                             modifier = Modifier.wrapContentWidth()
                         )
                     }

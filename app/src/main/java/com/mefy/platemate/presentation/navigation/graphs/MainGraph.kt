@@ -1,9 +1,14 @@
-package com.mefy.platemate.presentation.navigation
+package com.mefy.platemate.presentation.navigation.graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigation
-import com.mefy.platemate.presentation.navigation.graphs.searchGraph
+import com.mefy.platemate.presentation.navigation.MainGraphDestination
+import com.mefy.platemate.presentation.navigation.SearchGraphDestination
+import com.mefy.platemate.presentation.navigation.adminGraph
+import com.mefy.platemate.presentation.navigation.discoverGraph
+import com.mefy.platemate.presentation.navigation.messagesGraph
+import com.mefy.platemate.presentation.navigation.settingsGraph
 
 internal fun NavGraphBuilder.mainGraph(
     navController: NavHostController,

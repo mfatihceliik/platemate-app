@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile
 
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.mefy.platemate.R
@@ -113,9 +112,6 @@ class UserProfileViewModel @Inject constructor(
                 conversationId = "",
                 otherUserId = userId,
                 participantName = state.displayName,
-                initials = state.initials,
-                avatarBgArgb = state.avatarBg.toArgb().toLong(),
-                avatarFgArgb = state.avatarFg.toArgb().toLong()
             )
         )
     }

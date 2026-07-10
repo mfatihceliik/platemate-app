@@ -43,7 +43,7 @@ internal fun EmptyPlateState() {
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeLarge)
+                .size(dims.sizing.plateBadgeLg)
                 .clip(CircleShape)
                 .background(colors.searchFieldBg),
             contentAlignment = Alignment.Center

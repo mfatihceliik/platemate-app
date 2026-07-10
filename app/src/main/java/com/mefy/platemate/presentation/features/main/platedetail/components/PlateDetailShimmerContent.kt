@@ -42,13 +42,13 @@ internal fun PlateDetailShimmerContent(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dims.sizing.iconHuge),
+                .height(dims.sizing.iconLg),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ShimmerBlock(
                 shimmer = shimmer,
-                modifier = Modifier.size(dims.sizing.iconLg),
+                modifier = Modifier.size(dims.sizing.iconMd),
                 shape = CircleShape
             )
             ShimmerBlock(
@@ -58,7 +58,7 @@ internal fun PlateDetailShimmerContent(modifier: Modifier = Modifier) {
             )
             ShimmerBlock(
                 shimmer = shimmer,
-                modifier = Modifier.size(dims.sizing.iconLg),
+                modifier = Modifier.size(dims.sizing.iconMd),
                 shape = CircleShape
             )
         }
@@ -71,7 +71,10 @@ internal fun PlateDetailShimmerContent(modifier: Modifier = Modifier) {
         ) {
             ShimmerBlock(
                 shimmer = shimmer,
-                modifier = Modifier.size(dims.sizing.plateBadgeLarge),
+                modifier = Modifier.size(
+                    width = dims.sizing.plateBadgeMd * 3f,
+                    height = dims.sizing.plateBadgeMd
+                ),
                 shape = RoundedCornerShape(dims.radius.r16)
             )
             Column(
@@ -167,7 +170,7 @@ internal fun PlateDetailShimmerContent(modifier: Modifier = Modifier) {
                     ) {
                         ShimmerBlock(
                             shimmer = shimmer,
-                            modifier = Modifier.size(dims.sizing.avatarSmall),
+                            modifier = Modifier.size(dims.sizing.avatarMd),
                             shape = RoundedCornerShape(percent = 50)
                         )
                         Column(

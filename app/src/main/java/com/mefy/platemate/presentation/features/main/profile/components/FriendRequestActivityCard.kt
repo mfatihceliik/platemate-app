@@ -1,36 +1,27 @@
 package com.mefy.platemate.presentation.features.main.profile.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMCardVariant
-import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -45,18 +36,6 @@ internal fun FriendRequestActivityCard(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    val initials = remember(item.username) {
-        item.username
-            .split(" ")
-            .take(2)
-            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-            .joinToString("")
-            .ifEmpty { "?" }
-    }
-    val avatarBrush = remember(colors.primary, colors.tertiary) {
-        Brush.linearGradient(listOf(colors.primary, colors.tertiary))
-    }
-
     PMCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
@@ -68,23 +47,10 @@ internal fun FriendRequestActivityCard(
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Gradient daire avatar
-            Box(
-                modifier = Modifier
-                    .size(dims.sizing.avatarMedium)
-                    .clip(CircleShape)
-                    .background(avatarBrush)
-                    .border(dims.stroke.st2, colors.primaryContainerBorder, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = initials,
-                    style = PMTextStyle.Title,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = colors.onPrimary
-                )
-            }
-
+            PMAvatar(
+                displayName = item.username,
+                size = dims.sizing.avatarMd,
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
@@ -106,7 +72,6 @@ internal fun FriendRequestActivityCard(
                         containerColor = colors.tertiaryContainer
 
                     )
-
                     PMText(
                         text = item.createdAtText,
                         fontSize = dims.fontSize.sm,
@@ -117,8 +82,6 @@ internal fun FriendRequestActivityCard(
 
             PMIcon(
                 imageVector = Icons.Filled.ChevronRight,
-                tint = colors.textLabel,
-                size = dims.sizing.iconSm
             )
         }
     }

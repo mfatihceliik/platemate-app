@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
+import com.mefy.platemate.presentation.navigation.graphs.mainGraph
 
 /**
  * Yalnızca navigasyon: [NavHost] + grafikler + geçiş animasyonları. Uygulama chrome'u

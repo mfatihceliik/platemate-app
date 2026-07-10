@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMButtonStyle
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.moderation.comments.PendingCommentUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
@@ -94,14 +94,14 @@ internal fun PendingCommentCard(
             PMButton(
                 text = stringResource(R.string.admin_comment_reject),
                 onClick = onReject,
-                style = PMButtonStyle.Outlined,
+                variant = PMButtonVariant.Outlined,
                 enabled = !isActioning,
                 modifier = Modifier.weight(1f)
             )
             PMButton(
                 text = stringResource(R.string.admin_comment_remove),
                 onClick = onRemove,
-                style = PMButtonStyle.Text,
+                variant = PMButtonVariant.Text,
                 enabled = !isActioning,
                 modifier = Modifier.weight(1f)
             )

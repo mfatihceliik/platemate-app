@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,6 @@ import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.model.PlateBadgeSize
 import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -35,7 +34,6 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 fun PMPlateCard(
     id: String,
     rank: Int,
-    cityCode: String,
     plateNumber: String,
     rating: String,
     commentCount: Long,
@@ -74,27 +72,30 @@ fun PMPlateCard(
                 )
             }
 
-            PMPlateBadge(cityCode = cityCode, size = PlateBadgeSize.Medium)
+            PMPlateBadge(
+                plate = plateNumber,
+                size = dims.sizing.plateBadgeMd
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
 
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
             ) {
-                Text(
-                    text = plateNumber,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
+                PlateMetric(
+                    icon = Icons.Filled.Star,
+                    value = rating,
+                    iconTint = colors.iconStar
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PlateMetric(icon = Icons.Filled.Star, value = rating, iconTint = colors.star)
                     PlateMetric(
                         icon = Icons.AutoMirrored.Outlined.Chat,
                         value = NumberFormatter.formatCompact(commentCount),
-                        iconTint = colors.textTertiary
+                        iconTint = colors.iconDefault
                     )
                     if (searchCount > 0) {
                         PlateMetric(
@@ -116,7 +117,11 @@ private fun PlateMetric(icon: ImageVector, value: String, iconTint: Color) {
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PMIcon(imageVector = icon, contentDescription = null, size = dims.sizing.iconSm, tint = iconTint)
+        PMIcon(
+            imageVector = icon,
+            size = dims.sizing.iconXs,
+            tint = iconTint
+        )
         PMText(
             text = value,
             fontSize = dims.fontSize.sm,
@@ -126,7 +131,7 @@ private fun PlateMetric(icon: ImageVector, value: String, iconTint: Color) {
     }
 }
 
-@Preview(name = "PMTrendCard", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Preview(name = "PMPlateCard", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun PMPlateCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
@@ -138,9 +143,9 @@ private fun PMPlateCardPreview() {
                 .padding(dims.spacing.s16),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            PMPlateCard(id = "1", rank = 1, cityCode = "34", plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, modifier = Modifier.fillMaxWidth())
-            PMPlateCard(id = "2", rank = 2, cityCode = "06", plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, modifier = Modifier.fillMaxWidth())
-            PMPlateCard(id = "3", rank = 3, cityCode = "35", plateNumber = "35 T 4421", rating = "4.3", commentCount = 6, searchCount = 0, onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "1", rank = 1, plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "2", rank = 2, plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, modifier = Modifier.fillMaxWidth())
+            PMPlateCard(id = "3", rank = 3, plateNumber = "35 T 4421", rating = "4.3", commentCount = 6, searchCount = 0, onClick = {}, modifier = Modifier.fillMaxWidth())
         }
     }
 }

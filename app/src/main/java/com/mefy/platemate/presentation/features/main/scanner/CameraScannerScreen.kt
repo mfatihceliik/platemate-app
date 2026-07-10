@@ -16,10 +16,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -30,10 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
@@ -58,11 +56,11 @@ import java.util.concurrent.Executors
 
 @Composable
 fun CameraScannerScreen(
-    hasCameraPermission: Boolean,
-    onNavigateBack: () -> Unit,
-    onGalleryClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ScannerViewModel = hiltViewModel()
+    viewModel: ScannerViewModel = hiltViewModel(),
+    innerPadding: PaddingValues = PaddingValues(),
+    hasCameraPermission: Boolean,
+    onGalleryClick: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -212,22 +210,9 @@ fun CameraScannerScreen(
             }
 
             PMIcon(
-                imageVector = Icons.Rounded.Close,
-                tint = Color.White,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(dims.spacing.s24)
-                    .size(dims.sizing.iconLg)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.4f))
-                    .debouncedClickable { onNavigateBack() }
-                    .padding(dims.spacing.s8)
-            )
-
-            PMIcon(
                 imageVector = Icons.Rounded.PhotoLibrary,
                 tint = Color.White,
-                size = dims.sizing.iconHuge,
+                size = dims.sizing.iconLg,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(dims.spacing.s24)

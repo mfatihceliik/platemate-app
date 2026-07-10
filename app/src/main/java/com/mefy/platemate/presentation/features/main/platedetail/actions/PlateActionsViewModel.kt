@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.platedetail.actions
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.mefy.platemate.core.common.result.AppResult
@@ -28,29 +27,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
-
-@Immutable
-data class PlateActionsUiState(
-    val isLoading: Boolean = true,
-    val plateCode: String = "",
-    val cityCode: String = "",
-    val isSaved: Boolean = false,
-    val isAlarmed: Boolean = false,
-    val isAlarmInProgress: Boolean = false
-)
-
-sealed interface PlateActionsUiAction {
-    data object BackClicked : PlateActionsUiAction
-    data object SaveToggled : PlateActionsUiAction
-    data object AlarmToggled : PlateActionsUiAction
-    data object ReportClicked : PlateActionsUiAction
-}
-
-sealed interface PlateActionsUiEffect {
-    data object NavigateBack : PlateActionsUiEffect
-    data class NavigateToRemoval(val plateId: Long, val plateCode: String) : PlateActionsUiEffect
-}
-
 @HiltViewModel
 class PlateActionsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,

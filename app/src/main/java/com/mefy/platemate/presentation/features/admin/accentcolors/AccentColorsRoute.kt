@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -17,7 +18,6 @@ import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMIconButton
 import kotlinx.coroutines.flow.collectLatest
 
@@ -42,6 +42,12 @@ fun AccentColorsRoute(
         }
     }
 
+    val onAction = viewModel::onAction
+
+    val onBackClicked = remember(onAction) { { onAction(AccentColorsUiAction.BackClicked) } }
+    val onAddClicked = remember(onAction) { { onAction(AccentColorsUiAction.AddClicked) } }
+    val onRetryClicked = remember(onAction) { { onAction(AccentColorsUiAction.RetryClicked) } }
+
     val status = when {
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.isLoading -> ScreenStatus.Loading
@@ -51,16 +57,18 @@ fun AccentColorsRoute(
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.admin_theme_colors_title),
-            onBackClick = { viewModel.onAction(AccentColorsUiAction.BackClicked) },
+            onBackClick = onBackClicked,
             actions = {
-                PMIconButton(onClick = { viewModel.onAction(AccentColorsUiAction.AddClicked) }) {
-                    PMIcon(imageVector = Icons.Filled.Add, contentDescription = stringResource(R.string.admin_theme_color_add))
-                }
+                PMIconButton(
+                    onClick = onAddClicked,
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.admin_theme_color_add)
+                )
             }
         ),
         status = status,
         keepTopBarWhileLoading = true,
-        onRetry = { viewModel.onAction(AccentColorsUiAction.RetryClicked) },
+        onRetry = onRetryClicked,
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         AccentColorsScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

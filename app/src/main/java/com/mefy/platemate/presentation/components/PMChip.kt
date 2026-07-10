@@ -28,31 +28,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.components.model.PMChipStyle
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Unified chip / badge. Replaces the former `PMBadge` (display badge) and
- * `PMTagChip` (selectable chip).
- *
- * Coloring is fully dynamic and never hardcoded: all fills, borders and text
- * derive from a single [accentColor] (theme `primary` by default, or a
- * backend-provided hex via [com.mefy.platemate.presentation.common.hexToColor]).
- * Explicit [containerColor] / [contentColor] / [borderColor] win over derivation
- * for the rare callsite that needs an exact color pair (e.g. status badges).
- *
- * Color precedence (highest → lowest): explicit overrides → [selected] (forces a
- * [PMChipStyle.Solid] look) → [style].
- *
- * @param selected when true, renders the Solid (filled accent) look regardless of [style].
- * @param count optional trailing number (e.g. tag occurrence count).
- * @param dense compact variant for grids — smaller text and padding, no min height.
- * @param onClick `null` makes the chip a non-interactive display badge (no ripple).
- */
 @Composable
 fun PMChip(
     modifier: Modifier = Modifier,
@@ -92,7 +73,7 @@ fun PMChip(
         .background(resolved.container)
         .border(dims.stroke.st1, resolved.border, shape)
     if (!dense) boxModifier = boxModifier.heightIn(min = dims.sizing.chipHeight)
-    if (interactive) boxModifier = boxModifier.debouncedClickable(onClick = onClick!!)
+    if (interactive) boxModifier = boxModifier.debouncedClickable(onClick = onClick)
     boxModifier = if (dense) {
         boxModifier.padding(horizontal = dims.spacing.s8, vertical = dims.spacing.s4)
     } else {
@@ -138,6 +119,11 @@ fun PMChip(
 // Color resolution (pure — no Composable/theme access, safe to remember)
 // ─────────────────────────────────────────────────────────────────
 
+enum class PMChipStyle {
+    Soft,
+    Solid,
+    Outline
+}
 private data class ResolvedChipColors(
     val container: Color,
     val content: Color,
@@ -222,7 +208,13 @@ private fun PMChipPreviewContent() {
             contentColor = colors.categoryOrangeFg
         )
         // Dense
-        PMChip(label = "Kesik", style = PMChipStyle.Soft, dense = true, accentColor = colors.star, leadingIcon = Icons.Filled.Star)
+        PMChip(
+            label = "Kesik",
+            style = PMChipStyle.Soft,
+            dense = true,
+            accentColor = colors.iconStar,
+            leadingIcon = Icons.Filled.Star
+        )
 
         // Selectable Outline ↔ Solid toggle
         tags.forEachIndexed { index, tag ->
