@@ -1,19 +1,34 @@
 ﻿package com.mefy.platemate.presentation.features.main.discover
 
 import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.domain.model.discovery.CityPlatePage
 import com.mefy.platemate.domain.model.discovery.CityStats
 import com.mefy.platemate.domain.model.discovery.DailyStats
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
+import com.mefy.platemate.domain.model.discovery.DiscoveryTabFilter
+import com.mefy.platemate.domain.model.discovery.DiscoveryTabPage
+import com.mefy.platemate.domain.model.discovery.DiscoveryTabType
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.discovery.RecentActivity
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.domain.model.discovery.TopCityPlate
+import com.mefy.platemate.core.common.pagination.PagedResult
+import com.mefy.platemate.core.common.pagination.PaginationMeta
 import com.mefy.platemate.domain.model.plate.PlateDetail
+import com.mefy.platemate.domain.model.report.CommentReportReason
 import com.mefy.platemate.domain.model.report.ReportType
+import com.mefy.platemate.domain.model.review.Review
+import com.mefy.platemate.domain.model.review.ReviewResponse
 import com.mefy.platemate.domain.model.search.SavedPlate
 import com.mefy.platemate.domain.repository.DiscoveryRepository
+import com.mefy.platemate.domain.repository.PlateReviewRepository
 import com.mefy.platemate.domain.repository.SavedPlateRepository
+import com.mefy.platemate.data.local.CardStylePreferenceStore
+import com.mefy.platemate.domain.model.settings.PlateCardStyle
 import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryHomeUseCase
+import com.mefy.platemate.domain.usecase.discovery.GetDiscoveryTabFeedUseCase
+import com.mefy.platemate.domain.usecase.review.GetReportTypesUseCase
+import com.mefy.platemate.domain.usecase.settings.ObservePlateCardStyleUseCase
 import com.mefy.platemate.domain.usecase.saved.ObserveSavedPlateCodesUseCase
 import com.mefy.platemate.domain.usecase.saved.ToggleSavedPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
@@ -98,20 +113,83 @@ class DiscoverViewModelTest {
     }
 
     @Test
-    fun trendPlateClicked_emitsNavigateEffect() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+    fun trendPlateClicked_emitsNavigateEffectWithNormalizedPlateCode() = runTest(mainDispatcherRule.dispatcher.scheduler) {
         val viewModel = createViewModel()
-        val expectedTrendId = "trend_34_abc_123"
 
         val effectDeferred = async { viewModel.uiEffects.first() }
         runCurrent()
 
-        viewModel.onAction(DiscoverUiAction.TrendPlateClicked(expectedTrendId))
+        // Feed item id formati "<plateCode>_<filterName>"dir; efekt normalize plaka kodu tasir.
+        viewModel.onAction(DiscoverUiAction.TrendPlateClicked("34ABC123_Trend"))
 
         val effect = effectDeferred.await()
         assertEquals(
-            DiscoverUiEffect.NavigateToTrendDetail(expectedTrendId),
+            DiscoverUiEffect.NavigateToTrendDetail("34ABC123"),
             effect
         )
+    }
+
+    @Test
+    fun filtersApplied_fetchesServerFeedAndReplacesList() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+        val repository = FakeDiscoveryRepository(
+            response = AppResult.Success(sampleDiscoveryHome()),
+            tabFeedResponse = AppResult.Success(
+                DiscoveryTabPage(
+                    items = listOf(
+                        samplePlate("07FLT707", score = 5.5),
+                        samplePlate("07FLT708", score = 5.1),
+                        samplePlate("07FLT709", score = 4.9)
+                    ),
+                    page = 0,
+                    hasNext = true
+                )
+            )
+        )
+        val viewModel = createViewModel(repository = repository)
+        advanceUntilIdle()
+
+        val filters = com.mefy.platemate.presentation.features.uimodel.DiscoverFeedFilterUi(
+            cityIds = listOf(7),
+            cityNames = listOf("Antalya")
+        )
+        // Taslak once duzenlenir, sonra Uygula ile commit edilir.
+        viewModel.onAction(DiscoverUiAction.DraftCitiesChanged(filters.cityIds, filters.cityNames))
+        viewModel.onAction(DiscoverUiAction.FiltersApplied)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(1, repository.tabFeedCallCount)
+        assertEquals(filters, state.activeFilters)
+        assertEquals(3, state.plateDetail.size)
+        assertFalse(state.endReached)
+        assertFalse(state.isLoadingMore)
+    }
+
+    @Test
+    fun filtersCleared_restoresHomeTabList() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+        val repository = FakeDiscoveryRepository(
+            response = AppResult.Success(sampleDiscoveryHome()),
+            tabFeedResponse = AppResult.Success(
+                DiscoveryTabPage(
+                    items = listOf(samplePlate("07FLT707", score = 5.5)),
+                    page = 0,
+                    hasNext = false
+                )
+            )
+        )
+        val viewModel = createViewModel(repository = repository)
+        advanceUntilIdle()
+
+        viewModel.onAction(DiscoverUiAction.DraftCitiesChanged(listOf(7), listOf("Antalya")))
+        viewModel.onAction(DiscoverUiAction.FiltersApplied)
+        advanceUntilIdle()
+        viewModel.onAction(DiscoverUiAction.FiltersCleared)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.activeFilters.hasActiveFilters)
+        assertEquals(2, state.plateDetail.size)
+        assertTrue(state.endReached)
     }
 
     private fun createViewModel(
@@ -122,6 +200,10 @@ class DiscoverViewModelTest {
     ): DiscoverViewModel {
         return DiscoverViewModel(
             getDiscoveryHomeUseCase = GetDiscoveryHomeUseCase(repository),
+            getDiscoveryTabFeedUseCase = GetDiscoveryTabFeedUseCase(repository),
+            getReportTypesUseCase = GetReportTypesUseCase(FakePlateReviewRepository()),
+            observePlateCardStyleUseCase = ObservePlateCardStyleUseCase(FakeCardStylePreferenceStore()),
+            observeSessionUseCase = com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase(FakeAuthRepository()),
             observeSavedPlateCodesUseCase = ObserveSavedPlateCodesUseCase(savedPlateRepository),
             toggleSavedPlateUseCase = ToggleSavedPlateUseCase(savedPlateRepository),
             formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
@@ -140,6 +222,49 @@ class DiscoverViewModelTest {
         override fun observeSavedPlateCodes(): Flow<Set<String>> = flowOf(emptySet())
         override suspend fun toggleSaved(plate: SavedPlate): Boolean = true
         override suspend fun replaceFromRemote(plates: List<SavedPlate>) = Unit
+    }
+
+    private class FakeCardStylePreferenceStore : CardStylePreferenceStore {
+        override fun observeCardStyle(): Flow<PlateCardStyle> = flowOf(PlateCardStyle.CLASSIC)
+        override suspend fun setCardStyle(style: PlateCardStyle) = Unit
+        override fun peekCardStyle(): PlateCardStyle = PlateCardStyle.CLASSIC
+    }
+
+    private class FakePlateReviewRepository : PlateReviewRepository {
+        override suspend fun addReview(
+            plateCode: String,
+            rating: Int,
+            comment: String?,
+            reportTypeCodes: List<String>?
+        ): AppResult<ReviewResponse> = throw UnsupportedOperationException()
+
+        override suspend fun getReportTypes(): AppResult<List<ReportType>> = AppResult.Success(emptyList())
+
+        override suspend fun getCommentReportReasons(): AppResult<List<CommentReportReason>> =
+            AppResult.Success(emptyList())
+
+        override suspend fun getPlateReviews(plateCode: String, page: Int, size: Int): AppResult<PagedResult<Review>> =
+            AppResult.Success(
+                PagedResult(
+                    items = emptyList(),
+                    meta = PaginationMeta(
+                        page = page,
+                        size = size,
+                        totalElements = 0,
+                        totalPages = 0,
+                        hasNext = false,
+                        hasPrevious = false
+                    )
+                )
+            )
+
+        override suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit> =
+            AppResult.Success(Unit)
+
+        override suspend fun deleteReview(id: Long): AppResult<Unit> = AppResult.Success(Unit)
+
+        override suspend fun reportReview(commentId: Long, reasonCode: String, description: String?): AppResult<Unit> =
+            AppResult.Success(Unit)
     }
 
     private fun sampleDiscoveryHome(): DiscoveryHome = DiscoveryHome(
@@ -191,7 +316,7 @@ class DiscoverViewModelTest {
             RecentActivity(
                 username = "ali",
                 plateCode = "06XYZ987",
-                actionType = RecentActivityActionType.REPORT_ADDED,
+                actionType = RecentActivityActionType.REPORT_SUBMITTED,
                 occurredAt = "2026-05-18T09:00:00",
                 rating = 0.0,
                 comment = "",
@@ -227,15 +352,55 @@ class DiscoverViewModelTest {
     )
 
     private class FakeDiscoveryRepository(
-        private val response: AppResult<DiscoveryHome>
+        private val response: AppResult<DiscoveryHome>,
+        private val tabFeedResponse: AppResult<DiscoveryTabPage> = AppResult.Success(
+            DiscoveryTabPage(items = emptyList(), page = 0, hasNext = false)
+        )
     ) : DiscoveryRepository {
         val forceRefreshRequests = mutableListOf<Boolean>()
         var callCount = 0
+        var tabFeedCallCount = 0
 
         override suspend fun getDiscoveryHome(forceRefresh: Boolean): AppResult<DiscoveryHome> {
             callCount++
             forceRefreshRequests += forceRefresh
             return response
         }
+
+        override suspend fun getCityPlates(cityId: Int, page: Int, size: Int): AppResult<CityPlatePage> {
+            return AppResult.Success(CityPlatePage(items = emptyList(), page = page, hasNext = false))
+        }
+
+        override suspend fun getTabFeed(
+            tab: DiscoveryTabType,
+            filter: DiscoveryTabFilter,
+            page: Int,
+            size: Int
+        ): AppResult<DiscoveryTabPage> {
+            tabFeedCallCount++
+            return tabFeedResponse
+        }
+
+        override fun clearCache() = Unit
+    }
+
+    private class FakeAuthRepository(
+        private val role: com.mefy.platemate.domain.model.auth.UserRole = com.mefy.platemate.domain.model.auth.UserRole.NORMAL
+    ) : com.mefy.platemate.domain.repository.AuthRepository {
+        override val session: Flow<com.mefy.platemate.domain.model.auth.AuthSession?> = flowOf(
+            com.mefy.platemate.domain.model.auth.AuthSession(
+                userId = 1L,
+                username = "tester",
+                token = "token",
+                refreshToken = "refresh",
+                role = role
+            )
+        )
+
+        override suspend fun login(email: String, password: String) = throw UnsupportedOperationException()
+        override suspend fun register(username: String, email: String, password: String) = throw UnsupportedOperationException()
+        override suspend fun refreshSession() = throw UnsupportedOperationException()
+        override suspend fun changePassword(currentPassword: String, newPassword: String) = throw UnsupportedOperationException()
+        override suspend fun logout() = Unit
     }
 }

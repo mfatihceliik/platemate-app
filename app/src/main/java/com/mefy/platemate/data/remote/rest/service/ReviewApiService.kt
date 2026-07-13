@@ -6,6 +6,7 @@ import com.mefy.platemate.data.remote.dto.plate.PlateReviewDto
 import com.mefy.platemate.data.remote.dto.plate.AddPlateReviewRequest
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.data.remote.dto.report.AddCommentReportRequest
+import com.mefy.platemate.data.remote.dto.report.CommentReportReasonDto
 import com.mefy.platemate.data.remote.dto.report.PlateReportTypeDto
 import com.mefy.platemate.data.remote.dto.review.ReviewResponseDto
 import com.mefy.platemate.data.remote.dto.review.UpdatePlateReviewRequest
@@ -33,6 +34,9 @@ interface ReviewApiService {
 
     @GET("api/plate-report-types")
     suspend fun getReportTypes(): DataResultResponse<List<PlateReportTypeDto>>
+
+    @GET("api/comment-report-reasons")
+    suspend fun getCommentReportReasons(): DataResultResponse<List<CommentReportReasonDto>>
 
     @PUT("api/plates/reviews/{id}")
     suspend fun updateReview(

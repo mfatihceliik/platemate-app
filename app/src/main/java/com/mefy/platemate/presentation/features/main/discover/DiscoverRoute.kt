@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun DiscoverRoute(
     viewModel: DiscoverViewModel,
     onNavigateToTrendDetail: (String) -> Unit,
+    onNavigateToCityPlates: (cityId: Int, cityName: String) -> Unit,
+    onNavigateToFilter: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -35,6 +37,9 @@ fun DiscoverRoute(
             when (effect) {
                 is DiscoverUiEffect.NavigateToTrendDetail -> {
                     onNavigateToTrendDetail(effect.trendId)
+                }
+                is DiscoverUiEffect.NavigateToCityPlates -> {
+                    onNavigateToCityPlates(effect.cityId, effect.cityName)
                 }
             }
         }
@@ -71,6 +76,7 @@ fun DiscoverRoute(
             modifier = modifier,
             state = state,
             onAction = viewModel::onAction,
+            onOpenFilter = onNavigateToFilter,
             lazyListState = lazyListState,
             innerPadding = innerPadding
         )

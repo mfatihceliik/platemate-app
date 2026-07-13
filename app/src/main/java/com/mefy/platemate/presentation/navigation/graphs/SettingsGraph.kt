@@ -17,6 +17,8 @@ import com.mefy.platemate.presentation.features.main.settings.notifications.Noti
 import com.mefy.platemate.presentation.features.main.settings.notifications.NotificationPreferencesViewModel
 import com.mefy.platemate.presentation.features.main.settings.premium.PremiumInfoRoute
 import com.mefy.platemate.presentation.features.main.settings.premium.PremiumInfoViewModel
+import com.mefy.platemate.presentation.features.main.settings.cardstyle.CardStyleRoute
+import com.mefy.platemate.presentation.features.main.settings.cardstyle.CardStyleViewModel
 import com.mefy.platemate.presentation.features.main.settings.themecolor.ThemeColorRoute
 import com.mefy.platemate.presentation.features.main.settings.themecolor.ThemeColorViewModel
 
@@ -34,6 +36,7 @@ internal fun NavGraphBuilder.settingsGraph(
                 onNavigateToEditProfile = { navController.navigateToEditProfile() },
                 onNavigateToPremium = { navController.navigateToProfilePremiumInfo() },
                 onNavigateToThemeColor = { navController.navigateToProfileThemeColor() },
+                onNavigateToCardStyle = { navController.navigateToProfileCardStyle() },
                 onNavigateToLanguage = { navController.navigateToProfileLanguage() },
                 onNavigateToNotificationPreferences = { navController.navigateToProfileNotificationPreferences() },
                 onNavigateToAdmin = { navController.navigate(AdminHubDestination) },
@@ -60,6 +63,14 @@ internal fun NavGraphBuilder.settingsGraph(
             ThemeColorRoute(
                 viewModel = hiltViewModel<ThemeColorViewModel>(),
                 onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<ProfileCardStyleDestination> {
+            CardStyleRoute(
+                viewModel = hiltViewModel<CardStyleViewModel>(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToPremiumInfo = { navController.navigateToProfilePremiumInfo() },
             )
         }
 

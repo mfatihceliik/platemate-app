@@ -5,6 +5,7 @@ sealed interface ProfileSettingsUiEffect {
     data object NavigateToEditProfile : ProfileSettingsUiEffect
     data object NavigateToPremium : ProfileSettingsUiEffect
     data object NavigateToThemeColor : ProfileSettingsUiEffect
+    data object NavigateToCardStyle : ProfileSettingsUiEffect
     data object NavigateToLanguage : ProfileSettingsUiEffect
     data object NavigateToNotificationPreferences : ProfileSettingsUiEffect
     data object NavigateToAdmin : ProfileSettingsUiEffect

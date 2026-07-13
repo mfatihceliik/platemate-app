@@ -5,6 +5,7 @@ sealed interface ProfileSettingsUiAction {
     data object EditProfileClicked : ProfileSettingsUiAction
     data object PremiumClicked : ProfileSettingsUiAction
     data object ThemeColorClicked : ProfileSettingsUiAction
+    data object CardStyleClicked : ProfileSettingsUiAction
     data object LanguageClicked : ProfileSettingsUiAction
     data object NotificationPreferencesClicked : ProfileSettingsUiAction
     data object AdminPanelClicked : ProfileSettingsUiAction

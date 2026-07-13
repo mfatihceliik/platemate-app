@@ -68,7 +68,6 @@ internal fun CenterFab(
             else TopLevelDestination.Messages.unselectedIcon,
             contentDescription = label,
             tint = tint,
-            size = dims.sizing.iconLg
         )
     }
 }

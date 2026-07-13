@@ -44,7 +44,7 @@ internal fun SearchShimmerContent(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dims.sizing.searchBarHeight),
-                shape = RoundedCornerShape(dims.radius.r12),
+                shape = RoundedCornerShape(dims.radius.r16),
             )
         }
 

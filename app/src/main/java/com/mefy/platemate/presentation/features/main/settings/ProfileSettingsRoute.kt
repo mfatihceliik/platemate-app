@@ -25,6 +25,7 @@ fun ProfileSettingsRoute(
     onNavigateToEditProfile: () -> Unit,
     onNavigateToPremium: () -> Unit,
     onNavigateToThemeColor: () -> Unit,
+    onNavigateToCardStyle: () -> Unit,
     onNavigateToLanguage: () -> Unit,
     onNavigateToNotificationPreferences: () -> Unit,
     onNavigateToAdmin: () -> Unit,
@@ -40,6 +41,7 @@ fun ProfileSettingsRoute(
                 ProfileSettingsUiEffect.NavigateToEditProfile -> onNavigateToEditProfile()
                 ProfileSettingsUiEffect.NavigateToPremium -> onNavigateToPremium()
                 ProfileSettingsUiEffect.NavigateToThemeColor -> onNavigateToThemeColor()
+                ProfileSettingsUiEffect.NavigateToCardStyle -> onNavigateToCardStyle()
                 ProfileSettingsUiEffect.NavigateToLanguage -> onNavigateToLanguage()
                 ProfileSettingsUiEffect.NavigateToNotificationPreferences -> onNavigateToNotificationPreferences()
                 ProfileSettingsUiEffect.NavigateToAdmin -> onNavigateToAdmin()

@@ -6,7 +6,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.mefy.platemate.presentation.features.admin.commentreasons.CommentReasonsRoute
+import com.mefy.platemate.presentation.features.admin.commentreasons.CommentReasonsViewModel
+import com.mefy.platemate.presentation.features.admin.commentreasons.form.CommentReasonFormRoute
+import com.mefy.platemate.presentation.features.admin.commentreasons.form.CommentReasonFormViewModel
 import com.mefy.platemate.presentation.features.admin.hub.AdminHubRoute
+import com.mefy.platemate.presentation.features.admin.hub.AdminHubViewModel
 import com.mefy.platemate.presentation.features.admin.moderation.comments.CommentModerationRoute
 import com.mefy.platemate.presentation.features.admin.moderation.comments.CommentModerationViewModel
 import com.mefy.platemate.presentation.features.admin.moderation.plates.HiddenPlatesRoute
@@ -44,17 +49,26 @@ internal fun NavGraphBuilder.adminGraph(
     navigation<AdminGraphDestination>(startDestination = AdminHubDestination) {
         composable<AdminHubDestination> {
             AdminHubRoute(
+                viewModel = hiltViewModel<AdminHubViewModel>(),
                 onBackClick = { navController.navigateUp() },
-                onPendingComments = { navController.navigate(AdminCommentModerationDestination) },
-                onCommentReports = { navController.navigate(AdminCommentReportsDestination) },
-                onPlateRemoval = { navController.navigate(AdminPlateRemovalDestination) },
-                onHiddenPlates = { navController.navigate(AdminHiddenPlatesDestination) },
-                onReportTypes = { navController.navigate(AdminReportTypesDestination) },
-                onSocialPlatforms = { navController.navigate(AdminSocialPlatformsDestination) },
-                onPremiumPlans = { navController.navigate(AdminPremiumPlansDestination) },
-                onPremiumFeatures = { navController.navigate(AdminPremiumFeaturesDestination) },
-                onThemeColors = { navController.navigate(AdminAccentColorsDestination) },
-                onSettings = { navController.navigate(AdminSettingsDestination) },
+                onItemClick = { code ->
+                    // Backend menü kodu → Android destination; bilinmeyen kod no-op (forward-compat).
+                    val destination: AppDestination? = when (code) {
+                        "PENDING_COMMENTS" -> AdminCommentModerationDestination
+                        "COMMENT_REPORTS" -> AdminCommentReportsDestination
+                        "PLATE_REMOVAL_REQUESTS" -> AdminPlateRemovalDestination
+                        "HIDDEN_PLATES" -> AdminHiddenPlatesDestination
+                        "PLATE_REPORT_TYPES" -> AdminReportTypesDestination
+                        "COMMENT_REPORT_REASONS" -> AdminCommentReasonsDestination
+                        "SOCIAL_PLATFORMS" -> AdminSocialPlatformsDestination
+                        "PREMIUM_PLANS" -> AdminPremiumPlansDestination
+                        "PREMIUM_FEATURES" -> AdminPremiumFeaturesDestination
+                        "THEME_COLORS" -> AdminAccentColorsDestination
+                        "APP_SETTINGS" -> AdminSettingsDestination
+                        else -> null
+                    }
+                    destination?.let { navController.navigate(it) }
+                },
             )
         }
 
@@ -106,6 +120,23 @@ internal fun NavGraphBuilder.adminGraph(
         composable<AdminReportTypeFormDestination> {
             ReportTypeFormRoute(
                 viewModel = hiltViewModel<ReportTypeFormViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+            )
+        }
+
+        composable<AdminCommentReasonsDestination> {
+            CommentReasonsRoute(
+                viewModel = hiltViewModel<CommentReasonsViewModel>(),
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToForm = { reasonId ->
+                    navController.navigate(AdminCommentReasonFormDestination(reasonId ?: -1L))
+                },
+            )
+        }
+
+        composable<AdminCommentReasonFormDestination> {
+            CommentReasonFormRoute(
+                viewModel = hiltViewModel<CommentReasonFormViewModel>(),
                 onNavigateBack = { navController.navigateUp() },
             )
         }

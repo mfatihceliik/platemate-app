@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -70,7 +71,8 @@ class DataStoreSessionStore private constructor(
                     username = username,
                     token = token,
                     refreshToken = refreshToken?.takeIf { it.isNotBlank() },
-                    role = UserRole.fromString(preferences[ROLE])
+                    role = UserRole.fromString(preferences[ROLE]),
+                    premiumActive = preferences[PREMIUM_ACTIVE] ?: false
                 )
             }
         }
@@ -90,6 +92,7 @@ class DataStoreSessionStore private constructor(
             preferences[USERNAME] = session.username
             preferences[TOKEN] = session.token
             preferences[ROLE] = session.role.name
+            preferences[PREMIUM_ACTIVE] = session.premiumActive
             if (session.refreshToken.isNullOrBlank()) {
                 preferences.remove(REFRESH_TOKEN)
             } else {
@@ -124,6 +127,7 @@ class DataStoreSessionStore private constructor(
         val TOKEN = stringPreferencesKey("token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         val ROLE = stringPreferencesKey("role")
+        val PREMIUM_ACTIVE = booleanPreferencesKey("premium_active")
     }
 }
 

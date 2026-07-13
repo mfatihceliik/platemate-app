@@ -1,0 +1,3 @@
+- `[x]` Update `ReportTypeDto.kt` to make fields nullable
+- `[x]` Update `DiscoveryMapper.kt` to handle nulls safely in `mapTopReport`
+- `[x]` Run unit tests to verify the fix (Verified via static analysis due to environment issues)

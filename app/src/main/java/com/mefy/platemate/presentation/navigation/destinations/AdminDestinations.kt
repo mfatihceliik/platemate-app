@@ -30,6 +30,12 @@ data object AdminReportTypesDestination : AppDestination
 data class AdminReportTypeFormDestination(val typeId: Long = -1L) : AppDestination
 
 @Serializable
+data object AdminCommentReasonsDestination : AppDestination
+
+@Serializable
+data class AdminCommentReasonFormDestination(val reasonId: Long = -1L) : AppDestination
+
+@Serializable
 data object AdminSocialPlatformsDestination : AppDestination
 
 @Serializable

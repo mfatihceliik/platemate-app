@@ -1,7 +1,9 @@
 package com.mefy.platemate.data.mapper
 
 import com.mefy.platemate.core.mapper.Mapper
+import com.mefy.platemate.data.remote.dto.admin.AdminMenuItemDto
 import com.mefy.platemate.data.remote.dto.admin.CommentReportDto
+import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
 import com.mefy.platemate.data.remote.dto.admin.AccentColorAdminDto
@@ -10,7 +12,9 @@ import com.mefy.platemate.data.remote.dto.admin.PremiumFeatureAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PremiumPlanAdminDto
 import com.mefy.platemate.data.remote.dto.admin.SocialPlatformAdminDto
 import com.mefy.platemate.domain.model.admin.AccentColorAdmin
+import com.mefy.platemate.domain.model.admin.AdminMenuItem
 import com.mefy.platemate.domain.model.admin.CommentReport
+import com.mefy.platemate.domain.model.admin.CommentReportReasonAdmin
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
 import com.mefy.platemate.domain.model.admin.PremiumFeatureAdmin
@@ -18,6 +22,16 @@ import com.mefy.platemate.domain.model.admin.PremiumPlanAdmin
 import com.mefy.platemate.domain.model.admin.ReportTypeAdmin
 import com.mefy.platemate.domain.model.admin.SocialPlatformAdmin
 import javax.inject.Inject
+
+class AdminMenuItemMapper @Inject constructor() : Mapper<AdminMenuItemDto, AdminMenuItem> {
+    override fun map(input: AdminMenuItemDto): AdminMenuItem = AdminMenuItem(
+        code = input.code.orEmpty(),
+        title = input.title.orEmpty(),
+        iconKey = input.iconKey.orEmpty(),
+        sortOrder = input.sortOrder ?: 0,
+        badgeCount = input.badgeCount
+    )
+}
 
 class CommentReportMapper @Inject constructor() : Mapper<CommentReportDto, CommentReport> {
     override fun map(input: CommentReportDto): CommentReport = CommentReport(
@@ -66,6 +80,17 @@ class ReportTypeAdminMapper @Inject constructor() : Mapper<PlateReportTypeAdminD
         severityCode = input.severityCode.orEmpty(),
         colorHex = input.colorHex.orEmpty(),
         weight = input.weight ?: 0,
+        sortOrder = input.sortOrder ?: 0,
+        active = input.active
+    )
+}
+
+class CommentReportReasonAdminMapper @Inject constructor() : Mapper<CommentReportReasonAdminDto, CommentReportReasonAdmin> {
+    override fun map(input: CommentReportReasonAdminDto): CommentReportReasonAdmin = CommentReportReasonAdmin(
+        id = input.id,
+        code = input.code.orEmpty(),
+        label = input.label.orEmpty(),
+        requiresDescription = input.requiresDescription,
         sortOrder = input.sortOrder ?: 0,
         active = input.active
     )

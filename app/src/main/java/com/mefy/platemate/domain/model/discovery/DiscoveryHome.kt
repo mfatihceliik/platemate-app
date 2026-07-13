@@ -5,5 +5,8 @@ data class DiscoveryHome(
     val tabs: DiscoveryTabs,
     val cityStats: List<CityStats>,
     val topCityPlates: List<TopCityPlate>,
-    val recentActivities: List<RecentActivity>
+    val recentActivities: List<RecentActivity>,
+    val feedType: DiscoveryFeedType = DiscoveryFeedType.FREE,
+    val extendedStats: DiscoveryExtendedStats? = null,
+    val forYou: DiscoveryForYou? = null
 )

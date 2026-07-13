@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.features.main.discover.reducer
 
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
@@ -31,6 +32,7 @@ class DiscoverStateReducerTest {
             cityStats = listOf(
                 DiscoverCityStatUiModel(
                     rank = 1,
+                    cityId = 34,
                     cityName = "Istanbul",
                     count = 10,
                     progress = 1f
@@ -41,11 +43,14 @@ class DiscoverStateReducerTest {
                     id = "id",
                     type = RecentActivityActionType.REVIEW_ADDED,
                     actorName = "fatih",
-                    actionText = "REVIEW_ADDED",
+                    actionText = UiText.Dynamic("REVIEW_ADDED"),
                     plateCode = "34ABC123",
-                    timeAgoText = "now"
+                    timeAgoText = UiText.Dynamic("now")
                 )
             ),
+            topReportTypes = emptyList(),
+            isPremium = false,
+            forYou = null,
             tabs = com.mefy.platemate.domain.model.discovery.DiscoveryTabs(
                 trendPlates = emptyList(),
                 attentionPlates = emptyList(),
@@ -67,7 +72,8 @@ class DiscoverStateReducerTest {
         val state = reducer.onContentLoaded(
             state = DiscoverUiState(isInitialLoading = true, isRefreshing = true),
             mappedHome = home,
-            plateDetails = plates
+            plateDetails = plates,
+            endReached = true
         )
 
         assertFalse(state.isInitialLoading)
@@ -94,7 +100,8 @@ class DiscoverStateReducerTest {
         val state = reducer.onFilterSelected(
             state = DiscoverUiState(selectedFilter = DiscoverFilterUi.Trend),
             filter = DiscoverFilterUi.Careless,
-            plateDetails = plates
+            plateDetails = plates,
+            endReached = true
         )
 
         assertEquals(DiscoverFilterUi.Careless, state.selectedFilter)

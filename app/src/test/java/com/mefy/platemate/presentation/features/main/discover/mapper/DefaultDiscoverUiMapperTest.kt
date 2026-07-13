@@ -128,7 +128,7 @@ class DefaultDiscoverUiMapperTest {
             RecentActivity(
                 username = "ali",
                 plateCode = "06XYZ987",
-                actionType = RecentActivityActionType.REPORT_ADDED,
+                actionType = RecentActivityActionType.REPORT_SUBMITTED,
                 occurredAt = "2026-05-18T09:00:00",
                 rating = 0.0,
                 comment = "",

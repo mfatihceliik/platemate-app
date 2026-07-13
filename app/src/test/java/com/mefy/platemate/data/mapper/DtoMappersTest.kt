@@ -129,7 +129,7 @@ class DtoMappersTest {
                     RecentActivityDto(
                         username = "fatih",
                         plateCode = "34ABC123",
-                        actionType = "REPORT_ADDED",
+                        actionType = "REPORT_SUBMITTED",
                         occurredAt = "2026-05-18T10:00:00",
                         rating = 0.0,
                         comment = "",
@@ -140,7 +140,7 @@ class DtoMappersTest {
             )
         )
 
-        assertEquals(RecentActivityActionType.REPORT_ADDED, result.recentActivities.first().actionType)
+        assertEquals(RecentActivityActionType.REPORT_SUBMITTED, result.recentActivities.first().actionType)
     }
 
     @Test
@@ -214,7 +214,7 @@ class DtoMappersTest {
                             )
                         )
                     ),
-                    dangerousPlates = emptyList(),
+                    attentionPlates = emptyList(),
                     goodDriverPlates = emptyList(),
                     newPlates = emptyList()
                 ),

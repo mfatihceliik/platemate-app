@@ -2,8 +2,11 @@ package com.mefy.platemate.domain.repository
 
 import com.mefy.platemate.core.common.pagination.PagedResult
 import com.mefy.platemate.core.common.result.AppResult
+import com.mefy.platemate.domain.model.admin.AdminMenuItem
 import com.mefy.platemate.domain.model.admin.AppSettings
 import com.mefy.platemate.domain.model.admin.CommentReport
+import com.mefy.platemate.domain.model.admin.CommentReportReasonAdmin
+import com.mefy.platemate.domain.model.admin.CommentReportReasonInput
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PendingComment
 import com.mefy.platemate.domain.model.admin.AccentColorAdmin
@@ -19,6 +22,8 @@ import com.mefy.platemate.domain.model.admin.SocialPlatformAdmin
 import com.mefy.platemate.domain.model.admin.SocialPlatformInput
 
 interface AdminRepository {
+    suspend fun getAdminMenu(): AppResult<List<AdminMenuItem>>
+
     suspend fun getPendingComments(page: Int, size: Int): AppResult<PagedResult<PendingComment>>
     suspend fun approveComment(commentId: Long): AppResult<Unit>
     suspend fun rejectComment(commentId: Long, reason: String?): AppResult<Unit>
@@ -46,6 +51,11 @@ interface AdminRepository {
     suspend fun addReportType(input: ReportTypeInput): AppResult<Unit>
     suspend fun updateReportType(id: Long, input: ReportTypeInput): AppResult<Unit>
     suspend fun setReportTypeActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getCommentReportReasonsAdmin(): AppResult<List<CommentReportReasonAdmin>>
+    suspend fun addCommentReportReason(input: CommentReportReasonInput): AppResult<Unit>
+    suspend fun updateCommentReportReason(id: Long, input: CommentReportReasonInput): AppResult<Unit>
+    suspend fun setCommentReportReasonActive(id: Long, active: Boolean): AppResult<Unit>
 
     suspend fun getSocialPlatformsAdmin(): AppResult<List<SocialPlatformAdmin>>
     suspend fun addSocialPlatform(input: SocialPlatformInput): AppResult<Unit>

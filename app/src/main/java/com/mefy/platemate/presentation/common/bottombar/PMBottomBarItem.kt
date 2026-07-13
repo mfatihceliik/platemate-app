@@ -42,8 +42,6 @@ internal fun RowScope.PMBottomBarItem(
         label = "tint"
     )
 
-
-
     Box(
         modifier = Modifier
             .weight(1f)
@@ -62,7 +60,6 @@ internal fun RowScope.PMBottomBarItem(
             imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
             contentDescription = label,
             tint = tint,
-            size = dims.sizing.iconLg
         )
         // Etiket: alt overlay — ikonu ittirmez, dairenin hemen altına yerleşir.
         // align BottomCenter burada (BoxScope) hesaplanır; AnimatedVisibility'nin

@@ -152,6 +152,7 @@ data class PMColors(
     val iconDefault: Color,
     val iconStar: Color,
     val iconStarEmpty: Color,
+    val iconDanger: Color,
 )
 
 // ─────────────────────────────────────────────────────────────────
@@ -267,6 +268,7 @@ val LightPMColors = PMColors(
     iconDefault = Color(0xFF64748B),
     iconStar = Color(0xFFF59E0B),
     iconStarEmpty = Color(0xFFE2E8F0),
+    iconDanger = Color(0xFFEF4444),
 )
 
 // ─────────────────────────────────────────────────────────────────
@@ -382,6 +384,7 @@ val DarkPMColors = PMColors(
     iconDefault = Color(0xFF64748B),
     iconStar = Color(0xFFFBBF24),
     iconStarEmpty = Color(0xFF475569),
+    iconDanger = Color(0xFFF87171),
 )
 
 // ─────────────────────────────────────────────────────────────────

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -65,6 +66,8 @@ fun ProfileSettingsScreen(
     val onPremium = remember(onAction) { { onAction(ProfileSettingsUiAction.PremiumClicked) } }
     val onThemeColor =
         remember(onAction) { { onAction(ProfileSettingsUiAction.ThemeColorClicked) } }
+    val onCardStyle =
+        remember(onAction) { { onAction(ProfileSettingsUiAction.CardStyleClicked) } }
     val onLanguage = remember(onAction) { { onAction(ProfileSettingsUiAction.LanguageClicked) } }
     val onNotificationPrefs =
         remember(onAction) { { onAction(ProfileSettingsUiAction.NotificationPreferencesClicked) } }
@@ -159,6 +162,29 @@ fun ProfileSettingsScreen(
                         ChevronIcon()
                     }
                 })
+        }
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_settings_card_style),
+                leadingIcon = Icons.Filled.Style,
+                leadingIconTint = colors.primary,
+                leadingContainerColor = colors.primaryContainer,
+                position = PMRowPosition.Middle,
+                onClick = onCardStyle,
+                trailing = if (!state.premiumActive) {
+                    {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                        ) {
+                            ProBadge()
+                            ChevronIcon()
+                        }
+                    }
+                } else {
+                    null
+                }
+            )
         }
         item {
             PMRowItem(

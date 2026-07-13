@@ -4,9 +4,13 @@ import com.mefy.platemate.core.common.pagination.PagedResult
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
 import com.mefy.platemate.data.remote.dto.admin.AdminCommentModerationRequest
+import com.mefy.platemate.data.remote.dto.admin.AdminMenuItemDto
 import com.mefy.platemate.data.remote.dto.admin.AdminReviewRequest
 import com.mefy.platemate.data.remote.dto.admin.AppSettingsDto
 import com.mefy.platemate.data.remote.dto.admin.CommentReportDto
+import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonAdminDto
+import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdateCommentReportReasonActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.HidePlateRequest
 import com.mefy.platemate.data.remote.dto.admin.PlateAdminDto
 import com.mefy.platemate.data.remote.dto.admin.PlateRemovalRequestDto
@@ -36,6 +40,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AdminApiService {
+    // --- Admin hub menu ---
+    @GET("api/admin/menu")
+    suspend fun getAdminMenu(): DataResultResponse<List<AdminMenuItemDto>>
+
     // --- Pending comments ---
     @GET("api/admin/comments/pending")
     suspend fun getPendingComments(
@@ -124,6 +132,25 @@ interface AdminApiService {
     suspend fun setReportTypeActive(
         @Path("id") id: Long,
         @Body request: UpdateReportTypeActiveRequest
+    ): ResultResponse
+
+    // --- Comment report reasons (CRUD) ---
+    @GET("api/admin/comment-report-reasons")
+    suspend fun getCommentReportReasons(): DataResultResponse<List<CommentReportReasonAdminDto>>
+
+    @POST("api/admin/comment-report-reasons")
+    suspend fun addCommentReportReason(@Body request: CommentReportReasonRequest): DataResultResponse<CommentReportReasonAdminDto>
+
+    @PUT("api/admin/comment-report-reasons/{id}")
+    suspend fun updateCommentReportReason(
+        @Path("id") id: Long,
+        @Body request: CommentReportReasonRequest
+    ): DataResultResponse<CommentReportReasonAdminDto>
+
+    @PATCH("api/admin/comment-report-reasons/{id}/active")
+    suspend fun setCommentReportReasonActive(
+        @Path("id") id: Long,
+        @Body request: UpdateCommentReportReasonActiveRequest
     ): ResultResponse
 
     // --- Social platforms (CRUD) ---

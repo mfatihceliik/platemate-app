@@ -58,7 +58,6 @@ fun SearchScreen(
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
-    // Stable, paylaşılan callback'ler: chip/kart'lar veri değişmedikçe skip etsin.
     val onRecentClick = remember(onAction) { { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) } }
     val onSavedBookmark = remember(onAction) { { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) } }
     val onAlarmRemove = remember(onAction) { { norm: String -> onAction(SearchUiAction.AlarmPlateRemoveClicked(norm)) } }
@@ -100,24 +99,6 @@ fun SearchScreen(
                 errorText = if(errorText) stringResource(R.string.search_plate_invalid_format) else null,
                 isError = errorText,
             )
-
-            /*if (state.plateInput.isNotBlank() && !state.isPlateValid) {
-                PMText(
-                    text = stringResource(R.string.search_plate_invalid_format),
-                    fontSize = dims.fontSize.sm,
-                    color = colors.error,
-                    modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
-                )
-            }
-
-            if (state.detectedCityName != null) {
-                PMText(
-                    text = stringResource(R.string.search_detected_city_plate, state.detectedCityName),
-                    fontSize = dims.fontSize.sm,
-                    color = colors.textTertiary,
-                    modifier = Modifier.padding(top = dims.spacing.s8, start = dims.spacing.s4)
-                )
-            }*/
         }
 
         if (state.recentSearches.isNotEmpty()) {

@@ -84,6 +84,9 @@ class ProfileSettingsViewModel @Inject constructor(
             ProfileSettingsUiAction.ThemeColorClicked ->
                 _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToThemeColor)
 
+            ProfileSettingsUiAction.CardStyleClicked ->
+                _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToCardStyle)
+
             ProfileSettingsUiAction.LanguageClicked ->
                 _uiEffect.emitUiEffect(ProfileSettingsUiEffect.NavigateToLanguage)
 

@@ -12,7 +12,7 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 fun PMSectionLabel(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.pmColors.primary,
+    color: Color = MaterialTheme.pmColors.textPrimary,
     style: PMTextStyle = PMTextStyle.SectionLabel,
     text: String
 ) {
@@ -23,7 +23,7 @@ fun PMSectionLabel(
         color = color,
         modifier = modifier.padding(
             start = dims.spacing.s4,
-            top = dims.spacing.s8,
+            top = dims.spacing.s4,
             bottom = dims.spacing.s4
         )
     )

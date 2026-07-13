@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,7 +45,7 @@ internal fun ReviewItem(
     val colors = MaterialTheme.pmColors
     val dims = MaterialTheme.pmDimensions
 
-    PMCard(modifier = Modifier.fillMaxWidth(), padding = androidx.compose.foundation.layout.PaddingValues(dims.spacing.s12)) {
+    PMCard(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(dims.spacing.s12)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
@@ -80,12 +81,14 @@ internal fun ReviewItem(
                     onClick = onEditClick,
                     size = dims.sizing.iconSm,
                     imageVector = Icons.Outlined.Edit,
+                    iconColor = colors.iconDefault,
                     contentDescription = stringResource(R.string.review_edit_title)
                 )
                 review.canReport -> PMIconButton(
                     onClick = onReportClick,
                     size = dims.sizing.iconSm,
                     imageVector = Icons.Outlined.Flag,
+                    iconColor = colors.iconDanger,
                     contentDescription = stringResource(R.string.report_review_title)
                 )
             }

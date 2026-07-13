@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +24,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPasswordField(
@@ -56,21 +55,20 @@ fun PMPasswordField(
         singleLine = true,
         trailingIcon = if (showToggle) {
             {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    PMIcon(
-                        imageVector = if (passwordVisible) {
-                            Icons.Filled.VisibilityOff
-                        } else {
-                            Icons.Filled.Visibility
-                        },
-                        contentDescription = if (passwordVisible) {
-                            stringResource(R.string.common_hide)
-                        } else {
-                            stringResource(R.string.common_show)
-                        },
-                        tint = MaterialTheme.pmColors.primary
-                    )
-                }
+                PMIconButton(
+                    imageVector = if (passwordVisible) {
+                        Icons.Filled.VisibilityOff
+                    } else {
+                        Icons.Filled.Visibility
+                    },
+                    contentDescription = if (passwordVisible) {
+                        stringResource(R.string.common_hide)
+                    } else {
+                        stringResource(R.string.common_show)
+                    },
+                    iconColor = colors.iconDefault,
+                    onClick = { passwordVisible = !passwordVisible },
+                )
             }
         } else null,
         keyboardOptions = KeyboardOptions.Default.copy(

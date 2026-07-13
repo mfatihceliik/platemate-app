@@ -6,6 +6,7 @@ import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.plate.PlateDetailReview
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
+import com.mefy.platemate.domain.usecase.review.GetCommentReportReasonsUseCase
 import com.mefy.platemate.domain.usecase.review.ReportReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
@@ -14,7 +15,6 @@ import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
-import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,12 +31,15 @@ class PlateDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchPlateUseCase: SearchPlateUseCase,
     private val reportReviewUseCase: ReportReviewUseCase,
+    private val getCommentReportReasonsUseCase: GetCommentReportReasonsUseCase,
     private val observeSessionUseCase: ObserveSessionUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
     private val normalizedPlateCode: String = checkNotNull(savedStateHandle["id"])
+
+    private var cachedReportReasons: List<ReportReasonUiModel>? = null
 
     private val _uiState = MutableStateFlow(PlateDetailUiState())
     val uiState: StateFlow<PlateDetailUiState> = _uiState.asStateFlow()
@@ -63,7 +66,7 @@ class PlateDetailViewModel @Inject constructor(
             }
             is PlateDetailUiAction.EditReviewClicked -> onEditReviewClicked(action.reviewId)
             is PlateDetailUiAction.ReportReviewClicked -> onReportReviewClicked(action.reviewId)
-            is PlateDetailUiAction.ReportReasonSelected -> onReportReasonSelected(action.reason)
+            is PlateDetailUiAction.ReportReasonSelected -> onReportReasonSelected(action.code)
             is PlateDetailUiAction.ReportDescriptionChanged -> onReportDescriptionChanged(action.description)
             PlateDetailUiAction.ReportSubmitClicked -> onReportSubmitClicked()
             PlateDetailUiAction.ReportDismissed -> _uiState.update { it.copy(reviewReport = null) }
@@ -86,20 +89,58 @@ class PlateDetailViewModel @Inject constructor(
 
     private fun onReportReviewClicked(reviewId: Long) {
         val review = _uiState.value.reviews.firstOrNull { it.id == reviewId } ?: return
+        val cached = cachedReportReasons
         _uiState.update {
             it.copy(
                 reviewReport = ReviewReportUiState(
                     reviewId = review.id,
                     reviewerName = review.displayName ?: review.username,
-                    initials = AvatarPalette.initials(review.displayName ?: review.username)
+                    initials = AvatarPalette.initials(review.displayName ?: review.username),
+                    reasons = cached.orEmpty(),
+                    isLoadingReasons = cached == null
                 )
             )
         }
+        if (cached == null) loadReportReasons()
     }
 
-    private fun onReportReasonSelected(reason: CommentReportReason) {
+    private fun loadReportReasons() {
+        launch {
+            when (val result = getCommentReportReasonsUseCase()) {
+                is AppResult.Success -> {
+                    val reasons = result.data.map {
+                        ReportReasonUiModel(
+                            code = it.code,
+                            label = it.label,
+                            requiresDescription = it.requiresDescription
+                        )
+                    }
+                    cachedReportReasons = reasons
+                    _uiState.update { state ->
+                        state.reviewReport?.let {
+                            state.copy(reviewReport = it.copy(reasons = reasons, isLoadingReasons = false))
+                        } ?: state
+                    }
+                }
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(reviewReport = null) }
+                    showError(result.error.toUiText())
+                }
+            }
+        }
+    }
+
+    private fun onReportReasonSelected(code: String) {
         _uiState.update { state ->
-            state.reviewReport?.let { state.copy(reviewReport = it.copy(selectedReason = reason)) } ?: state
+            val report = state.reviewReport ?: return@update state
+            val selected = report.reasons.firstOrNull { it.code == code }
+            state.copy(
+                reviewReport = report.copy(
+                    selectedReasonCode = code,
+                    // Disabled alanda bayat metin kalmasın: description sadece OTHER'da korunur.
+                    description = if (selected?.requiresDescription == true) report.description else ""
+                )
+            )
         }
     }
 
@@ -111,12 +152,12 @@ class PlateDetailViewModel @Inject constructor(
 
     private fun onReportSubmitClicked() {
         val report = _uiState.value.reviewReport ?: return
-        val reason = report.selectedReason ?: return
+        val reasonCode = report.selectedReasonCode ?: return
         if (report.isSubmitting) return
 
         _uiState.update { it.copy(reviewReport = report.copy(isSubmitting = true)) }
         launch {
-            when (val result = reportReviewUseCase(report.reviewId, reason.code, report.description)) {
+            when (val result = reportReviewUseCase(report.reviewId, reasonCode, report.description)) {
                 is AppResult.Success -> {
                     _uiState.update { it.copy(reviewReport = null) }
                     showSuccess(UiText.Resource(R.string.report_review_success))

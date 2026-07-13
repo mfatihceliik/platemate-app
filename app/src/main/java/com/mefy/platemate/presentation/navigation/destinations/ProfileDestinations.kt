@@ -27,6 +27,9 @@ data object ProfileChangePasswordDestination : AppDestination
 data object ProfileThemeColorDestination : AppDestination
 
 @Serializable
+data object ProfileCardStyleDestination : AppDestination
+
+@Serializable
 data object ProfileLanguageDestination : AppDestination
 
 @Serializable

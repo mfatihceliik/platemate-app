@@ -1,12 +1,13 @@
 package com.mefy.platemate.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -36,34 +36,38 @@ fun PMCommentField(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
     ) {
-        Box(
+        PMTextField(
+            value = value,
+            onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(height)
+                .height(height),
+            placeholder = placeholder,
+            singleLine = false,
+        )
+        // Sayaç alanın altında: uzun metin artık sayacın altına akmaz.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dims.spacing.s4),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            PMTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxSize(),
-                placeholder = placeholder,
-                singleLine = false,
-            )
+            if (isMaxReached) {
+                PMText(
+                    text = stringResource(R.string.review_comment_max_reached),
+                    color = colors.error,
+                    fontSize = dims.fontSize.sm,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Spacer(modifier = Modifier.width(dims.spacing.s8))
             PMText(
                 text = stringResource(R.string.review_comment_counter, value.length, maxLength),
-                color = if (isMaxReached) colors.error else colors.textLabel,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = dims.spacing.s8, bottom = dims.spacing.s8)
-            )
-        }
-        if (isMaxReached) {
-            PMText(
-                text = stringResource(R.string.review_comment_max_reached),
-                color = colors.error,
-                fontSize = dims.fontSize.sm,
-                modifier = Modifier.padding(start = dims.spacing.s4)
+                color = if (isMaxReached) colors.error else colors.textLabel
             )
         }
     }

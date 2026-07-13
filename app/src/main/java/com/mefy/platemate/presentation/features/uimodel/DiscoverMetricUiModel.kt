@@ -8,5 +8,7 @@ data class DiscoverMetricUiModel(
     val type: DiscoverMetricUiType,
     val valueText: String,
     @StringRes val labelResId: Int,
-    @StringRes val periodResId: Int
+    @StringRes val periodResId: Int,
+    val deltaText: String? = null,
+    val deltaPositive: Boolean? = null
 )

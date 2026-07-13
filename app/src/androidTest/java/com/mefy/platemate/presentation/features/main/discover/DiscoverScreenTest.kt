@@ -14,6 +14,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
@@ -201,6 +202,7 @@ class DiscoverScreenTest {
             cityStats = listOf(
                 DiscoverCityStatUiModel(
                     rank = 1,
+                    cityId = 34,
                     cityName = "Istanbul",
                     count = 312,
                     progress = 1f
@@ -211,9 +213,9 @@ class DiscoverScreenTest {
                     id = "activity_ahmet_comment",
                     type = RecentActivityActionType.REVIEW_ADDED,
                     actorName = "Ahmet",
-                    actionText = "commented on",
+                    actionText = UiText.Dynamic("commented on"),
                     plateCode = "34 ABC 123",
-                    timeAgoText = "2 min ago"
+                    timeAgoText = UiText.Dynamic("2 min ago")
                 )
             )
         )

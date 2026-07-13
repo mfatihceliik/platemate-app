@@ -5,8 +5,10 @@ import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.map
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.mapper.mapList
+import com.mefy.platemate.data.mapper.AdminMenuItemMapper
 import com.mefy.platemate.data.mapper.AppSettingsMapper
 import com.mefy.platemate.data.mapper.CommentReportMapper
+import com.mefy.platemate.data.mapper.CommentReportReasonAdminMapper
 import com.mefy.platemate.data.mapper.HiddenPlateMapper
 import com.mefy.platemate.data.mapper.PendingCommentMapper
 import com.mefy.platemate.data.mapper.PlateRemovalRequestMapper
@@ -17,6 +19,8 @@ import com.mefy.platemate.data.mapper.ReportTypeAdminMapper
 import com.mefy.platemate.data.mapper.SocialPlatformAdminMapper
 import com.mefy.platemate.data.remote.dto.admin.AdminCommentModerationRequest
 import com.mefy.platemate.data.remote.dto.admin.AdminReviewRequest
+import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdateCommentReportReasonActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.HidePlateRequest
 import com.mefy.platemate.data.remote.dto.admin.AccentColorRequest
 import com.mefy.platemate.data.remote.dto.admin.ThemeGridSizeRequest
@@ -32,8 +36,11 @@ import com.mefy.platemate.data.remote.dto.admin.UpdateSocialPlatformActiveReques
 import com.mefy.platemate.data.remote.rest.service.AdminApiService
 import com.mefy.platemate.data.remote.safeApiCall
 import com.mefy.platemate.data.remote.safeResultCall
+import com.mefy.platemate.domain.model.admin.AdminMenuItem
 import com.mefy.platemate.domain.model.admin.AppSettings
 import com.mefy.platemate.domain.model.admin.CommentReport
+import com.mefy.platemate.domain.model.admin.CommentReportReasonAdmin
+import com.mefy.platemate.domain.model.admin.CommentReportReasonInput
 import com.mefy.platemate.domain.model.admin.HiddenPlate
 import com.mefy.platemate.domain.model.admin.PendingComment
 import com.mefy.platemate.domain.model.admin.PlateRemovalRequest
@@ -58,12 +65,19 @@ class AdminRepositoryImpl @Inject constructor(
     private val hiddenPlateMapper: HiddenPlateMapper,
     private val appSettingsMapper: AppSettingsMapper,
     private val reportTypeAdminMapper: ReportTypeAdminMapper,
+    private val commentReportReasonAdminMapper: CommentReportReasonAdminMapper,
+    private val adminMenuItemMapper: AdminMenuItemMapper,
     private val socialPlatformAdminMapper: SocialPlatformAdminMapper,
     private val premiumPlanAdminMapper: PremiumPlanAdminMapper,
     private val premiumFeatureAdminMapper: PremiumFeatureAdminMapper,
     private val accentColorAdminMapper: AccentColorAdminMapper,
     private val appDispatchers: AppDispatchers
 ) : AdminRepository {
+
+    override suspend fun getAdminMenu(): AppResult<List<AdminMenuItem>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getAdminMenu() }.map { dtos -> dtos.map(adminMenuItemMapper::map) }
+        }
 
     override suspend fun getPendingComments(page: Int, size: Int): AppResult<PagedResult<PendingComment>> =
         withContext(appDispatchers.io) {
@@ -180,6 +194,33 @@ class AdminRepositoryImpl @Inject constructor(
         severityCode = severityCode,
         colorHex = colorHex,
         weight = weight,
+        sortOrder = sortOrder
+    )
+
+    override suspend fun getCommentReportReasonsAdmin(): AppResult<List<CommentReportReasonAdmin>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getCommentReportReasons() }.map { dtos -> dtos.map(commentReportReasonAdminMapper::map) }
+        }
+
+    override suspend fun addCommentReportReason(input: CommentReportReasonInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.addCommentReportReason(input.toRequest()) }.map { }
+        }
+
+    override suspend fun updateCommentReportReason(id: Long, input: CommentReportReasonInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.updateCommentReportReason(id, input.toRequest()) }.map { }
+        }
+
+    override suspend fun setCommentReportReasonActive(id: Long, active: Boolean): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.setCommentReportReasonActive(id, UpdateCommentReportReasonActiveRequest(active)) }
+        }
+
+    private fun CommentReportReasonInput.toRequest(): CommentReportReasonRequest = CommentReportReasonRequest(
+        code = code,
+        label = label,
+        requiresDescription = requiresDescription,
         sortOrder = sortOrder
     )
 

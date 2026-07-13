@@ -22,7 +22,9 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 fun PMStatCard(
     value: String,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deltaText: String? = null,
+    deltaPositive: Boolean? = null
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
@@ -47,6 +49,13 @@ fun PMStatCard(
             fontSize = dims.fontSize.md,
             color = colors.textTertiary
         )
+        if (deltaText != null) {
+            PMText(
+                text = deltaText,
+                fontSize = dims.fontSize.sm,
+                color = if (deltaPositive == true) colors.success else colors.error
+            )
+        }
     }
 }
 
@@ -61,8 +70,8 @@ private fun PMStatCardPreview() {
                 .padding(dims.spacing.s16),
             horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            PMStatCard(value = "42", label = "Degerlendirme", modifier = Modifier.weight(1f))
-            PMStatCard(value = "318", label = "Takipci", modifier = Modifier.weight(1f))
+            PMStatCard(value = "42", label = "Degerlendirme", modifier = Modifier.weight(1f), deltaText = "+12%", deltaPositive = true)
+            PMStatCard(value = "318", label = "Takipci", modifier = Modifier.weight(1f), deltaText = "-4%", deltaPositive = false)
             PMStatCard(value = "4.6", label = "Puan", modifier = Modifier.weight(1f))
         }
     }

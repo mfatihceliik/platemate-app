@@ -54,6 +54,30 @@ fun NavHostController.navigateToDiscoverDetail(id: String) {
     }
 }
 
+fun NavHostController.navigateToDiscoverCityPlates(cityId: Int, cityName: String) {
+    navigate(DiscoverCityPlatesDestination(cityId = cityId, cityName = cityName)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToDiscoverFilter() {
+    navigate(DiscoverFilterDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToDiscoverCityFilter() {
+    navigate(DiscoverCityFilterDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToDiscoverReportTypeFilter() {
+    navigate(DiscoverReportTypeFilterDestination) {
+        launchSingleTop = true
+    }
+}
+
 fun NavHostController.navigateToSearchDetail(id: String) {
     navigate(SearchDetailDestination(id = id)) {
         launchSingleTop = true
@@ -129,6 +153,12 @@ fun NavHostController.navigateToProfileChangePassword() {
 
 fun NavHostController.navigateToProfileThemeColor() {
     navigate(ProfileThemeColorDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileCardStyle() {
+    navigate(ProfileCardStyleDestination) {
         launchSingleTop = true
     }
 }

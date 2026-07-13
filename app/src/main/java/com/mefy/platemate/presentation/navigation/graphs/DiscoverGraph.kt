@@ -9,6 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mefy.platemate.presentation.features.main.discover.DiscoverRoute
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
+import com.mefy.platemate.presentation.features.main.discover.cityplates.CityPlatesRoute
+import com.mefy.platemate.presentation.features.main.discover.cityplates.CityPlatesViewModel
+import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverCityFilterRoute
+import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverFilterRoute
+import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverReportTypeFilterRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailViewModel
 import com.mefy.platemate.presentation.features.main.platedetail.actions.PlateActionsRoute
@@ -31,6 +36,55 @@ internal fun NavGraphBuilder.discoverGraph(
             DiscoverRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
                 onNavigateToTrendDetail = onNavigateToDiscoverDetail,
+                onNavigateToCityPlates = { cityId, cityName ->
+                    navController.navigateToDiscoverCityPlates(cityId, cityName)
+                },
+                onNavigateToFilter = { navController.navigateToDiscoverFilter() },
+                modifier = modifier
+            )
+        }
+
+        composable<DiscoverFilterDestination> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainGraphDestination)
+            }
+            DiscoverFilterRoute(
+                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCityFilter = { navController.navigateToDiscoverCityFilter() },
+                onNavigateToReportTypeFilter = { navController.navigateToDiscoverReportTypeFilter() },
+                onNavigateToPremiumInfo = { navController.navigateToProfilePremiumInfo() },
+                modifier = modifier
+            )
+        }
+
+        composable<DiscoverCityFilterDestination> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainGraphDestination)
+            }
+            DiscoverCityFilterRoute(
+                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                onNavigateBack = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        composable<DiscoverReportTypeFilterDestination> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainGraphDestination)
+            }
+            DiscoverReportTypeFilterRoute(
+                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                onNavigateBack = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        composable<DiscoverCityPlatesDestination> {
+            CityPlatesRoute(
+                viewModel = hiltViewModel<CityPlatesViewModel>(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToPlateDetail = onNavigateToDiscoverDetail,
                 modifier = modifier
             )
         }

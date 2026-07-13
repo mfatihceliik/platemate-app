@@ -11,6 +11,7 @@ import com.mefy.platemate.data.remote.dto.report.AddCommentReportRequest
 import com.mefy.platemate.data.remote.dto.review.UpdatePlateReviewRequest
 import com.mefy.platemate.data.remote.safeApiCall
 import com.mefy.platemate.data.remote.safeResultCall
+import com.mefy.platemate.domain.model.report.CommentReportReason
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.review.ReviewResponse
@@ -73,6 +74,21 @@ class PlateReviewRepositoryImpl @Inject constructor(
                         colorHex = dto.colorHex.orEmpty(),
                         weight = dto.weight ?: 0,
                         sortOrder = dto.sortOrder ?: 0
+                    )
+                }
+            }
+        }
+
+    override suspend fun getCommentReportReasons(): AppResult<List<CommentReportReason>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getCommentReportReasons() }.map { dtos ->
+                dtos.mapNotNull { dto ->
+                    val code = dto.code ?: return@mapNotNull null
+                    val label = dto.label ?: return@mapNotNull null
+                    CommentReportReason(
+                        code = code,
+                        label = label,
+                        requiresDescription = dto.requiresDescription == true
                     )
                 }
             }

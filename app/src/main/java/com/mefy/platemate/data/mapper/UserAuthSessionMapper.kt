@@ -14,7 +14,8 @@ class UserAuthSessionMapper @Inject constructor() {
             username = input.username,
             token = accessToken,
             refreshToken = refreshToken,
-            role = UserRole.fromString(input.roleCode?.name)
+            role = UserRole.fromString(input.roleCode?.name),
+            premiumActive = input.premiumActive
         )
     }
 }

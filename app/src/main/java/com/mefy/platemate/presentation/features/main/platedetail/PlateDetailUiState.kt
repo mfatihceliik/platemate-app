@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.platedetail
 
 import androidx.compose.runtime.Immutable
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.uimodel.CommentReportReason
 
 @Immutable
 data class PlateDetailUiState(
@@ -57,7 +56,19 @@ data class ReviewReportUiState(
     val reviewId: Long,
     val reviewerName: String,
     val initials: String,
-    val selectedReason: CommentReportReason? = null,
+    val reasons: List<ReportReasonUiModel> = emptyList(),
+    val isLoadingReasons: Boolean = false,
+    val selectedReasonCode: String? = null,
     val description: String = "",
     val isSubmitting: Boolean = false
+) {
+    val selectedReason: ReportReasonUiModel? get() = reasons.firstOrNull { it.code == selectedReasonCode }
+    val descriptionEnabled: Boolean get() = selectedReason?.requiresDescription == true
+}
+
+@Immutable
+data class ReportReasonUiModel(
+    val code: String,
+    val label: String,
+    val requiresDescription: Boolean
 )

@@ -1,5 +1,6 @@
 package com.mefy.platemate.presentation.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,11 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.variant.PMTextFieldVariant
@@ -58,7 +63,8 @@ fun PMTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    interactionSource: MutableInteractionSource? = null
 ) {
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
@@ -87,7 +93,8 @@ fun PMTextField(
         trailingIcon = trailingIcon,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
-        visualTransformation = visualTransformation
+        visualTransformation = visualTransformation,
+        interactionSource = interactionSource
     )
 }
 
@@ -111,41 +118,29 @@ fun PMTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    interactionSource: MutableInteractionSource? = null
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
+    val fieldInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val isFocused by fieldInteractionSource.collectIsFocusedAsState()
+
+    val style = resolveFieldStyle(variant, singleLine)
 
     val shouldShowError = isError || errorText != null
     val supportingOrError = errorText ?: supportingText
 
-    val borderColor = when {
-        shouldShowError -> colors.error
-        isSuccess -> colors.primary
-        isFocused -> colors.primary
-        else -> colors.outlineVariant
-    }
-
-    val backgroundColor = when (variant) {
-        PMTextFieldVariant.Chat -> colors.surfaceVariant
-        PMTextFieldVariant.Search -> colors.searchFieldBg
-        else -> colors.surface
-    }
-    val textColor = colors.onSurface
-
-    val isChat = variant == PMTextFieldVariant.Chat
-    val isSearch = variant == PMTextFieldVariant.Search
-
-    val heightModifier: Modifier = when {
-        isSearch -> Modifier.height(dims.sizing.searchBarHeight)
-        isChat -> Modifier.heightIn(min = dims.sizing.chatFieldMinHeight)
-        singleLine -> Modifier.height(dims.sizing.ctaHeightLarge)
-        else -> Modifier
-            .heightIn(min = dims.sizing.ctaHeightLarge)
-            .fillMaxHeight()
-    }
+    // Focus, success'ten önce gelir: alan aktifken halka her zaman primary.
+    val borderColor by animateColorAsState(
+        targetValue = when {
+            shouldShowError -> colors.error
+            isFocused -> colors.primary
+            isSuccess -> colors.success
+            else -> style.idleBorderColor
+        },
+        label = "fieldBorderColor"
+    )
 
     Column(modifier = modifier) {
         if (label != null) {
@@ -162,51 +157,40 @@ fun PMTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(heightModifier),
+                .then(style.heightModifier),
             enabled = enabled,
             readOnly = readOnly,
-            singleLine = singleLine && !isChat,
+            singleLine = singleLine && variant != PMTextFieldVariant.Chat,
             maxLines = maxLines,
             textStyle = TextStyle(
-                color = textColor,
+                color = colors.onSurface,
                 fontSize = dims.fontSize.lg,
-                letterSpacing = if (visualTransformation != VisualTransformation.None) 4.sp else 0.sp
+                // Şifre noktaları arası nefes payı; diğer transformation'ları etkilemez.
+                letterSpacing = if (visualTransformation is PasswordVisualTransformation) 4.sp else 0.sp
             ),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            interactionSource = interactionSource,
+            interactionSource = fieldInteractionSource,
             visualTransformation = visualTransformation,
             cursorBrush = SolidColor(colors.primary),
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(heightModifier)
-                        .background(
-                            backgroundColor,
-                            when (variant) {
-                                PMTextFieldVariant.Chat -> RoundedCornerShape(dims.radius.rFull)
-                                PMTextFieldVariant.Search -> RoundedCornerShape(dims.radius.r16)
-                                else -> RoundedCornerShape(dims.radius.r16)
-                            }
-                        )
+                        .then(style.heightModifier)
+                        .background(style.backgroundColor, style.shape)
                         .then(
-                            if (isChat) Modifier
-                            else Modifier
-                                .border(
-                                    width = dims.stroke.st2,
-                                    color = borderColor,
-                                    shape = when (variant) {
-                                        PMTextFieldVariant.Search -> RoundedCornerShape(dims.radius.r16)
-                                        else -> RoundedCornerShape(dims.radius.r12)
-                                    }
-                                )
+                            if (style.hasBorder) {
+                                Modifier.border(dims.stroke.st2, borderColor, style.shape)
+                            } else {
+                                Modifier
+                            }
                         )
                         .padding(
                             horizontal = dims.spacing.s16,
-                            vertical = if (isChat || isSearch) dims.spacing.s10 else dims.spacing.s12
+                            vertical = style.verticalPadding
                         ),
-                    verticalAlignment = if (singleLine || isChat) Alignment.CenterVertically else Alignment.Top
+                    verticalAlignment = if (style.centerVertically) Alignment.CenterVertically else Alignment.Top
                 ) {
                     if (leadingIcon != null) {
                         leadingIcon()
@@ -237,13 +221,73 @@ fun PMTextField(
             PMSectionLabel(
                 text = supportingOrError,
                 style = PMTextStyle.Label,
-                color = if (shouldShowError) colors.error else colors.success,
+                color = when {
+                    shouldShowError -> colors.error
+                    isSuccess -> colors.success
+                    else -> colors.textLabel
+                },
                 modifier = Modifier.padding(
                     start = dims.spacing.s4,
                     bottom = dims.spacing.s4
                 )
             )
         }
+    }
+}
+
+/** Variant'a özgü tüm görsel kararlar tek yerde; decorationBox yalnızca bu değerleri okur. */
+private data class FieldStyle(
+    val shape: Shape,
+    val backgroundColor: Color,
+    val hasBorder: Boolean,
+    val idleBorderColor: Color,
+    val heightModifier: Modifier,
+    val verticalPadding: Dp,
+    val centerVertically: Boolean
+)
+
+@Composable
+private fun resolveFieldStyle(variant: PMTextFieldVariant, singleLine: Boolean): FieldStyle {
+    val dims = MaterialTheme.pmDimensions
+    val colors = MaterialTheme.pmColors
+
+    return when (variant) {
+        PMTextFieldVariant.Outlined -> FieldStyle(
+            shape = RoundedCornerShape(dims.radius.r12),
+            backgroundColor = colors.surface,
+            hasBorder = true,
+            idleBorderColor = colors.outlineVariant,
+            heightModifier = if (singleLine) {
+                Modifier.height(dims.sizing.ctaHeightLarge)
+            } else {
+                Modifier
+                    .heightIn(min = dims.sizing.ctaHeightLarge)
+                    .fillMaxHeight()
+            },
+            verticalPadding = dims.spacing.s12,
+            centerVertically = singleLine
+        )
+
+        PMTextFieldVariant.Chat -> FieldStyle(
+            shape = RoundedCornerShape(dims.radius.rFull),
+            backgroundColor = colors.surfaceVariant,
+            hasBorder = false,
+            idleBorderColor = Color.Transparent,
+            heightModifier = Modifier.heightIn(min = dims.sizing.chatFieldMinHeight),
+            verticalPadding = dims.spacing.s10,
+            centerVertically = true
+        )
+
+        // Çıplak input: konteyner (zemin, şekil, focus halkası) PMSearchBar tarafından çizilir.
+        PMTextFieldVariant.Search -> FieldStyle(
+            shape = RoundedCornerShape(dims.radius.r16),
+            backgroundColor = Color.Transparent,
+            hasBorder = false,
+            idleBorderColor = Color.Transparent,
+            heightModifier = Modifier.fillMaxHeight(),
+            verticalPadding = dims.spacing.s10,
+            centerVertically = true
+        )
     }
 }
 
@@ -269,6 +313,7 @@ private fun PMTextFieldPreviewContent() {
     val colors = MaterialTheme.pmColors
     var normal by remember { mutableStateOf("ahmet_yl") }
     var email by remember { mutableStateOf("ahmet@ornek.com") }
+    var plain by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -294,6 +339,17 @@ private fun PMTextFieldPreviewContent() {
             placeholder = "name@domain.com",
             isError = true,
             errorText = "E-posta veya şifre hatalı",
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(dims.spacing.s16))
+
+        PMTextField(
+            value = plain,
+            onValueChange = { plain = it },
+            label = "Ad Soyad",
+            placeholder = "Adınızı girin",
+            supportingText = "Profilinizde görünecek",
             modifier = Modifier.fillMaxWidth()
         )
     }

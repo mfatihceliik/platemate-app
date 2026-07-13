@@ -46,6 +46,7 @@ internal fun UserProfileSocialLinks(
                     onClick = { onLinkClick(link) },
                     variant = PMIconButtonVariant.Tonal,
                     size = dims.sizing.iconLg,
+                    iconColor = link.iconTint,
                     painter = rememberAsyncImagePainter(
                         model = link.iconUrl,
                         error = painterResource(R.drawable.ic_link),

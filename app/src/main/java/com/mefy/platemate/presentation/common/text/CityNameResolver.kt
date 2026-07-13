@@ -14,6 +14,10 @@ object CityNameResolver {
     fun resolveCityName(cityName: String?, plateCode: String): String? =
         normalizeCityName(cityName) ?: detectCityFromPlate(plateCode)
 
+    /** Plaka koduna gore sirali 81 il listesi (cityId = plaka kodu). */
+    fun allCities(): List<Pair<Int, String>> =
+        CITY_MAP.map { (code, name) -> code.toInt() to name }.sortedBy { it.first }
+
     private fun normalizeCityName(cityName: String?): String? {
         val value = cityName?.trim()?.takeIf { it.isNotBlank() } ?: return null
         if (!value.isLikelyMojibake()) return value
