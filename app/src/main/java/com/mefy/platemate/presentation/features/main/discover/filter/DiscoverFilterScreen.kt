@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -25,10 +27,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.components.PMChip
-import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMRowItem
-import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
@@ -38,17 +37,14 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-private val WINDOW_DAY_OPTIONS = listOf(
-    7 to R.string.discover_filter_window_7,
-    30 to R.string.discover_filter_window_30
-)
-
 @Composable
 fun DiscoverFilterRoute(
     viewModel: DiscoverViewModel,
     onNavigateBack: () -> Unit,
     onNavigateToCityFilter: () -> Unit,
+    onNavigateToRatingFilter: () -> Unit,
     onNavigateToReportTypeFilter: () -> Unit,
+    onNavigateToWindowFilter: () -> Unit,
     onNavigateToPremiumInfo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +57,9 @@ fun DiscoverFilterRoute(
         onAction = viewModel::onAction,
         onNavigateBack = onNavigateBack,
         onNavigateToCityFilter = onNavigateToCityFilter,
+        onNavigateToRatingFilter = onNavigateToRatingFilter,
         onNavigateToReportTypeFilter = onNavigateToReportTypeFilter,
+        onNavigateToWindowFilter = onNavigateToWindowFilter,
         onNavigateToPremiumInfo = onNavigateToPremiumInfo,
         modifier = modifier
     )
@@ -73,7 +71,9 @@ fun DiscoverFilterScreen(
     onAction: (DiscoverUiAction) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToCityFilter: () -> Unit,
+    onNavigateToRatingFilter: () -> Unit,
     onNavigateToReportTypeFilter: () -> Unit,
+    onNavigateToWindowFilter: () -> Unit,
     onNavigateToPremiumInfo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -118,19 +118,13 @@ fun DiscoverFilterScreen(
                 onClick = onNavigateToCityFilter
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
-                PMSectionLabel(text = stringResource(R.string.discover_filter_min_rating_label))
-                val currentRating = draft.minRating ?: 0
-                PMRatingStars(
-                    rating = currentRating,
-                    interactive = true,
-                    starSize = dims.sizing.iconLg,
-                    onRatingChange = { newRating ->
-                        // Ayni yildiza tekrar dokunmak secimi kaldirir.
-                        onAction(DiscoverUiAction.DraftMinRatingChanged(if (newRating == currentRating) 0 else newRating))
-                    }
-                )
-            }
+            // Minimum puan — detay ekranina gider (free).
+            PMRowItem(
+                title = stringResource(R.string.discover_filter_min_rating_label),
+                leadingIcon = Icons.Filled.Star,
+                trailingText = ratingSummary(draft),
+                onClick = onNavigateToRatingFilter
+            )
 
             if (state.isPremium) {
                 PMRowItem(
@@ -141,24 +135,12 @@ fun DiscoverFilterScreen(
                     onClick = onNavigateToReportTypeFilter
                 )
 
-                Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
-                    PMSectionLabel(text = stringResource(R.string.discover_filter_window_label))
-                    Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
-                        WINDOW_DAY_OPTIONS.forEach { (days, labelRes) ->
-                            PMChip(
-                                label = stringResource(labelRes),
-                                selected = draft.windowDays == days,
-                                onClick = {
-                                    onAction(
-                                        DiscoverUiAction.DraftWindowChanged(
-                                            if (draft.windowDays == days) null else days
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
+                PMRowItem(
+                    title = stringResource(R.string.discover_filter_window_label),
+                    leadingIcon = Icons.Filled.DateRange,
+                    trailingText = windowSummary(draft),
+                    onClick = onNavigateToWindowFilter
+                )
             } else {
                 PMRowItem(
                     title = stringResource(R.string.discover_filter_premium_locked),
@@ -177,6 +159,36 @@ private fun citySummary(draft: DiscoverFeedFilterUi): String = when {
     draft.cityIds.size == 1 ->
         draft.cityNames.firstOrNull() ?: stringResource(R.string.discover_filter_city_count, 1)
     else -> stringResource(R.string.discover_filter_city_count, draft.cityIds.size)
+}
+
+@Composable
+private fun ratingSummary(draft: DiscoverFeedFilterUi): String {
+    val rating = draft.minRating ?: 0
+    return if (rating <= 0) {
+        stringResource(R.string.discover_filter_report_type_any)
+    } else {
+        stringResource(R.string.discover_filter_rating_summary, rating)
+    }
+}
+
+@Composable
+private fun windowSummary(draft: DiscoverFeedFilterUi): String {
+    val days = draft.windowDays ?: return stringResource(R.string.discover_filter_report_type_any)
+    val presetRes = when (days) {
+        1 -> R.string.discover_filter_window_preset_1d
+        7 -> R.string.discover_filter_window_preset_1w
+        14 -> R.string.discover_filter_window_preset_2w
+        30 -> R.string.discover_filter_window_preset_1m
+        90 -> R.string.discover_filter_window_preset_3m
+        180 -> R.string.discover_filter_window_preset_6m
+        365 -> R.string.discover_filter_window_preset_1y
+        else -> null
+    }
+    return if (presetRes != null) {
+        stringResource(presetRes)
+    } else {
+        stringResource(R.string.discover_filter_window_days, days)
+    }
 }
 
 @Composable
@@ -220,13 +232,16 @@ private fun DiscoverFilterPreview() {
                 filterDraft = DiscoverFeedFilterUi(
                     cityIds = listOf(34, 6),
                     cityNames = listOf("İstanbul", "Ankara"),
-                    minRating = 3
+                    minRating = 3,
+                    windowDays = 30
                 )
             ),
             onAction = {},
             onNavigateBack = {},
             onNavigateToCityFilter = {},
+            onNavigateToRatingFilter = {},
             onNavigateToReportTypeFilter = {},
+            onNavigateToWindowFilter = {},
             onNavigateToPremiumInfo = {}
         )
     }

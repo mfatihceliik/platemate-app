@@ -23,4 +23,10 @@ data object DiscoverFilterDestination : AppDestination
 data object DiscoverCityFilterDestination : AppDestination
 
 @Serializable
+data object DiscoverRatingFilterDestination : AppDestination
+
+@Serializable
 data object DiscoverReportTypeFilterDestination : AppDestination
+
+@Serializable
+data object DiscoverWindowFilterDestination : AppDestination

@@ -290,6 +290,9 @@ class DiscoverViewModel @Inject constructor(
         // Filtresiz ana ekran her sekmede en fazla HOME_TAB_LIMIT (8) plaka onizler; sonsuz scroll yok.
         // Sayfalama yalnizca aktif bir filtre uygulandiginda calisir.
         if (!state.activeFilters.hasActiveFilters) return
+        // Bos liste (basarisiz veya sonucsuz filtre) load-more'u tetiklemesin; aksi halde
+        // shouldLoadMore surekli true kalir, fetch/hata donguye girer (ekran flicker + tekrar eden hata).
+        if (state.plateDetail.isEmpty()) return
         if (state.isInitialLoading || state.isRefreshing || state.isLoadingMore || state.endReached) return
 
         _uiState.update { discoverStateReducer.onLoadMoreStarted(it) }

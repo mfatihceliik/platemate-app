@@ -56,6 +56,7 @@ fun PlateDetailRoute(
     val status = when {
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.isLoading -> ScreenStatus.Loading
+        state.isEmpty -> ScreenStatus.Empty
         else -> ScreenStatus.Content
     }
 

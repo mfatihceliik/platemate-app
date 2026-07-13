@@ -72,8 +72,20 @@ fun NavHostController.navigateToDiscoverCityFilter() {
     }
 }
 
+fun NavHostController.navigateToDiscoverRatingFilter() {
+    navigate(DiscoverRatingFilterDestination) {
+        launchSingleTop = true
+    }
+}
+
 fun NavHostController.navigateToDiscoverReportTypeFilter() {
     navigate(DiscoverReportTypeFilterDestination) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToDiscoverWindowFilter() {
+    navigate(DiscoverWindowFilterDestination) {
         launchSingleTop = true
     }
 }

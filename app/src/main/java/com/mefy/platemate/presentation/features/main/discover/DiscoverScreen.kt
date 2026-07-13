@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,25 +22,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMPlateCard
-import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction.FilterSelected
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverCityStatRow
-import com.mefy.platemate.presentation.features.main.discover.components.DiscoverFilterChips
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverForYouSection
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverHeroStats
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverRecentActivityRow
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverTopReportTypes
 import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
+import com.mefy.platemate.presentation.components.PMChip
+import com.mefy.platemate.presentation.features.main.discover.components.DiscoverFilterButton
 import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
@@ -143,16 +138,37 @@ fun DiscoverScreen(
         }
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                verticalAlignment = Alignment.CenterVertically
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
             ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    DiscoverFilterChips(
-                        selectedFilter = state.selectedFilter, onSelected = onFilterSelected
+                items(
+                    DiscoverFilterUi.entries,
+                    key = { it.name },
+                    contentType = { "filter_chip" }
+                ) { filter ->
+                    val isSelected = state.selectedFilter == filter
+                    PMChip(
+                        label = filter.name,
+                        selected = isSelected,
+                        onClick = { onFilterSelected(filter) }
                     )
                 }
+                item {
+
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PMSectionLabel(
+                    text = stringResource(R.string.discover_section_trending),
+                )
                 DiscoverFilterButton(
                     activeCount = state.activeFilters.activeFilterCount,
                     onClick = {
@@ -163,12 +179,7 @@ fun DiscoverScreen(
                     }
                 )
             }
-        }
 
-        item {
-            PMSectionLabel(
-                text = stringResource(R.string.discover_section_trending),
-            )
         }
 
         itemsIndexed(
@@ -252,42 +263,6 @@ fun DiscoverScreen(
                 )
             }
         }
-        }
-    }
-}
-
-/** Filtre ekranini acan buton; aktif filtre varsa sayac rozeti gosterir. */
-@Composable
-private fun DiscoverFilterButton(
-    activeCount: Int,
-    onClick: () -> Unit
-) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-
-    Box {
-        PMIconButton(
-            imageVector = Icons.Filled.FilterList,
-            onClick = onClick,
-            iconColor = if (activeCount > 0) colors.primary else null,
-            contentDescription = stringResource(R.string.discover_filter_button_description)
-        )
-        if (activeCount > 0) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(dims.sizing.iconSm)
-                    .clip(RoundedCornerShape(dims.radius.r8))
-                    .background(colors.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                PMText(
-                    text = activeCount.toString(),
-                    fontSize = dims.fontSize.xs,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.onPrimary
-                )
-            }
         }
     }
 }

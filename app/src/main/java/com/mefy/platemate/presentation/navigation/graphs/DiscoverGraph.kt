@@ -13,7 +13,9 @@ import com.mefy.platemate.presentation.features.main.discover.cityplates.CityPla
 import com.mefy.platemate.presentation.features.main.discover.cityplates.CityPlatesViewModel
 import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverCityFilterRoute
 import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverFilterRoute
+import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverRatingFilterRoute
 import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverReportTypeFilterRoute
+import com.mefy.platemate.presentation.features.main.discover.filter.DiscoverWindowFilterRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailRoute
 import com.mefy.platemate.presentation.features.main.platedetail.PlateDetailViewModel
 import com.mefy.platemate.presentation.features.main.platedetail.actions.PlateActionsRoute
@@ -52,7 +54,9 @@ internal fun NavGraphBuilder.discoverGraph(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCityFilter = { navController.navigateToDiscoverCityFilter() },
+                onNavigateToRatingFilter = { navController.navigateToDiscoverRatingFilter() },
                 onNavigateToReportTypeFilter = { navController.navigateToDiscoverReportTypeFilter() },
+                onNavigateToWindowFilter = { navController.navigateToDiscoverWindowFilter() },
                 onNavigateToPremiumInfo = { navController.navigateToProfilePremiumInfo() },
                 modifier = modifier
             )
@@ -69,11 +73,33 @@ internal fun NavGraphBuilder.discoverGraph(
             )
         }
 
+        composable<DiscoverRatingFilterDestination> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainGraphDestination)
+            }
+            DiscoverRatingFilterRoute(
+                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                onNavigateBack = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
         composable<DiscoverReportTypeFilterDestination> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(MainGraphDestination)
             }
             DiscoverReportTypeFilterRoute(
+                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                onNavigateBack = { navController.popBackStack() },
+                modifier = modifier
+            )
+        }
+
+        composable<DiscoverWindowFilterDestination> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainGraphDestination)
+            }
+            DiscoverWindowFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
                 onNavigateBack = { navController.popBackStack() },
                 modifier = modifier
