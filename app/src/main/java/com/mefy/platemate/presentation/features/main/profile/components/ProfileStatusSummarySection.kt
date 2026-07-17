@@ -21,7 +21,8 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 internal fun ProfileStatusSummarySection(
     statusSummary: ProfileStatusSummaryUiModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onStatusClick: (String) -> Unit = {}
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
@@ -41,19 +42,22 @@ internal fun ProfileStatusSummarySection(
                     label = stringResource(R.string.profile_status_approved),
                     value = statusSummary.approved.toString(),
                     dotColor = colors.success,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onStatusClick("APPROVED") }
                 )
                 StatusCountPill(
                     label = stringResource(R.string.profile_status_pending_review),
                     value = statusSummary.pendingReview.toString(),
                     dotColor = colors.warning,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onStatusClick("PENDING_REVIEW") }
                 )
                 StatusCountPill(
                     label = stringResource(R.string.profile_status_rejected),
                     value = statusSummary.rejected.toString(),
                     dotColor = colors.error,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onStatusClick("REJECTED") }
                 )
             }
         }

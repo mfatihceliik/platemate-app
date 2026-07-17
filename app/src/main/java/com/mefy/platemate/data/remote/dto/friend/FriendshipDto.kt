@@ -6,6 +6,9 @@ data class FriendshipDto(
     @SerializedName("id") val id: Long,
     @SerializedName("friendUserId") val friendUserId: Long,
     @SerializedName("friendUsername") val friendUsername: String,
-    @SerializedName("status") val status: String, // PENDING, ACCEPTED, REJECTED
-    @SerializedName("createdAt") val createdAt: String
+    @SerializedName("status") val status: String?, // Now using statusCode or statusLabel from backend?
+    @SerializedName("statusCode") val statusCode: String?, 
+    @SerializedName("statusLabel") val statusLabel: String?,
+    @SerializedName("requestedAt") val requestedAt: String?,
+    @SerializedName("respondedAt") val respondedAt: String?
 )

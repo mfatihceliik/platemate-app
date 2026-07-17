@@ -12,6 +12,8 @@ interface PlateReviewRepository {
     suspend fun getReportTypes(): AppResult<List<ReportType>>
     suspend fun getCommentReportReasons(): AppResult<List<CommentReportReason>>
     suspend fun getPlateReviews(plateCode: String, page: Int, size: Int): AppResult<PagedResult<Review>>
+    suspend fun getReviewById(id: Long): AppResult<Review>
+    suspend fun getMyReviews(status: String?, query: String?, page: Int, size: Int): AppResult<PagedResult<Review>>
     suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit>
     suspend fun deleteReview(id: Long): AppResult<Unit>
     suspend fun reportReview(commentId: Long, reasonCode: String, description: String?): AppResult<Unit>

@@ -36,6 +36,12 @@ data object AdminCommentReasonsDestination : AppDestination
 data class AdminCommentReasonFormDestination(val reasonId: Long = -1L) : AppDestination
 
 @Serializable
+data object AdminPlateRemovalReasonsDestination : AppDestination
+
+@Serializable
+data class AdminPlateRemovalReasonFormDestination(val reasonId: Long = -1L) : AppDestination
+
+@Serializable
 data object AdminSocialPlatformsDestination : AppDestination
 
 @Serializable

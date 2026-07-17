@@ -44,7 +44,8 @@ interface AdminRepository {
         nonPremiumPlateFollowLimit: Int,
         nonPremiumPlateAlarmLimit: Int,
         preApprovalMessageLimit: Int,
-        commentReportThreshold: Int
+        commentReportThreshold: Int,
+        reportCommentMaxLength: Int
     ): AppResult<Unit>
 
     suspend fun getReportTypes(): AppResult<List<ReportTypeAdmin>>
@@ -56,6 +57,11 @@ interface AdminRepository {
     suspend fun addCommentReportReason(input: CommentReportReasonInput): AppResult<Unit>
     suspend fun updateCommentReportReason(id: Long, input: CommentReportReasonInput): AppResult<Unit>
     suspend fun setCommentReportReasonActive(id: Long, active: Boolean): AppResult<Unit>
+
+    suspend fun getPlateRemovalReasonsAdmin(): AppResult<List<com.mefy.platemate.domain.model.admin.PlateRemovalReasonAdmin>>
+    suspend fun addPlateRemovalReason(input: com.mefy.platemate.domain.model.admin.PlateRemovalReasonInput): AppResult<Unit>
+    suspend fun updatePlateRemovalReason(id: Long, input: com.mefy.platemate.domain.model.admin.PlateRemovalReasonInput): AppResult<Unit>
+    suspend fun setPlateRemovalReasonActive(id: Long, active: Boolean): AppResult<Unit>
 
     suspend fun getSocialPlatformsAdmin(): AppResult<List<SocialPlatformAdmin>>
     suspend fun addSocialPlatform(input: SocialPlatformInput): AppResult<Unit>

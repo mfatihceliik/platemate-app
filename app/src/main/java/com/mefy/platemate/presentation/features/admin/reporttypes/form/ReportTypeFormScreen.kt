@@ -43,8 +43,7 @@ internal fun ReportTypeFormScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .padding(dims.spacing.s16),
+            .padding(innerPadding),
     ) {
 
         LazyColumn(

@@ -1,10 +1,10 @@
 package com.mefy.platemate.presentation.features.main.platedetail
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +19,7 @@ import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.features.main.platedetail.components.EmptyPlateState
 import com.mefy.platemate.presentation.features.main.platedetail.components.PlateDetailShimmerContent
+import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -32,8 +33,6 @@ fun PlateDetailRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    HandleUiMessages(viewModel.uiMessages)
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
@@ -56,9 +55,9 @@ fun PlateDetailRoute(
     val status = when {
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         state.isLoading -> ScreenStatus.Loading
-        state.isEmpty -> ScreenStatus.Empty
         else -> ScreenStatus.Content
     }
+    val dims = MaterialTheme.pmDimensions
 
     PMBaseScreen(
         modifier = modifier,
@@ -75,15 +74,11 @@ fun PlateDetailRoute(
         ),
         status = status,
         onRetry = onRetryClicked,
+        contentPadding = PaddingValues(dims.spacing.s16),
         loading = { innerPadding ->
             PlateDetailShimmerContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
             )
-        },
-        empty = { innerPadding ->
-            EmptyPlateState()
         },
     ) { innerPadding ->
         PlateDetailScreen(

@@ -29,7 +29,7 @@ import com.mefy.platemate.data.local.ThemePreferenceStore
 import com.mefy.platemate.domain.model.language.AppLanguage
 import com.mefy.platemate.domain.model.theme.AppThemeMode
 import com.mefy.platemate.presentation.common.global.NotificationNavigationBus
-import com.mefy.platemate.presentation.navigation.PlateMateAppRoot
+import com.mefy.platemate.presentation.app.PlateMateAppRoot
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale

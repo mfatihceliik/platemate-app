@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 
 @Composable
 fun LoginRoute(
@@ -31,8 +30,6 @@ fun LoginRoute(
             }
         }
     }
-
-    HandleUiMessages(viewModel.uiMessages)
 
     LoginScreen(
         state = state,

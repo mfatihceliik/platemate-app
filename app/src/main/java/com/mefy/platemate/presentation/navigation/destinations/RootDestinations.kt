@@ -3,7 +3,7 @@ package com.mefy.platemate.presentation.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SessionGateDestination : AppDestination
+data object SplashDestination : AppDestination
 
 @Serializable
 data object AuthGraphDestination : AppDestination

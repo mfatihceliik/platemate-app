@@ -12,5 +12,6 @@ data class ChatRoomDto(
     @SerializedName("group") val group: Boolean,
     @SerializedName("requestStatus") val requestStatus: String?,
     @SerializedName("initiatorId") val initiatorId: Long?,
-    @SerializedName("unreadCount") val unreadCount: Int = 0
+    @SerializedName("unreadCount") val unreadCount: Int = 0,
+    @SerializedName("lastMessageSenderId") val lastMessageSenderId: Long?
 )

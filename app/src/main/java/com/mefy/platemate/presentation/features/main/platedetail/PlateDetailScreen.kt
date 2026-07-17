@@ -42,11 +42,9 @@ fun PlateDetailScreen(
     val dims = MaterialTheme.pmDimensions
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding), contentPadding = PaddingValues(
-            horizontal = dims.spacing.s16, vertical = dims.spacing.s16
-        ), verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = innerPadding,
+        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
     ) {
         item {
             PlateInfoRow(
@@ -104,6 +102,27 @@ fun PlateDetailScreen(
             }
         }
 
+        state.highlightedReview?.let { highlightedReview ->
+            item {
+                PMSectionLabel(
+                    text = stringResource(R.string.platedetail_your_review_label)
+                )
+            }
+
+            item {
+                ReviewItem(
+                    review = highlightedReview,
+                    onAvatarClick = { onAction(PlateDetailUiAction.AvatarClicked(highlightedReview.userId)) },
+                    onReportClick = { onAction(PlateDetailUiAction.ReportReviewClicked(highlightedReview.id)) },
+                    onEditClick = { onAction(PlateDetailUiAction.EditReviewClicked(highlightedReview.id)) }
+                )
+            }
+
+            item {
+                HorizontalDivider(color = colors.outlineVariant)
+            }
+        }
+
         if (state.hasReviews) {
             item {
                 PMSectionLabel(
@@ -118,6 +137,12 @@ fun PlateDetailScreen(
                     onAvatarClick = { onAction(PlateDetailUiAction.AvatarClicked(review.userId)) },
                     onReportClick = { onAction(PlateDetailUiAction.ReportReviewClicked(review.id)) },
                     onEditClick = { onAction(PlateDetailUiAction.EditReviewClicked(review.id)) })
+            }
+        }
+
+        if (state.isEmpty) {
+            item {
+                com.mefy.platemate.presentation.features.main.platedetail.components.EmptyPlateState()
             }
         }
 

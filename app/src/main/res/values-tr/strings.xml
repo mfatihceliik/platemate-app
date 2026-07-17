@@ -1,10 +1,14 @@
 <resources>
+    <string name="search_no_results">Sonuç bulunamadı</string>
     <string name="app_name">PlateMate</string>
     <string name="common_back">Geri</string>
     <string name="common_save">Kaydet</string>
     <string name="common_show">Göster</string>
     <string name="common_hide">Gizle</string>
     <string name="common_cancel">İptal</string>
+    <string name="common_yes">Evet</string>
+    <string name="user_profile_unfriend_confirmation">Bu kişiyi arkadaşlarınızdan çıkarmak istediğinize emin misiniz?</string>
+    <string name="common_clear">Temizle</string>
     <string name="common_loading">Yükleniyor…</string>
     <string name="common_error_unauthorized">Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.</string>
     <string name="common_error_server_unavailable">Sunucuya ulaşılamıyor. Lütfen daha sonra tekrar deneyin.</string>
@@ -261,6 +265,9 @@
     <string name="main_tab_search">Ara</string>
     <string name="main_tab_discover">Keşfet</string>
     <string name="main_tab_messages">Mesajlar</string>
+    <string name="add_to_favorite">Favorilere Ekle</string>
+    <string name="remove_from_favorite">Favorilerden Çıkar</string>
+    <string name="message_you_prefix">Sen: </string>
     <string name="main_tab_profile">Profil</string>
     <string name="main_tab_settings">Ayarlar</string>
     <string name="main_discover_placeholder_title">Keşfet ekranı yakında gelecek.</string>
@@ -296,6 +303,9 @@
     <string name="profile_status_approved">Onaylı</string>
     <string name="profile_status_pending_review">İncelemede</string>
     <string name="profile_status_rejected">Reddedildi</string>
+    <string name="profile_review_list_title">Yorumlarım</string>
+    <string name="profile_review_list_search_hint">Plaka veya yorum ara…</string>
+    <string name="profile_review_list_empty">Bu durumda yorum bulunamadı</string>
     <string name="profile_review_status_approved">Onaylı</string>
     <string name="profile_review_status_pending_review">İncelemede</string>
     <string name="profile_review_status_rejected">Reddedildi</string>
@@ -334,6 +344,10 @@
     <string name="profile_history_title">Bildirim Geçmişi</string>
     <string name="profile_history_empty">Henüz bildirim yok.</string>
     <string name="profile_recent_empty">Son bildirim bulunmuyor.</string>
+    <string name="profile_activity_tab_plate">Plaka Bildirimleri</string>
+    <string name="profile_activity_tab_friends">Arkadaşlık Bildirimleri</string>
+    <string name="profile_recent_empty_plate">Henüz plaka bildirimi yok.</string>
+    <string name="profile_recent_empty_friends">Henüz arkadaşlık isteği bildirimi yok.</string>
     <string name="profile_error_title">Profilin yüklenemedi</string>
     <string name="profile_error_message">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
     <string name="profile_error_retry">Tekrar dene</string>
@@ -415,6 +429,11 @@
     <string name="profile_settings_save_changes">Değişiklikleri Kaydet</string>
     <string name="profile_settings_saved">Ayarlar güncellendi.</string>
     <string name="profile_friend_request_title">%1$s sana arkadaşlık isteği gönderdi</string>
+    <string name="friend_request_status_requested">Beklemede</string>
+    <string name="friend_request_status_accepted">Kabul Edildi</string>
+    <string name="friend_request_status_rejected">Reddedildi</string>
+    <string name="friend_request_status_removed">Kaldırıldı</string>
+    <string name="friend_request_status_unknown">Bilinmiyor</string>
     <string name="profile_social_add_title">Sosyal medya linki ekle</string>
     <string name="profile_social_url_label">Profil URL\'si</string>
     <string name="profile_social_add_button">Link Ekle</string>
@@ -439,6 +458,13 @@
     <string name="user_profile_stat_following">Takip</string>
     <string name="user_profile_follow">Takip Et</string>
     <string name="user_profile_following_label">Takip Ediliyor</string>
+    <string name="user_profile_add_friend">Arkadaş Ekle</string>
+    <string name="user_profile_cancel_request">Beklemede</string>
+    <string name="user_profile_accept_request">Kabul Et</string>
+    <string name="user_profile_friends">Arkadaşlar</string>
+    <string name="user_profile_remove_friend_title">Çıkar</string>
+    <string name="user_profile_remove_friend_desc">Bu kişiyi arkadaş listenizden çıkarmak istediğinize emin misiniz?</string>
+    <string name="user_profile_remove">Kaldır</string>
     <string name="user_profile_message">Mesaj</string>
     <string name="user_profile_share">Paylaş</string>
 
@@ -529,6 +555,7 @@
     <string name="platedetail_review">Değerlendir</string>
     <string name="platedetail_tags_title">ETİKETLER</string>
     <string name="platedetail_reviews_title">DEĞERLENDİRMELER</string>
+    <string name="platedetail_your_review_label">SENİN YORUMUN</string>
     <string name="platedetail_empty_reviews_title">Henüz değerlendirme yok</string>
     <string name="platedetail_empty_reviews_subtitle">Bu plaka için ilk değerlendirmeyi sen yap!</string>
     <string name="platedetail_rate_driving">Sürüş deneyimini puanla</string>
@@ -587,6 +614,8 @@
     <string name="search_no_results_clear">Aramayı temizle</string>
     <string name="search_error_title">Bir hata oluştu</string>
     <string name="search_error_retry">Tekrar dene</string>
+    <string name="search_tab_plate">Plaka</string>
+    <string name="search_tab_users">Kullanıcı</string>
 
     <!-- Discover -->
     <string name="scanner_loading_gallery">Resim işleniyor...</string>
@@ -719,5 +748,32 @@
     <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
     <string name="scanner_searching_plate">%1$s\nAranıyor…</string>
     <string name="camera_scanner_screen">Kamera</string>
+    <string name="user_search_title">Kullanıcı Ara</string>
+    <string name="search_users_placeholder">Kullanıcı ara...</string>
+    <string name="search_recent">Geçmiş Aramalar</string>
+    <string name="admin_plate_removal_reasons_title">Plaka Çıkarma Nedenleri</string>
+    <string name="admin_plate_removal_reason_add">Sebep Ekle</string>
+    <string name="admin_plate_removal_reasons_empty">Herhangi bir neden bulunamadı.</string>
+    <string name="admin_plate_removal_reason_requires_description_badge">Açıklama gerektirir</string>
+    <string name="admin_plate_removal_reason_edit_title">Düzenleme Nedeni</string>
+    <string name="admin_plate_removal_reason_add_title">Sebep Ekle</string>
+    <string name="admin_plate_removal_reason_field_code">Kod</string>
+    <string name="admin_plate_removal_reason_field_label">Etiket</string>
+    <string name="admin_plate_removal_reason_field_sort">Sıralama Düzeni</string>
+    <string name="admin_plate_removal_reason_field_requires_description">Açıklama Gerektirir</string>
+    <string name="admin_plate_removal_reason_saved">Sebep başarıyla kaydedildi.</string>
+    <string name="profile_friends_search_placeholder">Arkadaş ara..</string>
+    <string name="profile_friends_empty_no_friends">Henüz arkadaş eklemedin</string>
+    <string name="profile_friends_empty_no_results">Arama sonucu bulunamadı</string>
+    <string name="user_profile_pending_requests">Bekleyen İstekler</string>
+    <string name="profile_friends_empty_no_pending_requests">Bekleyen isteğiniz bulunmamaktadır.</string>
+
+    <string name="profile_friends_requests_tab">İstekler</string>
+    <string name="profile_friends_received_section">Sana Gelenler</string>
+    <string name="profile_friends_sent_section">Gönderdiklerin</string>
+    <string name="profile_friends_cancel_request">Reddet</string>
+    <string name="profile_friends_remove_action">Kaldır</string>
+    <string name="profile_friends_cancel_request_confirmation">Bu arkadaşlık isteğini iptal etmek istediğinize emin misiniz?</string>
+    <string name="profile_friends_empty_global">Henüz arkadaşın veya isteğin yok.</string>
 </resources>
 

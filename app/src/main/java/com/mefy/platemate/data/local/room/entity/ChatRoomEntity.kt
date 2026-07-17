@@ -36,5 +36,7 @@ data class ChatRoomEntity(
     @ColumnInfo(name = "initiator_id")
     val initiatorId: Long?,
     @ColumnInfo(name = "unread_count")
-    val unreadCount: Int = 0
+    val unreadCount: Int = 0,
+    @ColumnInfo(name = "last_message_sender_id")
+    val lastMessageSenderId: Long? = null
 )

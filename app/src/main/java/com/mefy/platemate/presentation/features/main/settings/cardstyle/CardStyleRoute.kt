@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
@@ -22,8 +21,6 @@ fun CardStyleRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    HandleUiMessages(viewModel.uiMessages)
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffects.collectLatest { effect ->

@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.Flow
  * Ekran-yerel ([com.mefy.platemate.presentation.common.viewmodel.BaseViewModel.uiMessages])
  * bildirimlerinin kök seviyedeki tek banner sink'ine bağlanmasını sağlayan işleyici.
  *
- * [com.mefy.platemate.presentation.navigation.AppNavHost] bunu bir kez [LocalUiMessageHandlers]
- * üzerinden sağlar; her ekran yalnızca [HandleUiMessages] çağırarak kendi ViewModel akışını toplar.
+ * [com.mefy.platemate.presentation.app.AppShell] bunu bir kez [LocalUiMessageHandlers]
+ * üzerinden sağlar; nav katmanındaki `screenComposable` helper'ı her hedef için [HandleUiMessages]'i
+ * bir kez çağırarak o ekranın ViewModel akışını toplar (rotalar artık çağırmaz).
  */
 data class UiMessageHandlers(
     val onShowSnackbar: (UiText, BannerSeverity) -> Unit,

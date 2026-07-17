@@ -28,8 +28,8 @@ import com.mefy.platemate.presentation.components.PMCommentField
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.features.main.platedetail.removal.model.PlateRemovalReason
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.features.main.platedetail.removal.components.ReasonRow
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -64,8 +64,7 @@ internal fun PlateRemovalRequestScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(dims.spacing.s16),
+                .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
         ) {
             PMText(
@@ -76,71 +75,36 @@ internal fun PlateRemovalRequestScreen(
             )
 
             PMSectionLabel(text = stringResource(R.string.removal_request_reason_label))
-            PlateRemovalReason.entries.forEach { reason ->
-                ReasonRow(
-                    label = stringResource(reason.labelRes),
-                    isSelected = reason == state.selectedReason,
-                    onClick = { onAction(PlateRemovalRequestUiAction.ReasonSelected(reason)) }
+            if (state.isLoadingReasons) {
+                androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = colors.primary
                 )
+            } else {
+                state.reasons.forEach { reason ->
+                    ReasonRow(
+                        label = reason.label,
+                        isSelected = reason == state.selectedReason,
+                        onClick = { onAction(PlateRemovalRequestUiAction.ReasonSelected(reason)) }
+                    )
+                }
             }
 
-            PMSectionLabel(
-                text = stringResource(R.string.removal_request_description_hint),
-                modifier = Modifier.padding(top = dims.spacing.s8)
-            )
-            PMCommentField(
-                value = state.description,
-                onValueChange = { onAction(PlateRemovalRequestUiAction.DescriptionChanged(it)) },
-                maxLength = PlateRemovalRequestUiState.DESCRIPTION_MAX_LENGTH,
-                placeholder = stringResource(R.string.removal_request_description_hint),
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (state.selectedReason?.requiresDescription == true) {
+                PMSectionLabel(
+                    text = stringResource(R.string.removal_request_description_hint),
+                    modifier = Modifier.padding(top = dims.spacing.s8)
+                )
+                PMCommentField(
+                    value = state.description,
+                    onValueChange = { onAction(PlateRemovalRequestUiAction.DescriptionChanged(it)) },
+                    maxLength = PlateRemovalRequestUiState.DESCRIPTION_MAX_LENGTH,
+                    placeholder = stringResource(R.string.removal_request_description_hint),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
 
-@Composable
-private fun ReasonRow(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = MaterialTheme.shapes.small
 
-    androidx.compose.foundation.layout.Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(colors.surfaceSecondary)
-            .border(
-                width = dims.stroke.st2,
-                color = if (isSelected) colors.primary else colors.cardBorder,
-                shape = shape
-            )
-            .debouncedClickable(onClick = onClick)
-            .padding(dims.spacing.s12),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(dims.spacing.s24)
-                .clip(CircleShape)
-                .border(dims.stroke.st2, if (isSelected) colors.primary else colors.disabled, CircleShape)
-                .background(if (isSelected) colors.primary else Color.Transparent),
-            contentAlignment = Alignment.Center
-        ) {
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .size(dims.spacing.s8)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                )
-            }
-        }
-        PMText(text = label, style = PMTextStyle.Body, color = colors.textPrimary, modifier = Modifier.fillMaxWidth())
-    }
-}

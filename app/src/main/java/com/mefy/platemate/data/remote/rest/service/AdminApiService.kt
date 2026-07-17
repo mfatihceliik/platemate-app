@@ -153,6 +153,25 @@ interface AdminApiService {
         @Body request: UpdateCommentReportReasonActiveRequest
     ): ResultResponse
 
+    // --- Plate removal reasons (CRUD) ---
+    @GET("api/admin/plate-removal-reasons")
+    suspend fun getPlateRemovalReasons(): DataResultResponse<List<com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonAdminDto>>
+
+    @POST("api/admin/plate-removal-reasons")
+    suspend fun addPlateRemovalReason(@Body request: com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonRequest): DataResultResponse<com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonAdminDto>
+
+    @PUT("api/admin/plate-removal-reasons/{id}")
+    suspend fun updatePlateRemovalReason(
+        @Path("id") id: Long,
+        @Body request: com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonRequest
+    ): DataResultResponse<com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonAdminDto>
+
+    @PATCH("api/admin/plate-removal-reasons/{id}/active")
+    suspend fun setPlateRemovalReasonActive(
+        @Path("id") id: Long,
+        @Body request: com.mefy.platemate.data.remote.dto.admin.UpdatePlateRemovalReasonActiveRequest
+    ): ResultResponse
+
     // --- Social platforms (CRUD) ---
     @GET("api/admin/social-platforms")
     suspend fun getSocialPlatformsAdmin(): DataResultResponse<List<SocialPlatformAdminDto>>

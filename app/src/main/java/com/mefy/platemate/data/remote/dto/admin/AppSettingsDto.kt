@@ -6,5 +6,6 @@ data class AppSettingsDto(
     @SerializedName("nonPremiumPlateFollowLimit") val nonPremiumPlateFollowLimit: Int?,
     @SerializedName("nonPremiumPlateAlarmLimit") val nonPremiumPlateAlarmLimit: Int?,
     @SerializedName("preApprovalMessageLimit") val preApprovalMessageLimit: Int?,
-    @SerializedName("commentReportThreshold") val commentReportThreshold: Int?
+    @SerializedName("commentReportThreshold") val commentReportThreshold: Int?,
+    @SerializedName("reportCommentMaxLength") val reportCommentMaxLength: Int?
 )

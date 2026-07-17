@@ -50,7 +50,8 @@ internal fun ConversationRow(
             preview = conversation.preview,
             time = conversation.time,
             unreadCount = conversation.unreadCount,
-            onClick = onClick
+            onClick = onClick,
+            isSentByMe = conversation.isSentByMe
         )
     }
 }

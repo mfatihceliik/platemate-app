@@ -1,17 +1,16 @@
 package com.mefy.platemate.presentation.features.main.platedetail.removal
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.plate.CreatePlateRemovalRequestUseCase
+import com.mefy.platemate.domain.usecase.plate.GetPlateRemovalReasonsUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
-import com.mefy.platemate.presentation.features.main.platedetail.removal.model.PlateRemovalReason
 import com.mefy.platemate.presentation.navigation.PlateRemovalRequestDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -23,36 +22,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-@Immutable
-data class PlateRemovalRequestUiState(
-    val plateCode: String = "",
-    val selectedReason: PlateRemovalReason? = null,
-    val description: String = "",
-    val isSubmitting: Boolean = false
-) {
-    val isSubmitEnabled: Boolean
-        get() = selectedReason != null && description.isNotBlank() && !isSubmitting
-
-    companion object {
-        const val DESCRIPTION_MAX_LENGTH = 1000
-    }
-}
-
-sealed interface PlateRemovalRequestUiAction {
-    data object BackClicked : PlateRemovalRequestUiAction
-    data class ReasonSelected(val reason: PlateRemovalReason) : PlateRemovalRequestUiAction
-    data class DescriptionChanged(val value: String) : PlateRemovalRequestUiAction
-    data object SubmitClicked : PlateRemovalRequestUiAction
-}
-
-sealed interface PlateRemovalRequestUiEffect {
-    data object NavigateBack : PlateRemovalRequestUiEffect
-}
-
 @HiltViewModel
 class PlateRemovalRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createPlateRemovalRequestUseCase: CreatePlateRemovalRequestUseCase,
+    private val getPlateRemovalReasonsUseCase: GetPlateRemovalReasonsUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
@@ -65,6 +39,27 @@ class PlateRemovalRequestViewModel @Inject constructor(
 
     private val _uiEffect = MutableSharedFlow<PlateRemovalRequestUiEffect>()
     val uiEffect: SharedFlow<PlateRemovalRequestUiEffect> = _uiEffect.asSharedFlow()
+
+    init {
+        loadReasons()
+    }
+
+    private fun loadReasons() {
+        launch(onError = { error ->
+            _uiState.update { it.copy(isLoadingReasons = false) }
+            handleError(error)
+        }) {
+            when (val result = getPlateRemovalReasonsUseCase()) {
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(reasons = result.data, isLoadingReasons = false) }
+                }
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(isLoadingReasons = false) }
+                    showError(result.error.toUiText())
+                }
+            }
+        }
+    }
 
     fun onAction(action: PlateRemovalRequestUiAction) {
         when (action) {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 class PlateRepositoryImpl @Inject constructor(
     private val api: PlateApiService,
     private val mapper: PlateSearchResultMapper,
+    private val plateRemovalReasonMapper: com.mefy.platemate.data.mapper.PlateRemovalReasonMapper,
     private val appDispatchers: AppDispatchers
 ) : PlateRepository {
 
@@ -40,5 +41,10 @@ class PlateRepositoryImpl @Inject constructor(
                     AddPlateRemovalRequestRequest(reasonCode = reasonCode, description = description)
                 )
             }.map { }
+        }
+
+    override suspend fun getPlateRemovalReasons() =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getPlateRemovalReasons() }.map { dtos -> dtos.map(plateRemovalReasonMapper::map) }
         }
 }

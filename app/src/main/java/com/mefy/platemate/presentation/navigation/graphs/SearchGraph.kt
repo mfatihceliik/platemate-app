@@ -23,6 +23,7 @@ import com.mefy.platemate.presentation.features.main.scanner.ScannerViewModel
 import com.mefy.platemate.presentation.features.main.search.SearchRoute
 import com.mefy.platemate.presentation.features.main.search.SearchUiAction
 import com.mefy.platemate.presentation.features.main.search.SearchViewModel
+import com.mefy.platemate.presentation.features.main.search.usersearch.UserSearchViewModel
 import com.mefy.platemate.presentation.navigation.CameraScannerDestination
 import com.mefy.platemate.presentation.navigation.MainGraphDestination
 import com.mefy.platemate.presentation.navigation.PlateActionsDestination
@@ -37,6 +38,7 @@ import com.mefy.platemate.presentation.navigation.navigateToPlateActions
 import com.mefy.platemate.presentation.navigation.navigateToRemovalRequest
 import com.mefy.platemate.presentation.navigation.navigateToReview
 import com.mefy.platemate.presentation.navigation.navigateToUserProfile
+import com.mefy.platemate.presentation.navigation.screenComposable
 
 internal fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
@@ -44,14 +46,18 @@ internal fun NavGraphBuilder.searchGraph(
     modifier: Modifier = Modifier
 ) {
     navigation<SearchGraphDestination>(startDestination = SearchDestination) {
-        composable<SearchDestination> { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MainGraphDestination)
-            }
-            val searchViewModel = hiltViewModel<SearchViewModel>(parentEntry)
-            
-            val scannedPlate by backStackEntry.savedStateHandle.getStateFlow<String?>("scanned_plate", null).collectAsStateWithLifecycle()
-            
+        screenComposable<SearchDestination, SearchViewModel>(
+            viewModel = { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(MainGraphDestination)
+                }
+                hiltViewModel<SearchViewModel>(parentEntry)
+            },
+        ) { searchViewModel ->
+            val scannedPlate by backStackEntry.savedStateHandle
+                .getStateFlow<String?>("scanned_plate", null)
+                .collectAsStateWithLifecycle()
+
             LaunchedEffect(scannedPlate) {
                 if (!scannedPlate.isNullOrEmpty()) {
                     searchViewModel.onAction(SearchUiAction.PlateInputChanged(scannedPlate!!))
@@ -62,15 +68,19 @@ internal fun NavGraphBuilder.searchGraph(
 
             SearchRoute(
                 viewModel = searchViewModel,
+                userSearchViewModel = hiltViewModel<UserSearchViewModel>(),
                 onNavigateToSearchDetail = onNavigateToSearchDetail,
                 onNavigateToCameraScanner = { navController.navigateToCameraScanner() },
+                onNavigateToUserProfile = { userId -> navController.navigateToUserProfile(userId.toString()) },
                 modifier = modifier
             )
         }
 
-        composable<SearchDetailDestination> {
+        screenComposable<SearchDetailDestination, PlateDetailViewModel>(
+            viewModel = { hiltViewModel<PlateDetailViewModel>() },
+        ) { viewModel ->
             PlateDetailRoute(
-                viewModel = hiltViewModel<PlateDetailViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToReview = { navController.navigateToReview(it) },
                 onNavigateToUserProfile = { userId -> navController.navigateToUserProfile(userId.toString()) },
@@ -82,9 +92,11 @@ internal fun NavGraphBuilder.searchGraph(
             )
         }
 
-        composable<PlateActionsDestination> {
+        screenComposable<PlateActionsDestination, PlateActionsViewModel>(
+            viewModel = { hiltViewModel<PlateActionsViewModel>() },
+        ) { viewModel ->
             PlateActionsRoute(
-                viewModel = hiltViewModel<PlateActionsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToRemoval = { plateId, plateCode ->
                     navController.navigateToRemovalRequest(plateId, plateCode)
@@ -93,23 +105,28 @@ internal fun NavGraphBuilder.searchGraph(
             )
         }
 
-        composable<PlateRemovalRequestDestination> {
+        screenComposable<PlateRemovalRequestDestination, PlateRemovalRequestViewModel>(
+            viewModel = { hiltViewModel<PlateRemovalRequestViewModel>() },
+        ) { viewModel ->
             PlateRemovalRequestRoute(
-                viewModel = hiltViewModel<PlateRemovalRequestViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
 
-        composable<ReviewDestination> {
+        screenComposable<ReviewDestination, ReviewViewModel>(
+            viewModel = { hiltViewModel<ReviewViewModel>() },
+        ) { viewModel ->
             ReviewRoute(
-                viewModel = hiltViewModel<ReviewViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onReviewSubmitted = { navController.popBackStack() },
                 modifier = modifier
             )
         }
 
+        // Kamera tarayıcı banner toplamaz (BaseViewModel akışı yok); düz composable.
         composable<CameraScannerDestination> {
             CameraScannerRoute(
                 modifier = modifier,

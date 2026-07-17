@@ -2,8 +2,6 @@ package com.mefy.platemate.presentation.features.main.profile
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
-
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,25 +25,33 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ProfileRoute(
     viewModel: ProfileViewModel,
-    onNavigateToSearchDetail: (String) -> Unit,
-    onNavigateToFriends: () -> Unit,
+    onNavigateToReviewDetail: (String, Long) -> Unit,
+    onNavigateToFriends: (Int) -> Unit,
+    onNavigateToUserProfile: (Long) -> Unit,
+    onNavigateToReviewList: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    HandleUiMessages(viewModel.uiMessages)
-
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                is ProfileUiEffect.NavigateToSearchDetail -> {
-                    onNavigateToSearchDetail(effect.normalizedPlateCode)
+                is ProfileUiEffect.NavigateToReviewDetail -> {
+                    onNavigateToReviewDetail(effect.normalizedPlateCode, effect.reviewId)
                 }
 
-                ProfileUiEffect.NavigateToFriends -> {
-                    onNavigateToFriends()
+                is ProfileUiEffect.NavigateToFriends -> {
+                    onNavigateToFriends(effect.initialTab)
+                }
+                
+                is ProfileUiEffect.NavigateToUserProfile -> {
+                    onNavigateToUserProfile(effect.userId)
+                }
+
+                is ProfileUiEffect.NavigateToReviewList -> {
+                    onNavigateToReviewList(effect.status)
                 }
 
                 is ProfileUiEffect.ShowSnackbar -> Unit
@@ -79,7 +85,8 @@ fun ProfileRoute(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.main_tab_profile),
-            alignment = PMTopBarAlignment.Start
+            alignment = PMTopBarAlignment.Start,
+            onBackClick = null
         ),
         status = status,
         onRetry = onRetry,

@@ -2,15 +2,17 @@ package com.mefy.platemate.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
+import com.mefy.platemate.presentation.app.AppState
 import com.mefy.platemate.presentation.navigation.graphs.mainGraph
+import com.mefy.platemate.presentation.navigation.graphs.splashGraph
 
 /**
  * Yalnızca navigasyon: [NavHost] + grafikler + geçiş animasyonları. Uygulama chrome'u
  * (Scaffold, banner, alt bar), composition local sağlama ve app-singleton yan etkiler
  * burada DEĞİL ([AppShell] ve [PlateMateAppRoot]).
  *
- * Ekran-yerel geri-bildirimler her ekranda `HandleUiMessages` ile `LocalUiMessageHandlers`
- * üzerinden banner'a toplanır (sağlayıcı: [AppShell]).
+ * Ekran-yerel geri-bildirimler [screenComposable] ile kaydedilen hedeflerde `LocalUiMessageHandlers`
+ * üzerinden banner'a toplanır (sağlayıcı: [AppShell]); rotalar artık kendileri toplamaz.
  */
 @Composable
 fun AppNavHost(
@@ -20,13 +22,13 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = SessionGateDestination,
+        startDestination = SplashDestination,
         enterTransition = { appEnter() },
         exitTransition = { appExit() },
         popEnterTransition = { appPopEnter() },
         popExitTransition = { appPopExit() }
     ) {
-        sessionGateGraph(
+        splashGraph(
             onNavigateToAuth = navController::navigateToAuthGraphFromGate,
             onNavigateToMain = navController::navigateToMainGraphFromGate
         )

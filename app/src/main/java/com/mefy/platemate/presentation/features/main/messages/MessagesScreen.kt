@@ -33,7 +33,7 @@ fun MessagesScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
+        contentPadding = innerPadding
     ) {
         items(
             items = state.conversations, key = { it.roomId }) { conversation ->
@@ -44,7 +44,7 @@ fun MessagesScreen(
                 onSwipeToMarkRead = { onAction(MessagesUiAction.MarkReadSwiped(conversation.roomId)) }
             )
             HorizontalDivider(
-                modifier = Modifier.padding(start = dims.spacing.s16 + dims.sizing.avatarMd + dims.spacing.s12),
+                modifier = Modifier.padding(start = dims.sizing.avatarMd + dims.spacing.s12),
                 color = colors.outlineVariant
             )
         }
@@ -101,18 +101,21 @@ private fun previewConversations() = listOf(
         name = "Ahmet Y.",
         preview = "Teşekkürler, çok yardımcı oldun!",
         time = "09:24",
-        unreadCount = 3
+        unreadCount = 3,
+        isSentByMe = false
     ), MessageConversationUiModel(
         roomId = 2,
         name = "Zeynep K.",
         preview = "Plakayı gördüm, gerçekten nazik biri",
         time = "Dün",
-        unreadCount = 0
+        unreadCount = 0,
+        isSentByMe = true
     ), MessageConversationUiModel(
         roomId = 3,
         name = "Mehmet C.",
         preview = "Evet, o plakanın sahibiyim ben",
         time = "Pzt",
-        unreadCount = 0
+        unreadCount = 0,
+        isSentByMe = false
     )
 )

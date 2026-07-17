@@ -22,7 +22,9 @@ import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMCardVariant
+import com.mefy.platemate.presentation.components.util.friendRequestStatusStyle
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -66,11 +68,11 @@ internal fun FriendRequestActivityCard(
                     horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val style = friendRequestStatusStyle(item.status, colors)
                     PMChip(
-                        label = item.statusCode,
-                        contentColor = colors.onTertiaryContainer,
-                        containerColor = colors.tertiaryContainer
-
+                        label = stringResource(style.label),
+                        containerColor = style.background,
+                        accentColor = style.foreground
                     )
                     PMText(
                         text = item.createdAtText,
@@ -111,7 +113,7 @@ private fun FriendRequestActivityCardPreviewContent() {
             id = "friend_1",
             friendUserId = 7,
             username = "fatih",
-            statusCode = "PENDING",
+            status = FriendRequestStatusUi.REQUESTED,
             createdAtText = "2026-05-26",
             sortKey = "2026-05-26T09:30:00Z"
         ),

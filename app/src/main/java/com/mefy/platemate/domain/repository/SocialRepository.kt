@@ -10,5 +10,6 @@ interface SocialRepository {
     suspend fun removeFriend(id: Long): AppResult<Unit>
     suspend fun getFriends(): AppResult<List<Friendship>>
     suspend fun getPendingRequests(): AppResult<List<Friendship>>
+    suspend fun getSentRequests(): AppResult<List<Friendship>>
 }
 

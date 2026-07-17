@@ -36,10 +36,8 @@ fun PremiumInfoScreen(
     val dims = MaterialTheme.pmDimensions
 
     LazyColumn(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-        contentPadding = PaddingValues(dims.spacing.s16),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = innerPadding,
         verticalArrangement =spacedByWithFooter(dims.spacing.s0)
     ) {
         item {

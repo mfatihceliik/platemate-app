@@ -37,8 +37,7 @@ fun ChangePasswordScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .padding(dims.spacing.s16),
+            .padding(innerPadding),
         verticalArrangement = spacedByWithFooter(dims.spacing.s8)
     ) {
         item {

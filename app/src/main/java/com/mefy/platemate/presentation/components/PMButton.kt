@@ -18,11 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.border
+import androidx.compose.ui.semantics.Role
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClick
+import com.mefy.platemate.presentation.components.util.bounceClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -35,7 +42,6 @@ fun PMButton(
     variant: PMButtonVariant = PMButtonVariant.Filled,
     enabled: Boolean = true,
     loading: Boolean = false,
-    debounceClick: Boolean = true,
     debounceMillis: Long = 600L,
     colors: ButtonColors? = null,
     contentPadding: PaddingValues? = null,
@@ -45,14 +51,17 @@ fun PMButton(
     val dims = MaterialTheme.pmDimensions
     val pm = MaterialTheme.pmColors
 
-    val buttonModifier = modifier.fillMaxWidth()
+    val buttonModifier = modifier
+        .fillMaxWidth()
+        .defaultMinSize(minHeight = dims.sizing.buttonMinHeight)
     val shape: Shape = RoundedCornerShape(dims.radius.r10)
 
-    val safeOnClick = if (debounceClick) {
-        debouncedClick(debounceMillis = debounceMillis, onClick = onClick)
-    } else {
-        onClick
+    val padding = contentPadding ?: when (variant) {
+        PMButtonVariant.Text -> ButtonDefaults.TextButtonContentPadding
+        else -> ButtonDefaults.ContentPadding
     }
+
+    val isActuallyEnabled = enabled && !loading
 
     val resolvedColors = colors ?: when (variant) {
         PMButtonVariant.Filled -> ButtonDefaults.buttonColors()
@@ -64,8 +73,6 @@ fun PMButton(
         PMButtonVariant.Text -> ButtonDefaults.textButtonColors()
     }
 
-    // Loading'de buton input için disabled edilir; ama gri disabled renklerine
-    // düşmemeli, variant renklerini korumalı.
     val displayColors = if (loading) {
         resolvedColors.copy(
             disabledContainerColor = resolvedColors.containerColor,
@@ -75,32 +82,43 @@ fun PMButton(
         resolvedColors
     }
 
-    Button(
-        onClick = safeOnClick,
-        modifier = buttonModifier,
-        enabled = enabled && !loading,
-        shape = shape,
-        colors = displayColors,
-        elevation = when (variant) {
-            PMButtonVariant.Filled, PMButtonVariant.Tonal -> ButtonDefaults.buttonElevation()
-            PMButtonVariant.Outlined, PMButtonVariant.Text -> null
-        },
-        border = if (variant == PMButtonVariant.Outlined) {
-            ButtonDefaults.outlinedButtonBorder(enabled = enabled)
-        } else {
-            null
-        },
-        contentPadding = contentPadding ?: when (variant) {
-            PMButtonVariant.Text -> ButtonDefaults.TextButtonContentPadding
-            else -> ButtonDefaults.ContentPadding
-        }
+    val border = if (variant == PMButtonVariant.Outlined) {
+        ButtonDefaults.outlinedButtonBorder(enabled = enabled)
+    } else null
+
+    val animatedContainerColor by animateColorAsState(
+        targetValue = displayColors.containerColor,
+        label = "containerColor"
+    )
+    val animatedContentColor by animateColorAsState(
+        targetValue = displayColors.contentColor,
+        label = "contentColor"
+    )
+
+    Box(
+        modifier = buttonModifier
+            .clip(shape)
+            .background(animatedContainerColor)
+            .then(if (border != null) Modifier.border(border, shape) else Modifier)
+            .bounceClick(
+                enabled = isActuallyEnabled,
+                debounceMillis = debounceMillis,
+                role = Role.Button,
+                onClick = onClick
+            )
+            .padding(padding),
+        contentAlignment = Alignment.Center
     ) {
-        PMButtonContent(
-            text = text,
-            loading = loading,
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon
-        )
+        CompositionLocalProvider(
+            LocalContentColor provides animatedContentColor
+        ) {
+            PMButtonContent(
+                text = text,
+                loading = loading,
+                leadingIcon = leadingIcon,
+                trailingIcon = trailingIcon
+            )
+        }
     }
 }
 

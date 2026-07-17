@@ -37,10 +37,8 @@ fun ReviewScreen(
     val dims = MaterialTheme.pmDimensions
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        contentPadding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = innerPadding,
         verticalArrangement = spacedByWithFooter(dims.spacing.s16)
     ) {
         item {

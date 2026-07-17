@@ -7,7 +7,7 @@ data class FriendRequestNotificationItem(
     override val id: String,
     val friendUserId: Long,
     val username: String,
-    val statusCode: String,
+    val status: FriendRequestStatusUi,
     override val createdAtText: String,
     override val sortKey: String
 ) : ProfileActivityUiModel

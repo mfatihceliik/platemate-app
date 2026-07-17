@@ -6,8 +6,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.profile.UserProfile
 import com.mefy.platemate.domain.model.review.Review
-import com.mefy.platemate.domain.usecase.follow.FollowUserUseCase
-import com.mefy.platemate.domain.usecase.follow.UnfollowUserUseCase
+import com.mefy.platemate.domain.repository.SocialRepository
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.report.ReportUserUseCase
 import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
@@ -19,6 +18,7 @@ import com.mefy.platemate.presentation.common.text.CityNameResolver
 import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
@@ -40,8 +40,7 @@ class UserProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getProfileUseCase: GetProfileUseCase,
     private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
-    private val followUserUseCase: FollowUserUseCase,
-    private val unfollowUserUseCase: UnfollowUserUseCase,
+    private val socialRepository: SocialRepository,
     private val reportUserUseCase: ReportUserUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
@@ -66,7 +65,19 @@ class UserProfileViewModel @Inject constructor(
             UserProfileUiAction.BackClicked ->
                 _uiEffect.emitUiEffect(UserProfileUiEffect.NavigateBack)
 
-            UserProfileUiAction.FollowClicked -> onFollowClicked()
+            UserProfileUiAction.AddFriendClicked -> onAddFriendClicked()
+
+            UserProfileUiAction.CancelRequestClicked -> onRemoveFriendClicked()
+
+            UserProfileUiAction.AcceptRequestClicked -> onAcceptRequestClicked()
+
+            UserProfileUiAction.RemoveFriendClicked -> 
+                _uiState.update { it.copy(showRemoveFriendPopup = true) }
+
+            UserProfileUiAction.RemoveFriendConfirmed -> onRemoveFriendClicked()
+
+            UserProfileUiAction.RemoveFriendDismissed -> 
+                _uiState.update { it.copy(showRemoveFriendPopup = false) }
 
             UserProfileUiAction.MessageClicked -> onMessageClicked()
 
@@ -78,10 +89,13 @@ class UserProfileViewModel @Inject constructor(
             is UserProfileUiAction.ReportReasonSelected ->
                 _uiState.update { it.copy(selectedReportReason = action.reason) }
 
+            is UserProfileUiAction.ReportOtherReasonTextChanged ->
+                _uiState.update { it.copy(otherReportReasonText = action.text) }
+
             UserProfileUiAction.ReportSubmitClicked -> submitReport()
 
             UserProfileUiAction.ReportDismissed ->
-                _uiState.update { it.copy(showReportSheet = false, selectedReportReason = null) }
+                _uiState.update { it.copy(showReportSheet = false, selectedReportReason = null, otherReportReasonText = "") }
         }
     }
 
@@ -103,9 +117,6 @@ class UserProfileViewModel @Inject constructor(
     }
 
     private fun onMessageClicked() {
-        // Oda burada YARATILMAZ; taslak konuşma açılır, gerçek oda ilk mesaj
-        // gönderiminde (ConversationViewModel) oluşturulur. Böylece mesaj atılmadan
-        // boş sohbet kalmaz.
         val state = _uiState.value
         _uiEffect.emitUiEffect(
             UserProfileUiEffect.NavigateToChat(
@@ -116,30 +127,74 @@ class UserProfileViewModel @Inject constructor(
         )
     }
 
-    private fun onFollowClicked() {
-        val wasFollowing = _uiState.value.isFollowing
-        _uiState.update { it.copy(isFollowing = !wasFollowing) }
+    private fun onAddFriendClicked() {
+        val prevState = _uiState.value.friendshipStatus
+        _uiState.update { it.copy(friendshipStatus = "PENDING_SENT") }
         launch(onError = {
-            _uiState.update { state -> state.copy(isFollowing = wasFollowing) }
+            _uiState.update { state -> state.copy(friendshipStatus = prevState) }
             handleError(it)
         }) {
-            val result = if (wasFollowing) unfollowUserUseCase(userId) else followUserUseCase(userId)
+            val result = socialRepository.sendFriendRequest(userId)
             if (result is AppResult.Error) {
-                _uiState.update { it.copy(isFollowing = wasFollowing) }
+                _uiState.update { it.copy(friendshipStatus = prevState) }
                 showError(result.error.toUiText())
+            } else {
+                // Reload profile to get the new friendshipId
+                loadProfile()
+            }
+        }
+    }
+
+    private fun onAcceptRequestClicked() {
+        val friendshipId = _uiState.value.friendshipId ?: return
+        val prevState = _uiState.value.friendshipStatus
+        _uiState.update { it.copy(friendshipStatus = "FRIENDS") }
+        launch(onError = {
+            _uiState.update { state -> state.copy(friendshipStatus = prevState) }
+            handleError(it)
+        }) {
+            val result = socialRepository.acceptFriendRequest(friendshipId)
+            if (result is AppResult.Error) {
+                _uiState.update { it.copy(friendshipStatus = prevState) }
+                showError(result.error.toUiText())
+            }
+        }
+    }
+
+    private fun onRemoveFriendClicked() {
+        val friendshipId = _uiState.value.friendshipId ?: return
+        val prevState = _uiState.value.friendshipStatus
+        _uiState.update { it.copy(friendshipStatus = "NONE", showRemoveFriendPopup = false) }
+        launch(onError = {
+            _uiState.update { state -> state.copy(friendshipStatus = prevState) }
+            handleError(it)
+        }) {
+            val result = socialRepository.removeFriend(friendshipId)
+            if (result is AppResult.Error) {
+                _uiState.update { it.copy(friendshipStatus = prevState) }
+                showError(result.error.toUiText())
+            } else {
+                _uiState.update { it.copy(friendshipId = null) }
             }
         }
     }
 
     private fun submitReport() {
         val reason = _uiState.value.selectedReportReason ?: return
+        val otherText = _uiState.value.otherReportReasonText
+        val reasonString = if (reason == ReportReason.OTHER && otherText.isNotBlank()) {
+            "${reason.name}: $otherText"
+        } else {
+            reason.name
+        }
+
         _uiState.update { it.copy(isSubmittingReport = true) }
         launch(onError = {
             _uiState.update { it.copy(isSubmittingReport = false) }
             handleError(it)
         }) {
-            val result = reportUserUseCase(userId, reason.name)
-            _uiState.update { it.copy(isSubmittingReport = false, showReportSheet = false, selectedReportReason = null) }
+            val result = reportUserUseCase(userId, reasonString)
+            _uiState.update { it.copy(isSubmittingReport = false, showReportSheet = false, selectedReportReason = null, otherReportReasonText = "") }
             when (result) {
                 is AppResult.Success -> showSuccess(UiText.Resource(R.string.user_profile_report_submitted))
                 is AppResult.Error -> showError(result.error.toUiText())
@@ -152,24 +207,19 @@ class UserProfileViewModel @Inject constructor(
         platforms: List<SocialPlatform>
     ): UserProfileUiState {
         val display = profile.displayName?.takeIf { it.isNotBlank() } ?: profile.username
-        val (background, foreground) = AvatarPalette.colorsFor(profile.id)
         return copy(
             isLoading = false,
             displayName = display,
             username = "@${profile.username}",
-            initials = AvatarPalette.initials(display),
-            avatarBg = background,
-            avatarFg = foreground,
             bio = profile.bio.orEmpty(),
             isVerified = profile.verified,
             isOnline = false,
-            isFollowing = profile.isFollowing,
+            friendshipStatus = profile.friendshipStatus,
+            friendshipId = profile.friendshipId,
             reviewCount = profile.reviewCount,
             followerCount = NumberFormatter.formatCompact(profile.followerCount.toLong()),
             followingCount = profile.followingCount,
             socialLinks = profile.socialMediaLinks.map { link ->
-                // Bilinmeyen platformlar jenerik link ikonuna düşer (kendi profilinden farklı
-                // olarak başka kullanıcının verisi keyfî olabilir; !! ile çökmek yerine fallback).
                 val platform = platforms.find { it.code.equals(link.platform, ignoreCase = true) }
                 ProfileSocialLinkUiModel(
                     id = link.id,

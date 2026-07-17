@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -86,6 +87,7 @@ fun DiscoverFilterScreen(
             title = stringResource(R.string.discover_filter_title),
             onBackClick = onNavigateBack
         ),
+        contentPadding = PaddingValues(dims.spacing.s16),
         bottomBar = {
             DiscoverFilterActions(
                 onClear = {
@@ -98,16 +100,12 @@ fun DiscoverFilterScreen(
                 }
             )
         }
-    ) { innerPadding ->
+    ) { pad ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = dims.spacing.s16)
-                .padding(
-                    top = dims.spacing.s16,
-                    bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-                ),
+                .padding(pad),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
         ) {
             // Sehir — coklu secim; detay ekranina gider.

@@ -52,6 +52,8 @@ class AdminSettingsViewModel @Inject constructor(
                 _uiState.update { it.copy(messageLimit = action.value.digitsOnly()) }
             is AdminSettingsUiAction.ReportThresholdChanged ->
                 _uiState.update { it.copy(reportThreshold = action.value.digitsOnly()) }
+            is AdminSettingsUiAction.CommentMaxLengthChanged ->
+                _uiState.update { it.copy(commentMaxLength = action.value.digitsOnly()) }
         }
     }
 
@@ -70,7 +72,8 @@ class AdminSettingsViewModel @Inject constructor(
                             followLimit = settings.nonPremiumPlateFollowLimit.toString(),
                             alarmLimit = settings.nonPremiumPlateAlarmLimit.toString(),
                             messageLimit = settings.preApprovalMessageLimit.toString(),
-                            reportThreshold = settings.commentReportThreshold.toString()
+                            reportThreshold = settings.commentReportThreshold.toString(),
+                            commentMaxLength = settings.reportCommentMaxLength.toString()
                         )
                     }
                 }
@@ -86,13 +89,14 @@ class AdminSettingsViewModel @Inject constructor(
         val alarm = state.alarmLimit.toIntOrNull() ?: return
         val message = state.messageLimit.toIntOrNull() ?: return
         val threshold = state.reportThreshold.toIntOrNull() ?: return
+        val commentMaxLength = state.commentMaxLength.toIntOrNull() ?: return
 
         _uiState.update { it.copy(isSaving = true) }
         launch(onError = { error ->
             _uiState.update { it.copy(isSaving = false) }
             handleError(error)
         }) {
-            when (val result = updateAppSettingsUseCase(follow, alarm, message, threshold)) {
+            when (val result = updateAppSettingsUseCase(follow, alarm, message, threshold, commentMaxLength)) {
                 is AppResult.Success -> {
                     _uiState.update { it.copy(isSaving = false) }
                     showSuccess(UiText.Resource(R.string.admin_settings_saved))

@@ -12,6 +12,7 @@ import com.mefy.platemate.data.mapper.CommentReportReasonAdminMapper
 import com.mefy.platemate.data.mapper.HiddenPlateMapper
 import com.mefy.platemate.data.mapper.PendingCommentMapper
 import com.mefy.platemate.data.mapper.PlateRemovalRequestMapper
+import com.mefy.platemate.data.mapper.PlateRemovalReasonAdminMapper
 import com.mefy.platemate.data.mapper.AccentColorAdminMapper
 import com.mefy.platemate.data.mapper.PremiumFeatureAdminMapper
 import com.mefy.platemate.data.mapper.PremiumPlanAdminMapper
@@ -21,7 +22,9 @@ import com.mefy.platemate.data.remote.dto.admin.AdminCommentModerationRequest
 import com.mefy.platemate.data.remote.dto.admin.AdminReviewRequest
 import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateCommentReportReasonActiveRequest
+import com.mefy.platemate.data.remote.dto.admin.UpdatePlateRemovalReasonActiveRequest
 import com.mefy.platemate.data.remote.dto.admin.HidePlateRequest
+import com.mefy.platemate.data.remote.dto.admin.PlateRemovalReasonRequest
 import com.mefy.platemate.data.remote.dto.admin.AccentColorRequest
 import com.mefy.platemate.data.remote.dto.admin.ThemeGridSizeRequest
 import com.mefy.platemate.data.remote.dto.admin.UpdateAccentColorActiveRequest
@@ -66,6 +69,7 @@ class AdminRepositoryImpl @Inject constructor(
     private val appSettingsMapper: AppSettingsMapper,
     private val reportTypeAdminMapper: ReportTypeAdminMapper,
     private val commentReportReasonAdminMapper: CommentReportReasonAdminMapper,
+    private val plateRemovalReasonAdminMapper: PlateRemovalReasonAdminMapper,
     private val adminMenuItemMapper: AdminMenuItemMapper,
     private val socialPlatformAdminMapper: SocialPlatformAdminMapper,
     private val premiumPlanAdminMapper: PremiumPlanAdminMapper,
@@ -151,7 +155,8 @@ class AdminRepositoryImpl @Inject constructor(
         nonPremiumPlateFollowLimit: Int,
         nonPremiumPlateAlarmLimit: Int,
         preApprovalMessageLimit: Int,
-        commentReportThreshold: Int
+        commentReportThreshold: Int,
+        reportCommentMaxLength: Int
     ): AppResult<Unit> =
         withContext(appDispatchers.io) {
             safeResultCall {
@@ -160,7 +165,8 @@ class AdminRepositoryImpl @Inject constructor(
                         nonPremiumPlateFollowLimit = nonPremiumPlateFollowLimit,
                         nonPremiumPlateAlarmLimit = nonPremiumPlateAlarmLimit,
                         preApprovalMessageLimit = preApprovalMessageLimit,
-                        commentReportThreshold = commentReportThreshold
+                        commentReportThreshold = commentReportThreshold,
+                        reportCommentMaxLength = reportCommentMaxLength
                     )
                 )
             }
@@ -218,6 +224,33 @@ class AdminRepositoryImpl @Inject constructor(
         }
 
     private fun CommentReportReasonInput.toRequest(): CommentReportReasonRequest = CommentReportReasonRequest(
+        code = code,
+        label = label,
+        requiresDescription = requiresDescription,
+        sortOrder = sortOrder
+    )
+
+    override suspend fun getPlateRemovalReasonsAdmin(): AppResult<List<com.mefy.platemate.domain.model.admin.PlateRemovalReasonAdmin>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getPlateRemovalReasons() }.map { dtos -> dtos.map(plateRemovalReasonAdminMapper::map) }
+        }
+
+    override suspend fun addPlateRemovalReason(input: com.mefy.platemate.domain.model.admin.PlateRemovalReasonInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.addPlateRemovalReason(input.toRequest()) }.map { }
+        }
+
+    override suspend fun updatePlateRemovalReason(id: Long, input: com.mefy.platemate.domain.model.admin.PlateRemovalReasonInput): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.updatePlateRemovalReason(id, input.toRequest()) }.map { }
+        }
+
+    override suspend fun setPlateRemovalReasonActive(id: Long, active: Boolean): AppResult<Unit> =
+        withContext(appDispatchers.io) {
+            safeResultCall { api.setPlateRemovalReasonActive(id, UpdatePlateRemovalReasonActiveRequest(active)) }
+        }
+
+    private fun com.mefy.platemate.domain.model.admin.PlateRemovalReasonInput.toRequest(): PlateRemovalReasonRequest = PlateRemovalReasonRequest(
         code = code,
         label = label,
         requiresDescription = requiresDescription,

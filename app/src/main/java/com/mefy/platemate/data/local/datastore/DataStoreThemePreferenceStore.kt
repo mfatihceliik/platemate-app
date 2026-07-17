@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.local.ThemePreferenceStore
 import com.mefy.platemate.domain.model.theme.AppThemeMode
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,21 +22,29 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 private val Context.themeDataStore by preferencesDataStore(name = "plate_mate_theme")
 
 @Singleton
 class DataStoreThemePreferenceStore private constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val sessionStore: SessionStore
 ) : ThemePreferenceStore {
 
     @Inject
-    constructor(@ApplicationContext context: Context) : this(context.themeDataStore)
+    constructor(
+        @ApplicationContext context: Context,
+        sessionStore: SessionStore
+    ) : this(context.themeDataStore, sessionStore)
 
-    internal constructor(dataStore: DataStore<Preferences>, marker: Unit = Unit) : this(dataStore)
+    internal constructor(
+        dataStore: DataStore<Preferences>,
+        sessionStore: SessionStore,
+        marker: Unit = Unit
+    ) : this(dataStore, sessionStore)
 
     private val cachedTheme = AtomicReference<AppThemeMode>(AppThemeMode.SYSTEM)
     private val cachedAccentArgb = AtomicLong(DEFAULT_ACCENT_ARGB)
@@ -54,17 +63,26 @@ class DataStoreThemePreferenceStore private constructor(
         }
     }
 
-    override fun observeThemeMode(): Flow<AppThemeMode> = dataStore.data
-        .catch { throwable ->
+    override fun observeThemeMode(): Flow<AppThemeMode> = combine(
+        dataStore.data.catch { throwable ->
             if (throwable is IOException) emit(emptyPreferences()) else throw throwable
+        },
+        sessionStore.session
+    ) { preferences, session ->
+        val userId = session?.userId
+        if (userId == null) {
+            AppThemeMode.SYSTEM
+        } else {
+            val key = stringPreferencesKey("app_theme_mode_$userId")
+            AppThemeMode.fromName(preferences[key])
         }
-        .map { preferences ->
-            AppThemeMode.fromName(preferences[THEME_MODE])
-        }
+    }
 
     override suspend fun setThemeMode(themeMode: AppThemeMode) {
+        val session = sessionStore.session.first() ?: return
+        val key = stringPreferencesKey("app_theme_mode_${session.userId}")
         dataStore.edit { preferences ->
-            preferences[THEME_MODE] = themeMode.name
+            preferences[key] = themeMode.name
         }
         cachedTheme.set(themeMode)
     }
@@ -76,17 +94,26 @@ class DataStoreThemePreferenceStore private constructor(
 
     override fun peekThemeMode(): AppThemeMode = cachedTheme.get()
 
-    override fun observeAccentColorArgb(): Flow<Long> = dataStore.data
-        .catch { throwable ->
+    override fun observeAccentColorArgb(): Flow<Long> = combine(
+        dataStore.data.catch { throwable ->
             if (throwable is IOException) emit(emptyPreferences()) else throw throwable
+        },
+        sessionStore.session
+    ) { preferences, session ->
+        val userId = session?.userId
+        if (userId == null) {
+            DEFAULT_ACCENT_ARGB
+        } else {
+            val key = longPreferencesKey("app_accent_color_$userId")
+            preferences[key] ?: DEFAULT_ACCENT_ARGB
         }
-        .map { preferences ->
-            preferences[ACCENT_COLOR] ?: DEFAULT_ACCENT_ARGB
-        }
+    }
 
     override suspend fun setAccentColorArgb(argb: Long) {
+        val session = sessionStore.session.first() ?: return
+        val key = longPreferencesKey("app_accent_color_${session.userId}")
         dataStore.edit { preferences ->
-            preferences[ACCENT_COLOR] = argb
+            preferences[key] = argb
         }
         cachedAccentArgb.set(argb)
     }
@@ -94,8 +121,6 @@ class DataStoreThemePreferenceStore private constructor(
     override fun peekAccentColorArgb(): Long = cachedAccentArgb.get()
 
     private companion object {
-        val THEME_MODE = stringPreferencesKey("app_theme_mode")
-        val ACCENT_COLOR = longPreferencesKey("app_accent_color")
         // 0xFF06B6D4 teal — ARGB packed as signed Long
         val DEFAULT_ACCENT_ARGB: Long = android.graphics.Color.parseColor("#FF06B6D4").toLong()
     }

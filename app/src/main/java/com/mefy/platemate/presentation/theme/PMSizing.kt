@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 data class PMSizing(
 
     /* TOPBAR */
-    val topBarHeight: Dp = 56.dp,
+    val topBarHeight: Dp = 48.dp,
 
     /* POPUP */
     val popupSize: Dp = 320.dp,
@@ -21,14 +21,12 @@ data class PMSizing(
     val iconXl: Dp = 48.dp,
     val iconContainer: Dp = 36.dp,
 
-
     /* AVATAR */
     val avatarXs: Dp = 24.dp,
     val avatarSm: Dp = 32.dp,
     val avatarMd: Dp = 48.dp,
     val avatarLg: Dp = 64.dp,
     val avatarXl: Dp = 96.dp,
-
 
     /* CIRCLE PROGRESSBAR */
     val circleProgressBarXs: Dp = 24.dp,
@@ -55,32 +53,29 @@ data class PMSizing(
     val plateBadgeLg: Dp = 64.dp,
     val plateBadgeXl: Dp = 96.dp,
 
-    /*  */
+    /* PROFILE HEADER */
+    val profileHeaderSize: Dp = 96.dp,
+    val profileHeaderGradientHeight: Dp = 64.dp,
 
+    /* BUTTON */
+    val buttonMinHeight: Dp = 48.dp,
 
-    /*  */
+    /* TEXT FIELD */
+    val textFieldMinHeight: Dp = 52.dp,
 
+    /* SEARCHBAR */
+    val searchBarHeight: Dp = 52.dp,
 
-    /*  */
+    /* CHAT */
 
 
     val gridHeight: Dp = 144.dp,
 
-
-    val searchBarHeight: Dp = 52.dp,
-
-    val ctaHeight: Dp = 48.dp,
-    val ctaHeightLarge: Dp = 52.dp,
-
     val chipHeight: Dp = 34.dp,
-
     val rankBadgeSize: Dp = 28.dp,
-
     val savedPlateCardWidth: Dp = 150.dp,
-
     val categoryIconContainer: Dp = 36.dp,
     val categoryIconDot: Dp = 12.dp,
-
     val stripeWidthLarge: Dp = 8.dp,
 
 

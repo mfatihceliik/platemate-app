@@ -7,7 +7,8 @@ data object SearchDestination : AppDestination
 
 @Serializable
 data class SearchDetailDestination(
-    val id: String
+    val id: String,
+    val highlightReviewId: Long = -1L
 ) : AppDestination
 
 @Serializable

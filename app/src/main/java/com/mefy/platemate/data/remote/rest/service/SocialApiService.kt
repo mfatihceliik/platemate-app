@@ -27,5 +27,8 @@ interface SocialApiService {
 
     @GET("api/friendships/pending")
     suspend fun getPendingRequests(): DataResultResponse<List<FriendshipDto>>
+
+    @GET("api/friendships/pending/sent")
+    suspend fun getSentPendingRequests(): DataResultResponse<List<FriendshipDto>>
 }
 

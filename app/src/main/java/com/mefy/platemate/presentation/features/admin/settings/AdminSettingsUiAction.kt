@@ -8,4 +8,5 @@ sealed interface AdminSettingsUiAction {
     data class AlarmLimitChanged(val value: String) : AdminSettingsUiAction
     data class MessageLimitChanged(val value: String) : AdminSettingsUiAction
     data class ReportThresholdChanged(val value: String) : AdminSettingsUiAction
+    data class CommentMaxLengthChanged(val value: String) : AdminSettingsUiAction
 }

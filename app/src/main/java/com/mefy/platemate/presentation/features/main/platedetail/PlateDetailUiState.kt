@@ -15,6 +15,7 @@ data class PlateDetailUiState(
     val ratingBreakdown: List<RatingBreakdownItem> = emptyList(),
     val tags: List<PlateTagUiModel> = emptyList(),
     val reviews: List<PlateReviewUiModel> = emptyList(),
+    val highlightedReview: PlateReviewUiModel? = null,
     val reviewReport: ReviewReportUiState? = null
 ) {
     val hasReviews: Boolean get() = reviews.isNotEmpty()

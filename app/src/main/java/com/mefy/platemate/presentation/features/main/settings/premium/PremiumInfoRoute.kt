@@ -1,7 +1,6 @@
 package com.mefy.platemate.presentation.features.main.settings.premium
 
 import androidx.compose.foundation.layout.padding
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,8 +19,6 @@ fun PremiumInfoRoute(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    HandleUiMessages(viewModel.uiMessages)
 
     val status = when {
         state.isLoading -> ScreenStatus.Loading

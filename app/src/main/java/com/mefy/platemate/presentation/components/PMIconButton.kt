@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClick
+import com.mefy.platemate.presentation.components.util.bounceClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -134,13 +134,6 @@ private fun PMIconButtonBase(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
-    val safeOnClick = if (debounceClick) {
-        debouncedClick(
-            debounceMillis = debounceMillis, onClick = onClick
-        )
-    } else {
-        onClick
-    }
 
     val iconTint = when {
         !enabled -> colors.disabled
@@ -191,11 +184,12 @@ private fun PMIconButtonBase(
                     Modifier
                 }
             )
-            .clickable(
+            .bounceClick(
                 enabled = enabled,
                 role = Role.Button,
                 onClickLabel = contentDescription,
-                onClick = safeOnClick
+                debounceMillis = debounceMillis,
+                onClick = onClick
             ), contentAlignment = Alignment.Center
     ) {
         icon(iconTint)

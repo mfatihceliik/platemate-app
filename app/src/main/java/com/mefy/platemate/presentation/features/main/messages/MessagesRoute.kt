@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
@@ -36,10 +35,6 @@ fun MessagesRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HandleUiMessages(viewModel.uiMessages)
-
-    // Bağlamsal izin: kullanıcı Messages'a ilk girdiğinde, izin verilmemişse ve daha önce
-    // istenmemişse bildirim iznini sor (sonraki ziyaretlerde tekrar sormaz).
     val context = LocalContext.current
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -80,7 +75,9 @@ fun MessagesRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.main_tab_messages), alignment = PMTopBarAlignment.Start
+            title = stringResource(R.string.main_tab_messages),
+            alignment = PMTopBarAlignment.Start,
+            onBackClick = null
         ),
         status = status,
         onRetry = { onAction(MessagesUiAction.RetryClicked) },

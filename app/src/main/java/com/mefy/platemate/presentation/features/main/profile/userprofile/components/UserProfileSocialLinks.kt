@@ -33,7 +33,7 @@ internal fun UserProfileSocialLinks(
 
 
     PMCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
     ) {
         LazyRow(
@@ -47,6 +47,7 @@ internal fun UserProfileSocialLinks(
                     variant = PMIconButtonVariant.Tonal,
                     size = dims.sizing.iconLg,
                     iconColor = link.iconTint,
+                    containerColor = link.backgroundColor,
                     painter = rememberAsyncImagePainter(
                         model = link.iconUrl,
                         error = painterResource(R.drawable.ic_link),

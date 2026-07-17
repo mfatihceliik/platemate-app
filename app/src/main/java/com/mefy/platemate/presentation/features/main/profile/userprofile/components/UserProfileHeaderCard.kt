@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.MaterialTheme
@@ -21,12 +19,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -36,18 +34,15 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun UserProfileHeaderCard(
+    modifier: Modifier = Modifier,
     displayName: String,
     username: String,
     bio: String,
-    initials: String,
-    avatarBg: Color,
-    avatarFg: Color,
     isVerified: Boolean,
     isOnline: Boolean,
     reviewCount: Int,
     followerCount: String,
-    followingCount: Int,
-    modifier: Modifier = Modifier
+    followingCount: Int
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
@@ -56,91 +51,82 @@ internal fun UserProfileHeaderCard(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surface)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(modifier = Modifier.size(74.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(74.dp)
-                        .clip(CircleShape)
-                        .background(avatarBg)
-                        .border(dims.stroke.st2, colors.primaryContainerBorder, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PMText(
-                        text = initials,
-                        style = PMTextStyle.Headline,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = avatarFg
-                    )
-                }
-                if (isOnline) {
-                    Box(
-                        modifier = Modifier
-                            .size(dims.spacing.s16)
-                            .clip(CircleShape)
-                            .background(colors.success)
-                            .border(dims.stroke.st2, colors.surface, CircleShape)
-                            .align(Alignment.BottomEnd)
-                    )
-                }
-            }
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = dims.spacing.s4),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-                ) {
-                    PMText(
-                        text = displayName,
-                        style = PMTextStyle.Title,
-                        fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary
-                    )
-                    if (isVerified) {
-                        PMIcon(
-                            imageVector = Icons.Filled.Verified,
-                            tint = colors.primary,
-                            size = dims.sizing.iconSm,
-                        )
-                    }
-                }
-                PMText(
-                    text = username,
-                    style = PMTextStyle.Note,
-                    color = colors.textLabel
-                )
-                PMText(
-                    text = bio,
-                    style = PMTextStyle.Note,
-                    color = colors.textSecondary
-                )
-            }
-        }
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = dims.spacing.s12)
-                .height(IntrinsicSize.Min)
-                .clip(MaterialTheme.shapes.medium)
-                .border(dims.stroke.st1, colors.outlineVariant, MaterialTheme.shapes.medium)
+                .padding(horizontal = dims.spacing.s16)
         ) {
-            StatCell(value = reviewCount.toString(), label = stringResource(R.string.user_profile_stat_reviews), modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant))
-            StatCell(value = followerCount, label = stringResource(R.string.user_profile_stat_followers), modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant))
-            StatCell(value = followingCount.toString(), label = stringResource(R.string.user_profile_stat_following), modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dims.spacing.s4),
+                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                PMAvatar(
+                    displayName = displayName,
+                    size = dims.sizing.avatarXl,
+                    showOnlineStatus = true,
+                    isOnline = isOnline
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    ) {
+                        PMText(
+                            text = displayName,
+                            fontSize = dims.fontSize.xl,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textPrimary
+                        )
+                        if (isVerified) {
+                            PMIcon(
+                                imageVector = Icons.Filled.Verified,
+                                tint = colors.primary,
+                                size = dims.sizing.iconSm,
+                            )
+                        }
+                    }
+                    PMText(
+                        text = username,
+                        fontSize = dims.fontSize.md,
+                        color = colors.textSecondary
+                    )
+                }
+            }
+
+            if (bio.isNotBlank()) {
+                PMText(
+                    text = bio,
+                    fontSize = dims.fontSize.md,
+                    color = colors.textSecondary,
+                    modifier = Modifier.padding(top = dims.spacing.s12)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dims.spacing.s16, bottom = dims.spacing.s16)
+                    .height(IntrinsicSize.Min)
+                    .clip(MaterialTheme.shapes.large)
+                    .border(dims.stroke.st1, colors.outlineVariant.copy(alpha=0.5f), MaterialTheme.shapes.large)
+            ) {
+                StatCell(value = reviewCount.toString(), label = stringResource(R.string.user_profile_stat_reviews), modifier = Modifier.weight(1f))
+                Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant.copy(alpha=0.5f)))
+                StatCell(value = followerCount, label = stringResource(R.string.user_profile_stat_followers), modifier = Modifier.weight(1f))
+                Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant.copy(alpha=0.5f)))
+                StatCell(value = followingCount.toString(), label = stringResource(R.string.user_profile_stat_following), modifier = Modifier.weight(1f))
+            }
         }
     }
 }
@@ -153,9 +139,6 @@ private fun UserProfileHeaderCardLightPreview() {
             displayName = "Ahmet Yılmaz",
             username = "@ahmetyilmaz",
             bio = "İstanbul sürücüsü. Saygılı ve temkinli araç kullanırım.",
-            initials = "AY",
-            avatarBg = Color(0xFFECFEFF),
-            avatarFg = Color(0xFF0E7490),
             isVerified = true,
             isOnline = true,
             reviewCount = 47,
@@ -173,9 +156,6 @@ private fun UserProfileHeaderCardDarkPreview() {
             displayName = "Ahmet Yılmaz",
             username = "@ahmetyilmaz",
             bio = "İstanbul sürücüsü. Saygılı ve temkinli araç kullanırım.",
-            initials = "AY",
-            avatarBg = Color(0xFF164E63),
-            avatarFg = Color(0xFF67E8F9),
             isVerified = true,
             isOnline = false,
             reviewCount = 47,
@@ -203,3 +183,4 @@ private fun StatCell(
         PMText(text = label, style = PMTextStyle.Note, color = colors.textTertiary)
     }
 }
+

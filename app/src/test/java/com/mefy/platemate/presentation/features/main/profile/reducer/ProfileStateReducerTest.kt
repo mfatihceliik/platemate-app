@@ -5,6 +5,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.main.profile.ProfileUiState
 import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiData
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
@@ -57,7 +58,7 @@ class ProfileStateReducerTest {
                     id = "friend_1",
                     friendUserId = 9L,
                     username = "user",
-                    statusCode = "PENDING",
+                    status = FriendRequestStatusUi.REQUESTED,
                     createdAtText = "2026-05-20",
                     sortKey = "2026-05-20T10:00:00Z"
                 )

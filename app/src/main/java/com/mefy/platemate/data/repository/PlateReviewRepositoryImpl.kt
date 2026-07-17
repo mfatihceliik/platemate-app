@@ -4,6 +4,7 @@ import com.mefy.platemate.core.common.pagination.PagedResult
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.map
 import com.mefy.platemate.core.coroutine.AppDispatchers
+import com.mefy.platemate.data.mapper.PlateReviewMapper
 import com.mefy.platemate.data.mapper.PlateReviewPageMapper
 import com.mefy.platemate.data.remote.rest.service.ReviewApiService
 import com.mefy.platemate.data.remote.dto.plate.AddPlateReviewRequest
@@ -21,6 +22,7 @@ import kotlinx.coroutines.withContext
 
 class PlateReviewRepositoryImpl @Inject constructor(
     private val api: ReviewApiService,
+    private val plateReviewMapper: PlateReviewMapper,
     private val plateReviewPageMapper: PlateReviewPageMapper,
     private val appDispatchers: AppDispatchers
 ) : PlateReviewRepository {
@@ -97,6 +99,16 @@ class PlateReviewRepositoryImpl @Inject constructor(
     override suspend fun getPlateReviews(plateCode: String, page: Int, size: Int): AppResult<PagedResult<Review>> =
         withContext(appDispatchers.io) {
             safeApiCall { api.getPlateReviews(plateCode, page, size) }.map(plateReviewPageMapper::map)
+        }
+
+    override suspend fun getReviewById(id: Long): AppResult<Review> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getReviewById(id) }.map(plateReviewMapper::map)
+        }
+
+    override suspend fun getMyReviews(status: String?, query: String?, page: Int, size: Int): AppResult<PagedResult<Review>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getMyReviews(status, query, page, size) }.map(plateReviewPageMapper::map)
         }
 
     override suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit> =

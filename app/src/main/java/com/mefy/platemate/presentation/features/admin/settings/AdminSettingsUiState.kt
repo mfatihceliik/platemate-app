@@ -11,12 +11,14 @@ data class AdminSettingsUiState(
     val followLimit: String = "",
     val alarmLimit: String = "",
     val messageLimit: String = "",
-    val reportThreshold: String = ""
+    val reportThreshold: String = "",
+    val commentMaxLength: String = ""
 ) {
     val isSaveEnabled: Boolean
         get() = !isSaving &&
                 followLimit.toIntOrNull()?.let { it >= 1 } == true &&
                 alarmLimit.toIntOrNull()?.let { it >= 1 } == true &&
                 messageLimit.toIntOrNull()?.let { it >= 1 } == true &&
-                reportThreshold.toIntOrNull()?.let { it >= 1 } == true
+                reportThreshold.toIntOrNull()?.let { it >= 1 } == true &&
+                commentMaxLength.toIntOrNull()?.let { it >= 1 } == true
 }

@@ -1,4 +1,4 @@
-﻿package com.mefy.platemate.data.remote.dto.user
+package com.mefy.platemate.data.remote.dto.user
 
 import com.google.gson.annotations.SerializedName
 import com.mefy.platemate.core.common.pagination.ReviewStatusTotals
@@ -17,6 +17,8 @@ data class UserProfileDto(
     @SerializedName("followerCount") val followerCount: Int = 0,
     @SerializedName("followingCount") val followingCount: Int = 0,
     @SerializedName("isFollowing") val isFollowing: Boolean = false,
+    @SerializedName("friendshipStatus") val friendshipStatus: String = "NONE",
+    @SerializedName("friendshipId") val friendshipId: Long? = null,
     @SerializedName("totalFriendCounts") val totalFriendCounts: Int = 0,
     @SerializedName("averageGivenRating") val averageGivenRating: Double = 0.0,
     @SerializedName("reviewCount") val reviewCount: Int = 0,

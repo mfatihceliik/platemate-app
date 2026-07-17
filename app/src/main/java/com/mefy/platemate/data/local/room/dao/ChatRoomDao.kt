@@ -30,11 +30,11 @@ interface ChatRoomDao {
     @Query(
         """
         UPDATE chat_rooms
-        SET last_message_content = :content, last_message_at = :sentAt
+        SET last_message_content = :content, last_message_at = :sentAt, last_message_sender_id = :senderId
         WHERE owner_user_id = :ownerUserId AND room_id = :roomId
         """
     )
-    suspend fun updatePreview(ownerUserId: Long, roomId: Long, content: String?, sentAt: String?): Int
+    suspend fun updatePreview(ownerUserId: Long, roomId: Long, content: String?, sentAt: String?, senderId: Long?): Int
 
     // Karşıdan yeni mesaj gelince (kullanıcı o odada değilken) okunmamış sayacını artırır.
     @Query(

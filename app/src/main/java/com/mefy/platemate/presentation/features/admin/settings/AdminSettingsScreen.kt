@@ -41,8 +41,7 @@ internal fun AdminSettingsScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(contentPadding)
-            .padding(dims.spacing.s16),
+            .padding(contentPadding),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
 
@@ -67,7 +66,12 @@ internal fun AdminSettingsScreen(
 
             item {
                 PMSectionLabel(text = stringResource(R.string.admin_settings_report_threshold))
-                NumberField(value = state.reportThreshold, onValueChange = { onAction(AdminSettingsUiAction.ReportThresholdChanged(it)) }, imeAction = ImeAction.Done)
+                NumberField(value = state.reportThreshold, onValueChange = { onAction(AdminSettingsUiAction.ReportThresholdChanged(it)) })
+            }
+
+            item {
+                PMSectionLabel(text = "Şikayet Açıklama Sınırı (Max Length)") // Hardcoded text or wait, add string resource if possible. Let's use a simple string for now, since strings are in strings.xml
+                NumberField(value = state.commentMaxLength, onValueChange = { onAction(AdminSettingsUiAction.CommentMaxLengthChanged(it)) }, imeAction = ImeAction.Done)
             }
         }
 
@@ -109,7 +113,8 @@ private val adminSettingsPreviewState = AdminSettingsUiState(
     followLimit = "50",
     alarmLimit = "10",
     messageLimit = "100",
-    reportThreshold = "5"
+    reportThreshold = "5",
+    commentMaxLength = "250"
 )
 
 @Preview(name = "AdminSettings Light", showBackground = true, backgroundColor = 0xFFF6F8FB)

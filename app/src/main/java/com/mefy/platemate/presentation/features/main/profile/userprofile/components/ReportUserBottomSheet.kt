@@ -1,33 +1,25 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMBottomSheet
 import com.mefy.platemate.presentation.components.PMBottomSheetActions
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.PMCommentField
+import com.mefy.platemate.presentation.components.PMRadioButton
+import com.mefy.platemate.presentation.components.PMRowItem
+import com.mefy.platemate.presentation.components.PMUserCard
+import com.mefy.platemate.presentation.components.pmRowPositionOf
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -35,119 +27,92 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun ReportUserBottomSheet(
+    modifier: Modifier = Modifier,
     participantName: String,
     username: String,
-    initials: String,
-    avatarBg: Color,
-    avatarFg: Color,
     selectedReason: ReportReason?,
     onReasonSelected: (ReportReason) -> Unit,
+    otherReasonText: String = "",
+    onOtherReasonTextChanged: (String) -> Unit = {},
+    commentMaxLength: Int = 250,
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    PMBottomSheet(
-        onDismiss = onDismiss,
-        title = stringResource(R.string.report_user_title),
-        modifier = modifier
-    ) {
-        ReportUserSheetContent(
-            participantName = participantName,
-            username = username,
-            initials = initials,
-            avatarBg = avatarBg,
-            avatarFg = avatarFg,
-            selectedReason = selectedReason,
-            onReasonSelected = onReasonSelected,
-            onDismiss = onDismiss,
-            onSubmit = onSubmit
-        )
-    }
-}
-
-@Composable
-private fun ReportUserSheetContent(
-    participantName: String,
-    username: String,
-    initials: String,
-    avatarBg: Color,
-    avatarFg: Color,
-    selectedReason: ReportReason?,
-    onReasonSelected: (ReportReason) -> Unit,
-    onDismiss: () -> Unit,
-    onSubmit: () -> Unit
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
+    val reasons = ReportReason.entries.toList()
 
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(bottom = dims.spacing.s32)
+    PMBottomSheet(
+        onDismiss = onDismiss,
+        title = stringResource(R.string.report_user_title),
+        skipPartiallyExpanded = true,
+        modifier = modifier
     ) {
-        item(key = "user_card") {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colors.surfaceSecondary)
-                    .padding(horizontal = dims.spacing.s24, vertical = dims.spacing.s12),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(dims.sizing.plateBadgeSm)
-                        .clip(CircleShape)
-                        .background(avatarBg)
-                        .border(dims.stroke.st1, colors.primaryContainerBorder, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PMText(
-                        text = initials,
-                        style = PMTextStyle.Body,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = avatarFg
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = dims.spacing.s32)
+        ) {
+            item(key = "user_card") {
+                PMUserCard(
+                    displayName = participantName,
+                    username = username,
+                    avatarSize = dims.sizing.plateBadgeSm,
+                    containerColor = colors.surfaceSecondary,
+                    modifier = Modifier.padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s8)
+                )
+            }
+
+            item(key = "divider_bottom") {
+                HorizontalDivider(color = colors.surfaceVariant)
+            }
+
+            item(key = "spacer_top") {
+                Spacer(modifier = Modifier.padding(top = dims.spacing.s16))
+            }
+
+            itemsIndexed(reasons, key = { _, reason -> "reason_${reason.name}" }) { index, reason ->
+                val isSelected = reason == selectedReason
+                PMRowItem(
+                    title = stringResource(reason.labelRes),
+                    subtitle = stringResource(reason.descriptionRes),
+                    position = pmRowPositionOf(index, reasons.size),
+                    showChevron = false,
+                    trailing = {
+                        PMRadioButton(
+                            selected = isSelected,
+                            onClick = null // Row handles click
+                        )
+                    },
+                    onClick = { onReasonSelected(reason) },
+                    modifier = Modifier.padding(horizontal = dims.spacing.s16)
+                )
+            }
+
+            if (selectedReason == ReportReason.OTHER) {
+                item(key = "other_reason_field") {
+                    PMCommentField(
+                        value = otherReasonText,
+                        onValueChange = onOtherReasonTextChanged,
+                        maxLength = commentMaxLength,
+                        placeholder = stringResource(R.string.report_reason_other_desc),
+                        modifier = Modifier
+                            .padding(horizontal = dims.spacing.s16)
+                            .padding(top = dims.spacing.s16)
                     )
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)) {
-                    PMText(
-                        text = participantName,
-                        style = PMTextStyle.Body,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colors.textPrimary
-                    )
-                    PMText(text = username, style = PMTextStyle.Note, color = colors.textLabel)
                 }
             }
-        }
 
-        item(key = "divider_bottom") {
-            HorizontalDivider(color = colors.surfaceVariant)
-        }
-
-        items(
-            items = ReportReason.entries.toList(),
-            key = { it.name }
-        ) { reason ->
-            ReportReasonRow(
-                reason = reason,
-                isSelected = reason == selectedReason,
-                onSelected = { onReasonSelected(reason) },
-                modifier = Modifier
-                    .padding(horizontal = dims.spacing.s24)
-                    .padding(top = dims.spacing.s10)
-            )
-        }
-
-        item(key = "footer") {
-            PMBottomSheetActions(
-                cancelText = stringResource(R.string.common_cancel),
-                submitText = stringResource(R.string.report_user_submit),
-                onCancel = onDismiss,
-                onSubmit = onSubmit,
-                modifier = Modifier
-                    .padding(horizontal = dims.spacing.s24)
-                    .padding(top = dims.spacing.s16)
-            )
+            item(key = "footer") {
+                PMBottomSheetActions(
+                    cancelText = stringResource(R.string.common_cancel),
+                    submitText = stringResource(R.string.report_user_submit),
+                    onCancel = onDismiss,
+                    onSubmit = onSubmit,
+                    modifier = Modifier
+                        .padding(horizontal = dims.spacing.s16)
+                        .padding(top = dims.spacing.s24)
+                )
+            }
         }
     }
 }
@@ -159,11 +124,10 @@ private fun ReportUserBottomSheetLightPreview() {
         ReportUserBottomSheet(
             participantName = "Ahmet Yılmaz",
             username = "@ahmetyilmaz",
-            initials = "AY",
-            avatarBg = Color(0xFFECFEFF),
-            avatarFg = Color(0xFF0E7490),
-            selectedReason = ReportReason.SPAM,
+            selectedReason = ReportReason.OTHER,
             onReasonSelected = {},
+            otherReasonText = "Bu kişi beni rahatsız ediyor.",
+            onOtherReasonTextChanged = {},
             onDismiss = {},
             onSubmit = {}
         )
@@ -177,11 +141,10 @@ private fun ReportUserBottomSheetDarkPreview() {
         ReportUserBottomSheet(
             participantName = "Ahmet Yılmaz",
             username = "@ahmetyilmaz",
-            initials = "AY",
-            avatarBg = Color(0xFF164E63),
-            avatarFg = Color(0xFF67E8F9),
             selectedReason = null,
             onReasonSelected = {},
+            otherReasonText = "",
+            onOtherReasonTextChanged = {},
             onDismiss = {},
             onSubmit = {}
         )

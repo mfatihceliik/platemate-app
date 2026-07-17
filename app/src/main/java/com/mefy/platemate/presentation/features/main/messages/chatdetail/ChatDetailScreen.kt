@@ -41,10 +41,8 @@ fun ChatDetailScreen(
     val onBlockClicked = remember(onAction) { { onAction(ChatDetailUiAction.BlockClicked) } }
 
     LazyColumn(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-        contentPadding = PaddingValues(dims.spacing.s16),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         item(key = "user_card") {

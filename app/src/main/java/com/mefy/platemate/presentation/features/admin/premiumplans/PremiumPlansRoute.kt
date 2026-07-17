@@ -1,6 +1,8 @@
 package com.mefy.platemate.presentation.features.admin.premiumplans
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,11 +12,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
+import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -24,8 +26,6 @@ fun PremiumPlansRoute(
     onNavigateToForm: (planId: Long) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    HandleUiMessages(viewModel.uiMessages)
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
@@ -52,6 +52,7 @@ fun PremiumPlansRoute(
         status = status,
         keepTopBarWhileLoading = true,
         onRetry = { viewModel.onAction(PremiumPlansUiAction.RetryClicked) },
+        contentPadding = PaddingValues(MaterialTheme.pmDimensions.spacing.s16),
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         PremiumPlansScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

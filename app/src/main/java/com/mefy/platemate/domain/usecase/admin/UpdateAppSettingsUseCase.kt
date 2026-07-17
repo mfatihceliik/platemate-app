@@ -10,11 +10,13 @@ class UpdateAppSettingsUseCase @Inject constructor(
         nonPremiumPlateFollowLimit: Int,
         nonPremiumPlateAlarmLimit: Int,
         preApprovalMessageLimit: Int,
-        commentReportThreshold: Int
+        commentReportThreshold: Int,
+        reportCommentMaxLength: Int
     ) = repository.updateAppSettings(
         nonPremiumPlateFollowLimit,
         nonPremiumPlateAlarmLimit,
         preApprovalMessageLimit,
-        commentReportThreshold
+        commentReportThreshold,
+        reportCommentMaxLength
     )
 }

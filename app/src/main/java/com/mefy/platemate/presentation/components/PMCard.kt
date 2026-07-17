@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClick
+import com.mefy.platemate.presentation.components.util.bounceClick
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -43,12 +43,6 @@ fun PMCard(
     val border = BorderStroke(dims.stroke.st1, pmColors.outlineVariant)
     val resolvedPadding = padding ?: PaddingValues(dims.spacing.s16)
 
-    val safeOnClick = if (onClick != null && debounceClick) {
-        debouncedClick(debounceMillis = debounceMillis, onClick = onClick)
-    } else {
-        onClick
-    }
-
     if (onClick == null) {
         Card(
             modifier = modifier,
@@ -56,20 +50,28 @@ fun PMCard(
             colors = colors,
             border = border
         ) {
-            Column(modifier = Modifier.padding(resolvedPadding), content = content)
+            Column(
+                modifier = Modifier
+                    .padding(resolvedPadding),
+                content = content
+            )
         }
     } else {
         Card(
-            // canFocus = false: tıklamada input-focus alma → focusable'ın bring-into-view
-            // kaydırması olmasın (kısmen ekran dışı kartta "ortalama" davranışını engeller).
-            modifier = modifier.focusProperties { canFocus = false },
-            onClick = safeOnClick!!,
-            enabled = enabled,
+            modifier = modifier.bounceClick(
+                enabled = enabled,
+                debounceMillis = debounceMillis,
+                onClick = onClick
+            ),
             shape = shape,
             colors = colors,
             border = border
         ) {
-            Column(modifier = Modifier.padding(resolvedPadding), content = content)
+            Column(
+                modifier = Modifier
+                    .padding(resolvedPadding),
+                content = content
+            )
         }
     }
 }

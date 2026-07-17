@@ -14,11 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -31,69 +36,93 @@ fun PMMessageItem(
     time: String,
     unreadCount: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSentByMe: Boolean = false
 ) {
     val isUnread = unreadCount > 0
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
+    val prefixStr = stringResource(id = R.string.message_you_prefix)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .background(colors.background)
             .debouncedClickable(onClick = onClick)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+            .padding(vertical = dims.spacing.s12, horizontal = dims.spacing.s16),
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
 
         PMAvatar(
             displayName = name,
-            size = dims.sizing.avatarMd
+            size = dims.sizing.avatarMd,
         )
 
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
         ) {
-            PMText(
-                text = name,
-                color = colors.textPrimary,
-                fontWeight = if (isUnread) FontWeight.Bold else FontWeight.Normal,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            PMText(
-                text = preview,
-                color = colors.textTertiary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PMText(
+                    text = name,
+                    color = colors.textPrimary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                PMText(
+                    text = time,
+                    color = if (isUnread) colors.primary else colors.textSecondary,
+                    fontSize = dims.fontSize.sm,
+                    modifier = Modifier.padding(start = dims.spacing.s8)
+                )
+            }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-        ) {
-            PMText(
-                text = time,
-                color = if (isUnread) colors.primary else colors.textLabel
-            )
-            if (isUnread) {
-                // WhatsApp tarzı sayılı rozet; iki+ hanede daireden hap biçimine genişler.
-                Box(
-                    modifier = Modifier
-                        .sizeIn(minWidth = 20.dp, minHeight = 20.dp)
-                        .clip(CircleShape)
-                        .background(colors.primary)
-                        .padding(horizontal = dims.spacing.s4),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PMText(
-                        text = if (unreadCount > 99) "99+" else unreadCount.toString(),
-                        color = colors.onPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PMText(
+                    text = buildAnnotatedString {
+                        if (isSentByMe) {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold, color = colors.textPrimary)) {
+                                append(prefixStr)
+                            }
+                        }
+                        append(preview)
+                    },
+                    color = colors.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+
+                if (isUnread) {
+                    Box(
+                        modifier = Modifier
+                            .padding(start = dims.spacing.s8)
+                            .sizeIn(minWidth = 20.dp, minHeight = 20.dp)
+                            .clip(CircleShape)
+                            .background(colors.primary)
+                            .padding(horizontal = dims.spacing.s4),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        PMText(
+                            text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                            color = colors.onPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -113,6 +142,7 @@ private fun PMMessageItemPreview() {
             PMMessageItem(
                 name = "Zeynep K.", preview = "Plakayi gordum, gercekten nazik biri",
                 time = "Dun", unreadCount = 0,
+                isSentByMe = true,
                 onClick = {}
             )
             PMMessageItem(

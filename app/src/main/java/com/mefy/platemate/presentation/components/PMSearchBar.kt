@@ -77,7 +77,7 @@ fun PMSearchBar(
         targetValue = when {
             shouldShowError -> colors.error
             isFocused -> colors.primary
-            isSuccess -> colors.success
+            isSuccess -> colors.primary
             else -> Color.Transparent
         },
         label = "searchBorderColor"
@@ -189,7 +189,7 @@ fun PMSearchBar(
                 style = PMTextStyle.Label,
                 color = when {
                     shouldShowError -> colors.error
-                    isSuccess -> colors.success
+                    isSuccess -> colors.textPrimary
                     else -> colors.textLabel
                 },
                 modifier = Modifier.padding(

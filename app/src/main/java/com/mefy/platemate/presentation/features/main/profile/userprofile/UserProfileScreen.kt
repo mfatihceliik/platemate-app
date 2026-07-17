@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.ReportUserBottomSheet
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileActionButtons
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileHeaderCard
@@ -28,6 +30,7 @@ import com.mefy.platemate.presentation.features.main.profile.userprofile.compone
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileSocialLinks
 import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
@@ -42,21 +45,29 @@ internal fun UserProfileScreen(
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
 
+    val onAddFriendClicked = remember(onAction) { { onAction(UserProfileUiAction.AddFriendClicked) } }
+    val onCancelRequestClicked = remember(onAction) { { onAction(UserProfileUiAction.CancelRequestClicked) } }
+    val onAcceptRequestClicked = remember(onAction) { { onAction(UserProfileUiAction.AcceptRequestClicked) } }
+    val onRemoveFriendClicked = remember(onAction) { { onAction(UserProfileUiAction.RemoveFriendClicked) } }
+    
+    val onMessageClicked = remember(onAction) { { onAction(UserProfileUiAction.MessageClicked) } }
+    val onShareClicked = remember(onAction) { { onAction(UserProfileUiAction.ShareClicked) } }
+    val onReportReasonSelected = remember(onAction) { { reason: ReportReason -> onAction(UserProfileUiAction.ReportReasonSelected(reason)) } }
+    val onReportSubmitClicked = remember(onAction) { { onAction(UserProfileUiAction.ReportSubmitClicked) } }
+    val onReportDismissed = remember(onAction) { { onAction(UserProfileUiAction.ReportDismissed) } }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .background(colors.surface)
             .padding(innerPadding),
-        contentPadding = PaddingValues(bottom = dims.spacing.s24),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s0)
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
         item(key = "header") {
             UserProfileHeaderCard(
                 displayName = state.displayName,
                 username = state.username,
                 bio = state.bio,
-                initials = state.initials,
-                avatarBg = state.avatarBg,
-                avatarFg = state.avatarFg,
                 isVerified = state.isVerified,
                 isOnline = state.isOnline,
                 reviewCount = state.reviewCount,
@@ -73,10 +84,13 @@ internal fun UserProfileScreen(
                     .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
             ) {
                 UserProfileActionButtons(
-                    isFollowing = state.isFollowing,
-                    onFollowClick = { onAction(UserProfileUiAction.FollowClicked) },
-                    onMessageClick = { onAction(UserProfileUiAction.MessageClicked) },
-                    onShareClick = { onAction(UserProfileUiAction.ShareClicked) }
+                    friendshipStatus = state.friendshipStatus,
+                    onAddFriendClick = onAddFriendClicked,
+                    onCancelRequestClick = onCancelRequestClicked,
+                    onAcceptRequestClick = onAcceptRequestClicked,
+                    onRemoveFriendClick = onRemoveFriendClicked,
+                    onMessageClick = onMessageClicked,
+                    onShareClick = onShareClicked
                 )
                 if (state.socialLinks.isNotEmpty()) {
                     Spacer(modifier = Modifier.padding(top = dims.spacing.s12))
@@ -98,8 +112,6 @@ internal fun UserProfileScreen(
                     color = colors.textPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(colors.surfaceSecondary)
-                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
                 )
             }
 
@@ -109,23 +121,37 @@ internal fun UserProfileScreen(
             ) { review ->
                 UserProfileReviewCard(
                     review = review,
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s4)
                 )
             }
         }
+    }
+
+    if (state.showRemoveFriendPopup) {
+        PMPopup(
+            title = stringResource(id = R.string.user_profile_remove_friend_title),
+            message = stringResource(id = R.string.user_profile_remove_friend_desc),
+            primaryText = stringResource(id = R.string.user_profile_remove),
+            secondaryText = stringResource(id = R.string.common_cancel),
+            onPrimaryClick = { onAction(UserProfileUiAction.RemoveFriendConfirmed) },
+            onSecondaryClick = { onAction(UserProfileUiAction.RemoveFriendDismissed) },
+            onDismissRequest = { onAction(UserProfileUiAction.RemoveFriendDismissed) },
+            primaryButtonColors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.pmColors.error,
+                contentColor = MaterialTheme.pmColors.onError
+            )
+        )
     }
 
     if (state.showReportSheet) {
         ReportUserBottomSheet(
             participantName = state.displayName,
             username = state.username,
-            initials = state.initials,
-            avatarBg = state.avatarBg,
-            avatarFg = state.avatarFg,
             selectedReason = state.selectedReportReason,
-            onReasonSelected = { onAction(UserProfileUiAction.ReportReasonSelected(it)) },
-            onDismiss = { onAction(UserProfileUiAction.ReportDismissed) },
-            onSubmit = { onAction(UserProfileUiAction.ReportSubmitClicked) }
+            onReasonSelected = { onReportReasonSelected(it) },
+            otherReasonText = state.otherReportReasonText,
+            onOtherReasonTextChanged = { onAction(UserProfileUiAction.ReportOtherReasonTextChanged(it)) },
+            onDismiss = onReportDismissed,
+            onSubmit = onReportSubmitClicked
         )
     }
 }
@@ -158,13 +184,11 @@ private val previewState = UserProfileUiState(
     userId = "user_preview",
     displayName = "Ahmet Yılmaz",
     username = "@ahmetyilmaz",
-    initials = "AY",
-    avatarBg = Color(0xFFECFEFF),
-    avatarFg = Color(0xFF0E7490),
     bio = "İstanbul sürücüsü. Saygılı ve temkinli araç kullanırım.",
     isVerified = true,
     isOnline = true,
-    isFollowing = false,
+    friendshipStatus = "NONE",
+    friendshipId = null,
     reviewCount = 47,
     followerCount = "1.2K",
     followingCount = 89,

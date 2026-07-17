@@ -7,5 +7,15 @@ import com.mefy.platemate.presentation.common.text.UiText
 data class ProfileFriendsUiState(
     val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
-    val friends: List<ProfileFriendUiModel> = emptyList()
+    val searchQuery: String = "",
+    val friends: List<ProfileFriendUiModel> = emptyList(),
+    val pendingRequests: List<ProfileFriendUiModel> = emptyList(),
+    val sentRequests: List<ProfileFriendUiModel> = emptyList(),
+    val filteredFriends: List<ProfileFriendUiModel> = emptyList(),
+    val filteredPendingRequests: List<ProfileFriendUiModel> = emptyList(),
+    val filteredSentRequests: List<ProfileFriendUiModel> = emptyList(),
+    val selectedTab: Int = 0,
+    val showRemoveFriendPopup: Boolean = false,
+    val selectedFriendIdForRemoval: Long? = null,
+    val isCancelingSentRequest: Boolean = false
 )

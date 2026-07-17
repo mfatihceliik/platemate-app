@@ -11,6 +11,7 @@ import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
@@ -32,9 +33,6 @@ class DefaultProfileUiMapper @Inject constructor(
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase
 ) : ProfileUiMapper {
-    private companion object {
-        const val UNKNOWN_STATUS = "UNKNOWN"
-    }
 
     override fun mapProfile(profile: UserProfile, platforms: List<SocialPlatform>): ProfileUiData {
         val plateActivities = profile.plateReviews.map(::mapReviewActivity)
@@ -73,6 +71,7 @@ class DefaultProfileUiMapper @Inject constructor(
         val sortKey = review.createdAt?.iso8601.orEmpty()
         return PlateReviewNotificationItem(
             id = "review_${review.id}",
+            reviewId = review.id,
             normalizedPlateCode = normalizedPlate,
             plateCode = formattedPlate,
             ratingAverage = review.rating.toDouble(),
@@ -92,7 +91,7 @@ class DefaultProfileUiMapper @Inject constructor(
             id = "friend_${request.id}",
             friendUserId = request.requesterUserId,
             username = request.requesterUsername,
-            statusCode = request.statusCode.ifBlank { UNKNOWN_STATUS },
+            status = FriendRequestStatusUi.from(request.statusCode),
             createdAtText = formatIsoDate(sortKey),
             sortKey = sortKey
         )

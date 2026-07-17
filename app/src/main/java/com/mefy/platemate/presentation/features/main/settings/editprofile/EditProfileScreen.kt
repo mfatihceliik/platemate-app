@@ -87,15 +87,11 @@ internal fun EditProfileScreen(
 
     LazyColumn(
         modifier = Modifier
-            .padding(innerPadding)
             .fillMaxSize()
             // Edge-to-edge'de adjustResize no-op; klavye açılınca liste viewport'u kısalsın ki
             // odaklanan PMTextField (bringIntoView ile) klavyenin üstüne kaysın, arkasında kalmasın.
             .imePadding(),
-        contentPadding = PaddingValues(
-            horizontal = dims.spacing.s16,
-            vertical = dims.spacing.s8
-        ),
+        contentPadding = innerPadding,
         verticalArrangement = spacedByWithFooter(dims.spacing.s8)
     ) {
 

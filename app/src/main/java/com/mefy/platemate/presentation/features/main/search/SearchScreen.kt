@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.features.main.search.components.SearchEmptyState
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMDraggableFab
@@ -70,15 +71,8 @@ fun SearchScreen(
     ) {
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(
-            start = dims.spacing.s16,
-            end = dims.spacing.s16,
-            top = dims.spacing.s16,
-            bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-        ),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = innerPadding,
         verticalArrangement = spacedByWithFooter(dims.spacing.s16)
     ) {
         item {
@@ -99,6 +93,12 @@ fun SearchScreen(
                 errorText = if(errorText) stringResource(R.string.search_plate_invalid_format) else null,
                 isError = errorText,
             )
+        }
+
+        if (state.recentSearches.isEmpty() && state.bookmarkedPlates.isEmpty() && state.alarmPlates.isEmpty()) {
+            item {
+                SearchEmptyState()
+            }
         }
 
         if (state.recentSearches.isNotEmpty()) {

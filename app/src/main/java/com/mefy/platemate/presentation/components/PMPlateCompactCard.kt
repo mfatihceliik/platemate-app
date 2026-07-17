@@ -81,14 +81,14 @@ fun PMPlateCompactCard(
                         text = ratingText,
                         fontSize = dims.fontSize.md,
                         maxLines = 1,
-                        color = colors.textTertiary
+                        color = colors.textPrimary
                     )
                 }
                 if (item.cityName != null) {
                     PMText(
                         text = "· ${item.cityName}",
                         fontSize = dims.fontSize.md,
-                        color = colors.textLabel,
+                        color = colors.textPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

@@ -48,6 +48,11 @@ class SocialRepositoryImpl @Inject constructor(
         withContext(appDispatchers.io) {
             safeApiCall { api.getPendingRequests() }.map(friendshipMapper::mapList)
         }
+
+    override suspend fun getSentRequests(): AppResult<List<Friendship>> =
+        withContext(appDispatchers.io) {
+            safeApiCall { api.getSentPendingRequests() }.map(friendshipMapper::mapList)
+        }
 }
 
 

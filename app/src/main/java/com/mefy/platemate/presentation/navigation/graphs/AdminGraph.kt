@@ -1,15 +1,17 @@
 package com.mefy.platemate.presentation.navigation
 
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mefy.platemate.presentation.features.admin.commentreasons.CommentReasonsRoute
 import com.mefy.platemate.presentation.features.admin.commentreasons.CommentReasonsViewModel
 import com.mefy.platemate.presentation.features.admin.commentreasons.form.CommentReasonFormRoute
 import com.mefy.platemate.presentation.features.admin.commentreasons.form.CommentReasonFormViewModel
+import com.mefy.platemate.presentation.features.admin.plateremovalreasons.PlateRemovalReasonsRoute
+import com.mefy.platemate.presentation.features.admin.plateremovalreasons.PlateRemovalReasonsViewModel
+import com.mefy.platemate.presentation.features.admin.plateremovalreasons.form.PlateRemovalReasonFormRoute
+import com.mefy.platemate.presentation.features.admin.plateremovalreasons.form.PlateRemovalReasonFormViewModel
 import com.mefy.platemate.presentation.features.admin.hub.AdminHubRoute
 import com.mefy.platemate.presentation.features.admin.hub.AdminHubViewModel
 import com.mefy.platemate.presentation.features.admin.moderation.comments.CommentModerationRoute
@@ -47,9 +49,11 @@ internal fun NavGraphBuilder.adminGraph(
     navController: NavHostController,
 ) {
     navigation<AdminGraphDestination>(startDestination = AdminHubDestination) {
-        composable<AdminHubDestination> {
+        screenComposable<AdminHubDestination, AdminHubViewModel>(
+            viewModel = { hiltViewModel<AdminHubViewModel>() },
+        ) { viewModel ->
             AdminHubRoute(
-                viewModel = hiltViewModel<AdminHubViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.navigateUp() },
                 onItemClick = { code ->
                     // Backend menü kodu → Android destination; bilinmeyen kod no-op (forward-compat).
@@ -60,6 +64,7 @@ internal fun NavGraphBuilder.adminGraph(
                         "HIDDEN_PLATES" -> AdminHiddenPlatesDestination
                         "PLATE_REPORT_TYPES" -> AdminReportTypesDestination
                         "COMMENT_REPORT_REASONS" -> AdminCommentReasonsDestination
+                        "PLATE_REMOVAL_REASONS" -> AdminPlateRemovalReasonsDestination
                         "SOCIAL_PLATFORMS" -> AdminSocialPlatformsDestination
                         "PREMIUM_PLANS" -> AdminPremiumPlansDestination
                         "PREMIUM_FEATURES" -> AdminPremiumFeaturesDestination
@@ -72,44 +77,56 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminCommentModerationDestination> {
+        screenComposable<AdminCommentModerationDestination, CommentModerationViewModel>(
+            viewModel = { hiltViewModel<CommentModerationViewModel>() },
+        ) { viewModel ->
             CommentModerationRoute(
-                viewModel = hiltViewModel<CommentModerationViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminCommentReportsDestination> {
+        screenComposable<AdminCommentReportsDestination, CommentReportsViewModel>(
+            viewModel = { hiltViewModel<CommentReportsViewModel>() },
+        ) { viewModel ->
             CommentReportsRoute(
-                viewModel = hiltViewModel<CommentReportsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminPlateRemovalDestination> {
+        screenComposable<AdminPlateRemovalDestination, PlateRemovalViewModel>(
+            viewModel = { hiltViewModel<PlateRemovalViewModel>() },
+        ) { viewModel ->
             PlateRemovalRoute(
-                viewModel = hiltViewModel<PlateRemovalViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminHiddenPlatesDestination> {
+        screenComposable<AdminHiddenPlatesDestination, HiddenPlatesViewModel>(
+            viewModel = { hiltViewModel<HiddenPlatesViewModel>() },
+        ) { viewModel ->
             HiddenPlatesRoute(
-                viewModel = hiltViewModel<HiddenPlatesViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminSettingsDestination> {
+        screenComposable<AdminSettingsDestination, AdminSettingsViewModel>(
+            viewModel = { hiltViewModel<AdminSettingsViewModel>() },
+        ) { viewModel ->
             AdminSettingsRoute(
-                viewModel = hiltViewModel<AdminSettingsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminReportTypesDestination> {
+        screenComposable<AdminReportTypesDestination, ReportTypesViewModel>(
+            viewModel = { hiltViewModel<ReportTypesViewModel>() },
+        ) { viewModel ->
             ReportTypesRoute(
-                viewModel = hiltViewModel<ReportTypesViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { typeId ->
                     navController.navigate(AdminReportTypeFormDestination(typeId ?: -1L))
@@ -117,16 +134,20 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminReportTypeFormDestination> {
+        screenComposable<AdminReportTypeFormDestination, ReportTypeFormViewModel>(
+            viewModel = { hiltViewModel<ReportTypeFormViewModel>() },
+        ) { viewModel ->
             ReportTypeFormRoute(
-                viewModel = hiltViewModel<ReportTypeFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminCommentReasonsDestination> {
+        screenComposable<AdminCommentReasonsDestination, CommentReasonsViewModel>(
+            viewModel = { hiltViewModel<CommentReasonsViewModel>() },
+        ) { viewModel ->
             CommentReasonsRoute(
-                viewModel = hiltViewModel<CommentReasonsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { reasonId ->
                     navController.navigate(AdminCommentReasonFormDestination(reasonId ?: -1L))
@@ -134,16 +155,41 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminCommentReasonFormDestination> {
+        screenComposable<AdminCommentReasonFormDestination, CommentReasonFormViewModel>(
+            viewModel = { hiltViewModel<CommentReasonFormViewModel>() },
+        ) { viewModel ->
             CommentReasonFormRoute(
-                viewModel = hiltViewModel<CommentReasonFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminSocialPlatformsDestination> {
+        screenComposable<AdminPlateRemovalReasonsDestination, PlateRemovalReasonsViewModel>(
+            viewModel = { hiltViewModel<PlateRemovalReasonsViewModel>() },
+        ) { viewModel ->
+            PlateRemovalReasonsRoute(
+                viewModel = viewModel,
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToForm = { reasonId ->
+                    navController.navigate(AdminPlateRemovalReasonFormDestination(reasonId ?: -1L))
+                },
+            )
+        }
+
+        screenComposable<AdminPlateRemovalReasonFormDestination, PlateRemovalReasonFormViewModel>(
+            viewModel = { hiltViewModel<PlateRemovalReasonFormViewModel>() },
+        ) { viewModel ->
+            PlateRemovalReasonFormRoute(
+                viewModel = viewModel,
+                onNavigateBack = { navController.navigateUp() },
+            )
+        }
+
+        screenComposable<AdminSocialPlatformsDestination, SocialPlatformsViewModel>(
+            viewModel = { hiltViewModel<SocialPlatformsViewModel>() },
+        ) { viewModel ->
             SocialPlatformsRoute(
-                viewModel = hiltViewModel<SocialPlatformsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { platformId ->
                     navController.navigate(AdminSocialPlatformFormDestination(platformId ?: -1L))
@@ -151,16 +197,20 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminSocialPlatformFormDestination> {
+        screenComposable<AdminSocialPlatformFormDestination, SocialPlatformFormViewModel>(
+            viewModel = { hiltViewModel<SocialPlatformFormViewModel>() },
+        ) { viewModel ->
             SocialPlatformFormRoute(
-                viewModel = hiltViewModel<SocialPlatformFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminPremiumPlansDestination> {
+        screenComposable<AdminPremiumPlansDestination, PremiumPlansViewModel>(
+            viewModel = { hiltViewModel<PremiumPlansViewModel>() },
+        ) { viewModel ->
             PremiumPlansRoute(
-                viewModel = hiltViewModel<PremiumPlansViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { planId ->
                     navController.navigate(AdminPremiumPlanFormDestination(planId))
@@ -168,16 +218,20 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminPremiumPlanFormDestination> {
+        screenComposable<AdminPremiumPlanFormDestination, PremiumPlanFormViewModel>(
+            viewModel = { hiltViewModel<PremiumPlanFormViewModel>() },
+        ) { viewModel ->
             PremiumPlanFormRoute(
-                viewModel = hiltViewModel<PremiumPlanFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminPremiumFeaturesDestination> {
+        screenComposable<AdminPremiumFeaturesDestination, PremiumFeaturesViewModel>(
+            viewModel = { hiltViewModel<PremiumFeaturesViewModel>() },
+        ) { viewModel ->
             PremiumFeaturesRoute(
-                viewModel = hiltViewModel<PremiumFeaturesViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { featureId ->
                     navController.navigate(AdminPremiumFeatureFormDestination(featureId ?: -1L))
@@ -185,16 +239,20 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminPremiumFeatureFormDestination> {
+        screenComposable<AdminPremiumFeatureFormDestination, PremiumFeatureFormViewModel>(
+            viewModel = { hiltViewModel<PremiumFeatureFormViewModel>() },
+        ) { viewModel ->
             PremiumFeatureFormRoute(
-                viewModel = hiltViewModel<PremiumFeatureFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }
 
-        composable<AdminAccentColorsDestination> {
+        screenComposable<AdminAccentColorsDestination, AccentColorsViewModel>(
+            viewModel = { hiltViewModel<AccentColorsViewModel>() },
+        ) { viewModel ->
             AccentColorsRoute(
-                viewModel = hiltViewModel<AccentColorsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToForm = { colorId ->
                     navController.navigate(AdminAccentColorFormDestination(colorId ?: -1L))
@@ -202,9 +260,11 @@ internal fun NavGraphBuilder.adminGraph(
             )
         }
 
-        composable<AdminAccentColorFormDestination> {
+        screenComposable<AdminAccentColorFormDestination, AccentColorFormViewModel>(
+            viewModel = { hiltViewModel<AccentColorFormViewModel>() },
+        ) { viewModel ->
             AccentColorFormRoute(
-                viewModel = hiltViewModel<AccentColorFormViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
             )
         }

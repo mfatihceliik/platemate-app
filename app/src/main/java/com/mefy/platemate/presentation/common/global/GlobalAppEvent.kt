@@ -6,7 +6,7 @@ package com.mefy.platemate.presentation.common.global
  * Hata/başarı gibi geçici geri-bildirimler artık üstten inen banner ile gösterilir
  * ([com.mefy.platemate.presentation.common.messaging.UiMessage]); bu kanal yalnızca tüm
  * uygulamayı bloklaması gereken olaylar içindir (oturum bitti → zorunlu yeniden giriş) ve
- * [com.mefy.platemate.presentation.navigation.AppGlobalEffects] tarafından tek elden gösterilir.
+ * [com.mefy.platemate.presentation.app.AppGlobalEffects] tarafından tek elden gösterilir.
  */
 sealed interface GlobalAppEvent {
 

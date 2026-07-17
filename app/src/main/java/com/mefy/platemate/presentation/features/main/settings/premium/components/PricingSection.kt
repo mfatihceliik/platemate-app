@@ -15,19 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.domain.model.premium.PremiumPeriod
 import com.mefy.platemate.domain.model.premium.PremiumPlan
 import com.mefy.platemate.presentation.common.text.PriceFormatter
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PricingSection(
+    modifier: Modifier = Modifier,
     monthly: PremiumPlan?,
-    yearly: PremiumPlan?,
-    modifier: Modifier = Modifier
+    yearly: PremiumPlan?
 ) {
     val colors = MaterialTheme.pmColors
     val shapes = MaterialTheme.shapes
@@ -99,5 +102,16 @@ internal fun PricingSection(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PricingSectionPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        PricingSection(
+            monthly = PremiumPlan(1, PremiumPeriod.MONTHLY, 49.0, "TRY", null),
+            yearly = PremiumPlan(2, PremiumPeriod.YEARLY, 399.0, "TRY", 32)
+        )
     }
 }

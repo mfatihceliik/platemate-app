@@ -9,7 +9,7 @@ data object ProfileDestination : AppDestination
 data object EditProfileDestination : AppDestination
 
 @Serializable
-data object ProfileSettingsHomeDestination : AppDestination
+data object SettingsHomeDestination : AppDestination
 
 @Serializable
 data object ProfileNotificationPreferencesDestination : AppDestination
@@ -18,7 +18,7 @@ data object ProfileNotificationPreferencesDestination : AppDestination
 data object ProfilePremiumInfoDestination : AppDestination
 
 @Serializable
-data object ProfileFriendsDestination : AppDestination
+data class ProfileFriendsDestination(val initialTab: Int = 0) : AppDestination
 
 @Serializable
 data object ProfileChangePasswordDestination : AppDestination
@@ -34,3 +34,6 @@ data object ProfileLanguageDestination : AppDestination
 
 @Serializable
 data class UserProfileDestination(val userId: String) : AppDestination
+
+@Serializable
+data class ProfileReviewListDestination(val initialStatus: String) : AppDestination

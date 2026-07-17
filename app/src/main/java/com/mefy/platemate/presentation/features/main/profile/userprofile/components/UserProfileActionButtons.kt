@@ -1,108 +1,60 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.components.PMIcon
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
+
 @Composable
 internal fun UserProfileActionButtons(
-    isFollowing: Boolean,
-    onFollowClick: () -> Unit,
+    friendshipStatus: String,
+    onAddFriendClick: () -> Unit,
+    onCancelRequestClick: () -> Unit,
+    onAcceptRequestClick: () -> Unit,
+    onRemoveFriendClick: () -> Unit,
     onMessageClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val buttonShape = MaterialTheme.shapes.small
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
+        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .height(dims.spacing.s48)
-                .then(
-                    if (isFollowing) Modifier.background(colors.outline, buttonShape)
-                    else Modifier
-                        .shadow(elevation = dims.spacing.s4, shape = buttonShape, ambientColor = colors.primary.copy(alpha = 0.4f))
-                        .background(colors.primary, buttonShape)
-                )
-                .debouncedClickable(onClick = onFollowClick),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            PMText(
-                text = if (isFollowing) stringResource(R.string.user_profile_following_label) else stringResource(R.string.user_profile_follow),
-                style = PMTextStyle.Body,
-                fontWeight = FontWeight.Bold,
-                color = if (isFollowing) colors.textSecondary else Color.White
-            )
+        val buttonModifier = Modifier.weight(1f)
+        when (friendshipStatus) {
+            "NONE" -> PMButton(text = stringResource(R.string.user_profile_add_friend), onClick = onAddFriendClick, modifier = buttonModifier)
+            "PENDING_SENT" -> PMButton(text = stringResource(R.string.user_profile_cancel_request), onClick = onCancelRequestClick, variant = PMButtonVariant.Outlined, modifier = buttonModifier)
+            "PENDING_RECEIVED" -> PMButton(text = stringResource(R.string.user_profile_accept_request), onClick = onAcceptRequestClick, modifier = buttonModifier)
+            "FRIENDS" -> PMButton(text = stringResource(R.string.user_profile_friends), onClick = onRemoveFriendClick, variant = PMButtonVariant.Outlined, modifier = buttonModifier)
+            else -> PMButton(text = stringResource(R.string.user_profile_add_friend), onClick = onAddFriendClick, modifier = buttonModifier)
         }
-
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .height(dims.spacing.s48)
-                .clip(buttonShape)
-                .background(colors.surface)
-                .border(dims.stroke.st1, colors.outline, buttonShape)
-                .debouncedClickable(onClick = onMessageClick),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            PMText(
-                text = stringResource(R.string.user_profile_message),
-                style = PMTextStyle.Body,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.textPrimary
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .size(dims.spacing.s48)
-                .clip(buttonShape)
-                .background(colors.surface)
-                .border(dims.stroke.st1, colors.outline, buttonShape)
-                .debouncedClickable(onClick = onShareClick),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            PMIcon(
-                imageVector = Icons.Outlined.IosShare,
-                contentDescription = stringResource(R.string.user_profile_share),
-                tint = colors.textTertiary,
-            )
-        }
+        
+        PMButton(
+            text = stringResource(R.string.user_profile_message),
+            onClick = onMessageClick,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
@@ -115,8 +67,9 @@ private fun UserProfileActionButtonsLightPreview() {
             modifier = Modifier.padding(dims.spacing.s16),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            UserProfileActionButtons(isFollowing = false, onFollowClick = {}, onMessageClick = {}, onShareClick = {})
-            UserProfileActionButtons(isFollowing = true, onFollowClick = {}, onMessageClick = {}, onShareClick = {})
+            UserProfileActionButtons("NONE", {}, {}, {}, {}, {}, {})
+            UserProfileActionButtons("PENDING_SENT", {}, {}, {}, {}, {}, {})
+            UserProfileActionButtons("FRIENDS", {}, {}, {}, {}, {}, {})
         }
     }
 }
@@ -130,8 +83,9 @@ private fun UserProfileActionButtonsDarkPreview() {
             modifier = Modifier.padding(dims.spacing.s16),
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
-            UserProfileActionButtons(isFollowing = false, onFollowClick = {}, onMessageClick = {}, onShareClick = {})
-            UserProfileActionButtons(isFollowing = true, onFollowClick = {}, onMessageClick = {}, onShareClick = {})
+            UserProfileActionButtons("NONE", {}, {}, {}, {}, {}, {})
+            UserProfileActionButtons("PENDING_SENT", {}, {}, {}, {}, {}, {})
+            UserProfileActionButtons("FRIENDS", {}, {}, {}, {}, {}, {})
         }
     }
 }

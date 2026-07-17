@@ -5,7 +5,8 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class ProfileFriendUiModel(
     val id: Long,
+    val friendUserId: Long,
     val username: String,
     val status: String,
-    val createdAtText: String
+    val subtitleText: String
 )

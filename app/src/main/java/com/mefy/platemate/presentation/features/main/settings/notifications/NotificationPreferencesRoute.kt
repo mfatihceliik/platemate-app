@@ -1,8 +1,6 @@
 package com.mefy.platemate.presentation.features.main.settings.notifications
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,7 +15,6 @@ import com.mefy.platemate.presentation.common.text.resolve
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -29,7 +26,6 @@ fun NotificationPreferencesRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HandleUiMessages(viewModel.uiMessages)
     val context = LocalContext.current
 
     LaunchedEffect(viewModel) {
@@ -43,7 +39,6 @@ fun NotificationPreferencesRoute(
     }
 
     val onAction = viewModel::onAction
-    val dims = MaterialTheme.pmDimensions
 
     val status = when {
         state.isLoading -> ScreenStatus.Loading

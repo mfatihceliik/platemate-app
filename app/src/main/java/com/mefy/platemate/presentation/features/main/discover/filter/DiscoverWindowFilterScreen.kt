@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -95,16 +96,15 @@ fun DiscoverWindowFilterScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.discover_filter_window_label),
             onBackClick = onNavigateBack
-        )
-    ) { innerPadding ->
+        ),
+        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+    ) { pad ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.background)
                 .verticalScroll(rememberScrollState())
-                .padding(
-                    bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-                )
+                .padding(pad)
         ) {
             WINDOW_PRESETS.forEach { (days, labelRes) ->
                 WindowOptionRow(

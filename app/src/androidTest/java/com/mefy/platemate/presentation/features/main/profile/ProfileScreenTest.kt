@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
@@ -113,6 +114,7 @@ class ProfileScreenTest {
         activities = listOf(
             PlateReviewNotificationItem(
                 id = "review_1",
+                reviewId = 1L,
                 normalizedPlateCode = "34AB1234",
                 plateCode = "34 AB 1234",
                 ratingAverage = 4.5,
@@ -125,7 +127,7 @@ class ProfileScreenTest {
                 id = "friend_2",
                 friendUserId = 7L,
                 username = "fatih",
-                statusCode = "PENDING",
+                status = FriendRequestStatusUi.REQUESTED,
                 createdAtText = "2026-05-26",
                 sortKey = "2026-05-26T10:00:00Z"
             )

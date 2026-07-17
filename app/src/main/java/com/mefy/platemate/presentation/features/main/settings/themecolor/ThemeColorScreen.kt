@@ -40,10 +40,8 @@ fun ThemeColorScreen(
     val colors = state.colors.ifEmpty { AccentColors }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        contentPadding = PaddingValues(dims.spacing.s16),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = innerPadding,
         verticalArrangement = spacedByWithFooter(dims.spacing.s16)
     ) {
         item {

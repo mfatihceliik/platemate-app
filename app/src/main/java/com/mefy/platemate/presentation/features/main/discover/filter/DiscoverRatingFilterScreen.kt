@@ -71,15 +71,14 @@ fun DiscoverRatingFilterScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.discover_filter_min_rating_label),
             onBackClick = onNavigateBack
-        )
-    ) { innerPadding ->
+        ),
+        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+    ) { pad ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.background),
-            contentPadding = PaddingValues(
-                bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-            )
+            contentPadding = pad
         ) {
             item(key = "rating_any") {
                 RatingOptionRow(

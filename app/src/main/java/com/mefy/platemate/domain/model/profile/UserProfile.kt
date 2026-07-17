@@ -15,6 +15,8 @@ data class UserProfile(
     val followerCount: Int = 0,
     val followingCount: Int = 0,
     val isFollowing: Boolean = false,
+    val friendshipStatus: String = "NONE",
+    val friendshipId: Long? = null,
     val totalFriendCounts: Int,
     val averageGivenRating: Double,
     val reviewCount: Int,

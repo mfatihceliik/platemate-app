@@ -10,6 +10,7 @@ class AppSettingsMapper @Inject constructor() : Mapper<AppSettingsDto, AppSettin
         nonPremiumPlateFollowLimit = input.nonPremiumPlateFollowLimit ?: 0,
         nonPremiumPlateAlarmLimit = input.nonPremiumPlateAlarmLimit ?: 0,
         preApprovalMessageLimit = input.preApprovalMessageLimit ?: 0,
-        commentReportThreshold = input.commentReportThreshold ?: 0
+        commentReportThreshold = input.commentReportThreshold ?: 0,
+        reportCommentMaxLength = input.reportCommentMaxLength ?: 250
     )
 }

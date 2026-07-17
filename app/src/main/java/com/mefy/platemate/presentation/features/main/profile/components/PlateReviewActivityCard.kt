@@ -41,14 +41,14 @@ import com.mefy.platemate.presentation.theme.pmDimensions
 @Composable
 internal fun PlateReviewActivityCard(
     item: PlateReviewNotificationItem,
-    onClick: (String) -> Unit,
+    onClick: (String, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
     // Stable, id-aware callback so the card can skip recomposition while data is unchanged.
-    val cardClick = remember(item.normalizedPlateCode, onClick) {
-        { onClick(item.normalizedPlateCode) }
+    val cardClick = remember(item.normalizedPlateCode, item.reviewId, onClick) {
+        { onClick(item.normalizedPlateCode, item.reviewId) }
     }
 
     PMCard(
@@ -171,6 +171,7 @@ private fun PlateReviewActivityCardPreviewContent() {
         PlateReviewActivityCard(
             item = PlateReviewNotificationItem(
                 id = "review_1",
+                reviewId = 1L,
                 normalizedPlateCode = "34AB1234",
                 plateCode = "34 AB 1234",
                 ratingAverage = 4.0,
@@ -179,11 +180,12 @@ private fun PlateReviewActivityCardPreviewContent() {
                 createdAtText = "2026-05-27",
                 sortKey = "2026-05-27T10:00:00Z"
             ),
-            onClick = { }
+            onClick = { _, _ -> }
         )
         PlateReviewActivityCard(
             item = PlateReviewNotificationItem(
                 id = "review_2",
+                reviewId = 2L,
                 normalizedPlateCode = "06XYZ06",
                 plateCode = "06 XYZ 06",
                 ratingAverage = 2.5,
@@ -192,7 +194,7 @@ private fun PlateReviewActivityCardPreviewContent() {
                 createdAtText = "2026-05-26",
                 sortKey = "2026-05-26T10:00:00Z"
             ),
-            onClick = { }
+            onClick = { _, _ -> }
         )
     }
 }

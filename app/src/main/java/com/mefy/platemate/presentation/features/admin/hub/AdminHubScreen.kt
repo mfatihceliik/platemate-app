@@ -56,7 +56,6 @@ internal fun AdminHubScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(horizontal = dims.spacing.s16)
     ) {
         PMSearchBar(
             query = state.query,

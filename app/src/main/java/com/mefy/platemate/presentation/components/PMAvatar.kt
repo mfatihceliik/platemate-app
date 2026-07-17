@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +36,9 @@ fun PMAvatar(
     imageUrl: String? = null,
     size: Dp = MaterialTheme.pmDimensions.sizing.avatarXl,
     isEditable: Boolean = false,
+    showOnlineStatus: Boolean = false,
+    isOnline: Boolean = false,
+    overlayIcon: ImageVector? = null,
     onClick: (() -> Unit)? = null,
     onEditClick: (() -> Unit)? = null
 ) {
@@ -93,9 +97,19 @@ fun PMAvatar(
             )
         }
 
-        // Edit Icon
-        if (isEditable) {
+        // Online Status Indicator
+        if (showOnlineStatus && isOnline) {
+            Box(
+                modifier = Modifier
+                    .size(size * 0.2f) // Relative size to the avatar
+                    .clip(CircleShape)
+                    .background(colors.success)
+                    .border(dims.stroke.st2, colors.background, CircleShape)
+            )
+        }
 
+        // Edit/Custom Icon Overlay
+        if (isEditable || overlayIcon != null) {
             Box(
                 modifier = Modifier
                     .size(dims.sizing.iconLg)
@@ -110,7 +124,7 @@ fun PMAvatar(
                 contentAlignment = Alignment.Center
             ) {
                 PMIcon(
-                    imageVector = Icons.Outlined.Edit,
+                    imageVector = overlayIcon ?: Icons.Outlined.Edit,
                     contentDescription = stringResource(R.string.edit_profile_change_photo),
                     tint = Color.White,
                 )
@@ -125,6 +139,19 @@ private fun PMAvatarPreview() {
     PlateMateTheme {
         PMAvatar(
             displayName = "Fatih Çelik",
+            onClick = {}
+        )
+    }
+}
+
+@Preview(name = "PMAvatar Online", showBackground = true)
+@Composable
+private fun PMAvatarOnlinePreview() {
+    PlateMateTheme {
+        PMAvatar(
+            displayName = "Fatih Çelik",
+            showOnlineStatus = true,
+            isOnline = true,
             onClick = {}
         )
     }

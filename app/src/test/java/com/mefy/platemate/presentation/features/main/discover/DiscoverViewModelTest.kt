@@ -261,6 +261,11 @@ class DiscoverViewModelTest {
         override suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit> =
             AppResult.Success(Unit)
 
+        override suspend fun getReviewById(id: Long): AppResult<Review> = throw UnsupportedOperationException()
+
+        override suspend fun getMyReviews(status: String?, query: String?, page: Int, size: Int): AppResult<PagedResult<Review>> =
+            throw UnsupportedOperationException()
+
         override suspend fun deleteReview(id: Long): AppResult<Unit> = AppResult.Success(Unit)
 
         override suspend fun reportReview(commentId: Long, reasonCode: String, description: String?): AppResult<Unit> =

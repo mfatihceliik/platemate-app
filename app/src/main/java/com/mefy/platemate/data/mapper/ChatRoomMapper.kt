@@ -18,7 +18,8 @@ class ChatRoomMapper @Inject constructor() : Mapper<ChatRoomDto, ChatRoom> {
         isGroup = input.group,
         requestStatus = ChatRoomRequestStatus.fromString(input.requestStatus),
         initiatorId = input.initiatorId,
-        unreadCount = input.unreadCount
+        unreadCount = input.unreadCount,
+        lastMessageSenderId = input.lastMessageSenderId
     )
 
     private fun String?.toAppDateTimeOrNull(): AppDateTime? =

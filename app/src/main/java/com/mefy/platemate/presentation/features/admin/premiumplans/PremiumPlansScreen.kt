@@ -35,8 +35,8 @@ internal fun PremiumPlansScreen(
         }
     } else {
         LazyColumn(
-            modifier = modifier.fillMaxSize().padding(contentPadding),
-            contentPadding = PaddingValues(dims.spacing.s16),
+            modifier = modifier.fillMaxSize(),
+            contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             items(items = state.items, key = { it.id }) { item ->

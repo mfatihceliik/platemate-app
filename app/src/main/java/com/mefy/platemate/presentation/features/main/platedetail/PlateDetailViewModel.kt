@@ -5,8 +5,10 @@ import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.plate.PlateDetailReview
 import com.mefy.platemate.domain.model.plate.PlateSearchResult
+import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.review.GetCommentReportReasonsUseCase
+import com.mefy.platemate.domain.usecase.review.GetReviewByIdUseCase
 import com.mefy.platemate.domain.usecase.review.ReportReviewUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
@@ -17,6 +19,7 @@ import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,12 +35,14 @@ class PlateDetailViewModel @Inject constructor(
     private val searchPlateUseCase: SearchPlateUseCase,
     private val reportReviewUseCase: ReportReviewUseCase,
     private val getCommentReportReasonsUseCase: GetCommentReportReasonsUseCase,
+    private val getReviewByIdUseCase: GetReviewByIdUseCase,
     private val observeSessionUseCase: ObserveSessionUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
     private val normalizedPlateCode: String = checkNotNull(savedStateHandle["id"])
+    private val highlightReviewId: Long = savedStateHandle.get<Long>("highlightReviewId") ?: -1L
 
     private var cachedReportReasons: List<ReportReasonUiModel>? = null
 
@@ -74,7 +79,10 @@ class PlateDetailViewModel @Inject constructor(
     }
 
     private fun onEditReviewClicked(reviewId: Long) {
-        val review = _uiState.value.reviews.firstOrNull { it.id == reviewId } ?: return
+        val state = _uiState.value
+        val review = state.reviews.firstOrNull { it.id == reviewId }
+            ?: state.highlightedReview?.takeIf { it.id == reviewId }
+            ?: return
         launch {
             _uiEffect.emit(
                 PlateDetailUiEffect.NavigateToEditReview(
@@ -88,7 +96,10 @@ class PlateDetailViewModel @Inject constructor(
     }
 
     private fun onReportReviewClicked(reviewId: Long) {
-        val review = _uiState.value.reviews.firstOrNull { it.id == reviewId } ?: return
+        val reportState = _uiState.value
+        val review = reportState.reviews.firstOrNull { it.id == reviewId }
+            ?: reportState.highlightedReview?.takeIf { it.id == reviewId }
+            ?: return
         val cached = cachedReportReasons
         _uiState.update {
             it.copy(
@@ -175,6 +186,12 @@ class PlateDetailViewModel @Inject constructor(
     private fun loadPlateDetail() {
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         launch {
+            val highlightedReviewDeferred = if (highlightReviewId > 0) {
+                async { getReviewByIdUseCase(highlightReviewId) }
+            } else {
+                null
+            }
+
             when (val result = searchPlateUseCase(normalizedPlateCode)) {
                 is AppResult.Success -> {
                     val plate = result.data
@@ -196,6 +213,9 @@ class PlateDetailViewModel @Inject constructor(
 
                     val currentUserId = observeSessionUseCase().first()?.userId ?: 0L
                     val reviews = plate.recentReviews.map { it.toUiModel(currentUserId) }
+                    val highlightedReview = highlightedReviewDeferred?.await()?.let { highlightResult ->
+                        (highlightResult as? AppResult.Success)?.data?.toUiModel(currentUserId)
+                    }
 
                     _uiState.update {
                         it.copy(
@@ -207,7 +227,8 @@ class PlateDetailViewModel @Inject constructor(
                             reviewCount = plate.reviewCount,
                             ratingBreakdown = breakdown,
                             tags = tags,
-                            reviews = reviews
+                            reviews = reviews,
+                            highlightedReview = highlightedReview
                         )
                     }
                 }
@@ -232,6 +253,24 @@ class PlateDetailViewModel @Inject constructor(
             timeAgo = timeText,
             comment = comment,
             reportTags = reportTags,
+            userId = userId,
+            canReport = userId != currentUserId,
+            canEdit = userId == currentUserId
+        )
+    }
+
+    private fun Review.toUiModel(currentUserId: Long): PlateReviewUiModel {
+        val timeText = createdAt?.iso8601?.substringBefore("T") ?: ""
+
+        return PlateReviewUiModel(
+            id = id,
+            username = reviewerUsername,
+            displayName = null,
+            profilePhotoUrl = null,
+            rating = rating,
+            timeAgo = timeText,
+            comment = comment,
+            reportTags = emptyList(),
             userId = userId,
             canReport = userId != currentUserId,
             canEdit = userId == currentUserId

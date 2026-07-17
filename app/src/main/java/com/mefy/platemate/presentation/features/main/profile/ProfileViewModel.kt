@@ -6,6 +6,7 @@ import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
+import com.mefy.platemate.domain.usecase.social.GetPendingFriendRequestsUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -14,6 +15,7 @@ import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiMap
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,6 +30,7 @@ class ProfileViewModel @Inject constructor(
     observeSessionUseCase: ObserveSessionUseCase,
     private val getProfileUseCase: GetProfileUseCase,
     private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
+    private val getPendingFriendRequestsUseCase: GetPendingFriendRequestsUseCase,
     private val profileUiMapper: ProfileUiMapper,
     private val profileStateReducer: ProfileStateReducer,
     globalUiEventBus: GlobalUiEventBus
@@ -47,20 +50,21 @@ class ProfileViewModel @Inject constructor(
 
     fun onAction(action: ProfileUiAction) {
         when (action) {
-            is ProfileUiAction.PlateReviewClicked -> onPlateReviewClicked(action.normalizedPlateCode)
-            ProfileUiAction.FriendsClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToFriends)
+            is ProfileUiAction.PlateReviewClicked -> onPlateReviewClicked(action.normalizedPlateCode, action.reviewId)
+            ProfileUiAction.FriendsClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToFriends(initialTab = 0))
+            ProfileUiAction.FriendRequestActivityClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToFriends(initialTab = 1))
+            is ProfileUiAction.StatusSummaryClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToReviewList(action.status))
+            is ProfileUiAction.ActivityTabChanged -> _uiState.update { it.copy(selectedActivityTab = action.tabIndex) }
             ProfileUiAction.OnResume -> loadProfile(mode = LoadMode.SILENT)
             ProfileUiAction.RefreshRequested -> onRefreshRequested()
             ProfileUiAction.RetryClicked -> loadProfile(mode = LoadMode.INITIAL)
         }
     }
-
     private fun onRefreshRequested() {
         val state = _uiState.value
         if (state.isInitialLoading || state.isRefreshing) return
         loadProfile(mode = LoadMode.REFRESH)
     }
-
     private fun observeSession(observeSessionUseCase: ObserveSessionUseCase) {
         launch(
             onError = { throwable ->
@@ -79,8 +83,8 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun onPlateReviewClicked(normalizedPlateCode: String) {
-        _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToSearchDetail(normalizedPlateCode))
+    private fun onPlateReviewClicked(normalizedPlateCode: String, reviewId: Long) {
+        _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToReviewDetail(normalizedPlateCode, reviewId))
     }
 
     private fun loadProfile(mode: LoadMode = LoadMode.INITIAL) {
@@ -96,15 +100,25 @@ class ProfileViewModel @Inject constructor(
                 handleError(throwable)
             }
         ) {
-            val platforms: List<SocialPlatform> = when (val platformsResult = getSocialPlatformsUseCase()) {
+            val platformsDeferred = async { getSocialPlatformsUseCase() }
+            val profileDeferred = async { getProfileUseCase(userId = userId) }
+            val pendingRequestsDeferred = async { getPendingFriendRequestsUseCase() }
+
+            val platforms: List<SocialPlatform> = when (val platformsResult = platformsDeferred.await()) {
                 is AppResult.Success -> platformsResult.data
                 is AppResult.Error -> emptyList()
             }
-            when (val result = getProfileUseCase(userId = userId)) {
+            // Badge count is a lenient enhancement: a failure here must not fail the whole profile load.
+            val pendingFriendRequestCount = when (val pendingResult = pendingRequestsDeferred.await()) {
+                is AppResult.Success -> pendingResult.data.size
+                is AppResult.Error -> 0
+            }
+            when (val result = profileDeferred.await()) {
                 is AppResult.Success -> {
                     val mapped = profileUiMapper.mapProfile(result.data, platforms)
                     _uiState.update { current ->
                         profileStateReducer.onProfileLoaded(current, mapped)
+                            .copy(pendingFriendRequestCount = pendingFriendRequestCount)
                     }
                 }
 

@@ -31,12 +31,16 @@ internal fun NavGraphBuilder.discoverGraph(
     modifier: Modifier = Modifier
 ) {
     navigation<DiscoverGraphDestination>(startDestination = DiscoverDestination) {
-        composable<DiscoverDestination> { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MainGraphDestination)
-            }
+        screenComposable<DiscoverDestination, DiscoverViewModel>(
+            viewModel = { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(MainGraphDestination)
+                }
+                hiltViewModel<DiscoverViewModel>(parentEntry)
+            },
+        ) { viewModel ->
             DiscoverRoute(
-                viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
+                viewModel = viewModel,
                 onNavigateToTrendDetail = onNavigateToDiscoverDetail,
                 onNavigateToCityPlates = { cityId, cityName ->
                     navController.navigateToDiscoverCityPlates(cityId, cityName)
@@ -46,6 +50,7 @@ internal fun NavGraphBuilder.discoverGraph(
             )
         }
 
+        // Filtre ekranları DiscoverViewModel'i paylaşır ama kendi banner'ını toplamaz; düz composable.
         composable<DiscoverFilterDestination> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(MainGraphDestination)
@@ -106,18 +111,22 @@ internal fun NavGraphBuilder.discoverGraph(
             )
         }
 
-        composable<DiscoverCityPlatesDestination> {
+        screenComposable<DiscoverCityPlatesDestination, CityPlatesViewModel>(
+            viewModel = { hiltViewModel<CityPlatesViewModel>() },
+        ) { viewModel ->
             CityPlatesRoute(
-                viewModel = hiltViewModel<CityPlatesViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToPlateDetail = onNavigateToDiscoverDetail,
                 modifier = modifier
             )
         }
 
-        composable<DiscoverDetailDestination> {
+        screenComposable<DiscoverDetailDestination, PlateDetailViewModel>(
+            viewModel = { hiltViewModel<PlateDetailViewModel>() },
+        ) { viewModel ->
             PlateDetailRoute(
-                viewModel = hiltViewModel<PlateDetailViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToReview = { navController.navigateToReview(it) },
                 onNavigateToUserProfile = { userId -> navController.navigateToUserProfile(userId.toString()) },
@@ -129,9 +138,11 @@ internal fun NavGraphBuilder.discoverGraph(
             )
         }
 
-        composable<PlateActionsDestination> {
+        screenComposable<PlateActionsDestination, PlateActionsViewModel>(
+            viewModel = { hiltViewModel<PlateActionsViewModel>() },
+        ) { viewModel ->
             PlateActionsRoute(
-                viewModel = hiltViewModel<PlateActionsViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToRemoval = { plateId, plateCode ->
                     navController.navigateToRemovalRequest(plateId, plateCode)
@@ -140,17 +151,21 @@ internal fun NavGraphBuilder.discoverGraph(
             )
         }
 
-        composable<PlateRemovalRequestDestination> {
+        screenComposable<PlateRemovalRequestDestination, PlateRemovalRequestViewModel>(
+            viewModel = { hiltViewModel<PlateRemovalRequestViewModel>() },
+        ) { viewModel ->
             PlateRemovalRequestRoute(
-                viewModel = hiltViewModel<PlateRemovalRequestViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
 
-        composable<ReviewDestination> {
+        screenComposable<ReviewDestination, ReviewViewModel>(
+            viewModel = { hiltViewModel<ReviewViewModel>() },
+        ) { viewModel ->
             ReviewRoute(
-                viewModel = hiltViewModel<ReviewViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onReviewSubmitted = { navController.popBackStack() },
                 modifier = modifier

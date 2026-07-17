@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,9 +28,7 @@ internal fun ThemeColorShimmerContent(
     val shimmer = rememberShimmer()
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(dims.spacing.s16),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
         // "Preview" label + card
@@ -58,7 +55,7 @@ internal fun ThemeColorShimmerContent(
         ShimmerBlock(shimmer, Modifier.fillMaxWidth(0.35f).height(dims.spacing.s16), RoundedCornerShape(dims.radius.r8))
         Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)) {
             repeat(3) {
-                ShimmerBlock(shimmer, Modifier.weight(1f).height(dims.sizing.ctaHeight), RoundedCornerShape(dims.radius.r12))
+                ShimmerBlock(shimmer, Modifier.weight(1f).height(dims.sizing.buttonMinHeight), RoundedCornerShape(dims.radius.r12))
             }
         }
     }

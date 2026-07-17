@@ -101,8 +101,9 @@ fun DiscoverCityFilterScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.discover_filter_city_title),
             onBackClick = onNavigateBack
-        )
-    ) { innerPadding ->
+        ),
+        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+    ) { pad ->
         Column(modifier = Modifier.fillMaxSize()) {
             PMSearchBar(
                 query = query,
@@ -129,9 +130,7 @@ fun DiscoverCityFilterScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(colors.background),
-                contentPadding = PaddingValues(
-                    bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-                )
+                contentPadding = pad
             ) {
                 items(items = filtered, key = { it.first }) { (cityId, cityName) ->
                     CityOptionRow(

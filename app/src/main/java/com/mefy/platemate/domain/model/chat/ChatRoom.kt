@@ -12,5 +12,6 @@ data class ChatRoom(
     val isGroup: Boolean,
     val requestStatus: ChatRoomRequestStatus,
     val initiatorId: Long?,
-    val unreadCount: Int = 0
+    val unreadCount: Int = 0,
+    val lastMessageSenderId: Long? = null
 )

@@ -3,10 +3,9 @@ package com.mefy.platemate.presentation.navigation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.mefy.platemate.presentation.features.main.settings.ProfileSettingsRoute
-import com.mefy.platemate.presentation.features.main.settings.ProfileSettingsViewModel
+import com.mefy.platemate.presentation.features.main.settings.SettingsRoute
+import com.mefy.platemate.presentation.features.main.settings.SettingsViewModel
 import com.mefy.platemate.presentation.features.main.settings.changepassword.ChangePasswordRoute
 import com.mefy.platemate.presentation.features.main.settings.changepassword.ChangePasswordViewModel
 import com.mefy.platemate.presentation.features.main.settings.editprofile.EditProfileRoute
@@ -26,11 +25,13 @@ internal fun NavGraphBuilder.settingsGraph(
     navController: NavHostController,
     onShowSnackbar: (String) -> Unit = {},
 ) {
-    navigation<SettingsGraphDestination>(startDestination = ProfileSettingsHomeDestination) {
+    navigation<SettingsGraphDestination>(startDestination = SettingsHomeDestination) {
         // Sekme kökü: geri butonu yok (onBackClick = null).
-        composable<ProfileSettingsHomeDestination> {
-            ProfileSettingsRoute(
-                viewModel = hiltViewModel<ProfileSettingsViewModel>(),
+        screenComposable<SettingsHomeDestination, SettingsViewModel>(
+            viewModel = { hiltViewModel<SettingsViewModel>() },
+        ) { viewModel ->
+            SettingsRoute(
+                viewModel = viewModel,
                 onBackClick = null,
                 onNavigateToChangePassword = { navController.navigateToProfileChangePassword() },
                 onNavigateToEditProfile = { navController.navigateToEditProfile() },
@@ -43,55 +44,69 @@ internal fun NavGraphBuilder.settingsGraph(
             )
         }
 
-        composable<EditProfileDestination> {
+        screenComposable<EditProfileDestination, EditProfileViewModel>(
+            viewModel = { hiltViewModel<EditProfileViewModel>() },
+        ) { viewModel ->
             EditProfileRoute(
-                viewModel = hiltViewModel<EditProfileViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
             )
         }
 
-        composable<ProfileChangePasswordDestination> {
+        screenComposable<ProfileChangePasswordDestination, ChangePasswordViewModel>(
+            viewModel = { hiltViewModel<ChangePasswordViewModel>() },
+        ) { viewModel ->
             ChangePasswordRoute(
-                viewModel = hiltViewModel<ChangePasswordViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
             )
         }
 
-        composable<ProfileThemeColorDestination> {
+        screenComposable<ProfileThemeColorDestination, ThemeColorViewModel>(
+            viewModel = { hiltViewModel<ThemeColorViewModel>() },
+        ) { viewModel ->
             ThemeColorRoute(
-                viewModel = hiltViewModel<ThemeColorViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
             )
         }
 
-        composable<ProfileCardStyleDestination> {
+        screenComposable<ProfileCardStyleDestination, CardStyleViewModel>(
+            viewModel = { hiltViewModel<CardStyleViewModel>() },
+        ) { viewModel ->
             CardStyleRoute(
-                viewModel = hiltViewModel<CardStyleViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToPremiumInfo = { navController.navigateToProfilePremiumInfo() },
             )
         }
 
-        composable<ProfileLanguageDestination> {
+        screenComposable<ProfileLanguageDestination, LanguageViewModel>(
+            viewModel = { hiltViewModel<LanguageViewModel>() },
+        ) { viewModel ->
             LanguageRoute(
-                viewModel = hiltViewModel<LanguageViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
             )
         }
 
-        composable<ProfileNotificationPreferencesDestination> {
+        screenComposable<ProfileNotificationPreferencesDestination, NotificationPreferencesViewModel>(
+            viewModel = { hiltViewModel<NotificationPreferencesViewModel>() },
+        ) { viewModel ->
             NotificationPreferencesRoute(
-                viewModel = hiltViewModel<NotificationPreferencesViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
                 onShowSnackbar = onShowSnackbar,
             )
         }
 
-        composable<ProfilePremiumInfoDestination> {
+        screenComposable<ProfilePremiumInfoDestination, PremiumInfoViewModel>(
+            viewModel = { hiltViewModel<PremiumInfoViewModel>() },
+        ) { viewModel ->
             PremiumInfoRoute(
-                viewModel = hiltViewModel<PremiumInfoViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
             )
         }

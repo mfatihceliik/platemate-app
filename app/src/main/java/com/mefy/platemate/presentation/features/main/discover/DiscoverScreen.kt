@@ -102,167 +102,161 @@ fun DiscoverScreen(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .fillMaxSize()
-                .background(colors.background),
-            contentPadding = PaddingValues(
-                start = dims.spacing.s16,
-                end = dims.spacing.s16,
-                top = dims.spacing.s16,
-                bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-            ),
+                .fillMaxSize(),
+            contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
         ) {
 
-        item {
-            PMSectionLabel(
-                text = stringResource(R.string.discover_header_subtitle),
-            )
-        }
-
-        if (state.metrics.isNotEmpty()) {
-            item(contentType = "hero_stats") {
-                DiscoverHeroStats(metrics = state.metrics)
-            }
-        }
-
-        if (state.forYou != null) {
-            item(contentType = "for_you_section") {
-                DiscoverForYouSection(
-                    forYou = state.forYou,
-                    cardStyle = state.cardStyle,
-                    onPlateClick = onTrendClick,
-                    onBookmarkClick = onBookmarkClick,
-                    onActivityPlateClick = onActivityPlateClick
+            item {
+                PMSectionLabel(
+                    text = stringResource(R.string.discover_header_subtitle),
                 )
             }
-        }
 
-        item {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-            ) {
-                items(
-                    DiscoverFilterUi.entries,
-                    key = { it.name },
-                    contentType = { "filter_chip" }
-                ) { filter ->
-                    val isSelected = state.selectedFilter == filter
-                    PMChip(
-                        label = filter.name,
-                        selected = isSelected,
-                        onClick = { onFilterSelected(filter) }
+            if (state.metrics.isNotEmpty()) {
+                item(contentType = "hero_stats") {
+                    DiscoverHeroStats(metrics = state.metrics)
+                }
+            }
+
+            if (state.forYou != null) {
+                item(contentType = "for_you_section") {
+                    DiscoverForYouSection(
+                        forYou = state.forYou,
+                        cardStyle = state.cardStyle,
+                        onPlateClick = onTrendClick,
+                        onBookmarkClick = onBookmarkClick,
+                        onActivityPlateClick = onActivityPlateClick
                     )
                 }
-                item {
-
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                PMSectionLabel(
-                    text = stringResource(R.string.discover_section_trending),
-                )
-                DiscoverFilterButton(
-                    activeCount = state.activeFilters.activeFilterCount,
-                    onClick = {
-                        // Taslak, filtre ekranina gitmeden once bir kez tohumlanir; alt picker'lardan
-                        // donuste ekran yeniden compose olsa da secim korunur.
-                        onAction(DiscoverUiAction.FilterScreenOpened)
-                        onOpenFilter()
-                    }
-                )
             }
 
-        }
-
-        itemsIndexed(
-            items = state.plateDetail,
-            key = { index, it -> "${it.id}_$index" },
-            contentType = { _, _ -> "trend_card" }) { _, detail ->
-            PMPlateCard(
-                id = detail.id,
-                rank = detail.rank ?: 0,
-                plateNumber = detail.plateCode,
-                rating = detail.ratingText,
-                commentCount = detail.commentCount,
-                searchCount = detail.searchCount,
-                onClick = onTrendClick,
-                style = state.cardStyle,
-                isBookmarked = detail.isBookmarked,
-                onBookmarkClick = onBookmarkClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        if (state.isLoadingMore) {
-            item(contentType = "loading_more") {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = dims.spacing.s8),
-                    contentAlignment = Alignment.Center
+            item {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
                 ) {
-                    PMCircularProgressIndicator()
+                    items(
+                        DiscoverFilterUi.entries,
+                        key = { it.name },
+                        contentType = { "filter_chip" }
+                    ) { filter ->
+                        val isSelected = state.selectedFilter == filter
+                        PMChip(
+                            label = filter.name,
+                            selected = isSelected,
+                            onClick = { onFilterSelected(filter) }
+                        )
+                    }
+                    item {
+
+                    }
                 }
             }
-        }
 
-        if (state.topReportTypes.isNotEmpty()) {
             item {
-                PMSectionLabel(
-                    text = stringResource(R.string.discover_section_top_reports),
-                )
-            }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PMSectionLabel(
+                        text = stringResource(R.string.discover_section_trending),
+                    )
+                    DiscoverFilterButton(
+                        activeCount = state.activeFilters.activeFilterCount,
+                        onClick = {
+                            // Taslak, filtre ekranina gitmeden once bir kez tohumlanir; alt picker'lardan
+                            // donuste ekran yeniden compose olsa da secim korunur.
+                            onAction(DiscoverUiAction.FilterScreenOpened)
+                            onOpenFilter()
+                        }
+                    )
+                }
 
-            item(contentType = "top_report_types") {
-                DiscoverTopReportTypes(reportTypes = state.topReportTypes)
-            }
-        }
-
-        if (state.cityStats.isNotEmpty()) {
-            item {
-                PMSectionLabel(
-                    text = stringResource(R.string.discover_section_by_city),
-                )
             }
 
             itemsIndexed(
-                items = state.cityStats,
-                key = { index, it -> "city_${it.cityId}_$index" },
-                contentType = { _, _ -> "city_stat_row" }) { _, cityStat ->
-                DiscoverCityStatRow(
-                    cityStat = cityStat,
-                    onClick = onCityStatClick,
+                items = state.plateDetail,
+                key = { index, it -> "${it.id}_$index" },
+                contentType = { _, _ -> "trend_card" }) { _, detail ->
+                PMPlateCard(
+                    id = detail.id,
+                    rank = detail.rank ?: 0,
+                    plateNumber = detail.plateCode,
+                    rating = detail.ratingText,
+                    commentCount = detail.commentCount,
+                    searchCount = detail.searchCount,
+                    onClick = onTrendClick,
+                    style = state.cardStyle,
+                    isBookmarked = detail.isBookmarked,
+                    onBookmarkClick = onBookmarkClick,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        }
 
-        if (state.recentActivities.isNotEmpty()) {
-            item {
-                PMSectionLabel(
-                    text = stringResource(R.string.discover_section_recent_activity),
-                )
+            if (state.isLoadingMore) {
+                item(contentType = "loading_more") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = dims.spacing.s8),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        PMCircularProgressIndicator()
+                    }
+                }
             }
 
-            itemsIndexed(
-                items = state.recentActivities,
-                key = { index, it -> "activity_${it.id}_$index" },
-                contentType = { _, _ -> "recent_activity_row" }) { _, activity ->
-                DiscoverRecentActivityRow(
-                    activity = activity,
-                    onPlateClick = onActivityPlateClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
+            if (state.topReportTypes.isNotEmpty()) {
+                item {
+                    PMSectionLabel(
+                        text = stringResource(R.string.discover_section_top_reports),
+                    )
+                }
+
+                item(contentType = "top_report_types") {
+                    DiscoverTopReportTypes(reportTypes = state.topReportTypes)
+                }
             }
-        }
+
+            if (state.cityStats.isNotEmpty()) {
+                item {
+                    PMSectionLabel(
+                        text = stringResource(R.string.discover_section_by_city),
+                    )
+                }
+
+                itemsIndexed(
+                    items = state.cityStats,
+                    key = { index, it -> "city_${it.cityId}_$index" },
+                    contentType = { _, _ -> "city_stat_row" }) { _, cityStat ->
+                    DiscoverCityStatRow(
+                        cityStat = cityStat,
+                        onClick = onCityStatClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            if (state.recentActivities.isNotEmpty()) {
+                item {
+                    PMSectionLabel(
+                        text = stringResource(R.string.discover_section_recent_activity),
+                    )
+                }
+
+                itemsIndexed(
+                    items = state.recentActivities,
+                    key = { index, it -> "activity_${it.id}_$index" },
+                    contentType = { _, _ -> "recent_activity_row" }) { _, activity ->
+                    DiscoverRecentActivityRow(
+                        activity = activity,
+                        onPlateClick = onActivityPlateClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
         }
     }
 }

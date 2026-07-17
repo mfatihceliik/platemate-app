@@ -41,8 +41,7 @@ fun LanguageScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(innerPadding)
-            .padding(horizontal = dims.spacing.s16),
+            .padding(innerPadding),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         PMSearchBar(

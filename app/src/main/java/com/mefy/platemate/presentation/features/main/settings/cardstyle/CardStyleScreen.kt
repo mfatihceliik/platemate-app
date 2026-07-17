@@ -50,12 +50,7 @@ fun CardStyleScreen(
         modifier = modifier
             .fillMaxSize()
             .background(colors.background),
-        contentPadding = PaddingValues(
-            start = dims.spacing.s16,
-            end = dims.spacing.s16,
-            top = dims.spacing.s16,
-            bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-        ),
+        contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
     ) {
         item {

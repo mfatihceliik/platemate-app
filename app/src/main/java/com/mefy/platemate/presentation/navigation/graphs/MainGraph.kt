@@ -30,7 +30,6 @@ internal fun NavGraphBuilder.mainGraph(
         )
         profileGraph(
             navController = navController,
-            onNavigateToSearchDetail = onNavigateToSearchDetail,
             onShowSnackbar = onShowSnackbar,
         )
         settingsGraph(

@@ -24,7 +24,7 @@ import com.mefy.platemate.data.local.room.entity.SavedPlateEntity
         ChatRoomEntity::class,
         ChatMessageEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(RecentSearchTypeConverters::class)
@@ -156,6 +156,14 @@ abstract class PlateMateDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "ALTER TABLE `chat_rooms` ADD COLUMN `unread_count` INTEGER NOT NULL DEFAULT 0"
+                )
+            }
+        }
+
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "ALTER TABLE `chat_rooms` ADD COLUMN `last_message_sender_id` INTEGER"
                 )
             }
         }

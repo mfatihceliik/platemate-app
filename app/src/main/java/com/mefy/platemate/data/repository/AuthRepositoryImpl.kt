@@ -21,6 +21,7 @@ import com.mefy.platemate.domain.repository.FcmTokenRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -70,9 +71,25 @@ class AuthRepositoryImpl @Inject constructor(
             val refreshResult = safeApiCall {
                 authTokenApiService.refresh(RefreshTokenRequest(refreshToken))
             }.flatMap { user ->
-                userAuthSessionMapper.mapOrNull(user)
-                    ?.let { session -> AppResult.Success(session) }
-                    ?: AppResult.Error(AppError.Api("Access or refresh token not found in refresh response"))
+                val newAccessToken = user.token?.takeIf { it.isNotBlank() }
+                val newRefreshToken = user.refreshToken?.takeIf { it.isNotBlank() }
+                
+                if (newAccessToken != null && newRefreshToken != null) {
+                    val currentSession = sessionStore.session.first()
+                    if (currentSession != null) {
+                        val refreshedSession = currentSession.copy(
+                            token = newAccessToken,
+                            refreshToken = newRefreshToken
+                        )
+                        AppResult.Success(refreshedSession)
+                    } else {
+                        userAuthSessionMapper.mapOrNull(user)
+                            ?.let { session -> AppResult.Success(session) }
+                            ?: AppResult.Error(AppError.Api("Access or refresh token not found in refresh response"))
+                    }
+                } else {
+                    AppResult.Error(AppError.Api("Access or refresh token not found in refresh response"))
+                }
             }.onSuccessSuspend(sessionStore::saveSession)
 
             if (refreshResult is AppResult.Error) {

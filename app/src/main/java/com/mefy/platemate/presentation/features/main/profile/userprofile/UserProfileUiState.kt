@@ -12,13 +12,12 @@ data class UserProfileUiState(
     val userId: String = "",
     val displayName: String = "",
     val username: String = "",
-    val initials: String = "",
-    val avatarBg: Color = Color(0xFFECFEFF),
-    val avatarFg: Color = Color(0xFF0E7490),
     val bio: String = "",
     val isVerified: Boolean = false,
     val isOnline: Boolean = false,
-    val isFollowing: Boolean = false,
+    val friendshipStatus: String = "NONE",
+    val friendshipId: Long? = null,
+    val showRemoveFriendPopup: Boolean = false,
     val reviewCount: Int = 0,
     val followerCount: String = "0",
     val followingCount: Int = 0,
@@ -26,5 +25,6 @@ data class UserProfileUiState(
     val approvedReviews: List<UserProfileReviewUiModel> = emptyList(),
     val showReportSheet: Boolean = false,
     val selectedReportReason: ReportReason? = null,
+    val otherReportReasonText: String = "",
     val isSubmittingReport: Boolean = false
 )

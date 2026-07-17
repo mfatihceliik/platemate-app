@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.messages.conversation.comp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,9 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -22,17 +19,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.variant.PMTextFieldVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
@@ -46,20 +41,12 @@ internal fun MessageInputBar(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val primary = colors.primary
-    // Klavye açıkken bar, IME'ye yapışık durmasın diye altına s12 boşluk eklenir; kapalıyken
-    // yalnızca nav-bar boşluğu kalır (root ime padding'i PMBaseScreen.applyImePadding'te uygulanır).
     val imeVisible = WindowInsets.isImeVisible
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            // Yarı saydam "buzlu cam": bar listenin üzerine biner, mesajlar arkasından
-            // görünür. (Gerçek gaussian backdrop-blur bir bağımlılık/RenderEffect gerektirir;
-            // minSdk 24'te güvenli değil — şeffaflık her API'de çalışır.)
-            .background(colors.surface.copy(alpha = 0.82f))
-            // IME inset'i ekran kökünde (PMBaseScreen.applyImePadding) uygulanır; burada
-            // yalnızca nav-bar boşluğu kalır. İkisi birden uygulanırsa çifte padding olur.
+            .background(colors.background.copy(alpha = 0.82f))
             .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(
                 start = dims.spacing.s12,
@@ -68,52 +55,34 @@ internal fun MessageInputBar(
                 bottom = dims.spacing.s10 + if (imeVisible) dims.spacing.s12 else dims.spacing.s0
             ),
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
-        // Alan çok satıra büyürken +/gönder butonları altta sabit kalır (WhatsApp davranışı).
         verticalAlignment = Alignment.Bottom
     ) {
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.chatComposerButton)
-                .clip(CircleShape)
-                .background(colors.surfaceVariant)
-                .debouncedClickable {},
-            contentAlignment = Alignment.Center
-        ) {
-            PMIcon(
-                imageVector = Icons.Default.Add,
-                tint = colors.textLabel,
-                size = dims.sizing.iconLg
-            )
-        }
 
-        // Chat pill: paylaşılan PMTextField'ın Chat variant'ı (kenarlıksız, hap biçimli).
+        PMIconButton(
+            imageVector = Icons.Default.Add,
+            onClick = {},
+            variant = PMIconButtonVariant.Tonal,
+            size = dims.sizing.iconLg
+        )
+
         PMTextField(
             value = text,
             onValueChange = onTextChange,
             modifier = Modifier.weight(1f),
             variant = PMTextFieldVariant.Chat,
-            // Uzun metin alt satıra sarar; 5 satırdan sonra alan büyümez, metin içeride kayar.
             maxLines = 5,
             placeholder = stringResource(R.string.conversation_input_placeholder),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSend() })
         )
 
-        Box(
-            modifier = Modifier
-                .size(dims.sizing.chatComposerButton)
-                .shadow(elevation = if (text.isNotBlank()) dims.spacing.s8 else dims.spacing.s0, CircleShape)
-                .clip(CircleShape)
-                .background(if (text.isNotBlank()) primary else colors.surfaceVariant)
-                .debouncedClickable(enabled = text.isNotBlank(), onClick = onSend),
-            contentAlignment = Alignment.Center
-        ) {
-            PMIcon(
-                imageVector = Icons.AutoMirrored.Filled.Send,
-                tint = if (text.isNotBlank()) colors.onPrimary else colors.textLabel,
-                size = dims.sizing.iconMd,
-            )
-        }
+        PMIconButton(
+            imageVector = Icons.AutoMirrored.Filled.Send,
+            enabled = text.isNotBlank(),
+            onClick = onSend,
+            variant = PMIconButtonVariant.Tonal,
+            size = dims.sizing.iconLg
+        )
     }
 }
 

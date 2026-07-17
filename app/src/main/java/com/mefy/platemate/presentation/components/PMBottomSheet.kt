@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
@@ -20,32 +19,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
 import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Proje standardı modal bottom sheet: surface arka plan, r16 üst köşeler,
- * opsiyonel sabit başlık + divider bloğu.
- *
- * ModalBottomSheet ayrı bir dialog penceresinde çizildiği için @Preview'da
- * görünmez; inspection mode'da aynı chrome düz composable olarak çizilir.
- * Böylece feature preview'ları bu sarmalayıcıyı doğrudan çağırabilir.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PMBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     title: String? = null,
+    skipPartiallyExpanded: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val dims = MaterialTheme.pmDimensions
@@ -55,7 +44,7 @@ fun PMBottomSheet(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = dims.radius.r16, topEnd = dims.radius.r16))
+                .clip(RoundedCornerShape(topStart = dims.radius.r10, topEnd = dims.radius.r10))
                 .background(colors.surface)
         ) {
             Box(
@@ -69,7 +58,7 @@ fun PMBottomSheet(
         return
     }
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -82,7 +71,6 @@ fun PMBottomSheet(
     }
 }
 
-/** Sheet gövdesi: opsiyonel başlık + divider, ardından içerik. */
 @Composable
 private fun PMBottomSheetContent(
     modifier: Modifier = Modifier,
@@ -101,7 +89,7 @@ private fun PMBottomSheetContent(
                 color = colors.textPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s24, vertical = dims.spacing.s16)
+                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
             )
             HorizontalDivider(color = colors.surfaceVariant)
         }
@@ -109,10 +97,6 @@ private fun PMBottomSheetContent(
     }
 }
 
-/**
- * Standart sheet footer'ı: iptal + destructive submit çifti.
- * [submitEnabled] false iken submit disabled renkte ve tıklanamaz.
- */
 @Composable
 fun PMBottomSheetActions(
     cancelText: String,
@@ -130,51 +114,21 @@ fun PMBottomSheetActions(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(dims.sizing.ctaHeight)
-                .clip(ctaShape)
-                .background(colors.surfaceVariant)
-                .debouncedClickable(onClick = onCancel),
-            contentAlignment = Alignment.Center
-        ) {
-            PMText(
-                text = cancelText,
-                style = PMTextStyle.Body,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.textTertiary
-            )
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(dims.sizing.ctaHeight)
-                .then(
-                    if (submitEnabled) {
-                        Modifier.shadow(
-                            elevation = 4.dp,
-                            shape = ctaShape,
-                            ambientColor = colors.error.copy(alpha = 0.5f)
-                        )
-                    } else {
-                        Modifier
-                    }
-                )
-                .clip(ctaShape)
-                .background(if (submitEnabled) colors.error else colors.disabled)
-                .then(
-                    if (submitEnabled) Modifier.debouncedClickable(onClick = onSubmit) else Modifier
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            PMText(
-                text = submitText,
-                style = PMTextStyle.Body,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        }
+
+        PMButton(
+            text = cancelText,
+            onClick = onCancel,
+            variant = PMButtonVariant.Outlined,
+            modifier = Modifier.weight(1f)
+        )
+
+        PMButton(
+            text = submitText,
+            onClick = onSubmit,
+            variant = PMButtonVariant.Filled,
+            enabled = submitEnabled,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 

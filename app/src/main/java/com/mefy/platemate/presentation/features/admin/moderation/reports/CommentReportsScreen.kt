@@ -47,8 +47,8 @@ internal fun CommentReportsScreen(
         }
     } else {
         LazyColumn(
-            modifier = modifier.fillMaxSize().padding(contentPadding),
-            contentPadding = PaddingValues(dims.spacing.s16),
+            modifier = modifier.fillMaxSize(),
+            contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
         ) {
             itemsIndexed(items = state.items, key = { _, item -> item.id }) { index, item ->

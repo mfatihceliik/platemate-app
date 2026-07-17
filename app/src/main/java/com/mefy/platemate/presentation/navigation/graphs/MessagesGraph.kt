@@ -4,7 +4,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.compose.runtime.remember
 import com.mefy.platemate.presentation.features.main.messages.MessagesRoute
@@ -19,12 +18,16 @@ internal fun NavGraphBuilder.messagesGraph(
     modifier: Modifier = Modifier
 ) {
     navigation<MessagesGraphDestination>(startDestination = MessagesDestination) {
-        composable<MessagesDestination> { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MainGraphDestination)
-            }
+        screenComposable<MessagesDestination, MessagesViewModel>(
+            viewModel = { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(MainGraphDestination)
+                }
+                hiltViewModel<MessagesViewModel>(parentEntry)
+            },
+        ) { viewModel ->
             MessagesRoute(
-                viewModel = hiltViewModel<MessagesViewModel>(parentEntry),
+                viewModel = viewModel,
                 onNavigateToChat = { conversationId, participantName ->
                     navController.navigate(
                         ChatDestination(
@@ -37,9 +40,11 @@ internal fun NavGraphBuilder.messagesGraph(
             )
         }
 
-        composable<ChatDestination> {
+        screenComposable<ChatDestination, ConversationViewModel>(
+            viewModel = { hiltViewModel<ConversationViewModel>() },
+        ) { viewModel ->
             ConversationRoute(
-                viewModel = hiltViewModel<ConversationViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToChatDetail = { conversationId, participantName ->
                     navController.navigate(
@@ -53,9 +58,11 @@ internal fun NavGraphBuilder.messagesGraph(
             )
         }
 
-        composable<ChatDetailDestination> {
+        screenComposable<ChatDetailDestination, ChatDetailViewModel>(
+            viewModel = { hiltViewModel<ChatDetailViewModel>() },
+        ) { viewModel ->
             ChatDetailRoute(
-                viewModel = hiltViewModel<ChatDetailViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToUserProfile = { userId ->
                     navController.navigateToUserProfile(userId.toString())

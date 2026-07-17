@@ -19,5 +19,7 @@ data class ProfileUiState(
     val stats: List<ProfileStatUiModel> = emptyList(),
     val statusSummary: ProfileStatusSummaryUiModel = ProfileStatusSummaryUiModel(),
     val activities: List<ProfileActivityUiModel> = emptyList(),
-    val socialLinks: List<ProfileSocialLinkUiModel> = emptyList()
+    val socialLinks: List<ProfileSocialLinkUiModel> = emptyList(),
+    val selectedActivityTab: Int = 0,
+    val pendingFriendRequestCount: Int = 0
 )

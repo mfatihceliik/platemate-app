@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import com.mefy.platemate.presentation.components.PMBaseScreen
@@ -22,7 +21,6 @@ fun CityPlatesRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HandleUiMessages(viewModel.uiMessages)
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(viewModel) {
@@ -45,6 +43,7 @@ fun CityPlatesRoute(
         state.isEmpty -> ScreenStatus.Empty
         else -> ScreenStatus.Content
     }
+
 
     PMBaseScreen(
         modifier = modifier,

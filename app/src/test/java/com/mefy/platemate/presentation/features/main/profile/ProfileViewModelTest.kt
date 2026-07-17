@@ -9,14 +9,17 @@ import com.mefy.platemate.domain.model.profile.SocialMediaLink
 import com.mefy.platemate.domain.model.profile.UserProfile
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.settings.UserSettings
+import com.mefy.platemate.domain.model.social.Friendship
 import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.repository.ProfileRepository
 import com.mefy.platemate.domain.repository.SocialLinkRepository
+import com.mefy.platemate.domain.repository.SocialRepository
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
+import com.mefy.platemate.domain.usecase.social.GetPendingFriendRequestsUseCase
 import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.profile.mapper.DefaultProfileUiMapper
@@ -61,7 +64,7 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun action_plateReviewClicked_emitsNavigateSearchDetail() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+    fun action_plateReviewClicked_emitsNavigateReviewDetail() = runTest(mainDispatcherRule.dispatcher.scheduler) {
         val viewModel = createViewModel(
             FakeAuthRepository(AuthSession(42L, "u", "t")),
             FakeProfileRepository(sampleProfile())
@@ -69,9 +72,9 @@ class ProfileViewModelTest {
         advanceUntilIdle()
 
         val deferred = async { viewModel.uiEffect.first() }
-        viewModel.onAction(ProfileUiAction.PlateReviewClicked("34AB1234"))
+        viewModel.onAction(ProfileUiAction.PlateReviewClicked("34AB1234", 1L))
         assertEquals(
-            ProfileUiEffect.NavigateToSearchDetail("34AB1234"),
+            ProfileUiEffect.NavigateToReviewDetail("34AB1234", 1L),
             deferred.await()
         )
     }
@@ -83,6 +86,7 @@ class ProfileViewModelTest {
         observeSessionUseCase = ObserveSessionUseCase(authRepository),
         getProfileUseCase = GetProfileUseCase(profileRepository),
         getSocialPlatformsUseCase = GetSocialPlatformsUseCase(FakeSocialLinkRepository()),
+        getPendingFriendRequestsUseCase = GetPendingFriendRequestsUseCase(FakeSocialRepository()),
         profileUiMapper = DefaultProfileUiMapper(
             formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
             validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
@@ -115,6 +119,16 @@ class ProfileViewModelTest {
         override suspend fun updateSocialLink(link: SocialMediaLink): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun deleteSocialLink(id: Long): AppResult<Unit> = AppResult.Success(Unit)
         override suspend fun getSocialPlatforms(): AppResult<List<SocialPlatform>> = AppResult.Success(emptyList())
+    }
+
+    private class FakeSocialRepository : SocialRepository {
+        override suspend fun sendFriendRequest(addresseeId: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
+        override suspend fun acceptFriendRequest(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
+        override suspend fun rejectFriendRequest(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
+        override suspend fun removeFriend(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
+        override suspend fun getFriends(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
+        override suspend fun getPendingRequests(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
+        override suspend fun getSentRequests(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
     }
 
     private class FakeProfileRepository(

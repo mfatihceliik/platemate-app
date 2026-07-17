@@ -43,4 +43,7 @@ interface PlateApiService {
         @Path("plateId") plateId: Long,
         @Body request: AddPlateRemovalRequestRequest
     ): DataResultResponse<PlateRemovalRequestDto>
+
+    @GET("api/plate-removal-reasons")
+    suspend fun getPlateRemovalReasons(): DataResultResponse<List<com.mefy.platemate.data.remote.dto.plate.PlateRemovalReasonDto>>
 }

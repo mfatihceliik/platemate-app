@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class PlateReviewNotificationItem(
     override val id: String,
+    val reviewId: Long,
     val normalizedPlateCode: String,
     val plateCode: String,
     val ratingAverage: Double,

@@ -31,7 +31,8 @@ object LocalDatabaseModule {
         PlateMateDatabase.MIGRATION_1_2,
         PlateMateDatabase.MIGRATION_2_3,
         PlateMateDatabase.MIGRATION_3_4,
-        PlateMateDatabase.MIGRATION_4_5
+        PlateMateDatabase.MIGRATION_4_5,
+        PlateMateDatabase.MIGRATION_5_6
     ).build()
 
     @Provides

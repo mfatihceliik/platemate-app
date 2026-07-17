@@ -36,8 +36,8 @@ internal fun AccentColorsScreen(
     val colors = MaterialTheme.pmColors
 
     LazyColumn(
-        modifier = modifier.fillMaxSize().padding(contentPadding),
-        contentPadding = PaddingValues(dims.spacing.s16),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
     ) {
         item {

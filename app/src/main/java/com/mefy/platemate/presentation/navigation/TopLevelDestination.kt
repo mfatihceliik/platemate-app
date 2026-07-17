@@ -60,7 +60,7 @@ enum class TopLevelDestination(
         labelRes = R.string.main_tab_settings,
         selectedIcon = Icons.Filled.Settings,
         unselectedIcon = Icons.Outlined.Settings,
-        route = ProfileSettingsHomeDestination::class,
+        route = SettingsHomeDestination::class,
         graphRoute = SettingsGraphDestination::class,
         graphDestination = SettingsGraphDestination
     )

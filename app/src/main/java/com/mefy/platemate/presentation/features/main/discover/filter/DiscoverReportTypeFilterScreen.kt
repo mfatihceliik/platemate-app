@@ -70,15 +70,14 @@ fun DiscoverReportTypeFilterScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.discover_filter_report_type_title),
             onBackClick = onNavigateBack
-        )
-    ) { innerPadding ->
+        ),
+        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+    ) { pad ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.background),
-            contentPadding = PaddingValues(
-                bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()
-            )
+            contentPadding = pad
         ) {
             item(key = "report_type_any") {
                 ReportTypeOptionRow(

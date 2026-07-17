@@ -38,7 +38,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun searchByUsername(username: String): AppResult<List<User>> =
         withContext(appDispatchers.io) {
-            safeApiCall { api.searchUserByUsername(username) }.map { listOf(userMapper.map(it)) }
+            safeApiCall { api.searchUserByUsername(username) }.map(userMapper::mapList)
         }
 
     override suspend fun updateCurrentUser(email: String?, password: String?): AppResult<Unit> =

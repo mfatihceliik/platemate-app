@@ -224,7 +224,7 @@ private fun TrailingDefault(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 size = dims.sizing.iconLg,
-                tint = colors.textLabel
+                tint = colors.primary
             )
         }
     }

@@ -41,8 +41,7 @@ internal fun PlateActionsScreen(
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize()
-            .padding(dims.spacing.s16),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(dims.spacing.s16),
     ) {
         item {

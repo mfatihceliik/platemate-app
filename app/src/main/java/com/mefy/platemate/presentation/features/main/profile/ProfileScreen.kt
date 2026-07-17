@@ -1,15 +1,17 @@
 package com.mefy.platemate.presentation.features.main.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,11 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMStatCard
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.PMTabRow
+import com.mefy.platemate.presentation.components.PMTabItem
 import com.mefy.platemate.presentation.features.main.profile.components.FriendRequestActivityCard
 import com.mefy.platemate.presentation.features.main.profile.components.PlateReviewActivityCard
 import com.mefy.platemate.presentation.features.main.profile.components.ProfileHeaderSection
 import com.mefy.platemate.presentation.features.main.profile.components.ProfileStatusSummarySection
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
+import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileActivityUiModel
@@ -51,37 +56,40 @@ fun ProfileScreen(
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-
     val uriHandler = LocalUriHandler.current
 
-    // Stable, shared callbacks: activity cards skip recomposition while data is unchanged.
     val onReviewClick = remember(onAction) {
-        { code: String -> onAction(ProfileUiAction.PlateReviewClicked(code)) }
+        { code: String, reviewId: Long -> onAction(ProfileUiAction.PlateReviewClicked(code, reviewId)) }
     }
     val onFriendsClick = remember(onAction) {
         { onAction(ProfileUiAction.FriendsClicked) }
     }
-    val onLinkClick = remember(uriHandler) {
-        { link: ProfileSocialLinkUiModel ->
-            try {
-                uriHandler.openUri(link.url)
-            } catch (_: Exception) {
-            }
-        }
+    val onFriendRequestClick = remember(onAction) {
+        { onAction(ProfileUiAction.FriendRequestActivityClicked) }
+    }
+    val onStatusClick = remember(onAction) {
+        { status: String -> onAction(ProfileUiAction.StatusSummaryClicked(status)) }
+    }
+    val plateActivities = remember(state.activities) {
+        state.activities.filterIsInstance<PlateReviewNotificationItem>()
+    }
+    val friendActivities = remember(state.activities) {
+        state.activities.filterIsInstance<FriendRequestNotificationItem>()
     }
 
     LazyColumn(
         state = lazyListState,
         modifier = modifier
-            .background(colors.background)
-            .padding(dims.spacing.s12),
-        contentPadding = PaddingValues(bottom = dims.spacing.s16 + innerPadding.calculateBottomPadding()),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            .fillMaxSize(),
+        contentPadding = innerPadding,
+        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
     ) {
         item {
             ProfileHeaderSection(
                 header = state.header,
-                accountSummary = state.accountSummary
+                accountSummary = state.accountSummary,
+                onFriendsClick = onFriendsClick,
+                pendingFriendRequestCount = state.pendingFriendRequestCount
             )
         }
 
@@ -95,6 +103,7 @@ fun ProfileScreen(
                         PMStatCard(
                             value = stat.valueText,
                             label = stringResource(stat.labelResId),
+                            onClick = if (stat.labelResId == R.string.profile_stat_friends) onFriendsClick else null,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -109,21 +118,21 @@ fun ProfileScreen(
         }
 
         item {
-            ProfileStatusSummarySection(statusSummary = state.statusSummary)
+            ProfileStatusSummarySection(
+                statusSummary = state.statusSummary,
+                onStatusClick = onStatusClick
+            )
         }
 
         if (state.socialLinks.isNotEmpty()) {
             item(key = "social_links") {
-                // Tıklama handler'ı stabil: her recomposition'da yeniden yaratılmaz.
                 val onLinkClick = remember(uriHandler) {
                     { link: ProfileSocialLinkUiModel ->
                         try {
                             uriHandler.openUri(link.url)
-                        } catch (_: Exception) {
-                        }
+                        } catch (_: Exception) {}
                     }
                 }
-                // Bileşen kendi PMCard'ını çizer; burada ek sarmalayıcı yok.
                 UserProfileSocialLinks(
                     links = state.socialLinks,
                     onLinkClick = onLinkClick
@@ -137,36 +146,63 @@ fun ProfileScreen(
             )
         }
 
-        if (state.activities.isEmpty()) {
-            item {
-                PMText(
-                    text = stringResource(R.string.profile_recent_empty),
-                    fontSize = dims.fontSize.md,
-                    color = colors.textTertiary,
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16)
-                )
-            }
-        } else {
-            items(
-                items = state.activities,
-                key = ProfileActivityUiModel::id,
-                contentType = {
-                    when (it) {
-                        is PlateReviewNotificationItem -> "profile_review_activity"
-                        is FriendRequestNotificationItem -> "profile_friend_activity"
-                    }
+        item {
+            PMTabRow(
+                selectedTabIndex = state.selectedActivityTab,
+                tabs = listOf(
+                    PMTabItem(
+                        title = stringResource(R.string.profile_activity_tab_plate),
+                        icon = Icons.Filled.DirectionsCar
+                    ),
+                    PMTabItem(
+                        title = stringResource(R.string.profile_activity_tab_friends),
+                        icon = Icons.Filled.Person
+                    )
+                ),
+                onTabSelected = { onAction(ProfileUiAction.ActivityTabChanged(it)) }
+            )
+        }
+
+        if (state.selectedActivityTab == 0) {
+            if (plateActivities.isEmpty()) {
+                item {
+                    PMText(
+                        text = stringResource(R.string.profile_recent_empty_plate),
+                        fontSize = dims.fontSize.md,
+                        color = colors.textPrimary
+                    )
                 }
-            ) { item ->
-                when (item) {
-                    is PlateReviewNotificationItem -> PlateReviewActivityCard(
+            } else {
+                items(
+                    items = plateActivities,
+                    key = ProfileActivityUiModel::id,
+                    contentType = { "profile_review_activity" }
+                ) { item ->
+                    PlateReviewActivityCard(
                         item = item,
                         onClick = onReviewClick,
                         modifier = Modifier.testTag("profile_activity_${item.id}")
                     )
-
-                    is FriendRequestNotificationItem -> FriendRequestActivityCard(
+                }
+            }
+        } else {
+            if (friendActivities.isEmpty()) {
+                item {
+                    PMText(
+                        text = stringResource(R.string.profile_recent_empty_friends),
+                        fontSize = dims.fontSize.md,
+                        color = colors.textPrimary
+                    )
+                }
+            } else {
+                items(
+                    items = friendActivities,
+                    key = ProfileActivityUiModel::id,
+                    contentType = { "profile_friend_activity" }
+                ) { item ->
+                    FriendRequestActivityCard(
                         item = item,
-                        onClick = onFriendsClick,
+                        onClick = onFriendRequestClick,
                         modifier = Modifier.testTag("profile_activity_${item.id}")
                     )
                 }
@@ -209,7 +245,6 @@ private fun previewState(isLoading: Boolean): ProfileUiState = ProfileUiState(
     stats = listOf(
         ProfileStatUiModel("42", R.string.profile_stat_average_rating),
         ProfileStatUiModel("318", R.string.profile_stat_friends),
-        ProfileStatUiModel("4.6", R.string.profile_stat_average_rating)
     ),
     statusSummary = ProfileStatusSummaryUiModel(
         approved = 124,
@@ -229,6 +264,7 @@ private fun previewState(isLoading: Boolean): ProfileUiState = ProfileUiState(
     activities = listOf(
         PlateReviewNotificationItem(
             id = "review_1",
+            reviewId = 1L,
             normalizedPlateCode = "34AB1234",
             plateCode = "34 AB 1234",
             ratingAverage = 4.0,
@@ -241,7 +277,7 @@ private fun previewState(isLoading: Boolean): ProfileUiState = ProfileUiState(
             id = "friend_1",
             friendUserId = 7,
             username = "fatih",
-            statusCode = "PENDING",
+            status = FriendRequestStatusUi.REQUESTED,
             createdAtText = "2026-05-26",
             sortKey = "2026-05-26T09:30:00Z"
         )

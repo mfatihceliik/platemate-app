@@ -8,4 +8,5 @@ interface PlateRepository {
     suspend fun followPlate(plateCode: String): AppResult<Unit>
     suspend fun unfollowPlate(plateCode: String): AppResult<Unit>
     suspend fun createRemovalRequest(plateId: Long, reasonCode: String, description: String): AppResult<Unit>
+    suspend fun getPlateRemovalReasons(): AppResult<List<com.mefy.platemate.domain.model.plate.PlateRemovalReason>>
 }

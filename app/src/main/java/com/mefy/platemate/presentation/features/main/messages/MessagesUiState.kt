@@ -18,5 +18,6 @@ data class MessageConversationUiModel(
     val name: String,
     val preview: String,
     val time: String,
-    val unreadCount: Int
+    val unreadCount: Int,
+    val isSentByMe: Boolean
 )

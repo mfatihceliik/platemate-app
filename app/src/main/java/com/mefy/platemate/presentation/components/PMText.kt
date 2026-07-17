@@ -36,7 +36,7 @@ fun PMText(
 ) {
     val colors = MaterialTheme.pmColors
     val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
-        colors.textLabel
+        colors.textPrimary
     } else {
         color
     }
@@ -73,7 +73,7 @@ fun PMText(
 ) {
     val colors = MaterialTheme.pmColors
     val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
-        colors.textLabel
+        colors.textPrimary
     } else {
         color
     }

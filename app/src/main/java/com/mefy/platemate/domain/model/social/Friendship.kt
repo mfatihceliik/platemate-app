@@ -7,5 +7,6 @@ data class Friendship(
     val friendUserId: Long,
     val friendUsername: String,
     val status: FriendshipStatus,
-    val createdAt: AppDateTime?
+    val requestedAt: AppDateTime?,
+    val respondedAt: AppDateTime?
 )

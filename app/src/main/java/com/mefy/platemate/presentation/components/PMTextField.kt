@@ -258,10 +258,10 @@ private fun resolveFieldStyle(variant: PMTextFieldVariant, singleLine: Boolean):
             hasBorder = true,
             idleBorderColor = colors.outlineVariant,
             heightModifier = if (singleLine) {
-                Modifier.height(dims.sizing.ctaHeightLarge)
+                Modifier.height(dims.sizing.textFieldMinHeight)
             } else {
                 Modifier
-                    .heightIn(min = dims.sizing.ctaHeightLarge)
+                    .heightIn(min = dims.sizing.textFieldMinHeight)
                     .fillMaxHeight()
             },
             verticalPadding = dims.spacing.s12,
@@ -269,7 +269,7 @@ private fun resolveFieldStyle(variant: PMTextFieldVariant, singleLine: Boolean):
         )
 
         PMTextFieldVariant.Chat -> FieldStyle(
-            shape = RoundedCornerShape(dims.radius.rFull),
+            shape = RoundedCornerShape(dims.radius.r10),
             backgroundColor = colors.surfaceVariant,
             hasBorder = false,
             idleBorderColor = Color.Transparent,

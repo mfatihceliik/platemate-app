@@ -29,10 +29,10 @@ internal fun NavGraphBuilder.authGraph(
             )
         }
 
-        composable<LoginDestination> { backStackEntry ->
+        screenComposable<LoginDestination, LoginViewModel>(
+            viewModel = { hiltViewModel<LoginViewModel>() },
+        ) { viewModel ->
             val destination = backStackEntry.toRoute<LoginDestination>()
-            val viewModel = hiltViewModel<LoginViewModel>()
-
             LoginRoute(
                 viewModel = viewModel,
                 prefillEmail = destination.prefillIdentifier,
@@ -43,10 +43,10 @@ internal fun NavGraphBuilder.authGraph(
             )
         }
 
-        composable<RegisterDestination> { backStackEntry ->
+        screenComposable<RegisterDestination, RegisterViewModel>(
+            viewModel = { hiltViewModel<RegisterViewModel>() },
+        ) { viewModel ->
             val destination = backStackEntry.toRoute<RegisterDestination>()
-            val viewModel = hiltViewModel<RegisterViewModel>()
-
             RegisterRoute(
                 viewModel = viewModel,
                 prefillIdentifier = destination.prefillIdentifier,

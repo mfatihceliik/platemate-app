@@ -1,7 +1,7 @@
 package com.mefy.platemate.presentation.features.main.platedetail.review
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.common.messaging.HandleUiMessages
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
+import androidx.compose.material3.MaterialTheme
 import com.mefy.platemate.presentation.components.PMBaseScreen
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.ReviewShimmerContent
+import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -24,8 +25,6 @@ fun ReviewRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HandleUiMessages(viewModel.uiMessages)
-
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
@@ -36,17 +35,18 @@ fun ReviewRoute(
     }
 
     val onAction = viewModel::onAction
+    val dims = MaterialTheme.pmDimensions
 
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(if (state.isEditMode) R.string.review_edit_title else R.string.review_title),
             onBackClick = { onAction(ReviewUiAction.BackClicked) }),
+        applyImePadding = true,
+        contentPadding = PaddingValues(dims.spacing.s16),
         loading = { innerPadding ->
             ReviewShimmerContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
             )
         },
     ) { innerPadding ->

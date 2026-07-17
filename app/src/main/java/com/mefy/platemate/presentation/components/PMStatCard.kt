@@ -1,18 +1,16 @@
 package com.mefy.platemate.presentation.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.theme.pmColors
@@ -24,37 +22,45 @@ fun PMStatCard(
     label: String,
     modifier: Modifier = Modifier,
     deltaText: String? = null,
-    deltaPositive: Boolean? = null
+    deltaPositive: Boolean? = null,
+    onClick: (() -> Unit)? = null
 ) {
     val dims = MaterialTheme.pmDimensions
     val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r16)
 
-    Column(
-        modifier = modifier
-            .clip(shape)
-            .background(colors.surface)
-            .border(dims.stroke.st1, colors.outlineVariant, shape)
-            .padding(vertical = dims.spacing.s16, horizontal = dims.spacing.s8),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+    PMCard(
+        modifier = modifier,
+        onClick = onClick,
+        padding = PaddingValues(
+            vertical = dims.spacing.s16,
+            horizontal = dims.spacing.s8
+        )
     ) {
-        PMText(
-            text = value,
-            fontSize = dims.fontSize.xl,
-            color = colors.textPrimary
-        )
-        PMText(
-            text = label,
-            fontSize = dims.fontSize.md,
-            color = colors.textTertiary
-        )
-        if (deltaText != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+        ) {
             PMText(
-                text = deltaText,
-                fontSize = dims.fontSize.sm,
-                color = if (deltaPositive == true) colors.success else colors.error
+                text = value,
+                fontSize = dims.fontSize.xxl,
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary
             )
+            PMText(
+                text = label,
+                fontSize = dims.fontSize.md,
+                color = colors.textSecondary
+            )
+            if (deltaText != null) {
+                PMText(
+                    text = deltaText,
+                    fontSize = dims.fontSize.sm,
+                    fontWeight = FontWeight.Medium,
+                    color = if (deltaPositive == true) colors.success else colors.error
+                )
+            }
         }
     }
 }

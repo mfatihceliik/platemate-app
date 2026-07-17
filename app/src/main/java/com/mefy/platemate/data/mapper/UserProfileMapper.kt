@@ -23,6 +23,8 @@ class UserProfileMapper @Inject constructor(
         followerCount = input.followerCount,
         followingCount = input.followingCount,
         isFollowing = input.isFollowing,
+        friendshipStatus = input.friendshipStatus,
+        friendshipId = input.friendshipId,
         totalFriendCounts = input.totalFriendCounts,
         averageGivenRating = input.averageGivenRating,
         reviewCount = input.reviewCount,

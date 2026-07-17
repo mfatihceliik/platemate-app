@@ -5,14 +5,14 @@ import androidx.navigation.NavHostController
 
 fun NavHostController.navigateToAuthGraphFromGate() {
     navigate(AuthGraphDestination) {
-        popUpTo<SessionGateDestination> { inclusive = true }
+        popUpTo<SplashDestination> { inclusive = true }
         launchSingleTop = true
     }
 }
 
 fun NavHostController.navigateToMainGraphFromGate() {
     navigate(MainGraphDestination) {
-        popUpTo<SessionGateDestination> { inclusive = true }
+        popUpTo<SplashDestination> { inclusive = true }
         launchSingleTop = true
     }
 }
@@ -139,8 +139,14 @@ fun NavHostController.navigateToEditProfile() {
     }
 }
 
-fun NavHostController.navigateToProfileFriends() {
-    navigate(ProfileFriendsDestination) {
+fun NavHostController.navigateToProfileFriends(initialTab: Int = 0) {
+    navigate(ProfileFriendsDestination(initialTab = initialTab)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToProfileReviewList(status: String) {
+    navigate(ProfileReviewListDestination(initialStatus = status)) {
         launchSingleTop = true
     }
 }

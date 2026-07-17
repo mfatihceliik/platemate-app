@@ -1,10 +1,17 @@
 <resources>
+    <!-- Search strings -->`n    <string name="user_search_title">Search User</string>
+    <string name="search_users_placeholder">Search user...</string>
+    <string name="search_recent">Search History</string>
+    <string name="search_no_results">No result found</string>
     <string name="app_name">PlateMate</string>
     <string name="common_back">Back</string>
     <string name="common_save">Save</string>
     <string name="common_show">Show</string>
     <string name="common_hide">Hide</string>
     <string name="common_cancel">Cancel</string>
+    <string name="common_yes">Yes</string>
+    <string name="user_profile_unfriend_confirmation">Are you sure you want to remove this person from your friends?</string>
+    <string name="common_clear">Clear</string>
     <string name="common_loading">Loading…</string>
     <string name="common_error_unauthorized">Your session has expired. Please sign in again.</string>
     <string name="common_error_server_unavailable">Unable to reach the server. Please try again later.</string>
@@ -34,6 +41,9 @@
     <string name="notification_channel_new_follower">Followers</string>
     <string name="notification_channel_system">General</string>
     <string name="common_confirm">Confirm</string>
+    <string name="add_to_favorite">Add to Favorites</string>
+    <string name="remove_from_favorite">Remove from Favorites</string>
+    <string name="message_you_prefix">You: </string>
     <string name="admin_panel_title">Admin Panel</string>
     <string name="admin_moderation_title">Pending Comments</string>
     <string name="admin_moderation_empty">No pending comments.</string>
@@ -296,6 +306,9 @@
     <string name="profile_status_approved">Approved</string>
     <string name="profile_status_pending_review">Pending</string>
     <string name="profile_status_rejected">Rejected</string>
+    <string name="profile_review_list_title">My Reviews</string>
+    <string name="profile_review_list_search_hint">Search plate or comment…</string>
+    <string name="profile_review_list_empty">No reviews in this status</string>
     <string name="profile_review_status_approved">Approved</string>
     <string name="profile_review_status_pending_review">Pending Review</string>
     <string name="profile_review_status_rejected">Rejected</string>
@@ -334,6 +347,10 @@
     <string name="profile_history_title">Notification History</string>
     <string name="profile_history_empty">No notifications yet.</string>
     <string name="profile_recent_empty">No recent notifications.</string>
+    <string name="profile_activity_tab_plate">Plate Notifications</string>
+    <string name="profile_activity_tab_friends">Friend Requests</string>
+    <string name="profile_recent_empty_plate">No plate notifications yet.</string>
+    <string name="profile_recent_empty_friends">No friend request notifications yet.</string>
     <string name="profile_error_title">Couldn\'t load your profile</string>
     <string name="profile_error_message">Something went wrong. Please try again.</string>
     <string name="profile_error_retry">Retry</string>
@@ -415,6 +432,11 @@
     <string name="profile_settings_save_changes">Save Changes</string>
     <string name="profile_settings_saved">Settings updated.</string>
     <string name="profile_friend_request_title">%1$s sent you a friend request</string>
+    <string name="friend_request_status_requested">Pending</string>
+    <string name="friend_request_status_accepted">Accepted</string>
+    <string name="friend_request_status_rejected">Declined</string>
+    <string name="friend_request_status_removed">Removed</string>
+    <string name="friend_request_status_unknown">Unknown</string>
     <string name="profile_social_add_title">Add social media link</string>
     <string name="profile_social_url_label">Profile URL</string>
     <string name="profile_social_add_button">Add link</string>
@@ -439,6 +461,13 @@
     <string name="user_profile_stat_following">Following</string>
     <string name="user_profile_follow">Follow</string>
     <string name="user_profile_following_label">Following</string>
+    <string name="user_profile_add_friend">Add Friend</string>
+    <string name="user_profile_cancel_request">Pending</string>
+    <string name="user_profile_accept_request">Accept</string>
+    <string name="user_profile_friends">Friends</string>
+    <string name="user_profile_remove_friend_title">Remove</string>
+    <string name="user_profile_remove_friend_desc">Are you sure you want to remove this person from your friends list?</string>
+    <string name="user_profile_remove">Remove</string>
     <string name="user_profile_message">Message</string>
     <string name="user_profile_share">Share</string>
 
@@ -529,6 +558,7 @@
     <string name="platedetail_review">Review</string>
     <string name="platedetail_tags_title">TAGS</string>
     <string name="platedetail_reviews_title">REVIEWS</string>
+    <string name="platedetail_your_review_label">YOUR REVIEW</string>
     <string name="platedetail_empty_reviews_title">No reviews yet</string>
     <string name="platedetail_empty_reviews_subtitle">Be the first to review this plate!</string>
     <string name="platedetail_rate_driving">Rate the driving experience</string>
@@ -587,11 +617,13 @@
     <string name="search_no_results_clear">Clear search</string>
     <string name="search_error_title">An error occurred</string>
     <string name="search_error_retry">Retry</string>
+    <string name="search_tab_plate">Plate</string>
+    <string name="search_tab_users">User</string>
 
     <!-- Scanner -->
-    <string name="scanner_hint">Plakayı dikdörtgenin içine yerleştirin</string>
-    <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
-    <string name="scanner_loading_gallery">Resim işleniyor...</string>
+    <string name="scanner_hint">Place the plate inside the rectangle.</string>
+    <string name="scanner_error_not_found">License plate not found. Please select a clearer photo.</string>
+    <string name="scanner_loading_gallery">Image is being processed…</string>
 
     <!-- Discover -->
     <string name="discover_header_title">Discover</string>
@@ -721,5 +753,32 @@
     <string name="review_rating_5">Excellent</string>
     <string name="scanner_searching_plate">%1$s\nSearching…</string>
     <string name="camera_scanner_screen">Camera</string>
-</resources>
 
+
+    <string name="admin_plate_removal_reasons_title">Plate Removal Reasons</string>
+    <string name="admin_plate_removal_reason_add">Add Reason</string>
+    <string name="admin_plate_removal_reasons_empty">No reasons found.</string>
+    <string name="admin_plate_removal_reason_requires_description_badge">Requires Desc</string>
+    <string name="admin_plate_removal_reason_edit_title">Edit Reason</string>
+    <string name="admin_plate_removal_reason_add_title">Add Reason</string>
+    <string name="admin_plate_removal_reason_field_code">Code</string>
+    <string name="admin_plate_removal_reason_field_label">Label</string>
+    <string name="admin_plate_removal_reason_field_sort">Sort Order</string>
+    <string name="admin_plate_removal_reason_field_requires_description">Requires Description</string>
+    <string name="admin_plate_removal_reason_saved">Reason saved successfully.</string>
+
+    <string name="profile_friends_search_placeholder">Search friend…</string>
+    <string name="profile_friends_empty_no_friends">You haven\'t added any friends yet.</string>
+    <string name="profile_friends_empty_no_results">No search results were found.</string>
+
+    <string name="user_profile_pending_requests">Pending Requests</string>
+    <string name="profile_friends_empty_no_pending_requests">You have no pending requests.</string>
+
+    <string name="profile_friends_requests_tab">Requests</string>
+    <string name="profile_friends_received_section">Received</string>
+    <string name="profile_friends_sent_section">Sent</string>
+    <string name="profile_friends_cancel_request">Cancel</string>
+    <string name="profile_friends_remove_action">Remove</string>
+    <string name="profile_friends_cancel_request_confirmation">Are you sure you want to cancel this friend request?</string>
+    <string name="profile_friends_empty_global">You don\'t have any friends or requests yet.</string>
+</resources>

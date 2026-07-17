@@ -32,6 +32,17 @@ interface ReviewApiService {
         @Query("size") size: Int = 20
     ): DataResultResponse<PagedResult<PlateReviewDto>>
 
+    @GET("api/plates/reviews/{id}")
+    suspend fun getReviewById(@Path("id") id: Long): DataResultResponse<PlateReviewDto>
+
+    @GET("api/plates/reviews/mine")
+    suspend fun getMyReviews(
+        @Query("status") status: String?,
+        @Query("query") query: String?,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): DataResultResponse<PagedResult<PlateReviewDto>>
+
     @GET("api/plate-report-types")
     suspend fun getReportTypes(): DataResultResponse<List<PlateReportTypeDto>>
 

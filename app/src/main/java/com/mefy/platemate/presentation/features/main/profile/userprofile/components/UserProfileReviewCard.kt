@@ -104,11 +104,24 @@ internal fun UserProfileReviewCard(
             }
         }
 
-        PMText(
-            text = review.comment,
-            style = PMTextStyle.Note,
-            color = colors.textSecondary
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            PMText(
+                text = "“",
+                fontSize = dims.fontSize.xxl,
+                fontWeight = FontWeight.Bold,
+                color = colors.primary.copy(alpha = 0.4f),
+                modifier = Modifier.padding(end = dims.spacing.s4)
+            )
+            PMText(
+                text = review.comment,
+                fontSize = dims.fontSize.md,
+                color = colors.textPrimary,
+                modifier = Modifier.weight(1f).padding(top = dims.spacing.s4)
+            )
+        }
     }
 }
 

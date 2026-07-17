@@ -5,12 +5,13 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mefy.platemate.presentation.features.main.profile.ProfileRoute
 import com.mefy.platemate.presentation.features.main.profile.ProfileViewModel
 import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFriendsRoute
 import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFriendsViewModel
+import com.mefy.platemate.presentation.features.main.profile.reviewlist.ProfileReviewListRoute
+import com.mefy.platemate.presentation.features.main.profile.reviewlist.ProfileReviewListViewModel
 import com.mefy.platemate.presentation.features.main.profile.userprofile.UserProfileRoute
 import com.mefy.platemate.presentation.features.main.profile.userprofile.UserProfileViewModel
 import com.mefy.platemate.presentation.navigation.ChatDestination
@@ -18,31 +19,59 @@ import com.mefy.platemate.presentation.navigation.MainGraphDestination
 import com.mefy.platemate.presentation.navigation.ProfileDestination
 import com.mefy.platemate.presentation.navigation.ProfileFriendsDestination
 import com.mefy.platemate.presentation.navigation.ProfileGraphDestination
+import com.mefy.platemate.presentation.navigation.ProfileReviewListDestination
+import com.mefy.platemate.presentation.navigation.SearchDetailDestination
 import com.mefy.platemate.presentation.navigation.UserProfileDestination
 import com.mefy.platemate.presentation.navigation.navigateToProfileFriends
+import com.mefy.platemate.presentation.navigation.navigateToProfileReviewList
+import com.mefy.platemate.presentation.navigation.screenComposable
 
 internal fun NavGraphBuilder.profileGraph(
     navController: NavHostController,
-    onNavigateToSearchDetail: (String) -> Unit = {},
     onShowSnackbar: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     navigation<ProfileGraphDestination>(startDestination = ProfileDestination) {
-        composable<ProfileDestination> { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MainGraphDestination)
-            }
+        screenComposable<ProfileDestination, ProfileViewModel>(
+            viewModel = { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(MainGraphDestination)
+                }
+                hiltViewModel<ProfileViewModel>(parentEntry)
+            },
+        ) { viewModel ->
             ProfileRoute(
-                viewModel = hiltViewModel<ProfileViewModel>(parentEntry),
-                onNavigateToSearchDetail = onNavigateToSearchDetail,
-                onNavigateToFriends = { navController.navigateToProfileFriends() },
+                viewModel = viewModel,
+                onNavigateToReviewDetail = { code, reviewId ->
+                    navController.navigate(SearchDetailDestination(id = code, highlightReviewId = reviewId))
+                },
+                onNavigateToFriends = { tab -> navController.navigateToProfileFriends(tab) },
+                onNavigateToUserProfile = { userId ->
+                    navController.navigate(UserProfileDestination(userId.toString()))
+                },
+                onNavigateToReviewList = { status -> navController.navigateToProfileReviewList(status) },
                 modifier = modifier
             )
         }
 
-        composable<UserProfileDestination> {
+        screenComposable<ProfileReviewListDestination, ProfileReviewListViewModel>(
+            viewModel = { hiltViewModel<ProfileReviewListViewModel>() },
+        ) { viewModel ->
+            ProfileReviewListRoute(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() },
+                onNavigateToReviewDetail = { code, reviewId ->
+                    navController.navigate(SearchDetailDestination(id = code, highlightReviewId = reviewId))
+                },
+                modifier = modifier
+            )
+        }
+
+        screenComposable<UserProfileDestination, UserProfileViewModel>(
+            viewModel = { hiltViewModel<UserProfileViewModel>() },
+        ) { viewModel ->
             UserProfileRoute(
-                viewModel = hiltViewModel<UserProfileViewModel>(),
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToChat = { conversationId, otherUserId, participantName ->
                     navController.navigate(
@@ -57,10 +86,15 @@ internal fun NavGraphBuilder.profileGraph(
             )
         }
 
-        composable<ProfileFriendsDestination> {
+        screenComposable<ProfileFriendsDestination, ProfileFriendsViewModel>(
+            viewModel = { hiltViewModel<ProfileFriendsViewModel>() },
+        ) { viewModel ->
             ProfileFriendsRoute(
-                viewModel = hiltViewModel<ProfileFriendsViewModel>(),
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
+                onNavigateToUserProfile = { userId ->
+                    navController.navigate(UserProfileDestination(userId))
+                },
                 modifier = modifier
             )
         }

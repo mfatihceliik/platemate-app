@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.messages
 
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.data.local.NotificationPermissionStore
+import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.domain.model.chat.ChatRoom
 import com.mefy.platemate.domain.usecase.chat.LeaveChatUseCase
 import com.mefy.platemate.domain.usecase.chat.MarkMessagesAsReadUseCase
@@ -18,7 +19,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MessagesViewModel @Inject constructor(
@@ -27,6 +32,7 @@ class MessagesViewModel @Inject constructor(
     private val leaveChatUseCase: LeaveChatUseCase,
     private val markMessagesAsReadUseCase: MarkMessagesAsReadUseCase,
     private val notificationPermissionStore: NotificationPermissionStore,
+    private val sessionStore: SessionStore,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -94,11 +100,16 @@ class MessagesViewModel @Inject constructor(
     // ile otomatik güncel kalır; konuşmadan dönünce son mesaj/sıra doğru.
     private fun observeConversations() {
         launch {
-            observeChatRoomsUseCase().collect { rooms ->
+            combine(sessionStore.session, observeChatRoomsUseCase()) { session, rooms ->
+                val userId = session?.userId
                 _uiState.update {
-                    it.copy(isLoading = false, errorMessage = null, conversations = rooms.map { room -> room.toUiModel() })
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = null,
+                        conversations = rooms.map { room -> room.toUiModel(userId) }
+                    )
                 }
-            }
+            }.collect()
         }
     }
 
@@ -129,15 +140,17 @@ class MessagesViewModel @Inject constructor(
         }
     }
 
-    private fun ChatRoom.toUiModel(): MessageConversationUiModel {
+    private fun ChatRoom.toUiModel(currentUserId: Long?): MessageConversationUiModel {
         val displayName = otherParticipantName ?: roomName ?: "Chat"
+        val isSentByMe = currentUserId != null && lastMessageSenderId == currentUserId
 
         return MessageConversationUiModel(
             roomId = id,
             name = displayName,
             preview = lastMessageContent ?: "",
             time = lastMessageAt?.iso8601?.substringAfter("T")?.take(5) ?: "",
-            unreadCount = unreadCount
+            unreadCount = unreadCount,
+            isSentByMe = isSentByMe
         )
     }
 }

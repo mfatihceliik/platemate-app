@@ -4,5 +4,6 @@ data class AppSettings(
     val nonPremiumPlateFollowLimit: Int,
     val nonPremiumPlateAlarmLimit: Int,
     val preApprovalMessageLimit: Int,
-    val commentReportThreshold: Int
+    val commentReportThreshold: Int,
+    val reportCommentMaxLength: Int
 )

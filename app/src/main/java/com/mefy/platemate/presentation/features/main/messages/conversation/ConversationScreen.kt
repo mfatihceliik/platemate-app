@@ -91,18 +91,16 @@ fun ConversationScreen(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding)
+        modifier = modifier.fillMaxSize()
     ) {
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = dims.spacing.s12,
-                end = dims.spacing.s12,
-                top = dims.spacing.s8,
-                bottom = dims.spacing.s8 + bottomOverlayInset
+                start = innerPadding.calculateLeftPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
+                end = innerPadding.calculateRightPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding() + bottomOverlayInset
             ),
             verticalArrangement = spacedByWithFooter(dims.spacing.s16) //Arrangement.spacedBy(dims.spacing.s12)
         ) {

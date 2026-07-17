@@ -63,7 +63,7 @@ internal fun ReviewReportBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(colors.surfaceSecondary)
-                        .padding(horizontal = dims.spacing.s24, vertical = dims.spacing.s12),
+                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
                     horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -117,7 +117,7 @@ internal fun ReviewReportBottomSheet(
                         showChevron = false,
                         trailing = { RadioIndicator(isSelected = reason.code == report.selectedReasonCode) },
                         modifier = Modifier
-                            .padding(horizontal = dims.spacing.s24)
+                            .padding(horizontal = dims.spacing.s16)
                             .padding(top = if (index == 0) dims.spacing.s16 else dims.spacing.s0)
                     )
                 }
@@ -132,7 +132,7 @@ internal fun ReviewReportBottomSheet(
                     enabled = report.descriptionEnabled,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dims.spacing.s24)
+                        .padding(horizontal = dims.spacing.s16)
                         .padding(top = dims.spacing.s16)
                 )
             }
@@ -145,7 +145,7 @@ internal fun ReviewReportBottomSheet(
                     onSubmit = onSubmit,
                     submitEnabled = canSubmit,
                     modifier = Modifier
-                        .padding(horizontal = dims.spacing.s24)
+                        .padding(horizontal = dims.spacing.s16)
                         .padding(top = dims.spacing.s16)
                 )
             }

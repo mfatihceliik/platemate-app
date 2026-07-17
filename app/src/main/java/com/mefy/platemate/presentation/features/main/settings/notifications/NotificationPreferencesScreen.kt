@@ -41,12 +41,8 @@ fun NotificationPreferencesScreen(
     val onReviewReplyChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.ReviewReplyChanged(v)) } }
 
     LazyColumn(
-        modifier = modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-        contentPadding = PaddingValues(
-            horizontal = dims.spacing.s16, vertical = dims.spacing.s8
-        ),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = innerPadding,
         verticalArrangement = spacedByWithFooter(dims.spacing.s16)
 
     ) {

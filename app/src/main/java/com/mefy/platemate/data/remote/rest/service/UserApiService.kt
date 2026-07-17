@@ -19,7 +19,7 @@ interface UserApiService {
     suspend fun getUserById(@Path("id") id: Long): DataResultResponse<UserDto>
 
     @GET("api/users/search")
-    suspend fun searchUserByUsername(@Query("username") username: String): DataResultResponse<UserDto>
+    suspend fun searchUserByUsername(@Query("username") username: String): DataResultResponse<List<UserDto>>
 
     @PUT("api/users/{userId}")
     suspend fun updateCurrentUser(

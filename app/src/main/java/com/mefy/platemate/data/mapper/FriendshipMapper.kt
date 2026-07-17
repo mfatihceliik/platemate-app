@@ -13,8 +13,9 @@ class FriendshipMapper @Inject constructor() : Mapper<FriendshipDto, Friendship>
         id = input.id,
         friendUserId = input.friendUserId,
         friendUsername = input.friendUsername,
-        status = FriendshipStatusDto.fromWire(input.status).toDomain(),
-        createdAt = input.createdAt.toAppDateTimeOrNull()
+        status = FriendshipStatusDto.fromWire(input.status ?: input.statusCode).toDomain(),
+        requestedAt = input.requestedAt.toAppDateTimeOrNull(),
+        respondedAt = input.respondedAt.toAppDateTimeOrNull()
     )
 
     private fun String?.toAppDateTimeOrNull(): AppDateTime? =

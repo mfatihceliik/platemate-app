@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -101,7 +102,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun syncChatRooms(): AppResult<Unit> =
         withContext(appDispatchers.io) {
-            val userId = sessionStore.session.first()?.userId
+            val userId = sessionStore.session.mapNotNull { it?.userId }.first()
             getMyChatRooms().also { result ->
                 if (result is AppResult.Success && userId != null) {
                     // Kullanıcının o an açık olduğu odanın unread'ini diriltme; izlediği oda okundu sayılır.
@@ -118,7 +119,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun syncRoomMessages(roomId: Long): AppResult<Unit> =
         withContext(appDispatchers.io) {
-            val userId = sessionStore.session.first()?.userId
+            val userId = sessionStore.session.mapNotNull { it?.userId }.first()
             getRoomMessages(roomId).also { result ->
                 if (result is AppResult.Success && userId != null) {
                     chatMessageDao.upsertAll(result.data.map { it.toEntity(userId) })
@@ -128,7 +129,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun cacheIncomingMessage(message: ChatMessage) {
         withContext(appDispatchers.io) {
-            val userId = sessionStore.session.first()?.userId ?: run {
+            val userId = sessionStore.session.mapNotNull { it?.userId }.first() ?: run {
                 if (BuildConfig.DEBUG) Log.w(TAG, "cacheIncomingMessage: no session userId → dropped")
                 return@withContext
             }
@@ -137,7 +138,13 @@ class ChatRepositoryImpl @Inject constructor(
                 if (BuildConfig.DEBUG) Log.w(TAG, "cacheIncomingMessage: null chatRoomId → msg upserted, room not touched")
                 return@withContext
             }
-            val affected = chatRoomDao.updatePreview(userId, roomId, message.content, message.sentAt?.iso8601)
+            val affected = chatRoomDao.updatePreview(
+                ownerUserId = userId,
+                roomId = roomId,
+                content = message.content,
+                sentAt = message.sentAt?.iso8601,
+                senderId = message.senderUserId
+            )
             if (BuildConfig.DEBUG) Log.d(TAG, "cacheIncomingMessage room=$roomId updatePreview affected=$affected")
             if (affected == 0) {
                 // Oda henüz yerelde yok (yeni konuşma) → REST'ten odayı çek; unreadCount de gelir.
@@ -151,7 +158,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun cacheMessageStatus(signal: MessageStatusSignal) {
         withContext(appDispatchers.io) {
-            val userId = sessionStore.session.first()?.userId ?: return@withContext
+            val userId = sessionStore.session.mapNotNull { it?.userId }.first() ?: return@withContext
             if (signal.messageId != null) {
                 chatMessageDao.updateStatus(userId, signal.messageId, signal.status.name)
             } else {
@@ -164,7 +171,7 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun markMessagesAsRead(roomId: Long): AppResult<Unit> =
         withContext(appDispatchers.io) {
             // Yerel okunmamış sayacını hemen sıfırla (iyimser) — API sonucundan bağımsız.
-            sessionStore.session.first()?.userId?.let { chatRoomDao.clearUnread(it, roomId) }
+            sessionStore.session.mapNotNull { it?.userId }.first().let { chatRoomDao.clearUnread(it, roomId) }
             safeResultCall { api.markMessagesAsRead(roomId) }
         }
 
@@ -211,7 +218,7 @@ class ChatRepositoryImpl @Inject constructor(
             safeResultCall { api.leaveRoom(roomId) }.onSuccessSuspend {
                 // Server soft-hides the participant row; mirror that locally so the conversation
                 // disappears from the Messages list immediately instead of only after logout.
-                sessionStore.session.first()?.userId?.let { userId ->
+                sessionStore.session.mapNotNull { it?.userId }.first().let { userId ->
                     chatRoomDao.deleteRoom(userId, roomId)
                     chatMessageDao.deleteMessagesForRoom(userId, roomId)
                 }
@@ -258,7 +265,8 @@ class ChatRepositoryImpl @Inject constructor(
         isGroup = isGroup,
         requestStatus = requestStatus.name,
         initiatorId = initiatorId,
-        unreadCount = unreadCount
+        unreadCount = unreadCount,
+        lastMessageSenderId = lastMessageSenderId
     )
 
     private companion object {
@@ -289,7 +297,8 @@ private fun ChatRoomEntity.toDomain(): ChatRoom = ChatRoom(
     isGroup = isGroup,
     requestStatus = ChatRoomRequestStatus.fromString(requestStatus),
     initiatorId = initiatorId,
-    unreadCount = unreadCount
+    unreadCount = unreadCount,
+    lastMessageSenderId = lastMessageSenderId
 )
 
 
