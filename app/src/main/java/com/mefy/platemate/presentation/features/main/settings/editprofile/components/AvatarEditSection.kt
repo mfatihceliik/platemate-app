@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,26 +18,24 @@ import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun AvatarEditSection(
+    modifier: Modifier = Modifier,
     displayName: String,
-    onAvatarClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onAvatarClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val primary = colors.primary
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surface)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s24),
+            .padding(horizontal = spacing.s16, vertical = spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s10)
+        verticalArrangement = Arrangement.spacedBy(spacing.s10)
     ) {
         PMAvatar(
             displayName = displayName,
@@ -50,7 +47,7 @@ internal fun AvatarEditSection(
             text = stringResource(R.string.edit_profile_change_photo),
             style = PMTextStyle.Body,
             fontWeight = FontWeight.SemiBold,
-            color = primary,
+            color = colors.primary,
             modifier = Modifier.debouncedClickable(onClick = onAvatarClick)
         )
     }

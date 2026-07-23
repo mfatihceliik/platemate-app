@@ -11,23 +11,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PlateActionsRoute(
+    modifier: Modifier = Modifier,
     viewModel: PlateActionsViewModel,
-    onNavigateBack: () -> Unit,
-    onNavigateToRemoval: (plateId: Long, plateCode: String) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToRemoval: (plateId: Long, plateCode: String) -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                PlateActionsUiEffect.NavigateBack -> onNavigateBack()
+                PlateActionsUiEffect.NavigateBack -> navController.navigateUp()
                 is PlateActionsUiEffect.NavigateToRemoval -> onNavigateToRemoval(effect.plateId, effect.plateCode)
             }
         }
@@ -44,8 +45,7 @@ fun PlateActionsRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.platedetail_actions_title),
-            onBackClick = onBackClicked
+            title = stringResource(R.string.platedetail_actions_title)
         ),
         status = status,
         loading = { innerPadding ->

@@ -55,7 +55,6 @@ class EditProfileViewModel @Inject constructor(
         when (action) {
             EditProfileUiAction.BackClicked -> _uiEffect.emitUiEffect(EditProfileUiEffect.NavigateBack)
             EditProfileUiAction.SaveClicked -> saveProfile()
-            EditProfileUiAction.RetryClicked -> loadProfile()
             EditProfileUiAction.AvatarEditClicked -> _uiState.update { it.copy(showAvatarDialog = true, avatarUrlDraft = it.profilePhotoUrl) }
             is EditProfileUiAction.AvatarUrlChanged -> _uiState.update { it.copy(avatarUrlDraft = action.value) }
             EditProfileUiAction.AvatarUrlConfirmed -> _uiState.update { it.copy(profilePhotoUrl = it.avatarUrlDraft.trim(), showAvatarDialog = false) }

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,29 +27,26 @@ import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.IntOffset
-import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalDensity
+import com.mefy.platemate.presentation.app.providers.LocalNavController
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PMTopBar(
     modifier: Modifier = Modifier,
     config: PMTopBarConfig,
-    containerColor: Color = MaterialTheme.pmColors.background,
+    containerColor: Color = PMTheme.colors.background,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     when (config) {
         is PMTopBarConfig.Hidden -> {}
         is PMTopBarConfig.Standard -> PMStandardTopBar(config, modifier, containerColor)
         is PMTopBarConfig.Transparent -> PMTransparentTopBar(config, modifier, scrollBehavior)
-        // Status-bar inset + zemin burada merkezî olarak uygulanır; Custom topbar'lar
-        // (ör. ConversationTopBar) kendi inset'ini yönetmek zorunda kalmaz.
         is PMTopBarConfig.Custom -> Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -68,7 +64,9 @@ private fun PMStandardTopBar(
     modifier: Modifier,
     containerColor: Color
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val fontSize = PMTheme.fontSize
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
@@ -76,45 +74,48 @@ private fun PMStandardTopBar(
             .fillMaxWidth()
             .background(containerColor)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .height(dims.sizing.topBarHeight)
-            .padding(horizontal = dims.spacing.s4)
+            .height(sizing.topBarHeight)
+            .padding(horizontal = spacing.s4)
     ) {
-        config.onBackClick?.let { onBack ->
-            Box(modifier = Modifier.align(Alignment.CenterStart)) {
-                PMIcon(
-                    modifier = Modifier.debouncedClickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onBack
-                    ),
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    size = dims.sizing.iconLg
-                )
-            }
+    if (config.showBackButton) {
+        val navController = LocalNavController.current
+        Box(modifier = Modifier.align(Alignment.CenterStart)) {
+            PMIcon(
+                modifier = Modifier.debouncedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = { 
+                        if (config.onBackClick != null) config.onBackClick.invoke()
+                        else navController.navigateUp() 
+                    }
+                ),
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                size = sizing.iconLg
+            )
         }
+    }
 
         val titleModifier = when (config.alignment) {
             PMTopBarAlignment.Center -> Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = dims.spacing.s48)
+                .padding(horizontal = spacing.s48)
 
             PMTopBarAlignment.Start -> Modifier
                 .align(Alignment.CenterStart)
                 .padding(
-                    start = if (config.onBackClick != null) dims.spacing.s48 else dims.spacing.s12,
-                    end = dims.spacing.s48
+                    start = if (config.showBackButton) spacing.s48 else spacing.s12,
+                    end = spacing.s48
                 )
         }
         PMText(
             text = config.title,
-            fontSize = dims.fontSize.xxl,
+            fontSize = fontSize.xxl,
             overflow = TextOverflow.Ellipsis,
             modifier = titleModifier,
             maxLines = 1
 
         )
 
-        // Aksiyonlar — sağ kenar
         config.actions?.let { actions ->
             Row(
                 modifier = Modifier
@@ -134,14 +135,15 @@ private fun PMTransparentTopBar(
     modifier: Modifier,
     scrollBehavior: TopAppBarScrollBehavior?
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val fontSize = PMTheme.fontSize
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Set up scroll limit if behavior is present
     if (scrollBehavior != null) {
-        val density = androidx.compose.ui.platform.LocalDensity.current
-        val heightOffsetLimitPx = with(density) { -(dims.sizing.topBarHeight + WindowInsets.statusBars.getTop(density).toDp()).toPx() }
-        androidx.compose.runtime.SideEffect {
+        val density = LocalDensity.current
+        val heightOffsetLimitPx = with(density) { -(sizing.topBarHeight + WindowInsets.statusBars.getTop(density).toDp()).toPx() }
+        SideEffect {
             if (scrollBehavior.state.heightOffsetLimit != heightOffsetLimitPx) {
                 scrollBehavior.state.heightOffsetLimit = heightOffsetLimitPx
             }
@@ -161,31 +163,35 @@ private fun PMTransparentTopBar(
                 }
             }
             .windowInsetsPadding(WindowInsets.statusBars)
-            .height(dims.sizing.topBarHeight)
-            .padding(horizontal = dims.spacing.s4)
+            .height(sizing.topBarHeight)
+            .padding(horizontal = spacing.s4)
     ) {
-        config.onBackClick?.let { onBack ->
-            Box(modifier = Modifier.align(Alignment.CenterStart)) {
-                PMIcon(
-                    modifier = Modifier.debouncedClickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onBack
-                    ),
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    size = dims.sizing.iconLg
-                )
-            }
+    if (config.showBackButton) {
+        val navController = LocalNavController.current
+        Box(modifier = Modifier.align(Alignment.CenterStart)) {
+            PMIcon(
+                modifier = Modifier.debouncedClickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = { 
+                        if (config.onBackClick != null) config.onBackClick.invoke()
+                        else navController.navigateUp() 
+                    }
+                ),
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                size = sizing.iconLg
+            )
         }
+    }
 
         if (config.title != null) {
             PMText(
                 text = config.title,
-                fontSize = dims.fontSize.xxl,
+                fontSize = fontSize.xxl,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(horizontal = dims.spacing.s48),
+                    .padding(horizontal = spacing.s48),
                 maxLines = 1
             )
         }
@@ -223,31 +229,27 @@ private fun PMTopBarDarkPreview() {
 @Composable
 private fun PMTopBarPreviewContent() {
     Column {
-        // Geri butonsuz, ortalı (tab ekranı)
         PMTopBar(config = PMTopBarConfig.Standard(title = "PlateMate"))
-        // Geri butonlu, ortalı
         PMTopBar(
             config = PMTopBarConfig.Standard(
                 title = "Profil",
-                onBackClick = {}
+                showBackButton = true
             )
         )
-        // Geri + aksiyonlar, ortalı
         PMTopBar(
             config = PMTopBarConfig.Standard(
                 title = "Plaka Detayı",
-                onBackClick = {},
+                showBackButton = true,
                 actions = {
                     PMIconButton(onClick = {}, imageVector = Icons.Outlined.Share)
                     PMIconButton(onClick = {}, imageVector = Icons.Outlined.MoreVert)
                 }
             )
         )
-        // Sola hizalı başlık
         PMTopBar(
             config = PMTopBarConfig.Standard(
                 title = "Sola Hizalı",
-                onBackClick = {},
+                showBackButton = true,
                 alignment = PMTopBarAlignment.Start
             )
         )

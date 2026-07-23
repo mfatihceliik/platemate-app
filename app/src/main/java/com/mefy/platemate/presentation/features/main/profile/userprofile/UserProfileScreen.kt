@@ -2,27 +2,21 @@ package com.mefy.platemate.presentation.features.main.profile.userprofile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.domain.model.profile.ProfileFriendshipStatus
 import com.mefy.platemate.presentation.components.PMPopup
+import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.ReportUserBottomSheet
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileActionButtons
 import com.mefy.platemate.presentation.features.main.profile.userprofile.components.UserProfileHeaderCard
@@ -31,9 +25,8 @@ import com.mefy.platemate.presentation.features.main.profile.userprofile.compone
 import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun UserProfileScreen(
@@ -42,8 +35,8 @@ internal fun UserProfileScreen(
     onAction: (UserProfileUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     val onAddFriendClicked = remember(onAction) { { onAction(UserProfileUiAction.AddFriendClicked) } }
     val onCancelRequestClicked = remember(onAction) { { onAction(UserProfileUiAction.CancelRequestClicked) } }
@@ -52,16 +45,17 @@ internal fun UserProfileScreen(
     
     val onMessageClicked = remember(onAction) { { onAction(UserProfileUiAction.MessageClicked) } }
     val onShareClicked = remember(onAction) { { onAction(UserProfileUiAction.ShareClicked) } }
+    val onFollowersClicked = remember(onAction) { { onAction(UserProfileUiAction.FollowersClicked) } }
+    val onFollowingClicked = remember(onAction) { { onAction(UserProfileUiAction.FollowingClicked) } }
     val onReportReasonSelected = remember(onAction) { { reason: ReportReason -> onAction(UserProfileUiAction.ReportReasonSelected(reason)) } }
     val onReportSubmitClicked = remember(onAction) { { onAction(UserProfileUiAction.ReportSubmitClicked) } }
     val onReportDismissed = remember(onAction) { { onAction(UserProfileUiAction.ReportDismissed) } }
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .background(colors.surface)
-            .padding(innerPadding),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            .fillMaxSize(),
+        contentPadding = innerPadding,
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         item(key = "header") {
             UserProfileHeaderCard(
@@ -72,46 +66,42 @@ internal fun UserProfileScreen(
                 isOnline = state.isOnline,
                 reviewCount = state.reviewCount,
                 followerCount = state.followerCount,
-                followingCount = state.followingCount
+                followingCount = state.followingCount,
+                onFollowersClick = onFollowersClicked,
+                onFollowingClick = onFollowingClicked
             )
         }
 
         item(key = "actions") {
-            Column(
+            UserProfileActionButtons(
+                friendshipStatus = state.friendshipStatus,
+                onAddFriendClick = onAddFriendClicked,
+                onCancelRequestClick = onCancelRequestClicked,
+                onAcceptRequestClick = onAcceptRequestClicked,
+                onRemoveFriendClick = onRemoveFriendClicked,
+                onMessageClick = onMessageClicked,
+                onShareClick = onShareClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colors.surface)
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
-            ) {
-                UserProfileActionButtons(
-                    friendshipStatus = state.friendshipStatus,
-                    onAddFriendClick = onAddFriendClicked,
-                    onCancelRequestClick = onCancelRequestClicked,
-                    onAcceptRequestClick = onAcceptRequestClicked,
-                    onRemoveFriendClick = onRemoveFriendClicked,
-                    onMessageClick = onMessageClicked,
-                    onShareClick = onShareClicked
+            )
+        }
+
+        item {
+            if (state.socialLinks.isNotEmpty()) {
+                UserProfileSocialLinks(
+                    links = state.socialLinks,
+                    onLinkClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
-                if (state.socialLinks.isNotEmpty()) {
-                    Spacer(modifier = Modifier.padding(top = dims.spacing.s12))
-                    UserProfileSocialLinks(
-                        links = state.socialLinks,
-                        onLinkClick = {}
-                    )
-                }
             }
-            HorizontalDivider(color = colors.outlineVariant)
         }
 
         if (state.approvedReviews.isNotEmpty()) {
             item(key = "reviews_header") {
-                PMText(
+                PMSectionLabel(
                     text = stringResource(R.string.user_profile_approved_reviews),
-                    style = PMTextStyle.Body,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary,
-                    modifier = Modifier
-                        .fillMaxWidth()
                 )
             }
 
@@ -136,8 +126,8 @@ internal fun UserProfileScreen(
             onSecondaryClick = { onAction(UserProfileUiAction.RemoveFriendDismissed) },
             onDismissRequest = { onAction(UserProfileUiAction.RemoveFriendDismissed) },
             primaryButtonColors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.pmColors.error,
-                contentColor = MaterialTheme.pmColors.onError
+                containerColor = colors.error,
+                contentColor = colors.onError
             )
         )
     }
@@ -187,7 +177,7 @@ private val previewState = UserProfileUiState(
     bio = "İstanbul sürücüsü. Saygılı ve temkinli araç kullanırım.",
     isVerified = true,
     isOnline = true,
-    friendshipStatus = "NONE",
+    friendshipStatus = ProfileFriendshipStatus.NONE,
     friendshipId = null,
     reviewCount = 47,
     followerCount = "1.2K",

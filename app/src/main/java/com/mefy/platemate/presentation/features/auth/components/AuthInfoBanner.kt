@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,18 +25,17 @@ import androidx.compose.ui.text.withStyle
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun AuthInfoBanner(
+    modifier: Modifier = Modifier,
     text: String,
-    links: List<String> = emptyList(),
-    modifier: Modifier = Modifier
+    links: List<String> = emptyList()
 ) {
-    val dimensions = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val spacing = dimensions.spacing
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val radius = PMTheme.radius
     var isChecked by remember { mutableStateOf(true) }
 
     val annotatedString = buildAnnotatedString {
@@ -86,7 +84,7 @@ fun AuthInfoBanner(
                 .size(spacing.s24)
                 .background(
                     color = if (isChecked) colors.primary else Color.Transparent,
-                    shape = RoundedCornerShape(dimensions.radius.r8)
+                    shape = RoundedCornerShape(radius.r8)
                 ),
             contentAlignment = Alignment.Center
         ) {

@@ -11,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.mefy.platemate.presentation.common.text.resolve
@@ -33,8 +32,7 @@ import com.mefy.platemate.presentation.features.main.settings.editprofile.compon
 import com.mefy.platemate.presentation.features.main.settings.editprofile.components.AvatarEditSection
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun EditProfileScreen(
@@ -43,8 +41,8 @@ internal fun EditProfileScreen(
     onAction: (EditProfileUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
 
     // Stable, hoisted callbacks: fields/buttons skip recomposition while their data is unchanged.
@@ -92,7 +90,7 @@ internal fun EditProfileScreen(
             // odaklanan PMTextField (bringIntoView ile) klavyenin üstüne kaysın, arkasında kalmasın.
             .imePadding(),
         contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s8)
+        verticalArrangement = spacedByWithFooter(spacing.s8)
     ) {
 
         item {
@@ -192,7 +190,7 @@ internal fun EditProfileScreen(
                 onClick = onSave,
                 enabled = state.isDirty && !state.isSaving,
                 loading = state.isSaving,
-                modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+                modifier = Modifier.fillMaxWidth().padding(vertical = spacing.s24)
             )
         }
     }

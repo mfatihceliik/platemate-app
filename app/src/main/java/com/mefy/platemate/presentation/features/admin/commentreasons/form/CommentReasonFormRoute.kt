@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.admin.commentreasons.form
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,22 +11,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.app.providers.LocalNavController
+import com.mefy.platemate.presentation.theme.PMTheme
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CommentReasonFormRoute(
     viewModel: CommentReasonFormViewModel,
-    onNavigateBack: () -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val spacing = PMTheme.spacing
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                CommentReasonFormUiEffect.NavigateBack -> onNavigateBack()
+                CommentReasonFormUiEffect.NavigateBack -> navController.navigateUp()
             }
         }
     }
@@ -36,11 +37,10 @@ fun CommentReasonFormRoute(
 
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(titleRes),
-            onBackClick = { viewModel.onAction(CommentReasonFormUiAction.BackClicked) }
+            title = stringResource(titleRes)
         ),
         status = if (state.isLoading) ScreenStatus.Loading else ScreenStatus.Content,
-        contentPadding = PaddingValues(MaterialTheme.pmDimensions.spacing.s16),
+        contentPadding = PaddingValues(spacing.s16),
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) },
     ) { innerPadding ->
         CommentReasonFormScreen(

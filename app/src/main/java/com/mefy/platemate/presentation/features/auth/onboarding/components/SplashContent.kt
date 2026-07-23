@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,11 +21,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
 internal fun SplashContent(
@@ -37,6 +36,10 @@ internal fun SplashContent(
     onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val shape = PMTheme.shapes.medium
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -50,7 +53,6 @@ internal fun SplashContent(
                 )
             )
     ) {
-        val colors = MaterialTheme.pmColors
 
         // Glow orbs
         Box(
@@ -82,11 +84,10 @@ internal fun SplashContent(
                 )
         )
 
-        val dims = MaterialTheme.pmDimensions
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = dims.spacing.s48, bottom = dims.spacing.s48, start = dims.spacing.s24, end = dims.spacing.s24),
+                .padding(top = spacing.s48, bottom = spacing.s48, start = spacing.s24, end = spacing.s24),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top half: Animations and Logo
@@ -96,12 +97,12 @@ internal fun SplashContent(
                 verticalArrangement = Arrangement.Center
             ) {
                 FloatingPlatesAnimation()
-                Spacer(modifier = Modifier.height(dims.spacing.s32))
+                Spacer(modifier = Modifier.height(spacing.s32))
                 
                 // Logo Wordmark
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s12)
                 ) {
                     Box(
                         modifier = Modifier
@@ -109,9 +110,9 @@ internal fun SplashContent(
                             .shadow(
                                 elevation = 28.dp,
                                 spotColor = colors.primary.copy(alpha = 0.7f),
-                                shape = RoundedCornerShape(dims.radius.r16)
+                                shape = shape
                             )
-                            .background(colors.primary, RoundedCornerShape(dims.radius.r16)),
+                            .background(colors.primary, shape),
                         contentAlignment = Alignment.Center
                     ) {
                         PMText(
@@ -126,7 +127,7 @@ internal fun SplashContent(
                         color = Color.White
                     )
                 }
-                Spacer(modifier = Modifier.height(dims.spacing.s8))
+                Spacer(modifier = Modifier.height(spacing.s8))
                 PMText(
                     text = stringResource(R.string.onboarding_splash_desc),
                     style = PMTextStyle.Body,
@@ -138,7 +139,7 @@ internal fun SplashContent(
             // CTA Area
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s12)
+                verticalArrangement = Arrangement.spacedBy(spacing.s12)
             ) {
                 PMButton(
                     text = stringResource(R.string.onboarding_splash_start),
@@ -155,6 +156,22 @@ internal fun SplashContent(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "SplashContent Light", showBackground = true, backgroundColor = 0xFF0B0F17)
+@Composable
+private fun SplashContentLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        SplashContent(onStartClick = {}, onLoginClick = {})
+    }
+}
+
+@Preview(name = "SplashContent Dark", showBackground = true, backgroundColor = 0xFF0B0F17)
+@Composable
+private fun SplashContentDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        SplashContent(onStartClick = {}, onLoginClick = {})
     }
 }
 

@@ -9,25 +9,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChangePasswordRoute(
     viewModel: ChangePasswordViewModel,
-    onBackClick: () -> Unit,
     onShowSnackbar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                ChangePasswordUiEffect.NavigateBack -> onBackClick()
+                ChangePasswordUiEffect.NavigateBack -> navController.navigateUp()
                 ChangePasswordUiEffect.PasswordChanged -> {
                     onShowSnackbar("Şifre güncellendi")
-                    onBackClick()
+                    navController.navigateUp()
                 }
             }
         }
@@ -39,8 +40,7 @@ fun ChangePasswordRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_change_password_title),
-            onBackClick = onBack
+            title = stringResource(R.string.profile_change_password_title)
         ),
     ) { innerPadding ->
         ChangePasswordScreen(

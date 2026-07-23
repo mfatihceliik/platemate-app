@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -18,21 +17,22 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun AddSocialLinkForm(
+    modifier: Modifier = Modifier,
     url: String,
     errorText: String?,
     isAddEnabled: Boolean,
     onUrlChange: (String) -> Unit,
-    onAdd: () -> Unit,
-    modifier: Modifier = Modifier
+    onAdd: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    // Ayrı buton yerine: URL alanının içinde küçük "+" ekle ikonu (trailingIcon).
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+
     PMTextField(
         value = url,
         onValueChange = onUrlChange,
@@ -48,7 +48,7 @@ internal fun AddSocialLinkForm(
                 enabled = isAddEnabled,
                 variant = PMIconButtonVariant.Filled,
                 imageVector = Icons.Filled.Add,
-                size = dims.sizing.iconSm,
+                size = sizing.iconSm,
                 contentDescription = stringResource(R.string.edit_profile_social_add)
             )
         },
@@ -64,13 +64,13 @@ private fun AddSocialLinkFormPreviewContainer(
     errorText: String?,
     isAddEnabled: Boolean
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
-            .padding(dims.spacing.s16)
+            .padding(spacing.s16)
     ) {
         AddSocialLinkForm(
             url = url,

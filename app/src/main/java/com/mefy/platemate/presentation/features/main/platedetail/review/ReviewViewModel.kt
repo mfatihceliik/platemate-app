@@ -2,19 +2,23 @@ package com.mefy.platemate.presentation.features.main.platedetail.review
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
+import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.usecase.review.AddPlateReviewUseCase
 import com.mefy.platemate.domain.usecase.review.GetReportTypesUseCase
+import com.mefy.platemate.domain.usecase.review.GetReviewByIdUseCase
 import com.mefy.platemate.domain.usecase.review.UpdatePlateReviewUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.SearchPlateUseCase
 import com.mefy.platemate.presentation.navigation.ReviewDestination
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
+import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUiState.Companion.REVIEW_COMMENT_MAX_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -30,6 +34,7 @@ class ReviewViewModel @Inject constructor(
     private val addPlateReviewUseCase: AddPlateReviewUseCase,
     private val updatePlateReviewUseCase: UpdatePlateReviewUseCase,
     private val getReportTypesUseCase: GetReportTypesUseCase,
+    private val getReviewByIdUseCase: GetReviewByIdUseCase,
     private val formatTurkishPlateInputUseCase: FormatTurkishPlateInputUseCase,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
@@ -42,9 +47,7 @@ class ReviewViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         ReviewUiState(
             plateCode = formatTurkishPlateInputUseCase(plateCode),
-            isEditMode = isEditMode,
-            overallRating = if (isEditMode) route.initialRating else 0,
-            comment = if (isEditMode) route.initialComment else ""
+            isEditMode = isEditMode
         )
     )
     val uiState: StateFlow<ReviewUiState> = _uiState.asStateFlow()
@@ -53,8 +56,7 @@ class ReviewViewModel @Inject constructor(
     val uiEffect: SharedFlow<ReviewUiEffect> = _uiEffect.asSharedFlow()
 
     init {
-        loadPlateInfo()
-        loadReportTypes()
+        loadData()
     }
 
     fun onAction(action: ReviewUiAction) {
@@ -86,47 +88,79 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
-    private fun loadPlateInfo() {
+    private fun loadData() {
         launch {
-            when (val result = searchPlateUseCase(plateCode)) {
+            val plateInfoDeferred = async { searchPlateUseCase(plateCode) }
+            val reportTypesDeferred = async { getReportTypesUseCase() }
+            val reviewDeferred = if (isEditMode) async { getReviewByIdUseCase(editReviewId) } else null
+
+            var reportTags = emptyList<ReviewTagUiModel>()
+            var initialRating = 0
+            var initialComment = ""
+            var preSelectedCodes = emptyList<String>()
+
+            when (val typesResult = reportTypesDeferred.await()) {
                 is AppResult.Success -> {
-                    val plate = result.data
+                    reportTags = typesResult.data
+                        .sortedBy { it.sortOrder }
+                        .map { ReviewTagUiModel(code = it.code, label = it.label) }
+                }
+                is AppResult.Error -> {}
+            }
+
+            if (reviewDeferred != null) {
+                when (val reviewResult = reviewDeferred.await()) {
+                    is AppResult.Success -> {
+                        initialRating = reviewResult.data.rating
+                        initialComment = reviewResult.data.comment
+                        preSelectedCodes = reviewResult.data.reportTypeCodes
+                    }
+                    is AppResult.Error -> {
+                        handleError(reviewResult.error)
+                    }
+                }
+            }
+
+            // Update tags with pre-selected codes
+            val safePreSelectedCodes = preSelectedCodes.map { it.trim().uppercase() }
+            val updatedTags = reportTags.map { tag ->
+                if (safePreSelectedCodes.contains(tag.code.trim().uppercase())) tag.copy(isSelected = true) else tag
+            }
+
+            when (val plateResult = plateInfoDeferred.await()) {
+                is AppResult.Success -> {
+                    val plate = plateResult.data
                     _uiState.update {
                         it.copy(
                             cityCode = plate.plateCode.take(2),
                             cityName = plate.cityName,
                             reviewCount = plate.reviewCount,
-                            isLoading = false
+                            isLoading = false,
+                            tags = updatedTags,
+                            overallRating = initialRating,
+                            comment = initialComment
                         )
                     }
                 }
                 is AppResult.Error -> {
                     _uiState.update { it.copy(isLoading = false) }
-                    handleError(result.error)
+                    handleError(plateResult.error)
                 }
-            }
-        }
-    }
-
-    private fun loadReportTypes() {
-        launch {
-            when (val result = getReportTypesUseCase()) {
-                is AppResult.Success -> {
-                    val tags = result.data
-                        .sortedBy { it.sortOrder }
-                        .map { ReviewTagUiModel(code = it.code, label = it.label) }
-                    _uiState.update { it.copy(tags = tags) }
-                }
-                is AppResult.Error -> { }
             }
         }
     }
 
     private fun toggleTag(code: String) {
-        _uiState.update { state ->
-            state.copy(
-                tags = state.tags.map {
-                    if (it.code == code) it.copy(isSelected = !it.isSelected) else it
+        val state = _uiState.value
+        val target = state.tags.firstOrNull { it.code == code } ?: return
+        if (!target.isSelected && state.tags.count { it.isSelected } >= MAX_SELECTED_TAGS) {
+            showInfo(UiText.Resource(R.string.review_tags_limit_reached, listOf(MAX_SELECTED_TAGS)))
+            return
+        }
+        _uiState.update {
+            it.copy(
+                tags = it.tags.map { tag ->
+                    if (tag.code == code) tag.copy(isSelected = !tag.isSelected) else tag
                 }
             )
         }
@@ -176,7 +210,12 @@ class ReviewViewModel @Inject constructor(
     private fun submitEdit(state: ReviewUiState) {
         launch {
             val comment = state.comment.ifBlank { null }
-            when (val result = updatePlateReviewUseCase(editReviewId, state.overallRating, comment)) {
+            val selectedCodes = state.tags
+                .filter { it.isSelected }
+                .map { it.code }
+                .ifEmpty { null }
+                
+            when (val result = updatePlateReviewUseCase(editReviewId, state.overallRating, comment, selectedCodes)) {
                 is AppResult.Success -> _uiState.update {
                     it.copy(isSubmitting = false, submitResult = ReviewSubmitResult.Success)
                 }
@@ -185,5 +224,9 @@ class ReviewViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val MAX_SELECTED_TAGS = 5
     }
 }

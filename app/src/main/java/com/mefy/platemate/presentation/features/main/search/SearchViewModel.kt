@@ -123,8 +123,11 @@ class SearchViewModel @Inject constructor(
             is SearchUiAction.AlarmPlateRemoveClicked -> onAlarmPlateRemoveClicked(action.normalizedPlateCode)
             is SearchUiAction.RecentDismissClicked -> onRecentDismissClicked(action.normalizedPlateCode)
             SearchUiAction.ClearRecentClicked -> onClearRecentClicked()
-            SearchUiAction.RetryClicked -> syncMyLists()
         }
+    }
+
+    override fun onRetry() {
+        syncMyLists()
     }
 
     private fun onPlateInputChanged(value: String) {

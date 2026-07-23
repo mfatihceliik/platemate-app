@@ -6,8 +6,8 @@ import com.mefy.platemate.domain.model.discovery.CityStats
 import com.mefy.platemate.domain.model.discovery.DailyStats
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabFilter
+import com.mefy.platemate.domain.model.discovery.DiscoveryTabOption
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabPage
-import com.mefy.platemate.domain.model.discovery.DiscoveryTabType
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.discovery.RecentActivity
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
@@ -36,7 +36,6 @@ import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.discover.mapper.DefaultDiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.testutil.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -70,7 +69,7 @@ class DiscoverViewModelTest {
         val state = viewModel.uiState.value
         assertFalse(state.isInitialLoading)
         assertFalse(state.isRefreshing)
-        assertEquals(DiscoverFilterUi.Trend, state.selectedFilter)
+        assertEquals("TREND", state.selectedTabCode)
         assertEquals(3, state.metrics.size)
         assertEquals(2, state.plateDetail.size)
         assertEquals("Istanbul", state.plateDetail.first().cityName)
@@ -86,10 +85,10 @@ class DiscoverViewModelTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onAction(DiscoverUiAction.FilterSelected(DiscoverFilterUi.Careless))
+        viewModel.onAction(DiscoverUiAction.FilterSelected("DANGEROUS"))
 
         val state = viewModel.uiState.value
-        assertEquals(DiscoverFilterUi.Careless, state.selectedFilter)
+        assertEquals("DANGEROUS", state.selectedTabCode)
         assertEquals(1, state.plateDetail.size)
         assertTrue(state.plateDetail.all { it.plateCode.isNotBlank() })
     }
@@ -328,6 +327,12 @@ class DiscoverViewModelTest {
                 reportTypeCode = "DANGER",
                 reportTypeLabel = "Danger"
             )
+        ),
+        tabOptions = listOf(
+            DiscoveryTabOption(code = "TREND", label = "Trend", sortOrder = 0),
+            DiscoveryTabOption(code = "DANGEROUS", label = "Careless", sortOrder = 1),
+            DiscoveryTabOption(code = "GOOD_DRIVER", label = "Good Driver", sortOrder = 2),
+            DiscoveryTabOption(code = "NEW", label = "Newest", sortOrder = 3)
         )
     )
 
@@ -377,7 +382,7 @@ class DiscoverViewModelTest {
         }
 
         override suspend fun getTabFeed(
-            tab: DiscoveryTabType,
+            tab: String,
             filter: DiscoveryTabFilter,
             page: Int,
             size: Int

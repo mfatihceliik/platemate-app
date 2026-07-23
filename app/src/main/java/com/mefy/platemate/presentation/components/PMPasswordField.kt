@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,9 +22,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPasswordField(
@@ -40,7 +38,9 @@ fun PMPasswordField(
     showToggle: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    val colors = MaterialTheme.pmColors
+
+    val colors = PMTheme.colors
+
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     PMTextField(
@@ -103,11 +103,14 @@ private fun PMPasswordFieldDarkPreview() {
 private fun PMPasswordFieldPreviewContent() {
     var password by remember { mutableStateOf("123456") }
 
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.pmColors.background)
-            .padding(MaterialTheme.pmDimensions.spacing.s16)
+            .background(colors.background)
+            .padding(spacing.s16)
     ) {
         PMPasswordField(
             value = password,
@@ -125,7 +128,7 @@ private fun PMPasswordFieldPreviewContent() {
             showToggle = false,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = MaterialTheme.pmDimensions.spacing.s12)
+                .padding(top = spacing.s12)
         )
     }
 }

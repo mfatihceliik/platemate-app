@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.main.discover.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -12,19 +11,19 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMStatCard
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun DiscoverHeroStats(
-    metrics: List<DiscoverMetricUiModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    metrics: List<DiscoverMetricUiModel>
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         metrics.forEach { metric ->
             PMStatCard(

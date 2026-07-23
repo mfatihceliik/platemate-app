@@ -7,4 +7,5 @@ sealed interface UserProfileUiEffect {
         val otherUserId: Long,
         val participantName: String,
     ) : UserProfileUiEffect
+    data class NavigateToFollowList(val userId: String, val initialTab: Int) : UserProfileUiEffect
 }

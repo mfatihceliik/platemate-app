@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,9 +24,8 @@ import com.mefy.platemate.presentation.features.main.platedetail.components.Plat
 import com.mefy.platemate.presentation.features.main.platedetail.components.ReviewItem
 import com.mefy.platemate.presentation.features.main.platedetail.components.ReviewReportBottomSheet
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -38,13 +36,13 @@ fun PlateDetailScreen(
     innerPadding: PaddingValues = PaddingValues()
 ) {
 
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(spacing.s16)
     ) {
         item {
             PlateInfoRow(
@@ -61,7 +59,7 @@ fun PlateDetailScreen(
 
         if (state.hasRatingBreakdown) {
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+                Column(verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
                     state.ratingBreakdown.forEach { item ->
                         PMRatingBar(
                             starNumber = item.stars, percentage = item.percentage
@@ -84,8 +82,8 @@ fun PlateDetailScreen(
 
             item {
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                    verticalArrangement = Arrangement.spacedBy(spacing.s8)
                 ) {
                     state.tags.forEach { tag ->
                         PMChip(
@@ -153,7 +151,7 @@ fun PlateDetailScreen(
                         R.string.platedetail_review
                     ),
                     onClick = { onAction(PlateDetailUiAction.ReviewClicked) },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = spacing.s16)
                 )
             }
         }

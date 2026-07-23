@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.main.platedetail.review.compone
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -11,9 +10,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun OverallRatingSection(
@@ -21,24 +19,26 @@ internal fun OverallRatingSection(
     label: String,
     onRatingChange: (Int) -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8),
         modifier = Modifier.fillMaxWidth()
     ) {
         PMRatingStars(
             rating = rating,
-            starSize = dims.sizing.iconXl,
+            starSize = sizing.iconXl,
             interactive = true,
             onRatingChange = onRatingChange
         )
         if (label.isNotBlank()) {
             PMText(
                 text = label,
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 fontWeight = FontWeight.SemiBold,
                 color = colors.textSecondary
             )

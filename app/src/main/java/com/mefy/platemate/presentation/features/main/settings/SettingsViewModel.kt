@@ -97,9 +97,11 @@ class SettingsViewModel @Inject constructor(
                 _uiEffect.emitUiEffect(SettingsUiEffect.NavigateToAdmin)
 
             SettingsUiAction.SignOutClicked -> onSignOutClicked()
-
-            SettingsUiAction.RetryClicked -> loadSettingsOverview()
         }
+    }
+
+    override fun onRetry() {
+        loadSettingsOverview()
     }
 
     private fun loadSettingsOverview() {

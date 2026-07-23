@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,9 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
@@ -29,16 +29,15 @@ import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverReportTypeOptionUi
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun DiscoverReportTypeFilterRoute(
-    viewModel: DiscoverViewModel,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: DiscoverViewModel
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     DiscoverReportTypeFilterScreen(
@@ -47,23 +46,23 @@ fun DiscoverReportTypeFilterRoute(
         onSelect = { code, label ->
             viewModel.onAction(DiscoverUiAction.DraftReportTypeChanged(code, label))
             // Tek secim; secimden hemen sonra filtre ekranina don.
-            onNavigateBack()
+            navController.navigateUp()
         },
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { navController.navigateUp() },
         modifier = modifier
     )
 }
 
 @Composable
 fun DiscoverReportTypeFilterScreen(
+    modifier: Modifier = Modifier,
     options: List<DiscoverReportTypeOptionUi>,
     selectedCode: String?,
     onSelect: (code: String?, label: String?) -> Unit,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateBack: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     PMBaseScreen(
         modifier = modifier,
@@ -71,7 +70,7 @@ fun DiscoverReportTypeFilterScreen(
             title = stringResource(R.string.discover_filter_report_type_title),
             onBackClick = onNavigateBack
         ),
-        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+        contentPadding = PaddingValues(bottom = spacing.s16)
     ) { pad ->
         LazyColumn(
             modifier = Modifier
@@ -103,14 +102,15 @@ private fun ReportTypeOptionRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .debouncedClickable(onClick = onClick)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
+            .padding(horizontal = spacing.s16, vertical = spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMText(
@@ -123,7 +123,7 @@ private fun ReportTypeOptionRow(
         if (selected) {
             PMIcon(
                 imageVector = Icons.Filled.Check,
-                size = dims.sizing.iconSm,
+                size = sizing.iconSm,
                 tint = colors.primary
             )
         }

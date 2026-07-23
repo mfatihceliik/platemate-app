@@ -120,13 +120,11 @@ fun NavHostController.navigateToRemovalRequest(plateId: Long, plateCode: String)
     }
 }
 
-fun NavHostController.navigateToEditReview(plateCode: String, reviewId: Long, rating: Int, comment: String) {
+fun NavHostController.navigateToEditReview(plateCode: String, reviewId: Long) {
     navigate(
         ReviewDestination(
             plateCode = plateCode,
-            reviewId = reviewId,
-            initialRating = rating,
-            initialComment = comment
+            reviewId = reviewId
         )
     ) {
         launchSingleTop = true
@@ -189,6 +187,12 @@ fun NavHostController.navigateToProfileLanguage() {
 
 fun NavHostController.navigateToUserProfile(userId: String) {
     navigate(UserProfileDestination(userId = userId)) {
+        launchSingleTop = true
+    }
+}
+
+fun NavHostController.navigateToUserFollowList(userId: String, initialTab: Int = 0) {
+    navigate(UserFollowListDestination(userId = userId, initialTab = initialTab)) {
         launchSingleTop = true
     }
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -21,9 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMPlateCard
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 private const val LOAD_MORE_THRESHOLD = 4
 
@@ -35,8 +33,8 @@ fun CityPlatesScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     val onPlateClick = remember(onAction) {
         { id: String -> onAction(CityPlatesUiAction.PlateClicked(id)) }
@@ -61,7 +59,7 @@ fun CityPlatesScreen(
         state = lazyListState,
         modifier = modifier.background(colors.background),
         contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         items(
             items = state.plates,
@@ -84,7 +82,7 @@ fun CityPlatesScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dims.spacing.s8),
+                        .padding(vertical = spacing.s8),
                     contentAlignment = Alignment.Center
                 ) {
                     PMCircularProgressIndicator()

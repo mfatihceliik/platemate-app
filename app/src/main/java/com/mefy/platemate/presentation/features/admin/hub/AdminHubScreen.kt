@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,26 +29,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.pmRowPositionOf
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun AdminHubScreen(
+    modifier: Modifier = Modifier,
     state: AdminHubUiState,
     onAction: (AdminHubUiAction) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     val filtered = state.filteredItems
 
     Column(
@@ -63,14 +60,14 @@ internal fun AdminHubScreen(
             placeholder = stringResource(R.string.admin_menu_search_hint),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = dims.spacing.s12)
+                .padding(vertical = spacing.s12)
         )
 
         if (filtered.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = dims.spacing.s48),
+                    .padding(bottom = spacing.s48),
                 contentAlignment = Alignment.Center
             ) {
                 PMText(
@@ -82,7 +79,7 @@ internal fun AdminHubScreen(
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = dims.spacing.s24)
+                contentPadding = PaddingValues(bottom = spacing.s24)
             ) {
                 itemsIndexed(
                     items = filtered,
@@ -107,14 +104,14 @@ internal fun AdminHubScreen(
 
 @Composable
 private fun MenuBadge(count: Long, modifier: Modifier = Modifier) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Box(
         modifier = modifier
-            .sizeIn(minWidth = dims.spacing.s24, minHeight = dims.spacing.s24)
+            .sizeIn(minWidth = spacing.s24, minHeight = spacing.s24)
             .background(colors.errorContainer, CircleShape)
-            .padding(horizontal = dims.spacing.s8),
+            .padding(horizontal = spacing.s8),
         contentAlignment = Alignment.Center
     ) {
         PMText(
@@ -156,7 +153,10 @@ private val adminHubPreviewState = AdminHubUiState(
 @Composable
 private fun AdminHubScreenLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        AdminHubScreen(state = adminHubPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        AdminHubScreen(
+            state = adminHubPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -164,7 +164,10 @@ private fun AdminHubScreenLightPreview() {
 @Composable
 private fun AdminHubScreenDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        AdminHubScreen(state = adminHubPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        AdminHubScreen(
+            state = adminHubPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -174,8 +177,7 @@ private fun AdminHubScreenEmptySearchPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         AdminHubScreen(
             state = adminHubPreviewState.copy(query = "bulunamayacak"),
-            onAction = {},
-            contentPadding = PaddingValues(0.dp)
+            onAction = {}
         )
     }
 }

@@ -11,7 +11,6 @@ import com.mefy.platemate.domain.model.discovery.CityPlatePage
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabFilter
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabPage
-import com.mefy.platemate.domain.model.discovery.DiscoveryTabType
 import com.mefy.platemate.domain.repository.DiscoveryRepository
 import javax.inject.Inject
 import kotlinx.coroutines.withContext
@@ -46,7 +45,7 @@ class DiscoveryRepositoryImpl @Inject constructor(
         }
 
     override suspend fun getTabFeed(
-        tab: DiscoveryTabType,
+        tab: String,
         filter: DiscoveryTabFilter,
         page: Int,
         size: Int
@@ -54,7 +53,7 @@ class DiscoveryRepositoryImpl @Inject constructor(
         withContext(appDispatchers.io) {
             safeApiCall {
                 api.getDiscoveryTabPlates(
-                    tabType = tab.name,
+                    tabType = tab,
                     page = page,
                     size = size,
                     cityIds = filter.cityIds.takeIf { it.isNotEmpty() },

@@ -15,11 +15,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,12 +30,17 @@ import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun FloatingPlatesAnimation() {
     val transition = rememberInfiniteTransition(label = "floating")
+
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val shape = PMTheme.shapes.medium
+    val stroke = PMTheme.stroke
 
     val floatA by transition.animateFloat(
         initialValue = 0f,
@@ -80,9 +82,6 @@ internal fun FloatingPlatesAnimation() {
         label = "shimmer"
     )
 
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-
     Box(
         modifier = Modifier
             .width(260.dp)
@@ -95,13 +94,13 @@ internal fun FloatingPlatesAnimation() {
                 .offset(x = 28.dp, y = (-8).dp + floatC.dp)
                 .size(width = 110.dp, height = 46.dp)
                 .shadow(20.dp, spotColor = colors.primary.copy(alpha = 0.18f))
-                .background(Color(0xFF1E2A36), RoundedCornerShape(dims.radius.r12))
-                .border(dims.stroke.st1, colors.primary.copy(alpha = 0.35f), RoundedCornerShape(dims.radius.r12))
-                .clip(RoundedCornerShape(dims.radius.r12)),
+                .background(Color(0xFF1E2A36), shape)
+                .border(stroke.st1, colors.primary.copy(alpha = 0.35f), shape)
+                .clip(shape),
             contentAlignment = Alignment.Center
         ) {
             Box(modifier = Modifier.width(8.dp).fillMaxSize().background(colors.primary.copy(alpha = 0.6f)).align(Alignment.CenterStart))
-            PMText(text = "35 MK 777", style = PMTextStyle.Label, color = colors.textLabel, modifier = Modifier.padding(start = dims.spacing.s8))
+            PMText(text = "35 MK 777", style = PMTextStyle.Label, color = colors.textLabel, modifier = Modifier.padding(start = spacing.s8))
         }
 
         // Plate 2 (Right)
@@ -112,12 +111,12 @@ internal fun FloatingPlatesAnimation() {
                 .rotate(3f)
                 .size(width = 120.dp, height = 52.dp)
                 .shadow(28.dp, spotColor = colors.textPrimary.copy(alpha = 0.35f))
-                .background(Color.White, RoundedCornerShape(dims.radius.r12))
-                .clip(RoundedCornerShape(dims.radius.r12)),
+                .background(Color.White, shape)
+                .clip(shape),
             contentAlignment = Alignment.Center
         ) {
             Box(modifier = Modifier.width(9.dp).fillMaxSize().background(colors.primary).align(Alignment.CenterStart))
-            PMText(text = "06 AB 1234", style = PMTextStyle.Title, color = colors.primaryDark, modifier = Modifier.padding(start = dims.spacing.s8))
+            PMText(text = "06 AB 1234", style = PMTextStyle.Title, color = colors.onPrimaryContainer, modifier = Modifier.padding(start = spacing.s8))
         }
 
         // Plate 1 (Top left)
@@ -128,19 +127,19 @@ internal fun FloatingPlatesAnimation() {
                 .rotate(-4f)
                 .size(width = 120.dp, height = 52.dp)
                 .shadow(28.dp, spotColor = colors.primary.copy(alpha = 0.45f))
-                .background(colors.primary, RoundedCornerShape(dims.radius.r12))
-                .clip(RoundedCornerShape(dims.radius.r12)),
+                .background(colors.primary, shape)
+                .clip(shape),
             contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.width(9.dp).fillMaxSize().background(colors.primaryDark).align(Alignment.CenterStart))
-            PMText(text = "34 EK 0682", style = PMTextStyle.Title, color = Color.White, modifier = Modifier.padding(start = dims.spacing.s8))
+            Box(modifier = Modifier.width(9.dp).fillMaxSize().background(colors.onPrimaryContainer).align(Alignment.CenterStart))
+            PMText(text = "34 EK 0682", style = PMTextStyle.Title, color = Color.White, modifier = Modifier.padding(start = spacing.s8))
         }
 
         // Stars
         PMIcon(
             imageVector = Icons.Filled.Star,
             tint = colors.iconStar,
-            size = dims.sizing.iconLg,
+            size = sizing.iconLg,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .offset(x = 0.dp, y = 0.dp)
@@ -151,7 +150,7 @@ internal fun FloatingPlatesAnimation() {
             imageVector = Icons.Filled.Star,
             contentDescription = null,
             tint = colors.iconStar.copy(alpha = 0.7f),
-            size = dims.sizing.iconMd,
+            size = sizing.iconMd,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = (-28).dp, y = (-20).dp)
@@ -162,7 +161,7 @@ internal fun FloatingPlatesAnimation() {
             imageVector = Icons.Filled.Star,
             contentDescription = null,
             tint = colors.primary.copy(alpha = 0.8f),
-            size = dims.sizing.iconSm,
+            size = sizing.iconSm,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .offset(x = 0.dp, y = 20.dp)

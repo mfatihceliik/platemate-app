@@ -1,6 +1,5 @@
 package com.mefy.platemate.presentation.features.main.discover
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -46,9 +44,8 @@ import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverReportTypeCountUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 private const val LOAD_MORE_THRESHOLD = 4
 
@@ -61,8 +58,7 @@ fun DiscoverScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
 
     // Stable, shared callbacks: cards/chips skip recomposition while data is unchanged.
     val onTrendClick = remember(onAction) {
@@ -72,7 +68,7 @@ fun DiscoverScreen(
         { id: String -> onAction(DiscoverUiAction.TrendPlateBookmarkClicked(id)) }
     }
     val onFilterSelected = remember(onAction) {
-        { filter: DiscoverFilterUi -> onAction(FilterSelected(filter)) }
+        { tabCode: String -> onAction(FilterSelected(tabCode)) }
     }
     val onCityStatClick = remember(onAction) {
         { cityId: Int, cityName: String -> onAction(DiscoverUiAction.CityStatClicked(cityId, cityName)) }
@@ -104,7 +100,7 @@ fun DiscoverScreen(
             modifier = Modifier
                 .fillMaxSize(),
             contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            verticalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
 
             item {
@@ -133,18 +129,19 @@ fun DiscoverScreen(
 
             item {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                 ) {
                     items(
-                        DiscoverFilterUi.entries,
-                        key = { it.name },
+                        state.tabOptions,
+                        key = { it.code },
                         contentType = { "filter_chip" }
-                    ) { filter ->
-                        val isSelected = state.selectedFilter == filter
+                    ) { option ->
+                        val isSelected = state.selectedTabCode == option.code
+                        val labelRes = DiscoverFilterUi.labelResFor(option.code)
                         PMChip(
-                            label = filter.name,
+                            label = labelRes?.let { stringResource(it) } ?: option.label,
                             selected = isSelected,
-                            onClick = { onFilterSelected(filter) }
+                            onClick = { onFilterSelected(option.code) }
                         )
                     }
                     item {
@@ -166,8 +163,6 @@ fun DiscoverScreen(
                     DiscoverFilterButton(
                         activeCount = state.activeFilters.activeFilterCount,
                         onClick = {
-                            // Taslak, filtre ekranina gitmeden once bir kez tohumlanir; alt picker'lardan
-                            // donuste ekran yeniden compose olsa da secim korunur.
                             onAction(DiscoverUiAction.FilterScreenOpened)
                             onOpenFilter()
                         }
@@ -200,7 +195,7 @@ fun DiscoverScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = dims.spacing.s8),
+                            .padding(vertical = spacing.s8),
                         contentAlignment = Alignment.Center
                     ) {
                         PMCircularProgressIndicator()
@@ -291,7 +286,7 @@ private fun DiscoverShimmerPreview() {
 private fun previewState(isInitialLoading: Boolean): DiscoverUiState {
     return DiscoverUiState(
         isInitialLoading = isInitialLoading,
-        selectedFilter = DiscoverFilterUi.Trend,
+        selectedTabCode = "TREND",
         metrics = listOf(
             DiscoverMetricUiModel(
                 type = DiscoverMetricUiType.Search,

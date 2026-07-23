@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,9 +41,8 @@ import com.mefy.platemate.presentation.features.main.profile.userprofile.compone
 import com.mefy.platemate.presentation.features.uimodel.ProfileStatUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun ProfileScreen(
@@ -54,8 +52,9 @@ fun ProfileScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+    val fontSize = PMTheme.fontSize
     val uriHandler = LocalUriHandler.current
 
     val onReviewClick = remember(onAction) {
@@ -76,13 +75,20 @@ fun ProfileScreen(
     val friendActivities = remember(state.activities) {
         state.activities.filterIsInstance<FriendRequestNotificationItem>()
     }
+    val onLinkClick = remember(uriHandler) {
+        { link: ProfileSocialLinkUiModel ->
+            try {
+                uriHandler.openUri(link.url)
+            } catch (_: Exception) {}
+        }
+    }
 
     LazyColumn(
         state = lazyListState,
         modifier = modifier
             .fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         item {
             ProfileHeaderSection(
@@ -97,7 +103,7 @@ fun ProfileScreen(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                 ) {
                     state.stats.forEach { stat ->
                         PMStatCard(
@@ -126,13 +132,6 @@ fun ProfileScreen(
 
         if (state.socialLinks.isNotEmpty()) {
             item(key = "social_links") {
-                val onLinkClick = remember(uriHandler) {
-                    { link: ProfileSocialLinkUiModel ->
-                        try {
-                            uriHandler.openUri(link.url)
-                        } catch (_: Exception) {}
-                    }
-                }
                 UserProfileSocialLinks(
                     links = state.socialLinks,
                     onLinkClick = onLinkClick
@@ -168,7 +167,7 @@ fun ProfileScreen(
                 item {
                     PMText(
                         text = stringResource(R.string.profile_recent_empty_plate),
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         color = colors.textPrimary
                     )
                 }
@@ -190,7 +189,7 @@ fun ProfileScreen(
                 item {
                     PMText(
                         text = stringResource(R.string.profile_recent_empty_friends),
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         color = colors.textPrimary
                     )
                 }
@@ -233,7 +232,7 @@ private fun ProfileDarkPreview() {
     }
 }
 
-private fun previewState(isLoading: Boolean): ProfileUiState = ProfileUiState(
+private fun previewState(isLoading: Boolean = false): ProfileUiState = ProfileUiState(
     isInitialLoading = isLoading,
     header = ProfileHeaderUiModel(username = "Caner Yıldırım"),
     accountSummary = ProfileAccountSummaryUiModel(

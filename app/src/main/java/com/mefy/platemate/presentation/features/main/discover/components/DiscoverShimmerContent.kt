@@ -1,31 +1,31 @@
 package com.mefy.platemate.presentation.features.main.discover.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.ShimmerBlock
 import com.mefy.platemate.presentation.components.rememberShimmer
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
-internal fun DiscoverShimmerContent(modifier: Modifier = Modifier) {
+internal fun DiscoverShimmerContent(
+    modifier: Modifier = Modifier
+) {
     val shimmer = rememberShimmer()
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        verticalArrangement = Arrangement.spacedBy(spacing.s16)
     ) {
         // Subtitle Shimmer
         ShimmerBlock(
@@ -37,7 +37,7 @@ internal fun DiscoverShimmerContent(modifier: Modifier = Modifier) {
         // Hero Stats Shimmer
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             repeat(3) {
                 ShimmerBlock(
@@ -57,7 +57,7 @@ internal fun DiscoverShimmerContent(modifier: Modifier = Modifier) {
 
         // Filters Shimmer
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             repeat(4) {
                 ShimmerBlock(
@@ -94,5 +94,21 @@ internal fun DiscoverShimmerContent(modifier: Modifier = Modifier) {
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
             )
         }
+    }
+}
+
+@Preview(name = "DiscoverShimmer Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun DiscoverShimmerContentLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        DiscoverShimmerContent(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Preview(name = "DiscoverShimmer Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun DiscoverShimmerContentDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        DiscoverShimmerContent(modifier = Modifier.fillMaxWidth())
     }
 }

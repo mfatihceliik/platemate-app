@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -27,19 +26,18 @@ import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PlateRemovalScreen(
+    modifier: Modifier = Modifier,
     state: PlateRemovalUiState,
     onAction: (PlateRemovalUiAction) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     if (state.isEmpty) {
         Box(modifier.fillMaxSize().padding(contentPadding), contentAlignment = Alignment.Center) {
@@ -49,7 +47,7 @@ internal fun PlateRemovalScreen(
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             itemsIndexed(items = state.items, key = { _, item -> item.id }) { index, item ->
                 if (index >= state.items.lastIndex) {
@@ -64,7 +62,7 @@ internal fun PlateRemovalScreen(
             }
             if (state.isLoadingMore) {
                 item {
-                    Box(Modifier.fillMaxWidth().padding(dims.spacing.s12), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxWidth().padding(spacing.s12), contentAlignment = Alignment.Center) {
                         PMCircularProgressIndicator()
                     }
                 }
@@ -80,15 +78,15 @@ private fun RemovalCard(
     onAccept: () -> Unit,
     onReject: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.surfaceVariant, RoundedCornerShape(12.dp))
-            .padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            .padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             PMText(text = model.plateCode, style = PMTextStyle.Body, fontWeight = FontWeight.Bold, color = colors.textPrimary)
@@ -104,7 +102,7 @@ private fun RemovalCard(
             PMText(text = model.description, style = PMTextStyle.Body, color = colors.textPrimary)
         }
         PMText(text = model.date, style = PMTextStyle.Note, color = colors.textLabel)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(spacing.s8)) {
             PMButton(
                 text = stringResource(R.string.admin_request_reject),
                 onClick = onReject,
@@ -142,7 +140,10 @@ private val plateRemovalPreviewState = PlateRemovalUiState(
 @Composable
 private fun PlateRemovalScreenLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        PlateRemovalScreen(state = plateRemovalPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        PlateRemovalScreen(
+            state = plateRemovalPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -150,7 +151,10 @@ private fun PlateRemovalScreenLightPreview() {
 @Composable
 private fun PlateRemovalScreenDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        PlateRemovalScreen(state = plateRemovalPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        PlateRemovalScreen(
+            state = plateRemovalPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -158,7 +162,11 @@ private fun PlateRemovalScreenDarkPreview() {
 @Composable
 private fun PlateRemovalScreenEmptyPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        PlateRemovalScreen(state = PlateRemovalUiState(isLoading = false), onAction = {}, contentPadding = PaddingValues(0.dp))
+        PlateRemovalScreen(
+            state = PlateRemovalUiState(
+                isLoading = false),
+            onAction = {}
+        )
     }
 }
 
@@ -166,6 +174,11 @@ private fun PlateRemovalScreenEmptyPreview() {
 @Composable
 private fun RemovalCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        RemovalCard(model = plateRemovalPreviewModel, isActioning = false, onAccept = {}, onReject = {})
+        RemovalCard(
+            model = plateRemovalPreviewModel,
+            isActioning = false,
+            onAccept = {},
+            onReject = {}
+        )
     }
 }

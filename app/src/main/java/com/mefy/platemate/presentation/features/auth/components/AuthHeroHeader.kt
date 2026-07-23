@@ -8,30 +8,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun AuthHeroHeader(
+    modifier: Modifier = Modifier,
     badgeText: String, // Kept for API compatibility, not visually used as a badge anymore, instead we just render 'P'
     title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier
+    subtitle: String
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val spacing = dims.spacing
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     Column(
         modifier = modifier
@@ -53,7 +49,7 @@ fun AuthHeroHeader(
             PMText(
                 text = "P",
                 color = Color.White,
-                fontSize = dims.fontSize.huge,
+                fontSize = fontSize.huge,
                 fontWeight = FontWeight.ExtraBold,
             )
         }
@@ -64,7 +60,7 @@ fun AuthHeroHeader(
         ) {
             PMText(
                 text = title,
-                fontSize = dims.fontSize.xxl,
+                fontSize = fontSize.xxl,
                 fontWeight = FontWeight.ExtraBold,
                 color = colors.onSurface
             )

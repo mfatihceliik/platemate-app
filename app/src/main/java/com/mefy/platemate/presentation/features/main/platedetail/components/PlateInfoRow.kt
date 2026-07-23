@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,10 +14,9 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PlateInfoRow(
@@ -27,22 +25,24 @@ internal fun PlateInfoRow(
     ratingAverage: Double,
     reviewCount: Long
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s16),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMPlateBadge(
             plate = plateCode,
-            size = dims.sizing.plateBadgeMd
+            size = sizing.plateBadgeMd
         )
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
             PMText(
                 text = cityName,
@@ -53,11 +53,11 @@ internal fun PlateInfoRow(
         if (reviewCount > 0) {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = NumberFormatter.formatRating(ratingAverage),
-                    fontSize = dims.fontSize.lg,
+                    fontSize = fontSize.lg,
                     color = colors.textPrimary
                 )
                 PMRatingStars(
@@ -71,11 +71,11 @@ internal fun PlateInfoRow(
         } else {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = "—",
-                    fontSize = dims.fontSize.lg,
+                    fontSize = fontSize.lg,
                     color = colors.textLabel
                 )
                 PMRatingStars(
@@ -108,10 +108,10 @@ private fun PlateInfoRowDarkPreview() {
 
 @Composable
 private fun PlateInfoRowPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
     Column(
-        modifier = Modifier.padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        modifier = Modifier.padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s16)
     ) {
         // Puanlı
         PlateInfoRow(

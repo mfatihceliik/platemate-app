@@ -1,36 +1,29 @@
 package com.mefy.platemate.presentation.features.main.profile.userprofile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMAvatar
 import com.mefy.platemate.presentation.components.PMIcon
+import com.mefy.platemate.presentation.components.PMStatPill
 import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun UserProfileHeaderCard(
@@ -42,91 +35,108 @@ internal fun UserProfileHeaderCard(
     isOnline: Boolean,
     reviewCount: Int,
     followerCount: String,
-    followingCount: Int
+    followingCount: Int,
+    onFollowersClick: (() -> Unit)? = null,
+    onFollowingClick: (() -> Unit)? = null
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surface)
     ) {
-
-
-        Column(
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dims.spacing.s16)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            PMAvatar(
+                displayName = displayName,
+                size = sizing.avatarXl,
+                showOnlineStatus = true,
+                isOnline = isOnline
+            )
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dims.spacing.s4),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
-                verticalAlignment = Alignment.CenterVertically
+                    .wrapContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
-
-                PMAvatar(
-                    displayName = displayName,
-                    size = dims.sizing.avatarXl,
-                    showOnlineStatus = true,
-                    isOnline = isOnline
-                )
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s4),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-                    ) {
-                        PMText(
-                            text = displayName,
-                            fontSize = dims.fontSize.xl,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.textPrimary
+                    PMText(
+                        text = displayName,
+                        fontSize = fontSize.lg,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                    if (isVerified) {
+                        PMIcon(
+                            imageVector = Icons.Filled.Verified,
+                            tint = colors.primary,
+                            size = sizing.iconSm,
                         )
-                        if (isVerified) {
-                            PMIcon(
-                                imageVector = Icons.Filled.Verified,
-                                tint = colors.primary,
-                                size = dims.sizing.iconSm,
-                            )
-                        }
                     }
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     PMText(
                         text = username,
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.sm,
                         color = colors.textSecondary
                     )
                 }
-            }
 
-            if (bio.isNotBlank()) {
-                PMText(
-                    text = bio,
-                    fontSize = dims.fontSize.md,
-                    color = colors.textSecondary,
-                    modifier = Modifier.padding(top = dims.spacing.s12)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s4),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PMStatPill(
+                        value = reviewCount.toString(),
+                        label = stringResource(R.string.user_profile_stat_reviews),
+                        modifier = Modifier.weight(1f)
+                    )
+                    PMStatPill(
+                        value = followerCount,
+                        label = stringResource(R.string.user_profile_stat_followers),
+                        onClick = onFollowersClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    PMStatPill(
+                        value = followingCount.toString(),
+                        label = stringResource(R.string.user_profile_stat_following),
+                        onClick = onFollowingClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
+        }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dims.spacing.s16, bottom = dims.spacing.s16)
-                    .height(IntrinsicSize.Min)
-                    .clip(MaterialTheme.shapes.large)
-                    .border(dims.stroke.st1, colors.outlineVariant.copy(alpha=0.5f), MaterialTheme.shapes.large)
-            ) {
-                StatCell(value = reviewCount.toString(), label = stringResource(R.string.user_profile_stat_reviews), modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant.copy(alpha=0.5f)))
-                StatCell(value = followerCount, label = stringResource(R.string.user_profile_stat_followers), modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.width(dims.stroke.st1).fillMaxHeight().background(colors.outlineVariant.copy(alpha=0.5f)))
-                StatCell(value = followingCount.toString(), label = stringResource(R.string.user_profile_stat_following), modifier = Modifier.weight(1f))
-            }
+        if (bio.isNotBlank()) {
+            PMText(
+                text = bio,
+                fontSize = fontSize.md,
+                color = colors.textPrimary,
+                modifier = Modifier.padding(top = spacing.s8, start = spacing.s4)
+            )
         }
     }
 }
@@ -162,25 +172,6 @@ private fun UserProfileHeaderCardDarkPreview() {
             followerCount = "1.2K",
             followingCount = 89
         )
-    }
-}
-
-@Composable
-private fun StatCell(
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    val colors = MaterialTheme.pmColors
-    Column(
-        modifier = modifier
-            .background(colors.surfaceSecondary)
-            .padding(vertical = 11.dp, horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        PMText(text = value, style = PMTextStyle.Title, fontWeight = FontWeight.Bold, color = colors.textPrimary)
-        PMText(text = label, style = PMTextStyle.Note, color = colors.textTertiary)
     }
 }
 

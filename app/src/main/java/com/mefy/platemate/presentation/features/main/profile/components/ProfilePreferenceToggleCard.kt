@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,20 +18,19 @@ import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMSwitch
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 internal fun ProfilePreferenceToggleCard(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    onCheckedChange: (Boolean) -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
-    val spacing = MaterialTheme.pmDimensions.spacing
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
@@ -87,7 +84,7 @@ private fun ProfilePreferenceToggleCardDarkPreview() {
 
 @Composable
 private fun ProfilePreferenceToggleCardPreviewContent() {
-    val spacing = MaterialTheme.pmDimensions.spacing
+    val spacing = PMTheme.spacing
     var checked by remember { mutableStateOf(true) }
     ProfilePreferenceToggleCard(
         title = "Push bildirimleri",

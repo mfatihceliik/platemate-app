@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,9 +28,8 @@ import com.mefy.platemate.presentation.components.PMPlateCard
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.components.variant.PMPlateCardStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun CardStyleScreen(
@@ -41,8 +38,11 @@ fun CardStyleScreen(
     onAction: (CardStyleUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
+    val sizing = PMTheme.sizing
+    val shapes = PMTheme.shapes
 
     val onPremiumCta = remember(onAction) { { onAction(CardStyleUiAction.PremiumCtaClicked) } }
 
@@ -51,12 +51,12 @@ fun CardStyleScreen(
             .fillMaxSize()
             .background(colors.background),
         contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        verticalArrangement = Arrangement.spacedBy(spacing.s16)
     ) {
         item {
             PMText(
                 text = stringResource(R.string.card_style_subtitle),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textSecondary
             )
         }
@@ -66,21 +66,21 @@ fun CardStyleScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(dims.radius.r12))
+                        .clip(shapes.medium)
                         .background(colors.primaryContainer)
                         .debouncedClickable(onClick = onPremiumCta)
-                        .padding(dims.spacing.s12),
+                        .padding(spacing.s12),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                 ) {
                     PMIcon(
                         imageVector = Icons.Filled.Lock,
-                        size = dims.sizing.iconSm,
+                        size = sizing.iconSm,
                         tint = colors.primary
                     )
                     PMText(
                         text = stringResource(R.string.card_style_premium_cta),
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         color = colors.primary
                     )
                 }
@@ -106,22 +106,25 @@ private fun StyleOption(
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r16)
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val stroke = PMTheme.stroke
+    val fontSize = PMTheme.fontSize
+    val shapes = PMTheme.shapes
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape)
+            .clip(shapes.medium)
             .border(
-                width = if (isSelected) dims.stroke.st2 else dims.stroke.st1,
+                width = if (isSelected) stroke.st2 else stroke.st1,
                 color = if (isSelected) colors.primary else colors.outlineVariant,
-                shape = shape
+                shape = shapes.medium
             )
             .debouncedClickable(onClick = onSelect)
-            .padding(dims.spacing.s12),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            .padding(spacing.s12),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -129,7 +132,7 @@ private fun StyleOption(
         ) {
             PMText(
                 text = label,
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 fontWeight = FontWeight.SemiBold,
                 color = colors.textPrimary
             )
@@ -137,7 +140,7 @@ private fun StyleOption(
             if (isSelected) {
                 PMIcon(
                     imageVector = Icons.Filled.CheckCircle,
-                    size = dims.sizing.iconSm,
+                    size = sizing.iconSm,
                     tint = colors.primary
                 )
             }

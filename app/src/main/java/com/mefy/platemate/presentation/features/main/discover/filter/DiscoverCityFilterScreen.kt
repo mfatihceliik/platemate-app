@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.text.CityNameResolver
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMSearchBar
@@ -38,19 +38,17 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
-/** Filtrede en fazla secilebilecek sehir sayisi. */
 private const val MAX_FILTER_CITIES = 5
 
 @Composable
 fun DiscoverCityFilterRoute(
-    viewModel: DiscoverViewModel,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: DiscoverViewModel
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     DiscoverCityFilterScreen(
@@ -58,20 +56,20 @@ fun DiscoverCityFilterRoute(
         onCitiesChanged = { ids, names ->
             viewModel.onAction(DiscoverUiAction.DraftCitiesChanged(ids, names))
         },
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { navController.navigateUp() },
         modifier = modifier
     )
 }
 
 @Composable
 fun DiscoverCityFilterScreen(
+    modifier: Modifier = Modifier,
     selectedCityIds: List<Int>,
     onCitiesChanged: (List<Int>, List<String>) -> Unit,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateBack: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     val allCities = remember { CityNameResolver.allCities() }
     var query by remember { mutableStateOf("") }
@@ -102,7 +100,7 @@ fun DiscoverCityFilterScreen(
             title = stringResource(R.string.discover_filter_city_title),
             onBackClick = onNavigateBack
         ),
-        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+        contentPadding = PaddingValues(bottom = spacing.s16)
     ) { pad ->
         Column(modifier = Modifier.fillMaxSize()) {
             PMSearchBar(
@@ -111,7 +109,7 @@ fun DiscoverCityFilterScreen(
                 placeholder = stringResource(R.string.discover_filter_city_search_hint),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s8)
+                    .padding(horizontal = spacing.s16, vertical = spacing.s8)
             )
 
             if (selected.isNotEmpty()) {
@@ -152,14 +150,14 @@ private fun SelectedCitiesHeader(
     onRemove: (String) -> Unit,
     onClearAll: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s8),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            .padding(horizontal = spacing.s16, vertical = spacing.s8),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -186,8 +184,8 @@ private fun SelectedCitiesHeader(
             )
         }
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             selectedNames.forEach { name ->
                 PMChip(
@@ -206,14 +204,15 @@ private fun CityOptionRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .debouncedClickable(onClick = onClick)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
+            .padding(horizontal = spacing.s16, vertical = spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMText(
@@ -226,7 +225,7 @@ private fun CityOptionRow(
         if (selected) {
             PMIcon(
                 imageVector = Icons.Filled.Check,
-                size = dims.sizing.iconSm,
+                size = sizing.iconSm,
                 tint = colors.primary
             )
         }

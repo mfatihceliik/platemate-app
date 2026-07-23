@@ -9,5 +9,6 @@ data class UserSettingsDto(
     @SerializedName("friendNotificationsEnabled") val friendNotificationsEnabled: Boolean,
     @SerializedName("plateReviewNotificationsEnabled") val plateReviewNotificationsEnabled: Boolean = false,
     @SerializedName("newFollowerNotificationsEnabled") val newFollowerNotificationsEnabled: Boolean = false,
-    @SerializedName("reviewReplyNotificationsEnabled") val reviewReplyNotificationsEnabled: Boolean = false
+    @SerializedName("reviewReplyNotificationsEnabled") val reviewReplyNotificationsEnabled: Boolean = false,
+    @SerializedName("followingListVisible") val followingListVisible: Boolean = true
 )

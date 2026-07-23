@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +20,6 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.uimodel.ProfileAccountSummaryUiModel
 import com.mefy.platemate.presentation.features.uimodel.ProfileHeaderUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -31,18 +27,21 @@ import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.text.font.FontWeight
 import com.mefy.platemate.presentation.components.PMBadge
 import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun ProfileHeaderSection(
+    modifier: Modifier = Modifier,
     header: ProfileHeaderUiModel,
     accountSummary: ProfileAccountSummaryUiModel,
     onFriendsClick: () -> Unit,
-    pendingFriendRequestCount: Int = 0,
-    modifier: Modifier = Modifier
+    pendingFriendRequestCount: Int = 0
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r10)
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
+    val shape = PMTheme.shapes
 
     val emailText = accountSummary.email
         .takeIf { it.isNotBlank() }
@@ -58,29 +57,29 @@ internal fun ProfileHeaderSection(
                         colors.surface
                     )
                 ),
-                shape = shape
+                shape = shape.medium
             )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+                .padding(horizontal = spacing.s16, vertical = spacing.s16),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            verticalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
             PMAvatar(
                 displayName = header.username,
-                size = dims.sizing.avatarLg,
+                size = sizing.avatarLg,
             )
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = header.username,
-                    fontSize = dims.fontSize.xl,
+                    fontSize = fontSize.xl,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary,
                     maxLines = 1,
@@ -88,7 +87,7 @@ internal fun ProfileHeaderSection(
                 )
                 PMText(
                     text = emailText,
-                    fontSize = dims.fontSize.md,
+                    fontSize = fontSize.md,
                     color = colors.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -96,7 +95,7 @@ internal fun ProfileHeaderSection(
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s8),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (accountSummary.isPremiumActive) {
@@ -132,12 +131,12 @@ internal fun ProfileHeaderSection(
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(dims.spacing.s12)
+                .padding(spacing.s12)
         ) {
             PMIconButton(
                 imageVector = Icons.Filled.Person,
                 iconColor = colors.primary,
-                size = dims.sizing.iconMd,
+                size = sizing.iconMd,
                 onClick = onFriendsClick
             )
             if (pendingFriendRequestCount > 0) {
@@ -145,7 +144,7 @@ internal fun ProfileHeaderSection(
                     showCount = false,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .offset(x = dims.spacing.s4, y = -dims.spacing.s4)
+                        .offset(x = spacing.s4, y = -spacing.s4)
                 )
             }
         }

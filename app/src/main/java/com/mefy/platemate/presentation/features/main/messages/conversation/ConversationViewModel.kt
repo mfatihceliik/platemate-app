@@ -13,17 +13,24 @@ import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
 import com.mefy.platemate.domain.usecase.chat.AcceptChatRequestUseCase
 import com.mefy.platemate.domain.usecase.chat.CreateOrGetPrivateChatRoomUseCase
 import com.mefy.platemate.domain.usecase.chat.DeclineChatRequestUseCase
+import com.mefy.platemate.domain.usecase.chat.DeleteChatMessageUseCase
 import com.mefy.platemate.domain.usecase.chat.GetChatRoomUseCase
 import com.mefy.platemate.domain.usecase.chat.GetRoomPresenceUseCase
 import com.mefy.platemate.domain.usecase.chat.JoinChatRoomUseCase
 import com.mefy.platemate.domain.usecase.chat.MarkMessagesAsReadUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveChatErrorsUseCase
+import com.mefy.platemate.domain.usecase.chat.ObserveChatRoomsUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveUserPresenceUseCase
 import com.mefy.platemate.domain.usecase.chat.ObserveRoomMessagesUseCase
+import com.mefy.platemate.domain.usecase.chat.PurgeDeletedMessagesUseCase
+import com.mefy.platemate.domain.usecase.chat.ReportMessageUseCase
+import com.mefy.platemate.domain.usecase.chat.RetryFailedMessageUseCase
+import com.mefy.platemate.domain.usecase.chat.SyncChatRoomsUseCase
 import com.mefy.platemate.domain.usecase.chat.SyncRoomMessagesUseCase
 import com.mefy.platemate.domain.usecase.chat.SendChatMessageUseCase
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
+import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.navigation.ChatDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -43,6 +50,10 @@ class ConversationViewModel @Inject constructor(
     private val observeRoomMessagesUseCase: ObserveRoomMessagesUseCase,
     private val syncRoomMessagesUseCase: SyncRoomMessagesUseCase,
     private val sendChatMessageUseCase: SendChatMessageUseCase,
+    private val retryFailedMessageUseCase: RetryFailedMessageUseCase,
+    private val deleteChatMessageUseCase: DeleteChatMessageUseCase,
+    private val reportMessageUseCase: ReportMessageUseCase,
+    private val purgeDeletedMessagesUseCase: PurgeDeletedMessagesUseCase,
     private val joinChatRoomUseCase: JoinChatRoomUseCase,
     private val observeChatErrorsUseCase: ObserveChatErrorsUseCase,
     private val getRoomPresenceUseCase: GetRoomPresenceUseCase,
@@ -51,6 +62,8 @@ class ConversationViewModel @Inject constructor(
     private val acceptChatRequestUseCase: AcceptChatRequestUseCase,
     private val declineChatRequestUseCase: DeclineChatRequestUseCase,
     private val createOrGetPrivateChatRoomUseCase: CreateOrGetPrivateChatRoomUseCase,
+    private val observeChatRoomsUseCase: ObserveChatRoomsUseCase,
+    private val syncChatRoomsUseCase: SyncChatRoomsUseCase,
     private val observeSessionUseCase: ObserveSessionUseCase,
     private val activeConversationTracker: ActiveConversationTracker,
     globalUiEventBus: GlobalUiEventBus
@@ -97,6 +110,10 @@ class ConversationViewModel @Inject constructor(
     private var unreadAnchorMessageId: Long? = null
     private var unreadAnchorCount = 0
 
+    // Sunucudan gelen iş kuralı hataları (limit/engel/kapalı/red) — Room'a yazılmaz, sadece bu
+    // ekran oturumu boyunca thread'in sonunda kalıcı gösterilir (bkz. observeErrors/buildListItems).
+    private val systemInfoMessages = mutableListOf<UiText>()
+
     init {
         observeErrors()
         launch {
@@ -105,10 +122,37 @@ class ConversationViewModel @Inject constructor(
             currentUsername = session?.username ?: ""
             if (roomId > 0) {
                 startRoomSession()
+            } else if (otherUserId > 0) {
+                resolveExistingRoomOrShowDraft()
             } else {
                 // Taslak konuşma: oda yok, yükleme yok; ilk mesajla oluşacak.
                 _uiState.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    /**
+     * conversationId boş ama otherUserId dolu geldiğinde (ör. UserProfileScreen'in mesaj
+     * butonu) önce yerelde (Room DB, ağ çağrısı yok) bu kullanıcıyla mevcut bir oda var mı
+     * bakılır; yoksa bir kez senkronize edilip tekrar bakılır. Bulunursa geçmiş hemen yüklenir —
+     * artık sadece ilk mesaj gönderilince değil. createOrGetPrivateChatRoomUseCase burada
+     * ÇAĞRILMAZ: o oda yaratır, sırf ekranı açarak (mesaj göndermeden) boş oda oluşturmamak için
+     * taslak davranışı (ilk mesajla oluşturma) korunur.
+     */
+    private suspend fun resolveExistingRoomOrShowDraft() {
+        var existing = observeChatRoomsUseCase().first()
+            .firstOrNull { it.otherParticipantId == otherUserId }
+        if (existing == null) {
+            syncChatRoomsUseCase()
+            existing = observeChatRoomsUseCase().first()
+                .firstOrNull { it.otherParticipantId == otherUserId }
+        }
+        if (existing != null) {
+            roomId = existing.id
+            joinChatRoomUseCase(roomId)
+            startRoomSession()
+        } else {
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -129,8 +173,15 @@ class ConversationViewModel @Inject constructor(
         // Yeni oluşturulan odalar bağlantı anında mevcut olmadığından şarttır.
         launch { joinChatRoomUseCase(roomId) }
         loadRoom()
-        observeMessages()
-        syncMessages()
+        launch {
+            // Önceki oturumdan kalan taşlaşmış (DELETED) satırlar temizlenir, SONRA gözlem/senkron
+            // başlar — sıralama bozulursa Flow ilk anlık görüntüde eski "silindi" balonunu bir kare
+            // gösterip kaybedebilir. Canlı oturumda (reconnect resync vb.) tekrar çağrılmaz — bu
+            // yüzden az önce silinen bir mesajın balonu ekrandayken kaybolmaz.
+            purgeDeletedMessagesUseCase(roomId)
+            observeMessages()
+            syncMessages()
+        }
         loadPresence()
     }
 
@@ -161,8 +212,10 @@ class ConversationViewModel @Inject constructor(
     private fun observeErrors() {
         launch {
             observeChatErrorsUseCase().collect { message ->
-                _uiState.update { it.copy(isSending = false) }
                 showError(UiText.Dynamic(message))
+                // Snackbar geçici/kaçırılabilir; aynı mesajı thread içinde kalıcı da göster.
+                systemInfoMessages.add(UiText.Dynamic(message))
+                _uiState.update { it.copy(items = buildListItems()) }
             }
         }
     }
@@ -176,7 +229,30 @@ class ConversationViewModel @Inject constructor(
             ConversationUiAction.InfoClicked -> navigateToDetail()
             ConversationUiAction.BackClicked ->
                 _uiEffect.emitUiEffect(ConversationUiEffect.NavigateBack)
-            ConversationUiAction.RetryClicked -> syncMessages()
+            is ConversationUiAction.RetryMessageClicked -> retryMessage(action.messageId)
+            is ConversationUiAction.MessageLongPressed -> onMessageLongPressed(action.messageId)
+            ConversationUiAction.ActionMenuDismissed ->
+                _uiState.update { it.copy(actionMenuTargetId = null) }
+            is ConversationUiAction.QuoteMessageClicked -> onQuoteMessageClicked(action.messageId)
+            ConversationUiAction.CancelReplyClicked ->
+                _uiState.update { it.copy(replyTarget = null) }
+            is ConversationUiAction.ReportMessageClicked -> onReportMessageClicked(action.messageId)
+            is ConversationUiAction.ReportReasonSelected ->
+                _uiState.update { it.copy(selectedReportReason = action.reason) }
+            is ConversationUiAction.ReportOtherReasonTextChanged ->
+                _uiState.update { it.copy(otherReportReasonText = action.text) }
+            ConversationUiAction.ReportSubmitClicked -> submitReport()
+            ConversationUiAction.ReportDismissed ->
+                _uiState.update {
+                    it.copy(reportTarget = null, selectedReportReason = null, otherReportReasonText = "")
+                }
+            is ConversationUiAction.DeleteActionClicked ->
+                _uiState.update {
+                    it.copy(actionMenuTargetId = null, deleteConfirmTargetId = action.messageId)
+                }
+            is ConversationUiAction.DeleteMessageConfirmed -> deleteMessage(action.messageId)
+            ConversationUiAction.DeleteConfirmDismissed ->
+                _uiState.update { it.copy(deleteConfirmTargetId = null) }
             ConversationUiAction.AcceptRequestClicked -> respondToRequest(accept = true)
             ConversationUiAction.DeclineRequestClicked -> respondToRequest(accept = false)
             ConversationUiAction.ScreenResumed -> {
@@ -221,12 +297,18 @@ class ConversationViewModel @Inject constructor(
                 val firstUnreadIndex = items
                     .indexOfFirst { it is ConversationListItem.UnreadDivider }
                     .takeIf { it >= 0 }
+                val scrollToMessageIndex = route.targetMessageId?.let { targetId ->
+                    items
+                        .indexOfFirst { it is ConversationListItem.Message && it.model.id == targetId }
+                        .takeIf { it >= 0 }
+                }
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         errorMessage = null,
                         items = items,
-                        firstUnreadIndex = firstUnreadIndex
+                        firstUnreadIndex = firstUnreadIndex,
+                        scrollToMessageIndex = scrollToMessageIndex
                     )
                 }
                 maybeMarkRead()
@@ -282,15 +364,19 @@ class ConversationViewModel @Inject constructor(
         }
     }
 
+    // Per-message send state (PENDING/SENT/FAILED) now lives entirely in ChatMessageUiModel.status,
+    // reactive via Room → observeRoomMessages() → buildListItems() — there is no screen-level
+    // "isSending" flag anymore, since rapid-fire sends can have several messages in flight at
+    // once and a single boolean can't represent that.
     private fun sendMessage() {
         val text = _uiState.value.inputText.trim()
-        if (text.isBlank() || _uiState.value.isSending) return
+        if (text.isBlank()) return
+        val replyTarget = _uiState.value.replyTarget
 
-        _uiState.update { it.copy(isSending = true, inputText = "") }
+        _uiState.update { it.copy(inputText = "", replyTarget = null) }
         launch(onError = { e ->
             handleError(e)
-            // Hata: yazılan metni geri ver, gönderim durumunu sıfırla.
-            _uiState.update { it.copy(isSending = false, inputText = text) }
+            _uiState.update { it.copy(inputText = text, replyTarget = replyTarget) }
         }) {
             // Taslak konuşma: önce sunucuda oda yarat, sonra mesajı gönder.
             if (roomId == 0L) {
@@ -303,19 +389,113 @@ class ConversationViewModel @Inject constructor(
                     }
                     is AppResult.Error -> {
                         showError(result.error.toUiText())
-                        _uiState.update { it.copy(isSending = false, inputText = text) }
+                        _uiState.update { it.copy(inputText = text, replyTarget = replyTarget) }
                         return@launch
                     }
                 }
             }
-            // Sent via socket; the broadcast echo appends the message with its server id.
-            when (val result = sendChatMessageUseCase(roomId, text)) {
-                is AppResult.Success -> _uiState.update { it.copy(isSending = false) }
+            // Repository writes an optimistic PENDING row to Room before attempting the socket
+            // send, so the message is already visible here regardless of outcome; this call only
+            // fails (AppResult.Error) in the rare case there's no active session to send as.
+            when (val result = sendChatMessageUseCase(roomId, text, replyTarget?.messageId)) {
+                is AppResult.Success -> Unit
                 is AppResult.Error -> {
-                    // Soket bağlı değil/gönderilemedi: sessiz kalma — kullanıcıyı uyar, metni geri ver.
                     showError(result.error.toUiText())
-                    _uiState.update { it.copy(isSending = false, inputText = text) }
+                    _uiState.update { it.copy(inputText = text, replyTarget = replyTarget) }
                 }
+            }
+        }
+    }
+
+    private fun retryMessage(messageId: Long) {
+        launch(onError = { handleError(it) }) {
+            retryFailedMessageUseCase(roomId, messageId)
+        }
+    }
+
+    // Herhangi bir mesaj için aksiyon menüsünü açar (Alıntıla/Raporla/Sil); Sil sadece kendi
+    // mesajların için, Raporla sadece karşı tarafın mesajları için satır olarak gösterilir —
+    // gating render tarafında (MessageActionMenu), burada değil.
+    private fun onMessageLongPressed(messageId: Long) {
+        _uiState.update { it.copy(actionMenuTargetId = messageId) }
+    }
+
+    private fun onQuoteMessageClicked(messageId: Long) {
+        val message = messages.firstOrNull { it.id == messageId } ?: run {
+            _uiState.update { it.copy(actionMenuTargetId = null) }
+            return
+        }
+        val senderLabel = if (message.isMine()) {
+            UiText.Resource(R.string.common_you)
+        } else {
+            UiText.Dynamic(message.senderUsername)
+        }
+        _uiState.update {
+            it.copy(
+                actionMenuTargetId = null,
+                replyTarget = ReplyPreviewUiModel(
+                    messageId = message.id,
+                    senderLabel = senderLabel,
+                    contentPreview = message.content
+                )
+            )
+        }
+    }
+
+    private fun onReportMessageClicked(messageId: Long) {
+        val message = messages.firstOrNull { it.id == messageId } ?: run {
+            _uiState.update { it.copy(actionMenuTargetId = null) }
+            return
+        }
+        _uiState.update {
+            it.copy(
+                actionMenuTargetId = null,
+                reportTarget = ReplyPreviewUiModel(
+                    messageId = message.id,
+                    senderLabel = UiText.Dynamic(message.senderUsername),
+                    contentPreview = message.content
+                )
+            )
+        }
+    }
+
+    private fun submitReport() {
+        val target = _uiState.value.reportTarget ?: return
+        val reason = _uiState.value.selectedReportReason ?: return
+        val otherText = _uiState.value.otherReportReasonText
+        val reasonString = if (reason == ReportReason.OTHER && otherText.isNotBlank()) {
+            "${reason.name}: $otherText"
+        } else {
+            reason.name
+        }
+
+        _uiState.update { it.copy(isSubmittingReport = true) }
+        launch(onError = { e ->
+            _uiState.update { it.copy(isSubmittingReport = false) }
+            handleError(e)
+        }) {
+            val result = reportMessageUseCase(target.messageId, reasonString)
+            _uiState.update {
+                it.copy(
+                    isSubmittingReport = false,
+                    reportTarget = null,
+                    selectedReportReason = null,
+                    otherReportReasonText = ""
+                )
+            }
+            when (result) {
+                is AppResult.Success -> showSuccess(UiText.Resource(R.string.user_profile_report_submitted))
+                is AppResult.Error -> showError(result.error.toUiText())
+            }
+        }
+    }
+
+    private fun deleteMessage(messageId: Long) {
+        _uiState.update { it.copy(deleteConfirmTargetId = null) }
+        launch(onError = { handleError(it) }) {
+            when (val result = deleteChatMessageUseCase(messageId)) {
+                is AppResult.Success -> Unit
+                is AppResult.Error -> showError(result.error.toUiText())
             }
         }
     }
@@ -368,6 +548,9 @@ class ConversationViewModel @Inject constructor(
             }
             result.add(ConversationListItem.Message(message.toUiModel()))
         }
+        systemInfoMessages.forEachIndexed { index, text ->
+            result.add(ConversationListItem.SystemInfo(id = index.toLong(), text = text))
+        }
         return result
     }
 
@@ -379,6 +562,17 @@ class ConversationViewModel @Inject constructor(
         content = content,
         time = sentAt?.iso8601?.substringAfter("T")?.take(5) ?: "",
         isMine = isMine(),
-        status = status
+        status = status,
+        replyPreview = replyToMessageId?.let { targetId ->
+            ReplyPreviewUiModel(
+                messageId = targetId,
+                senderLabel = if (replyToSenderUsername == currentUsername) {
+                    UiText.Resource(R.string.common_you)
+                } else {
+                    UiText.Dynamic(replyToSenderUsername.orEmpty())
+                },
+                contentPreview = replyToContentPreview.orEmpty()
+            )
+        }
     )
 }

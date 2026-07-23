@@ -56,6 +56,10 @@ class PlateDetailViewModel @Inject constructor(
         loadPlateDetail()
     }
 
+    override fun onRetry() {
+        loadPlateDetail()
+    }
+
     fun onAction(action: PlateDetailUiAction) {
         when (action) {
             PlateDetailUiAction.BackClicked -> launch { _uiEffect.emit(PlateDetailUiEffect.NavigateBack) }
@@ -65,7 +69,6 @@ class PlateDetailViewModel @Inject constructor(
             PlateDetailUiAction.ReviewClicked -> launch {
                 _uiEffect.emit(PlateDetailUiEffect.NavigateToReview(_uiState.value.plateCode))
             }
-            PlateDetailUiAction.RetryClicked -> loadPlateDetail()
             is PlateDetailUiAction.AvatarClicked -> launch {
                 _uiEffect.emit(PlateDetailUiEffect.NavigateToUserProfile(action.userId))
             }
@@ -87,9 +90,7 @@ class PlateDetailViewModel @Inject constructor(
             _uiEffect.emit(
                 PlateDetailUiEffect.NavigateToEditReview(
                     plateCode = _uiState.value.plateCode,
-                    reviewId = review.id,
-                    rating = review.rating,
-                    comment = review.comment.orEmpty()
+                    reviewId = review.id
                 )
             )
         }

@@ -3,8 +3,8 @@ package com.mefy.platemate.presentation.features.main.messages.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DoneAll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.R
@@ -12,16 +12,17 @@ import com.mefy.platemate.presentation.components.PMMessageItem
 import com.mefy.platemate.presentation.components.PMSwipeAction
 import com.mefy.platemate.presentation.components.PMSwipeActionRow
 import com.mefy.platemate.presentation.features.main.messages.MessageConversationUiModel
-import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun ConversationRow(
+    modifier: Modifier = Modifier,
     conversation: MessageConversationUiModel,
     onClick: () -> Unit,
     onSwipeToDelete: () -> Unit,
     onSwipeToMarkRead: () -> Unit,
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
 
     // Swipe right → mark read is only offered when there's something to clear; an already-read row
     // simply has no leading action (and no right-swipe).
@@ -46,6 +47,7 @@ internal fun ConversationRow(
         onEndToStart = onSwipeToDelete
     ) {
         PMMessageItem(
+            modifier = modifier,
             name = conversation.name,
             preview = conversation.preview,
             time = conversation.time,

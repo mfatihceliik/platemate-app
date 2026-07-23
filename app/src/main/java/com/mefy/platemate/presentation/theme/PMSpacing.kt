@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.theme
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -17,3 +18,7 @@ data class PMSpacing(
     val s48: Dp = 48.dp,
     val s64: Dp = 64.dp
 )
+
+val LocalSpacing = staticCompositionLocalOf<PMSpacing> {
+    error("No Spacing Provided")
+}

@@ -9,14 +9,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 
 @Composable
 fun PremiumInfoRoute(
-    viewModel: PremiumInfoViewModel,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PremiumInfoViewModel
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -29,8 +28,7 @@ fun PremiumInfoRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_premium_title),
-            onBackClick = onBackClick
+            title = stringResource(R.string.profile_premium_title)
         ),
         status = status,
         onRetry = viewModel::retry,

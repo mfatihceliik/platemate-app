@@ -11,22 +11,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.features.main.settings.themecolor.components.ThemeColorShimmerContent
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ThemeColorRoute(
     modifier: Modifier = Modifier,
-    viewModel: ThemeColorViewModel,
-    onBackClick: () -> Unit
+    viewModel: ThemeColorViewModel
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                ThemeColorUiEffect.NavigateBack -> onBackClick()
+                ThemeColorUiEffect.NavigateBack -> navController.navigateUp()
             }
         }
     }
@@ -42,7 +43,7 @@ fun ThemeColorRoute(
 
     PMBaseScreen(
         modifier = modifier, topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_theme_color_title), onBackClick = onBack
+            title = stringResource(R.string.profile_theme_color_title)
         ),
         status = status,
         keepTopBarWhileLoading = true,

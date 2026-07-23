@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.theme
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -68,6 +69,15 @@ data class PMSizing(
 
     /* CHAT */
 
+    /* TAB ROW */
+    val tabRowIndicatorHeight: Dp = 4.dp,
+    val tabRowIndicatorWidth: Dp = 32.dp,
+
+    /* Draggable Fab */
+    val draggableFabSize: Dp = 64.dp,
+
+    /* Banner */
+    val bannerProgressHeight: Dp = 4.dp,
 
     val gridHeight: Dp = 144.dp,
 
@@ -83,3 +93,7 @@ data class PMSizing(
     val chatComposerButton: Dp = 40.dp,
     val chatFieldMinHeight: Dp = 42.dp,
 )
+
+val LocalSizing = staticCompositionLocalOf<PMSizing> {
+    error("No Sizing Provided")
+}

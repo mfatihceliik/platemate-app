@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +30,8 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.pmRowPositionOf
 import com.mefy.platemate.presentation.features.main.platedetail.ReportReasonUiModel
 import com.mefy.platemate.presentation.features.main.platedetail.ReviewReportUiState
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun ReviewReportBottomSheet(
@@ -50,26 +48,27 @@ internal fun ReviewReportBottomSheet(
         modifier = modifier
     ) {
 
-        val dims = MaterialTheme.pmDimensions
-        val colors = MaterialTheme.pmColors
+        val colors = PMTheme.colors
+        val sizing = PMTheme.sizing
+        val spacing = PMTheme.spacing
         val canSubmit = report.selectedReasonCode != null && !report.isSubmitting
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = dims.spacing.s32)
+            contentPadding = PaddingValues(bottom = spacing.s32)
         ) {
             item(key = "user_card") {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(colors.surfaceSecondary)
-                        .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+                        .padding(horizontal = spacing.s16, vertical = spacing.s12),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s12),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(dims.sizing.plateBadgeSm)
+                            .size(sizing.plateBadgeSm)
                             .clip(CircleShape)
                             .background(colors.primaryContainer),
                         contentAlignment = Alignment.Center
@@ -99,7 +98,7 @@ internal fun ReviewReportBottomSheet(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = dims.spacing.s24),
+                            .padding(vertical = spacing.s24),
                         contentAlignment = Alignment.Center
                     ) {
                         PMCircularProgressIndicator()
@@ -117,8 +116,8 @@ internal fun ReviewReportBottomSheet(
                         showChevron = false,
                         trailing = { RadioIndicator(isSelected = reason.code == report.selectedReasonCode) },
                         modifier = Modifier
-                            .padding(horizontal = dims.spacing.s16)
-                            .padding(top = if (index == 0) dims.spacing.s16 else dims.spacing.s0)
+                            .padding(horizontal = spacing.s16)
+                            .padding(top = if (index == 0) spacing.s16 else spacing.s0)
                     )
                 }
             }
@@ -132,8 +131,8 @@ internal fun ReviewReportBottomSheet(
                     enabled = report.descriptionEnabled,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dims.spacing.s16)
-                        .padding(top = dims.spacing.s16)
+                        .padding(horizontal = spacing.s16)
+                        .padding(top = spacing.s16)
                 )
             }
 
@@ -145,8 +144,8 @@ internal fun ReviewReportBottomSheet(
                     onSubmit = onSubmit,
                     submitEnabled = canSubmit,
                     modifier = Modifier
-                        .padding(horizontal = dims.spacing.s16)
-                        .padding(top = dims.spacing.s16)
+                        .padding(horizontal = spacing.s16)
+                        .padding(top = spacing.s16)
                 )
             }
         }

@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,9 +18,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMRatingBar(
@@ -30,14 +27,15 @@ fun PMRatingBar(
     starNumber: Int,
     percentage: Float
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val barShape = RoundedCornerShape(dims.radius.r12)
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
+    val barShape = PMTheme.shapes.large
 
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         PMText(
             text = starNumber.toString(),
@@ -48,21 +46,21 @@ fun PMRatingBar(
 
         PMIcon(
             imageVector = Icons.Filled.Star,
-            size = dims.sizing.iconXs,
+            size = sizing.iconXs,
             tint = colors.iconStar,
         )
 
         Box(
             modifier = Modifier
                 .weight(1f)
-                .height(dims.sizing.ratingBarHeight)
+                .height(sizing.ratingBarHeight)
                 .clip(barShape)
                 .background(colors.surfaceVariant)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(percentage.coerceIn(0f, 1f))
-                    .height(dims.sizing.ratingBarHeight)
+                    .height(sizing.ratingBarHeight)
                     .clip(barShape)
                     .background(colors.primary)
             )
@@ -71,7 +69,7 @@ fun PMRatingBar(
         PMText(
             text = "${(percentage * 100).toInt()}%",
             color = colors.textLabel,
-            modifier = Modifier.width(dims.spacing.s32),
+            modifier = Modifier.width(spacing.s32),
             textAlign = TextAlign.End
         )
     }
@@ -81,12 +79,12 @@ fun PMRatingBar(
 @Composable
 private fun PMRatingBarPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
+        val spacing = PMTheme.spacing
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             PMRatingBar(starNumber = 5, percentage = 0.78f)
             PMRatingBar(starNumber = 4, percentage = 0.14f)

@@ -14,9 +14,7 @@ data class SearchDetailDestination(
 @Serializable
 data class ReviewDestination(
     val plateCode: String,
-    val reviewId: Long = -1L,
-    val initialRating: Int = 0,
-    val initialComment: String = ""
+    val reviewId: Long = -1L
 ) : AppDestination
 
 @Serializable

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,12 +18,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.premium.PremiumPeriod
 import com.mefy.platemate.domain.model.premium.PremiumPlan
-import com.mefy.platemate.presentation.common.text.PriceFormatter
+import com.mefy.platemate.presentation.common.formatter.PriceFormatter
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PricingSection(
@@ -32,22 +30,24 @@ internal fun PricingSection(
     monthly: PremiumPlan?,
     yearly: PremiumPlan?
 ) {
-    val colors = MaterialTheme.pmColors
-    val shapes = MaterialTheme.shapes
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val shapes = PMTheme.shapes
+    val stroke = PMTheme.stroke
+
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s10)
     ) {
         if (monthly != null) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .background(colors.surface, shapes.large)
-                    .border(dims.stroke.st1, colors.cardBorder, shapes.large)
-                    .padding(dims.spacing.s12),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                    .background(colors.surface, shapes.medium)
+                    .border(stroke.st1, colors.cardBorder, shapes.medium)
+                    .padding(spacing.s12),
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = stringResource(R.string.profile_premium_monthly),
@@ -69,9 +69,9 @@ internal fun PricingSection(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(colors.primaryContainer, shapes.large)
-                        .padding(dims.spacing.s12),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                        .background(colors.primaryContainer, shapes.medium)
+                        .padding(spacing.s12),
+                    verticalArrangement = Arrangement.spacedBy(spacing.s4)
                 ) {
                     PMText(
                         text = stringResource(R.string.profile_premium_yearly),
@@ -94,10 +94,10 @@ internal fun PricingSection(
                         color = colors.onPrimary,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(end = dims.spacing.s12)
-                            .clip(shapes.extraLarge)
+                            .padding(end = spacing.s12)
+                            .clip(shapes.medium)
                             .background(colors.primary)
-                            .padding(horizontal = dims.spacing.s8, vertical = dims.spacing.s4)
+                            .padding(horizontal = spacing.s8, vertical = spacing.s4)
                     )
                 }
             }

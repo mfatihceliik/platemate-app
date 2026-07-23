@@ -1,5 +1,15 @@
 package com.mefy.platemate.presentation.components
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -7,129 +17,135 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.LeadingIconTab
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.SecondaryScrollableTabRow
-import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabIndicatorScope
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PMTabRow(
+    modifier: Modifier = Modifier,
     selectedTabIndex: Int,
     tabs: List<PMTabItem>,
     onTabSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    style: PMTabRowStyle = PMTabRowStyle.Primary,
-    scrollable: Boolean = false,
-    containerColor: Color = MaterialTheme.pmColors.onPrimary,
-    contentColor: Color = MaterialTheme.pmColors.primary,
-    unselectedContentColor: Color = MaterialTheme.pmColors.textSecondary,
+    selectedTabBackgroundColor: Color = PMTheme.colors.primary.copy(alpha = .4f),
+    containerColor: Color = PMTheme.colors.surfaceVariant,
+    contentColor: Color = PMTheme.colors.primary,
+    unselectedContentColor: Color = PMTheme.colors.textSecondary,
     indicatorColor: Color = contentColor,
-    indicatorHeight: Dp = MaterialTheme.pmDimensions.spacing.s4,
-    indicatorShape: Shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r4),
-    matchIndicatorContentSize: Boolean = false,
+    indicatorHeight: Dp = PMTheme.sizing.tabRowIndicatorHeight,
+    indicatorWidthFraction: Float = 0.35f,
+    indicatorShape: Shape = PMTheme.shapes.extraSmall,
     selectedFontWeight: FontWeight = FontWeight.SemiBold,
     unselectedFontWeight: FontWeight = FontWeight.Normal,
     showDivider: Boolean = false
 ) {
 
-    val indicator: @Composable TabIndicatorScope.() -> Unit = {
-        TabRowDefaults.PrimaryIndicator(
-            modifier = Modifier.tabIndicatorOffset(
-                selectedTabIndex = selectedTabIndex,
-                matchContentSize = matchIndicatorContentSize
-            ),
-            height = indicatorHeight,
-            color = indicatorColor,
-            shape = indicatorShape
-        )
+    val radius = PMTheme.radius
+    val shape = RoundedCornerShape(
+        topStart = radius.r10,
+        topEnd = radius.r10,
+    )
+    val density = LocalDensity.current
+    val tabPositions = remember {
+        mutableStateListOf<TabPositionInfo>()
     }
+    val currentTab = tabPositions.getOrNull(selectedTabIndex)
+    val indicatorWidth = (currentTab?.width ?: 0.dp) * indicatorWidthFraction
+    val targetOffset = if (currentTab != null) {
+        currentTab.left + (currentTab.width - indicatorWidth) / 2
+    } else {
+        0.dp
+    }
+    val animatedOffset by animateDpAsState(
+        targetValue = targetOffset,
+        label = "PMTabIndicator"
+    )
 
-    val divider: @Composable () -> Unit = {
+    Column(
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(containerColor)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                tabs.forEachIndexed { index, tab ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .onGloballyPositioned { coordinates ->
+                                val info = with(density) {
+                                    TabPositionInfo(
+                                        left = coordinates.positionInParent().x.toDp(),
+                                        width = coordinates.size.width.toDp()
+                                    )
+                                }
+                                if (index < tabPositions.size) {
+                                    if (tabPositions[index] != info) tabPositions[index] = info
+                                } else {
+                                    tabPositions.add(info)
+                                }
+                            }
+                            .background(
+                                if (selectedTabIndex == index) selectedTabBackgroundColor else Color.Transparent
+                            )
+                    ) {
+                        PMTab(
+                            tab = tab,
+                            selected = selectedTabIndex == index,
+                            onClick = { onTabSelected(index) },
+                            selectedColor = contentColor,
+                            unselectedColor = unselectedContentColor,
+                            selectedWeight = selectedFontWeight,
+                            unselectedWeight = unselectedFontWeight
+                        )
+                    }
+                }
+            }
+            if (currentTab != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(x = animatedOffset)
+                        .width(indicatorWidth)
+                        .height(indicatorHeight)
+                        .clip(indicatorShape)
+                        .background(indicatorColor)
+                )
+            }
+        }
         if (showDivider) {
             HorizontalDivider()
         }
-    }
 
-    val tabContent: @Composable () -> Unit = {
-        tabs.forEachIndexed { index, tab ->
-            PMTab(
-                tab = tab,
-                selected = selectedTabIndex == index,
-                onClick = { onTabSelected(index) },
-                selectedColor = contentColor,
-                unselectedColor = unselectedContentColor,
-                selectedWeight = selectedFontWeight,
-                unselectedWeight = unselectedFontWeight
-            )
-        }
-    }
-
-    when {
-
-        style == PMTabRowStyle.Primary && !scrollable ->
-            PrimaryTabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = modifier,
-                containerColor = containerColor,
-                contentColor = contentColor,
-                indicator = indicator,
-                divider = divider,
-                tabs = tabContent
-            )
-
-        style == PMTabRowStyle.Secondary && !scrollable ->
-            SecondaryTabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = modifier,
-                containerColor = containerColor,
-                contentColor = contentColor,
-                indicator = indicator,
-                divider = divider,
-                tabs = tabContent
-            )
-
-        style == PMTabRowStyle.Primary && scrollable ->
-            PrimaryScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = modifier,
-                containerColor = containerColor,
-                contentColor = contentColor,
-                indicator = indicator,
-                divider = divider,
-                tabs = tabContent
-            )
-
-        else ->
-            SecondaryScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = modifier,
-                containerColor = containerColor,
-                contentColor = contentColor,
-                indicator = indicator,
-                divider = divider,
-                tabs = tabContent
-            )
     }
 }
 
@@ -143,14 +159,15 @@ private fun PMTab(
     selectedWeight: FontWeight,
     unselectedWeight: FontWeight
 ) {
-    val dims = MaterialTheme.pmDimensions
-
+    val sizing = PMTheme.sizing
     val title: @Composable () -> Unit = {
         PMText(
             text = tab.title,
             style = PMTextStyle.Body,
             color = if (selected) selectedColor else unselectedColor,
-            fontWeight = if (selected) selectedWeight else unselectedWeight
+            fontWeight = if (selected) selectedWeight else unselectedWeight,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 
@@ -160,7 +177,13 @@ private fun PMTab(
             selected = selected,
             enabled = tab.enabled,
             onClick = onClick,
-            icon = { PMIcon(imageVector = icon, size = dims.sizing.iconMd) },
+            icon = {
+                PMIcon(
+                    imageVector = icon,
+                    size = sizing.iconMd,
+                    tint = if (selected) selectedColor else unselectedColor
+                )
+            },
             text = title
         )
     } else {
@@ -174,11 +197,10 @@ private fun PMTab(
 }
 
 
-
-enum class PMTabRowStyle {
-    Primary,
-    Secondary
-}
+private data class TabPositionInfo(
+    val left: Dp,
+    val width: Dp
+)
 
 data class PMTabItem(
     val title: String,

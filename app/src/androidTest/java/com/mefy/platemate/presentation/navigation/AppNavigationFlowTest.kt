@@ -23,6 +23,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.bottombar.MainBottomBar
+import com.mefy.platemate.presentation.navigation.graphs.authGraph
 import com.mefy.platemate.presentation.navigation.graphs.mainGraph
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

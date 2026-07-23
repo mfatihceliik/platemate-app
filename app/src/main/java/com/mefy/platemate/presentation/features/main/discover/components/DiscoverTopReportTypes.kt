@@ -3,28 +3,27 @@ package com.mefy.platemate.presentation.features.main.discover.components
 import android.graphics.Color.parseColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.features.uimodel.DiscoverReportTypeCountUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun DiscoverTopReportTypes(
-    reportTypes: List<DiscoverReportTypeCountUiModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    reportTypes: List<DiscoverReportTypeCountUiModel>
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val fallbackAccent = MaterialTheme.pmColors.primary
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val fallbackAccent = colors.primary
 
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         items(count = reportTypes.size, key = { reportTypes[it].code }) { index ->
             val reportType = reportTypes[index]

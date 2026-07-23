@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -26,7 +25,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMTabRow
 import com.mefy.platemate.presentation.components.PMTabItem
 import com.mefy.platemate.presentation.features.main.search.components.SearchShimmerContent
@@ -38,12 +37,12 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SearchRoute(
+    modifier: Modifier = Modifier,
     viewModel: SearchViewModel,
     userSearchViewModel: UserSearchViewModel,
     onNavigateToSearchDetail: (String) -> Unit,
     onNavigateToCameraScanner: () -> Unit,
-    onNavigateToUserProfile: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToUserProfile: (Long) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val userSearchState by userSearchViewModel.uiState.collectAsStateWithLifecycle()
@@ -88,8 +87,9 @@ fun SearchRoute(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.main_tab_search),
             alignment = PMTopBarAlignment.Start,
-            onBackClick = null
+            showBackButton = false
         ),
+        viewModel = viewModel,
         status = status,
         loading = { innerPadding ->
             SearchShimmerContent(
@@ -97,8 +97,7 @@ fun SearchRoute(
                     .fillMaxSize()
                     .padding(innerPadding)
             )
-        },
-        onRetry = { onAction(SearchUiAction.RetryClicked) }
+        }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize()) {
             PMTabRow(

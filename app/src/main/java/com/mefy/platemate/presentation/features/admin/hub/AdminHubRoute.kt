@@ -1,8 +1,6 @@
 package com.mefy.platemate.presentation.features.admin.hub
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,21 +13,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Hub menüsü backend'den gelir (localized başlık + badge). Route yalnız state/effect
- * bağlar; code → destination eşlemesi nav katmanında ([onItemClick] callback'i).
- */
 @Composable
 fun AdminHubRoute(
     viewModel: AdminHubViewModel,
-    onBackClick: () -> Unit,
     onItemClick: (code: String) -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Detay ekranından dönüşte badge sayıları tazelensin.
@@ -38,7 +32,7 @@ fun AdminHubRoute(
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                AdminHubUiEffect.NavigateBack -> onBackClick()
+                AdminHubUiEffect.NavigateBack -> navController.navigateUp()
                 is AdminHubUiEffect.NavigateToItem -> onItemClick(effect.code)
             }
         }
@@ -57,13 +51,11 @@ fun AdminHubRoute(
 
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.admin_panel_title),
-            onBackClick = onBackClicked
+            title = stringResource(R.string.admin_panel_title)
         ),
         status = status,
         keepTopBarWhileLoading = true,
         onRetry = onRetryClicked,
-        contentPadding = PaddingValues(MaterialTheme.pmDimensions.spacing.s16),
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         AdminHubScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

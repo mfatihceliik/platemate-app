@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,9 +20,8 @@ import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMSearchBar
 import com.mefy.platemate.presentation.components.pmRowPositionOf
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun LanguageScreen(
@@ -32,8 +30,9 @@ fun LanguageScreen(
     onAction: (LanguageUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     val onQueryChange = remember(onAction) { { q: String -> onAction(LanguageUiAction.SearchQueryChanged(q)) } }
 
@@ -42,7 +41,7 @@ fun LanguageScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(innerPadding),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         PMSearchBar(
             query = state.searchQuery,
@@ -66,7 +65,7 @@ fun LanguageScreen(
                             PMIcon(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
-                                size = dims.sizing.iconLg,
+                                size = sizing.iconLg,
                                 tint = colors.primary
                             )
                         }

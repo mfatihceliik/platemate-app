@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.theme
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -16,3 +17,7 @@ data class PMRadius(
     val r24: Dp = 24.dp,
     val rFull: Dp = 999.dp
 )
+
+val LocalRadius = staticCompositionLocalOf<PMRadius> {
+    error("No Radius Provided")
+}

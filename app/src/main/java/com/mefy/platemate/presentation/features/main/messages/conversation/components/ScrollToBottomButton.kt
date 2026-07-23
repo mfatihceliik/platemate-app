@@ -7,27 +7,22 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Circular "jump to newest message" button overlaid on the conversation list. Fades/scales
- * in when [visible]; the caller positions it via [modifier] (e.g. `align(BottomEnd)`).
- */
 @Composable
 internal fun ScrollToBottomButton(
+    modifier: Modifier = Modifier,
     visible: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
 
     AnimatedVisibility(
         visible = visible,
@@ -39,7 +34,8 @@ internal fun ScrollToBottomButton(
         PMIconButton(
             imageVector = Icons.Default.KeyboardArrowDown,
             onClick = onClick,
-            size = dims.sizing.iconLg,
+            variant = PMIconButtonVariant.Outlined,
+            size = sizing.iconLg,
             containerColor = colors.surface
         )
     }

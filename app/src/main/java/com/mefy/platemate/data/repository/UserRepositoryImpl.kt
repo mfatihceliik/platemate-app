@@ -8,12 +8,14 @@ import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.data.local.SessionStore
 import com.mefy.platemate.data.mapper.UserMapper
+import com.mefy.platemate.data.mapper.UserSearchResultMapper
 import com.mefy.platemate.core.mapper.mapList
 import com.mefy.platemate.data.remote.rest.service.UserApiService
 import com.mefy.platemate.data.remote.dto.user.UpdateUserRequest
 import com.mefy.platemate.data.remote.safeApiCall
 import com.mefy.platemate.data.remote.safeResultCall
 import com.mefy.platemate.domain.model.user.User
+import com.mefy.platemate.domain.model.user.UserSearchResult
 import com.mefy.platemate.domain.repository.UserRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
@@ -23,6 +25,7 @@ class UserRepositoryImpl @Inject constructor(
     private val api: UserApiService,
     private val sessionStore: SessionStore,
     private val userMapper: UserMapper,
+    private val userSearchResultMapper: UserSearchResultMapper,
     private val appDispatchers: AppDispatchers
 ) : UserRepository {
 
@@ -36,9 +39,9 @@ class UserRepositoryImpl @Inject constructor(
             safeApiCall { api.getUserById(id) }.map(userMapper::map)
         }
 
-    override suspend fun searchByUsername(username: String): AppResult<List<User>> =
+    override suspend fun searchByUsername(username: String): AppResult<List<UserSearchResult>> =
         withContext(appDispatchers.io) {
-            safeApiCall { api.searchUserByUsername(username) }.map(userMapper::mapList)
+            safeApiCall { api.searchUserByUsername(username) }.map(userSearchResultMapper::mapList)
         }
 
     override suspend fun updateCurrentUser(email: String?, password: String?): AppResult<Unit> =

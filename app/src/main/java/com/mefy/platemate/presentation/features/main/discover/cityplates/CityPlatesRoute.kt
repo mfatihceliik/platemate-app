@@ -9,16 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CityPlatesRoute(
+    modifier: Modifier = Modifier,
     viewModel: CityPlatesViewModel,
-    onNavigateBack: () -> Unit,
-    onNavigateToPlateDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToPlateDetail: (String) -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
@@ -26,7 +27,7 @@ fun CityPlatesRoute(
     LaunchedEffect(viewModel) {
         viewModel.uiEffects.collectLatest { effect ->
             when (effect) {
-                CityPlatesUiEffect.NavigateBack -> onNavigateBack()
+                CityPlatesUiEffect.NavigateBack -> navController.navigateUp()
                 is CityPlatesUiEffect.NavigateToPlateDetail -> onNavigateToPlateDetail(effect.plateCode)
             }
         }
@@ -34,7 +35,6 @@ fun CityPlatesRoute(
 
     val onAction = viewModel::onAction
 
-    val onRetry = remember(onAction) { { onAction(CityPlatesUiAction.RetryClicked) } }
     val onBack = remember(onAction) { { onAction(CityPlatesUiAction.BackClicked) } }
 
     val status = when {
@@ -48,11 +48,10 @@ fun CityPlatesRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = state.cityName,
-            onBackClick = onBack
+            title = state.cityName
         ),
-        status = status,
-        onRetry = onRetry
+        viewModel = viewModel,
+        status = status
     ) { innerPadding ->
         CityPlatesScreen(
             state = state,

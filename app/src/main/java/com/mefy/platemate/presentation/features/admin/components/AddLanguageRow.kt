@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,22 +12,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMTextField
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun AddLanguageRow(
     onAdd: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
     var locale by remember { mutableStateOf("") }
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMTextField(

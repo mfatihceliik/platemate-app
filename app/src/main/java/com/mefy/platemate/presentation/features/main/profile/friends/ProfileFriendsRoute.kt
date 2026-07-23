@@ -9,27 +9,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PeopleOutline
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import androidx.compose.runtime.LaunchedEffect
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMEmptyState
 
 @Composable
 fun ProfileFriendsRoute(
+    modifier: Modifier = Modifier,
     viewModel: ProfileFriendsViewModel,
-    onBackClick: () -> Unit,
-    onNavigateToUserProfile: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToUserProfile: (String) -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    androidx.compose.runtime.LaunchedEffect(viewModel.uiEffect) {
+    LaunchedEffect(viewModel.uiEffect) {
         viewModel.uiEffect.collect { effect ->
             when (effect) {
-                is ProfileFriendsUiEffect.NavigateBack -> onBackClick()
+                is ProfileFriendsUiEffect.NavigateBack -> navController.navigateUp()
                 is ProfileFriendsUiEffect.NavigateToUserProfile -> onNavigateToUserProfile(effect.userId)
             }
         }
@@ -49,10 +51,8 @@ fun ProfileFriendsRoute(
             alignment = PMTopBarAlignment.Start,
             onBackClick = { viewModel.onAction(ProfileFriendsUiAction.BackClicked) }
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = {
-            viewModel.onAction(ProfileFriendsUiAction.RetryClicked)
-        },
         loading = { innerPadding ->
             PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(innerPadding))
         },

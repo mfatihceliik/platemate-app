@@ -30,4 +30,17 @@ object DialogFactory {
         variant = DialogVariant.Error,
         onConfirm = onConfirm
     )
+
+    /** Kamera izni kalıcı reddedilmiş (shouldShowRequestPermissionRationale=false); sistem
+     * dialogu bir daha gösterilemez, kullanıcı Ayarlar'a yönlendirilir. */
+    fun cameraPermissionDeniedDialog(onOpenSettings: () -> Unit, onDismiss: () -> Unit): DialogModel = DialogModel(
+        title = UiText.Resource(R.string.camera_permission_denied_title),
+        message = UiText.Resource(R.string.camera_permission_denied_message),
+        confirmText = UiText.Resource(R.string.camera_permission_open_settings),
+        dismissText = UiText.Resource(R.string.common_cancel),
+        dismissible = true,
+        variant = DialogVariant.Info,
+        onConfirm = onOpenSettings,
+        onDismiss = onDismiss
+    )
 }

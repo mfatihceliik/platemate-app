@@ -9,23 +9,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMCircularProgressIndicator(
     modifier: Modifier = Modifier,
-    size: Dp = MaterialTheme.pmDimensions.sizing.circleProgressBarSm,
-    strokeWidth: Dp = MaterialTheme.pmDimensions.stroke.st2,
-    color: Color = MaterialTheme.pmColors.primary,
+    size: Dp = PMTheme.sizing.circleProgressBarSm,
+    strokeWidth: Dp = PMTheme.stroke.st2,
+    color: Color = PMTheme.colors.primary,
     trackColor: Color = Color.Transparent,
     fillMaxSize: Boolean = false,
 ) {
@@ -69,32 +67,34 @@ private fun PMCircularProgressIndicatorDarkPreview() {
 
 @Composable
 private fun PMCircularProgressIndicatorPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.pmColors.background)
-            .padding(dims.spacing.s24),
+            .background(colors.background)
+            .padding(spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
+        verticalArrangement = Arrangement.spacedBy(spacing.s24)
     ) {
         PMCircularProgressIndicator(
-            size = dims.sizing.circleProgressBarXs,
-            strokeWidth = dims.stroke.st2
+            size = sizing.circleProgressBarXs,
+            strokeWidth = stroke.st2
         )
         PMCircularProgressIndicator(
-            size = dims.sizing.circleProgressBarSm,
-            strokeWidth = dims.stroke.st2
+            size = sizing.circleProgressBarSm,
+            strokeWidth = stroke.st2
         )
         PMCircularProgressIndicator(
-            size = dims.sizing.circleProgressBarMd,
-            strokeWidth = dims.stroke.st2
+            size = sizing.circleProgressBarMd,
+            strokeWidth = stroke.st2
         )
         PMCircularProgressIndicator(
-            size = dims.sizing.circleProgressBarLg,
-            strokeWidth = dims.stroke.st2
+            size = sizing.circleProgressBarLg,
+            strokeWidth = stroke.st2
         )
     }
 }

@@ -9,5 +9,6 @@ data class UpdateSettingsRequest(
     @SerializedName("friendNotificationsEnabled") val friendNotificationsEnabled: Boolean?,
     @SerializedName("plateReviewNotificationsEnabled") val plateReviewNotificationsEnabled: Boolean? = null,
     @SerializedName("newFollowerNotificationsEnabled") val newFollowerNotificationsEnabled: Boolean? = null,
-    @SerializedName("reviewReplyNotificationsEnabled") val reviewReplyNotificationsEnabled: Boolean? = null
+    @SerializedName("reviewReplyNotificationsEnabled") val reviewReplyNotificationsEnabled: Boolean? = null,
+    @SerializedName("followingListVisible") val followingListVisible: Boolean? = null
 )

@@ -10,5 +10,4 @@ sealed interface SettingsUiAction {
     data object NotificationPreferencesClicked : SettingsUiAction
     data object AdminPanelClicked : SettingsUiAction
     data object SignOutClicked : SettingsUiAction
-    data object RetryClicked : SettingsUiAction
 }

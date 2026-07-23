@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mefy.platemate"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "0.1"
@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
     implementation(libs.lifecycle.process)
     implementation(libs.play.services.mlkit.text.recognition.common)
     testImplementation(libs.junit)
@@ -90,7 +91,6 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.benchmark.macro.junit4)
@@ -103,7 +103,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -115,6 +115,8 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    debugImplementation(libs.chucker.debug)
+    releaseImplementation(libs.chucker.release)
 
     // Serialization
     implementation(libs.gson)

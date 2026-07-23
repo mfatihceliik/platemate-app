@@ -7,21 +7,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.features.admin.components.AddLanguageRow
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun SocialPlatformFormScreen(
@@ -30,7 +28,7 @@ internal fun SocialPlatformFormScreen(
     onAction: (SocialPlatformFormUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     val onSaveClicked = remember(onAction) { { onAction(SocialPlatformFormUiAction.SaveClicked) } }
 
@@ -41,7 +39,7 @@ internal fun SocialPlatformFormScreen(
     ) {
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             item {
                 PMSectionLabel(text = stringResource(R.string.admin_social_platform_field_code))
@@ -84,8 +82,8 @@ internal fun SocialPlatformFormScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dims.spacing.s8),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                .padding(spacing.s8),
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             if (!state.isLoading) {
                 PMButton(
@@ -117,8 +115,7 @@ private fun SocialPlatformFormScreenEditLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         SocialPlatformFormScreen(
             state = socialPlatformFormPreviewState,
-            onAction = {},
-            innerPadding = PaddingValues(0.dp)
+            onAction = {}
         )
     }
 }
@@ -129,8 +126,7 @@ private fun SocialPlatformFormScreenEditDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         SocialPlatformFormScreen(
             state = socialPlatformFormPreviewState,
-            onAction = {},
-            innerPadding = PaddingValues(0.dp)
+            onAction = {}
         )
     }
 }
@@ -141,8 +137,7 @@ private fun SocialPlatformFormScreenAddPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
         SocialPlatformFormScreen(
             state = SocialPlatformFormUiState(isEdit = false),
-            onAction = {},
-            innerPadding = PaddingValues(0.dp)
+            onAction = {}
         )
     }
 }

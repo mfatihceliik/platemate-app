@@ -5,17 +5,15 @@ import com.mefy.platemate.core.mapper.Mapper
 import com.mefy.platemate.domain.model.discovery.DiscoveryFeedType
 import com.mefy.platemate.domain.model.discovery.DiscoveryForYou
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
-import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.discovery.RecentActivity
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.presentation.common.text.CityNameResolver
-import com.mefy.platemate.presentation.common.text.NumberFormatter
-import com.mefy.platemate.presentation.common.text.RelativeTimeFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.RelativeTimeFormatter
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverForYouUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
@@ -192,35 +190,16 @@ class DefaultDiscoverUiMapper @Inject constructor(
         const val MAX_CITY_STATS = 5
     }
 
-    override fun mapTabPlates(
-        tabs: DiscoveryTabs,
-        filter: DiscoverFilterUi,
-        bookmarkedCodes: Set<String>
-    ): List<PlateDetailUiModel> {
-        val plates = when (filter) {
-            DiscoverFilterUi.Trend -> tabs.trendPlates
-            DiscoverFilterUi.Careless -> tabs.attentionPlates
-            DiscoverFilterUi.GoodDriver -> tabs.goodDriverPlates
-            DiscoverFilterUi.Newest -> tabs.newPlates
-        }
-
-        return plates.mapIndexed { index, plate ->
-            val normalizedCode = validateTurkishPlateUseCase.normalize(plate.plateCode)
-            val isBookmarked = bookmarkedCodes.contains(normalizedCode)
-            mapTabPlateToUiModel(plate = plate, rank = index + 1, idSuffix = filter.name, isBookmarked = isBookmarked)
-        }
-    }
-
     override fun mapFeedPlates(
         plates: List<PlateDetail>,
-        filter: DiscoverFilterUi,
+        filter: String,
         bookmarkedCodes: Set<String>,
         startRank: Int
     ): List<PlateDetailUiModel> {
         return plates.mapIndexed { index, plate ->
             val normalizedCode = validateTurkishPlateUseCase.normalize(plate.plateCode)
             val isBookmarked = bookmarkedCodes.contains(normalizedCode)
-            mapTabPlateToUiModel(plate = plate, rank = startRank + index, idSuffix = filter.name, isBookmarked = isBookmarked)
+            mapTabPlateToUiModel(plate = plate, rank = startRank + index, idSuffix = filter, isBookmarked = isBookmarked)
         }
     }
 

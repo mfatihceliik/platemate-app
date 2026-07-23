@@ -10,22 +10,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CardStyleRoute(
+    modifier: Modifier = Modifier,
     viewModel: CardStyleViewModel,
-    onNavigateBack: () -> Unit,
-    onNavigateToPremiumInfo: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToPremiumInfo: () -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffects.collectLatest { effect ->
             when (effect) {
-                CardStyleUiEffect.NavigateBack -> onNavigateBack()
+                CardStyleUiEffect.NavigateBack -> navController.navigateUp()
                 CardStyleUiEffect.NavigateToPremiumInfo -> onNavigateToPremiumInfo()
             }
         }
@@ -37,8 +38,7 @@ fun CardStyleRoute(
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.card_style_title),
-            onBackClick = onBack
+            title = stringResource(R.string.card_style_title)
         ),
         status = ScreenStatus.Content
     ) { innerPadding ->

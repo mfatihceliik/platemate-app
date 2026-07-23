@@ -3,10 +3,13 @@ package com.mefy.platemate.data.remote.websocket.datasource
 import android.util.Log
 import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.core.coroutine.AppDispatchers
+import com.mefy.platemate.data.remote.language.LanguageProvider
 import com.mefy.platemate.domain.model.socket.SocketConnectionState
+import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import kotlin.coroutines.resume
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -21,16 +24,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 
 @Singleton
 class SocketConnectionManager @Inject constructor(
     @param:Named("WebSocketEndpoint") private val socketEndpoint: String,
     private val socketAuthTokenProvider: SocketAuthTokenProvider,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val languageProvider: LanguageProvider
 ) {
 
     private var socket: Socket? = null
@@ -82,6 +88,21 @@ class SocketConnectionManager @Inject constructor(
             currentSocket.emit(eventName, value)
         }
     }
+
+    // Ack-aware emit: resolves with the server's ack payload, or null if the socket is
+    // unavailable or [timeoutMs] elapses with no ack (the two cases the caller distinguishes by
+    // checking connectivity first, same as the plain [emit] above).
+    suspend fun emitWithAck(eventName: String, payload: JSONObject, timeoutMs: Long = 30_000L): JSONObject? =
+        withContext(appDispatchers.io) {
+            val currentSocket = ensureConnected() ?: return@withContext null
+            withTimeoutOrNull(timeoutMs) {
+                suspendCancellableCoroutine { cont ->
+                    currentSocket.emit(eventName, payload, Ack { args ->
+                        if (cont.isActive) cont.resume(args.firstOrNull()?.toJsonObjectOrNull())
+                    })
+                }
+            }
+        }
 
     fun observeEvent(eventName: String): Flow<JSONObject> = callbackFlow {
         val listener = Emitter.Listener { args ->
@@ -191,8 +212,14 @@ class SocketConnectionManager @Inject constructor(
     /** Verilen token ile soketi kurar ve bağlanır. Senkron hata olursa null döner. */
     private fun buildSocket(token: String): Socket? =
         runCatching {
+            // REST tarafında LanguageInterceptor aynısını yapıyor; soket handshake'i de aynı
+            // sinyali taşımazsa backend'in "error" event'i (limit/engel/kapalı/red mesajları)
+            // her zaman backend'in varsayılan dilinde gelir, uygulamanın dil ayarını yok sayar.
             val options = IO.Options.builder()
                 .setQuery("token=$token")
+                .setExtraHeaders(
+                    mapOf(ACCEPT_LANGUAGE_HEADER to listOf(languageProvider.getAcceptLanguage()))
+                )
                 .build()
 
             IO.socket(socketEndpoint, options).also { currentSocket ->
@@ -210,5 +237,6 @@ class SocketConnectionManager @Inject constructor(
     private companion object {
         const val TAG = "SocketConnection"
         const val REAUTH_DEBOUNCE_MS = 10_000L
+        const val ACCEPT_LANGUAGE_HEADER = "Accept-Language"
     }
 }

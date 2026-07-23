@@ -59,10 +59,15 @@ class NotificationPreferencesViewModel @Inject constructor(
             is NotificationPreferencesUiAction.ReviewReplyChanged ->
                 _uiState.updateWith(reviewReplyEnabled = action.enabled)
 
-            NotificationPreferencesUiAction.SaveClicked -> save()
+            is NotificationPreferencesUiAction.FollowingListVisibleChanged ->
+                _uiState.updateWith(followingListVisible = action.enabled)
 
-            NotificationPreferencesUiAction.RetryClicked -> load()
+            NotificationPreferencesUiAction.SaveClicked -> save()
         }
+    }
+
+    override fun onRetry() {
+        load()
     }
 
     private fun load() {
@@ -84,6 +89,7 @@ class NotificationPreferencesViewModel @Inject constructor(
                             plateReviewEnabled = settings.plateReviewNotificationsEnabled,
                             newFollowerEnabled = settings.newFollowerNotificationsEnabled,
                             reviewReplyEnabled = settings.reviewReplyNotificationsEnabled,
+                            followingListVisible = settings.followingListVisible,
                             initialMessagingEnabled = settings.messagingEnabled,
                             initialOnlineVisibilityEnabled = settings.onlineVisibilityEnabled,
                             initialMessageNotificationsEnabled = settings.messageNotificationsEnabled,
@@ -91,6 +97,7 @@ class NotificationPreferencesViewModel @Inject constructor(
                             initialPlateReviewEnabled = settings.plateReviewNotificationsEnabled,
                             initialNewFollowerEnabled = settings.newFollowerNotificationsEnabled,
                             initialReviewReplyEnabled = settings.reviewReplyNotificationsEnabled,
+                            initialFollowingListVisible = settings.followingListVisible,
                             hasChanges = false
                         )
                     }
@@ -118,7 +125,8 @@ class NotificationPreferencesViewModel @Inject constructor(
                         friendNotificationsEnabled = state.friendNotificationsEnabled,
                         plateReviewNotificationsEnabled = state.plateReviewEnabled,
                         newFollowerNotificationsEnabled = state.newFollowerEnabled,
-                        reviewReplyNotificationsEnabled = state.reviewReplyEnabled
+                        reviewReplyNotificationsEnabled = state.reviewReplyEnabled,
+                        followingListVisible = state.followingListVisible
                     )
                 )
             ) {
@@ -133,6 +141,7 @@ class NotificationPreferencesViewModel @Inject constructor(
                             initialNewFollowerEnabled = it.newFollowerEnabled,
                             initialPlateReviewEnabled = it.plateReviewEnabled,
                             initialReviewReplyEnabled = it.reviewReplyEnabled,
+                            initialFollowingListVisible = it.followingListVisible,
                             hasChanges = false
                         )
                     }
@@ -158,7 +167,8 @@ class NotificationPreferencesViewModel @Inject constructor(
         friendNotificationsEnabled: Boolean? = null,
         newFollowerEnabled: Boolean? = null,
         plateReviewEnabled: Boolean? = null,
-        reviewReplyEnabled: Boolean? = null
+        reviewReplyEnabled: Boolean? = null,
+        followingListVisible: Boolean? = null
     ) {
         update { current ->
             val next = current.copy(
@@ -168,7 +178,8 @@ class NotificationPreferencesViewModel @Inject constructor(
                 friendNotificationsEnabled = friendNotificationsEnabled ?: current.friendNotificationsEnabled,
                 newFollowerEnabled = newFollowerEnabled ?: current.newFollowerEnabled,
                 plateReviewEnabled = plateReviewEnabled ?: current.plateReviewEnabled,
-                reviewReplyEnabled = reviewReplyEnabled ?: current.reviewReplyEnabled
+                reviewReplyEnabled = reviewReplyEnabled ?: current.reviewReplyEnabled,
+                followingListVisible = followingListVisible ?: current.followingListVisible
             )
             next.copy(
                 hasChanges = next.messagingEnabled != next.initialMessagingEnabled ||
@@ -177,7 +188,8 @@ class NotificationPreferencesViewModel @Inject constructor(
                     next.friendNotificationsEnabled != next.initialFriendNotificationsEnabled ||
                     next.newFollowerEnabled != next.initialNewFollowerEnabled ||
                     next.plateReviewEnabled != next.initialPlateReviewEnabled ||
-                    next.reviewReplyEnabled != next.initialReviewReplyEnabled
+                    next.reviewReplyEnabled != next.initialReviewReplyEnabled ||
+                    next.followingListVisible != next.initialFollowingListVisible
             )
         }
     }

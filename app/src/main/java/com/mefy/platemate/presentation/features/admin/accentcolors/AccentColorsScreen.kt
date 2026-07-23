@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMText
@@ -22,29 +22,29 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.accentcolors.components.AccentColorRow
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
 import com.mefy.platemate.presentation.components.PMSectionLabel
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
 internal fun AccentColorsScreen(
+    modifier: Modifier = Modifier,
     state: AccentColorsUiState,
     onAction: (AccentColorsUiAction) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         item {
             PMSectionLabel(text = stringResource(R.string.admin_theme_grid_size))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(modifier = Modifier.weight(1f)) {
@@ -58,7 +58,7 @@ internal fun AccentColorsScreen(
                     variant = PMButtonVariant.Outlined,
                     enabled = state.isGridSizeSaveEnabled,
                     loading = state.savingGridSize,
-                    modifier = Modifier.padding(top = dims.spacing.s4)
+                    modifier = Modifier.padding(top = spacing.s4)
                 )
             }
         }
@@ -73,7 +73,7 @@ internal fun AccentColorsScreen(
                     text = stringResource(R.string.admin_theme_colors_empty),
                     style = PMTextStyle.Body,
                     color = colors.textLabel,
-                    modifier = Modifier.fillMaxWidth().padding(dims.spacing.s16)
+                    modifier = Modifier.fillMaxWidth().padding(spacing.s16)
                 )
             }
         } else {
@@ -85,5 +85,39 @@ internal fun AccentColorsScreen(
                 )
             }
         }
+    }
+}
+
+private val accentColorsPreviewState = AccentColorsUiState(
+    isLoading = false,
+    items = listOf(
+        AccentColorListItem(id = 1L, hex = "#06B6D4", sortOrder = 0, active = true),
+        AccentColorListItem(id = 2L, hex = "#7C3AED", sortOrder = 1, active = true),
+        AccentColorListItem(id = 3L, hex = "#EA580C", sortOrder = 2, active = false)
+    ),
+    gridSizeInput = "4"
+)
+
+@Preview(name = "AccentColors Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun AccentColorsScreenLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        AccentColorsScreen(state = accentColorsPreviewState, onAction = {})
+    }
+}
+
+@Preview(name = "AccentColors Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun AccentColorsScreenDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        AccentColorsScreen(state = accentColorsPreviewState, onAction = {})
+    }
+}
+
+@Preview(name = "AccentColors Empty", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun AccentColorsScreenEmptyPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        AccentColorsScreen(state = AccentColorsUiState(isLoading = false), onAction = {})
     }
 }

@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -39,9 +38,8 @@ import com.mefy.platemate.presentation.components.PMTabItem
 import com.mefy.platemate.presentation.components.PMTabRow
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 private const val LOAD_MORE_THRESHOLD = 4
 
@@ -53,8 +51,8 @@ fun ProfileReviewListScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     val shouldLoadMore by remember(lazyListState) {
         derivedStateOf {
@@ -77,7 +75,7 @@ fun ProfileReviewListScreen(
             .fillMaxWidth()
             .background(colors.background),
         contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         item(contentType = "tabs") {
             PMTabRow(
@@ -107,7 +105,7 @@ fun ProfileReviewListScreen(
                 placeholder = stringResource(R.string.profile_review_list_search_hint),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s16)
+                    .padding(horizontal = spacing.s16)
             )
         }
 
@@ -116,7 +114,7 @@ fun ProfileReviewListScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dims.spacing.s32),
+                        .padding(spacing.s32),
                     contentAlignment = Alignment.Center
                 ) {
                     PMCircularProgressIndicator()
@@ -127,7 +125,7 @@ fun ProfileReviewListScreen(
                 PMEmptyState(
                     icon = Icons.Outlined.SearchOff,
                     message = stringResource(R.string.profile_review_list_empty),
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16)
+                    modifier = Modifier.padding(horizontal = spacing.s16)
                 )
             }
         } else {
@@ -141,7 +139,7 @@ fun ProfileReviewListScreen(
                     onClick = { onAction(ProfileReviewListUiAction.ReviewClicked(review.plateCode, review.id)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dims.spacing.s16)
+                        .padding(horizontal = spacing.s16)
                 )
             }
 
@@ -150,7 +148,7 @@ fun ProfileReviewListScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = dims.spacing.s8),
+                            .padding(vertical = spacing.s8),
                         contentAlignment = Alignment.Center
                     ) {
                         PMCircularProgressIndicator()
@@ -167,28 +165,29 @@ private fun ProfileReviewListItemCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     PMCard(
         modifier = modifier,
         onClick = onClick,
-        padding = PaddingValues(dims.spacing.s12)
+        padding = PaddingValues(spacing.s12)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s10),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PMPlateBadge(plate = review.plateCode, size = dims.sizing.plateBadgeSm)
+                PMPlateBadge(plate = review.plateCode, size = sizing.plateBadgeSm)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s4),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PMIcon(
                         imageVector = Icons.Filled.Star,
                         tint = colors.iconStar,
-                        size = dims.sizing.iconSm
+                        size = sizing.iconSm
                     )
                     PMText(
                         text = review.rating.toString(),

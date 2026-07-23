@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,47 +24,48 @@ import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.components.util.friendRequestStatusStyle
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun FriendRequestActivityCard(
+    modifier: Modifier = Modifier,
     item: FriendRequestNotificationItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
         variant = PMCardVariant.Large,
-        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
+        padding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s12)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMAvatar(
                 displayName = item.username,
-                size = dims.sizing.avatarMd,
+                size = sizing.avatarMd,
             )
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = stringResource(R.string.profile_friend_request_title, item.username),
-                    fontSize = dims.fontSize.md,
+                    fontSize = fontSize.md,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val style = friendRequestStatusStyle(item.status, colors)
@@ -76,7 +76,7 @@ internal fun FriendRequestActivityCard(
                     )
                     PMText(
                         text = item.createdAtText,
-                        fontSize = dims.fontSize.sm,
+                        fontSize = fontSize.sm,
                         color = colors.textLabel
                     )
                 }
@@ -107,7 +107,7 @@ private fun FriendRequestActivityCardDarkPreview() {
 
 @Composable
 private fun FriendRequestActivityCardPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
     FriendRequestActivityCard(
         item = FriendRequestNotificationItem(
             id = "friend_1",
@@ -118,6 +118,6 @@ private fun FriendRequestActivityCardPreviewContent() {
             sortKey = "2026-05-26T09:30:00Z"
         ),
         onClick = {},
-        modifier = Modifier.padding(dims.spacing.s16)
+        modifier = Modifier.padding(spacing.s16)
     )
 }

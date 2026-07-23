@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigation
 import com.mefy.platemate.presentation.features.main.profile.ProfileRoute
 import com.mefy.platemate.presentation.features.main.profile.ProfileViewModel
+import com.mefy.platemate.presentation.features.main.profile.followlist.UserFollowListRoute
+import com.mefy.platemate.presentation.features.main.profile.followlist.UserFollowListViewModel
 import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFriendsRoute
 import com.mefy.platemate.presentation.features.main.profile.friends.ProfileFriendsViewModel
 import com.mefy.platemate.presentation.features.main.profile.reviewlist.ProfileReviewListRoute
@@ -21,9 +23,11 @@ import com.mefy.platemate.presentation.navigation.ProfileFriendsDestination
 import com.mefy.platemate.presentation.navigation.ProfileGraphDestination
 import com.mefy.platemate.presentation.navigation.ProfileReviewListDestination
 import com.mefy.platemate.presentation.navigation.SearchDetailDestination
+import com.mefy.platemate.presentation.navigation.UserFollowListDestination
 import com.mefy.platemate.presentation.navigation.UserProfileDestination
 import com.mefy.platemate.presentation.navigation.navigateToProfileFriends
 import com.mefy.platemate.presentation.navigation.navigateToProfileReviewList
+import com.mefy.platemate.presentation.navigation.navigateToUserFollowList
 import com.mefy.platemate.presentation.navigation.screenComposable
 
 internal fun NavGraphBuilder.profileGraph(
@@ -59,7 +63,7 @@ internal fun NavGraphBuilder.profileGraph(
         ) { viewModel ->
             ProfileReviewListRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
                 onNavigateToReviewDetail = { code, reviewId ->
                     navController.navigate(SearchDetailDestination(id = code, highlightReviewId = reviewId))
                 },
@@ -72,7 +76,7 @@ internal fun NavGraphBuilder.profileGraph(
         ) { viewModel ->
             UserProfileRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToChat = { conversationId, otherUserId, participantName ->
                     navController.navigate(
                         ChatDestination(
@@ -81,6 +85,22 @@ internal fun NavGraphBuilder.profileGraph(
                             participantName = participantName,
                         )
                     )
+                },
+                onNavigateToFollowList = { userId, initialTab ->
+                    navController.navigateToUserFollowList(userId, initialTab)
+                },
+                modifier = modifier
+            )
+        }
+
+        screenComposable<UserFollowListDestination, UserFollowListViewModel>(
+            viewModel = { hiltViewModel<UserFollowListViewModel>() },
+        ) { viewModel ->
+            UserFollowListRoute(
+                viewModel = viewModel,
+
+                onNavigateToUserProfile = { userId ->
+                    navController.navigate(UserProfileDestination(userId))
                 },
                 modifier = modifier
             )
@@ -91,7 +111,7 @@ internal fun NavGraphBuilder.profileGraph(
         ) { viewModel ->
             ProfileFriendsRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
                 onNavigateToUserProfile = { userId ->
                     navController.navigate(UserProfileDestination(userId))
                 },

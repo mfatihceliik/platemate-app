@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.main.platedetail.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,19 +12,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun EmptyInfoRow(icon: ImageVector, text: String) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s10),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = dims.spacing.s24)
+        modifier = Modifier.padding(horizontal = spacing.s24)
     ) {
         PMIcon(
             imageVector = icon,

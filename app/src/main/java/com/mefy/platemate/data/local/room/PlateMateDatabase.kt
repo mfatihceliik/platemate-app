@@ -24,7 +24,7 @@ import com.mefy.platemate.data.local.room.entity.SavedPlateEntity
         ChatRoomEntity::class,
         ChatMessageEntity::class
     ],
-    version = 6,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(RecentSearchTypeConverters::class)
@@ -37,8 +37,8 @@ abstract class PlateMateDatabase : RoomDatabase() {
 
     companion object {
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `saved_plates` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -53,13 +53,13 @@ abstract class PlateMateDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE UNIQUE INDEX IF NOT EXISTS `index_saved_plates_user_id_normalized_plate_code`
                     ON `saved_plates` (`user_id`, `normalized_plate_code`)
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE INDEX IF NOT EXISTS `index_saved_plates_user_id_saved_at`
                     ON `saved_plates` (`user_id`, `saved_at`)
@@ -69,8 +69,8 @@ abstract class PlateMateDatabase : RoomDatabase() {
         }
 
         val MIGRATION_2_3: Migration = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `alarm_plates` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -85,13 +85,13 @@ abstract class PlateMateDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE UNIQUE INDEX IF NOT EXISTS `index_alarm_plates_user_id_normalized_plate_code`
                     ON `alarm_plates` (`user_id`, `normalized_plate_code`)
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE INDEX IF NOT EXISTS `index_alarm_plates_user_id_saved_at`
                     ON `alarm_plates` (`user_id`, `saved_at`)
@@ -101,8 +101,8 @@ abstract class PlateMateDatabase : RoomDatabase() {
         }
 
         val MIGRATION_3_4: Migration = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `chat_rooms` (
                         `owner_user_id` INTEGER NOT NULL,
@@ -119,13 +119,13 @@ abstract class PlateMateDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE INDEX IF NOT EXISTS `index_chat_rooms_owner_user_id_last_message_at`
                     ON `chat_rooms` (`owner_user_id`, `last_message_at`)
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS `chat_messages` (
                         `owner_user_id` INTEGER NOT NULL,
@@ -143,7 +143,7 @@ abstract class PlateMateDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE INDEX IF NOT EXISTS `index_chat_messages_owner_user_id_chat_room_id_sent_at`
                     ON `chat_messages` (`owner_user_id`, `chat_room_id`, `sent_at`)
@@ -153,17 +153,39 @@ abstract class PlateMateDatabase : RoomDatabase() {
         }
 
         val MIGRATION_4_5: Migration = object : Migration(4, 5) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     "ALTER TABLE `chat_rooms` ADD COLUMN `unread_count` INTEGER NOT NULL DEFAULT 0"
                 )
             }
         }
 
         val MIGRATION_5_6: Migration = object : Migration(5, 6) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     "ALTER TABLE `chat_rooms` ADD COLUMN `last_message_sender_id` INTEGER"
+                )
+            }
+        }
+
+        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `chat_messages` ADD COLUMN `client_message_id` TEXT"
+                )
+            }
+        }
+
+        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `chat_messages` ADD COLUMN `reply_to_message_id` INTEGER"
+                )
+                db.execSQL(
+                    "ALTER TABLE `chat_messages` ADD COLUMN `reply_to_sender_username` TEXT"
+                )
+                db.execSQL(
+                    "ALTER TABLE `chat_messages` ADD COLUMN `reply_to_content_preview` TEXT"
                 )
             }
         }

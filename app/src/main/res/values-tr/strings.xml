@@ -6,6 +6,7 @@
     <string name="common_show">Göster</string>
     <string name="common_hide">Gizle</string>
     <string name="common_cancel">İptal</string>
+    <string name="common_you">Sen</string>
     <string name="common_yes">Evet</string>
     <string name="user_profile_unfriend_confirmation">Bu kişiyi arkadaşlarınızdan çıkarmak istediğinize emin misiniz?</string>
     <string name="common_clear">Temizle</string>
@@ -418,6 +419,8 @@
     <string name="profile_notif_friend_add_desc">Biri seni eklediğinde bildirim al</string>
     <string name="profile_notif_new_follower">Yeni Takipçi</string>
     <string name="profile_notif_new_follower_desc">Biri seni takip ettiğinde</string>
+    <string name="profile_notif_following_list_visible">Takip Listemi Göster</string>
+    <string name="profile_notif_following_list_visible_desc">Kapatırsan başkaları kimleri takip ettiğini göremez. Takipçi listen bundan etkilenmez.</string>
     <string name="profile_notif_plate_review">Plaka Değerlendirmesi</string>
     <string name="profile_notif_plate_review_desc">Aracın değerlendirildiğinde</string>
     <string name="profile_notif_review_reply">Değerlendirme Yanıtları</string>
@@ -465,6 +468,7 @@
     <string name="user_profile_remove_friend_title">Çıkar</string>
     <string name="user_profile_remove_friend_desc">Bu kişiyi arkadaş listenizden çıkarmak istediğinize emin misiniz?</string>
     <string name="user_profile_remove">Kaldır</string>
+    <string name="user_profile_remove_friend_button">Takipten çıkar</string>
     <string name="user_profile_message">Mesaj</string>
     <string name="user_profile_share">Paylaş</string>
 
@@ -511,9 +515,18 @@
     <string name="messages_delete_confirm_title">Sohbeti sil?</string>
     <string name="messages_delete_confirm_message">Bu sohbet sadece senin için silinir. Karşı taraf tekrar mesaj atarsa yeniden görünür.</string>
     <string name="messages_mark_read">Okundu</string>
+    <string name="messages_search_placeholder">Sohbet ara…</string>
+    <string name="messages_search_no_results">Eşleşen konuşma yok</string>
+    <string name="messages_search_section_messages">Mesajlar</string>
     <string name="common_delete">Sil</string>
     <string name="conversation_empty_title">Konuşmaya başlayın</string>
     <string name="conversation_empty_subtitle">İlk mesajınızı göndererek sohbeti başlatın</string>
+    <string name="conversation_delete_message_title">Mesajı sil?</string>
+    <string name="conversation_delete_message_body">Bu mesaj herkesten silinecek. Bu işlem geri alınamaz.</string>
+    <string name="conversation_message_deleted">Bu mesaj silindi</string>
+    <string name="conversation_action_quote">Alıntıla</string>
+    <string name="conversation_action_report">Raporla</string>
+    <string name="conversation_report_message_title">Mesajı Raporla</string>
 
     <!-- Chat Detail -->
     <string name="chatdetail_title">Sohbet Bilgileri</string>
@@ -573,6 +586,7 @@
     <string name="review_submit_button">Değerlendirmeyi Paylaş</string>
     <string name="review_section_overall">GENEL PUAN</string>
     <string name="review_section_tags">ETİKETLER</string>
+    <string name="review_tags_limit_reached">En fazla %1$d etiket seçebilirsin</string>
     <string name="review_section_experience">DENEYİMİN</string>
     <string name="review_comment_placeholder">Deneyimini paylaş…</string>
     <string name="review_comment_counter">%1$d/%2$d</string>
@@ -746,8 +760,12 @@
     <string name="review_rating_5">Mükemmel</string>
     <string name="scanner_hint">Plakayı dikdörtgenin içine yerleştirin</string>
     <string name="scanner_error_not_found">Plaka bulunamadı. Lütfen daha net bir fotoğraf seçin.</string>
+    <string name="scanner_gallery_content_description">Galeriden seç</string>
     <string name="scanner_searching_plate">%1$s\nAranıyor…</string>
     <string name="camera_scanner_screen">Kamera</string>
+    <string name="camera_permission_denied_title">Kamera İzni Gerekli</string>
+    <string name="camera_permission_denied_message">Kamera erişimini reddettiniz. Plaka taramak için lütfen Ayarlar\'dan kamera iznini açın.</string>
+    <string name="camera_permission_open_settings">Ayarlara Git</string>
     <string name="user_search_title">Kullanıcı Ara</string>
     <string name="search_users_placeholder">Kullanıcı ara...</string>
     <string name="search_recent">Geçmiş Aramalar</string>
@@ -775,5 +793,11 @@
     <string name="profile_friends_remove_action">Kaldır</string>
     <string name="profile_friends_cancel_request_confirmation">Bu arkadaşlık isteğini iptal etmek istediğinize emin misiniz?</string>
     <string name="profile_friends_empty_global">Henüz arkadaşın veya isteğin yok.</string>
+
+    <string name="user_follow_list_following_tab">Takip Edilenler</string>
+    <string name="user_follow_list_followers_tab">Takipçiler</string>
+    <string name="user_follow_list_empty_following">Henüz kimseyi takip etmiyor.</string>
+    <string name="user_follow_list_empty_followers">Henüz takipçisi yok.</string>
+    <string name="user_follow_list_hidden_following">Bu kullanıcı takip listesini gizli tutuyor.</string>
 </resources>
 

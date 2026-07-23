@@ -9,5 +9,4 @@ sealed interface SearchUiAction {
     data class AlarmPlateRemoveClicked(val normalizedPlateCode: String) : SearchUiAction
     data class RecentDismissClicked(val normalizedPlateCode: String) : SearchUiAction
     data object ClearRecentClicked : SearchUiAction
-    data object RetryClicked : SearchUiAction
 }

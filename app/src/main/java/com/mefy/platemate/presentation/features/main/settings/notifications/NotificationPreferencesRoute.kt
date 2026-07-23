@@ -13,7 +13,8 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.text.resolve
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 
@@ -21,9 +22,9 @@ import kotlinx.coroutines.flow.collectLatest
 fun NotificationPreferencesRoute(
     modifier: Modifier = Modifier,
     viewModel: NotificationPreferencesViewModel,
-    onBackClick: () -> Unit,
     onShowSnackbar: (String) -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
@@ -46,16 +47,13 @@ fun NotificationPreferencesRoute(
         else -> ScreenStatus.Content
     }
 
-    val onRetry = remember(onAction) { { onAction(NotificationPreferencesUiAction.RetryClicked) } }
-
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_notification_preferences_title),
-            onBackClick = onBackClick
+            title = stringResource(R.string.profile_notification_preferences_title)
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = onRetry,
         loading = { innerPadding -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(innerPadding)) },
     ) { innerPadding ->
         NotificationPreferencesScreen(

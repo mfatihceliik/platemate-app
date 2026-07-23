@@ -57,6 +57,30 @@ class DataStoreRecentUserSearchStore @Inject constructor(
         }
     }
 
+    override suspend fun removeSearch(id: Long) {
+        dataStore.edit { preferences ->
+            val currentJson = preferences[RECENT_SEARCHES_KEY] ?: "[]"
+            val currentList = parseJsonToList(currentJson).toMutableList()
+
+            currentList.removeAll { it.id == id }
+
+            preferences[RECENT_SEARCHES_KEY] = serializeListToJson(currentList)
+        }
+    }
+
+    override suspend fun updateCachedProfile(id: Long, displayName: String?, bio: String?) {
+        dataStore.edit { preferences ->
+            val currentJson = preferences[RECENT_SEARCHES_KEY] ?: return@edit
+            val currentList = parseJsonToList(currentJson)
+            if (currentList.none { it.id == id }) return@edit
+
+            val updatedList = currentList.map {
+                if (it.id == id) it.copy(displayName = displayName, bio = bio) else it
+            }
+            preferences[RECENT_SEARCHES_KEY] = serializeListToJson(updatedList)
+        }
+    }
+
     override suspend fun clearSearches() {
         dataStore.edit { preferences ->
             preferences.remove(RECENT_SEARCHES_KEY)
@@ -70,7 +94,9 @@ class DataStoreRecentUserSearchStore @Inject constructor(
                 val obj = jsonArray.getJSONObject(i)
                 UserSearchItemUiModel(
                     id = obj.getLong("id"),
-                    username = obj.getString("username")
+                    username = obj.getString("username"),
+                    displayName = obj.optNullableString("displayName"),
+                    bio = obj.optNullableString("bio")
                 )
             }
         } catch (e: Exception) {
@@ -84,10 +110,15 @@ class DataStoreRecentUserSearchStore @Inject constructor(
             val obj = JSONObject()
             obj.put("id", item.id)
             obj.put("username", item.username)
+            obj.put("displayName", item.displayName)
+            obj.put("bio", item.bio)
             jsonArray.put(obj)
         }
         return jsonArray.toString()
     }
+
+    private fun JSONObject.optNullableString(key: String): String? =
+        if (has(key) && !isNull(key)) getString(key) else null
 
     private companion object {
         val RECENT_SEARCHES_KEY = stringPreferencesKey("recent_searches_list_v2")

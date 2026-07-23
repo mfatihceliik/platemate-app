@@ -7,16 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.mefy.platemate.presentation.components.PMSearchBar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
-import com.mefy.platemate.presentation.components.PMText
-import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
@@ -41,16 +36,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.components.PMEmptyState
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun ProfileFriendsScreen(
+    modifier: Modifier = Modifier,
     state: ProfileFriendsUiState,
     onAction: (ProfileFriendsUiAction) -> Unit,
-    modifier: Modifier = Modifier,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val colors = MaterialTheme.pmColors
-    val spacing = MaterialTheme.pmDimensions.spacing
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),

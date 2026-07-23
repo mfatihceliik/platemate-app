@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,9 +20,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.navigation.TopLevelDestination
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun RowScope.PMBottomBarItem(
@@ -31,8 +29,7 @@ internal fun RowScope.PMBottomBarItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
     val label = stringResource(destination.labelRes)
     val interaction = remember { MutableInteractionSource() }
 
@@ -79,7 +76,8 @@ internal fun RowScope.PMBottomBarItem(
 @Composable
 private fun PMBottomBarItemLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        Row(Modifier.background(MaterialTheme.pmColors.surface)) {
+        val colors = PMTheme.colors
+        Row(Modifier.background(colors.surface)) {
             PMBottomBarItem(TopLevelDestination.Search, selected = true, onClick = {})
             PMBottomBarItem(TopLevelDestination.Discover, selected = false, onClick = {})
             PMBottomBarItem(TopLevelDestination.Profile, selected = false, onClick = {})
@@ -91,7 +89,8 @@ private fun PMBottomBarItemLightPreview() {
 @Composable
 private fun PMBottomBarItemDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        Row(Modifier.background(MaterialTheme.pmColors.surface)) {
+        val colors = PMTheme.colors
+        Row(Modifier.background(colors.surface)) {
             PMBottomBarItem(TopLevelDestination.Search, selected = true, onClick = {})
             PMBottomBarItem(TopLevelDestination.Discover, selected = false, onClick = {})
             PMBottomBarItem(TopLevelDestination.Profile, selected = false, onClick = {})

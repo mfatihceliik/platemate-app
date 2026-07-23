@@ -27,8 +27,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,9 +45,8 @@ import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.auth.components.AuthHeroHeader
 import com.mefy.platemate.presentation.features.auth.components.AuthInfoBanner
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun RegisterScreen(
@@ -59,9 +56,8 @@ fun RegisterScreen(
     onBackClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-    val spacing = dims.spacing
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
     val isSubmitLoading = state.isLoading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,32 +17,35 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUiState
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PlateInfoCard(state: ReviewUiState) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
+    val shape = PMTheme.shapes
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(dims.radius.r16))
+            .clip(shape.medium)
             .background(colors.surfaceSecondary)
-            .border(dims.stroke.st1, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(dims.radius.r16))
-            .padding(dims.spacing.s16),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            .border(stroke.st1, colors.outlineVariant, shape.medium)
+            .padding(spacing.s16),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMPlateBadge(
             plate = state.plateCode,
-            size = dims.sizing.plateBadgeMd
+            size = sizing.plateBadgeMd
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
             PMText(
                 text = if (state.cityName.isNotBlank()) {
@@ -52,7 +53,7 @@ internal fun PlateInfoCard(state: ReviewUiState) {
                 } else {
                     stringResource(R.string.review_count_format, state.reviewCount)
                 },
-                fontSize = dims.fontSize.sm,
+                fontSize = fontSize.sm,
                 color = colors.textTertiary
             )
         }

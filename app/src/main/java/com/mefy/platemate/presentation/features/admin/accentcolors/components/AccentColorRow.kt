@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,8 +22,7 @@ import com.mefy.platemate.presentation.components.PMSwitch
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.accentcolors.AccentColorListItem
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun AccentColorRow(
@@ -32,24 +30,26 @@ internal fun AccentColorRow(
     onClick: () -> Unit,
     onToggle: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val stroke = PMTheme.stroke
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.surfaceVariant, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
-            .padding(dims.spacing.s16),
+            .padding(spacing.s16),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeSm)
+                .size(sizing.plateBadgeSm)
                 .clip(CircleShape)
                 .background(hexToColor(item.hex))
-                .border(dims.stroke.st1, colors.outlineVariant, CircleShape)
+                .border(stroke.st1, colors.outlineVariant, CircleShape)
         )
         PMText(
             text = item.hex,

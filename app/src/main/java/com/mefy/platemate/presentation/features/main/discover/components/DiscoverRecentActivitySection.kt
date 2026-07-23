@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,18 +21,19 @@ import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun DiscoverRecentActivityRow(
+    modifier: Modifier = Modifier,
     activity: DiscoverRecentActivityUiModel,
-    onPlateClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onPlateClick: (String) -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
 
     val plateClick = remember(activity.plateCode, onPlateClick) {
         { onPlateClick(activity.plateCode) }
@@ -41,25 +41,25 @@ internal fun DiscoverRecentActivityRow(
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
-        padding = PaddingValues(dims.spacing.s12)
+        padding = PaddingValues(spacing.s12)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMAvatar(
                 displayName = activity.actorName,
-                size = dims.sizing.avatarSm
+                size = sizing.avatarSm
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = "${activity.actorName} ${activity.actionText.resolve()}",
-                    fontSize = dims.fontSize.sm,
+                    fontSize = fontSize.sm,
                     fontWeight = FontWeight.Medium,
                     color = colors.textPrimary,
                     maxLines = 1,
@@ -67,7 +67,7 @@ internal fun DiscoverRecentActivityRow(
                 )
                 PMText(
                     text = activity.timeAgoText.resolve(),
-                    fontSize = dims.fontSize.xs,
+                    fontSize = fontSize.xs,
                     color = colors.textTertiary
                 )
             }
@@ -85,7 +85,8 @@ internal fun DiscoverRecentActivityRow(
 @Composable
 private fun DiscoverRecentActivityRowPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s8)) {
+        val spacing = PMTheme.spacing
+        Column(verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             DiscoverRecentActivityRow(
                 activity = DiscoverRecentActivityUiModel(
                     id = "1",

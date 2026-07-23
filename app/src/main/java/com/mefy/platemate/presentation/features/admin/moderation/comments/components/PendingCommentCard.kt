@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,13 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
+import com.mefy.platemate.presentation.components.PMChip
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.moderation.comments.PendingCommentUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -37,15 +36,15 @@ internal fun PendingCommentCard(
     onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.surfaceVariant, RoundedCornerShape(12.dp))
-            .padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            .padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -67,10 +66,14 @@ internal fun PendingCommentCard(
         if (model.tags.isNotEmpty()) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                verticalArrangement = Arrangement.spacedBy(spacing.s8)
             ) {
-                model.tags.forEach { tag -> TagChip(text = tag) }
+                model.tags.forEach { tag ->
+                    PMChip(
+                        label = tag
+                    )
+                }
             }
         }
 
@@ -89,7 +92,7 @@ internal fun PendingCommentCard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             PMButton(
                 text = stringResource(R.string.admin_comment_reject),

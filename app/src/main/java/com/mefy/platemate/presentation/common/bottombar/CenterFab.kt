@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,12 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.navigation.TopLevelDestination
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun CenterFab(
@@ -33,8 +30,8 @@ internal fun CenterFab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     val label = stringResource(TopLevelDestination.Messages.labelRes)
     val interaction = remember { MutableInteractionSource() }
 
@@ -51,7 +48,7 @@ internal fun CenterFab(
 
     Box(
         modifier = modifier
-            .size(dims.spacing.s48)
+            .size(spacing.s48)
             .clip(CircleShape)
             .background(fill)
             .selectable(
@@ -76,7 +73,8 @@ internal fun CenterFab(
 @Composable
 private fun CenterFabSelectedPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        Box(Modifier.padding(24.dp), contentAlignment = Alignment.Center) {
+        val spacing = PMTheme.spacing
+        Box(Modifier.padding(spacing.s24), contentAlignment = Alignment.Center) {
             CenterFab(selected = true, onClick = {})
         }
     }
@@ -86,7 +84,8 @@ private fun CenterFabSelectedPreview() {
 @Composable
 private fun CenterFabUnselectedDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        Box(Modifier.padding(24.dp), contentAlignment = Alignment.Center) {
+        val spacing = PMTheme.spacing
+        Box(Modifier.padding(spacing.s24), contentAlignment = Alignment.Center) {
             CenterFab(selected = false, onClick = {})
         }
     }

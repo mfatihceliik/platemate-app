@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +22,8 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun ReportReasonRow(
@@ -34,9 +32,10 @@ internal fun ReportReasonRow(
     onSelected: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val rowShape = MaterialTheme.shapes.small
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
+    val rowShape = PMTheme.shapes.small
     val primary = colors.primary
 
     Row(
@@ -45,27 +44,27 @@ internal fun ReportReasonRow(
             .clip(rowShape)
             .background(colors.surfaceSecondary)
             .border(
-                width = dims.stroke.st2,
+                width = stroke.st2,
                 color = if (isSelected) primary else colors.cardBorder,
                 shape = rowShape
             )
             .debouncedClickable(onClick = onSelected)
-            .padding(dims.spacing.s12),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            .padding(spacing.s12),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12),
         verticalAlignment = Alignment.Top
     ) {
         Box(
             modifier = Modifier
-                .size(dims.spacing.s24)
+                .size(spacing.s24)
                 .clip(CircleShape)
-                .border(dims.stroke.st2, if (isSelected) primary else colors.disabled, CircleShape)
+                .border(stroke.st2, if (isSelected) primary else colors.disabled, CircleShape)
                 .background(if (isSelected) primary else Color.Transparent),
             contentAlignment = Alignment.Center
         ) {
             if (isSelected) {
                 Box(
                     modifier = Modifier
-                        .size(dims.spacing.s8)
+                        .size(spacing.s8)
                         .clip(CircleShape)
                         .background(Color.White)
                 )
@@ -74,7 +73,7 @@ internal fun ReportReasonRow(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
             PMText(
                 text = stringResource(reason.labelRes),
@@ -95,8 +94,8 @@ internal fun ReportReasonRow(
 @Composable
 private fun ReportReasonRowLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        Column(modifier = Modifier.padding(dims.spacing.s16), verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        val spacing = PMTheme.spacing
+        Column(modifier = Modifier.padding(spacing.s16), verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             ReportReasonRow(reason = ReportReason.SPAM, isSelected = false, onSelected = {})
             ReportReasonRow(reason = ReportReason.HARASSMENT, isSelected = true, onSelected = {})
             ReportReasonRow(reason = ReportReason.INAPPROPRIATE_CONTENT, isSelected = false, onSelected = {})
@@ -108,8 +107,8 @@ private fun ReportReasonRowLightPreview() {
 @Composable
 private fun ReportReasonRowDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        Column(modifier = Modifier.padding(dims.spacing.s16), verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        val spacing = PMTheme.spacing
+        Column(modifier = Modifier.padding(spacing.s16), verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             ReportReasonRow(reason = ReportReason.SPAM, isSelected = false, onSelected = {})
             ReportReasonRow(reason = ReportReason.HARASSMENT, isSelected = true, onSelected = {})
             ReportReasonRow(reason = ReportReason.INAPPROPRIATE_CONTENT, isSelected = false, onSelected = {})

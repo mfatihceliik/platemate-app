@@ -8,5 +8,6 @@ data class DiscoveryHome(
     val recentActivities: List<RecentActivity>,
     val feedType: DiscoveryFeedType = DiscoveryFeedType.FREE,
     val extendedStats: DiscoveryExtendedStats? = null,
-    val forYou: DiscoveryForYou? = null
+    val forYou: DiscoveryForYou? = null,
+    val tabOptions: List<DiscoveryTabOption> = emptyList()
 )

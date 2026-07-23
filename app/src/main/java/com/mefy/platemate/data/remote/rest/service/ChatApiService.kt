@@ -2,6 +2,7 @@ package com.mefy.platemate.data.remote.rest.service
 
 import com.mefy.platemate.core.common.result.DataResultResponse
 import com.mefy.platemate.core.common.result.ResultResponse
+import com.mefy.platemate.data.remote.dto.chat.AddChatMessageReportRequest
 import com.mefy.platemate.data.remote.dto.chat.ChatMessageDto
 import com.mefy.platemate.data.remote.dto.chat.ChatRoomDto
 import com.mefy.platemate.data.remote.dto.chat.PresenceDto
@@ -44,5 +45,14 @@ interface ChatApiService {
 
     @DELETE("api/chat/rooms/{roomId}")
     suspend fun leaveRoom(@Path("roomId") roomId: Long): ResultResponse
+
+    @DELETE("api/chat/messages/{messageId}")
+    suspend fun deleteMessage(@Path("messageId") messageId: Long): ResultResponse
+
+    @POST("api/chat/messages/{messageId}/reports")
+    suspend fun reportMessage(
+        @Path("messageId") messageId: Long,
+        @Body request: AddChatMessageReportRequest
+    ): ResultResponse
 }
 

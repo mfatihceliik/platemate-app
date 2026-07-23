@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +28,8 @@ import com.mefy.platemate.presentation.components.PMRatingStars
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.platedetail.PlateReviewUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -42,13 +39,15 @@ internal fun ReviewItem(
     onReportClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val shape = PMTheme.shapes
 
-    PMCard(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(dims.spacing.s12)) {
+    PMCard(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(spacing.s12)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -56,12 +55,12 @@ internal fun ReviewItem(
                 onClick = onAvatarClick,
                 displayName = review.displayName ?: review.username,
                 isEditable = false,
-                size = dims.sizing.avatarMd,
+                size = sizing.avatarMd,
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PMText(
                     text = review.displayName ?: review.username,
@@ -79,14 +78,14 @@ internal fun ReviewItem(
             when {
                 review.canEdit -> PMIconButton(
                     onClick = onEditClick,
-                    size = dims.sizing.iconSm,
+                    size = sizing.iconSm,
                     imageVector = Icons.Outlined.Edit,
                     iconColor = colors.iconDefault,
                     contentDescription = stringResource(R.string.review_edit_title)
                 )
                 review.canReport -> PMIconButton(
                     onClick = onReportClick,
-                    size = dims.sizing.iconSm,
+                    size = sizing.iconSm,
                     imageVector = Icons.Outlined.Flag,
                     iconColor = colors.iconDanger,
                     contentDescription = stringResource(R.string.report_review_title)
@@ -96,8 +95,8 @@ internal fun ReviewItem(
 
         PMRatingStars(
             rating = review.rating,
-            starSize = dims.sizing.iconSm,
-            modifier = Modifier.padding(top = dims.spacing.s8)
+            starSize = sizing.iconSm,
+            modifier = Modifier.padding(top = spacing.s8)
         )
 
         if (!review.comment.isNullOrBlank()) {
@@ -105,22 +104,22 @@ internal fun ReviewItem(
                 text = review.comment,
                 style = PMTextStyle.Body,
                 color = colors.textSecondary,
-                modifier = Modifier.padding(top = dims.spacing.s8)
+                modifier = Modifier.padding(top = spacing.s8)
             )
         }
 
         if (review.reportTags.isNotEmpty()) {
             FlowRow(
-                modifier = Modifier.padding(top = dims.spacing.s10),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                modifier = Modifier.padding(top = spacing.s10),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s4),
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 review.reportTags.forEach { tag ->
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(dims.radius.r8))
+                            .clip(shape.medium)
                             .background(colors.surfaceVariant)
-                            .padding(horizontal = dims.spacing.s10, vertical = dims.spacing.s4),
+                            .padding(horizontal = spacing.s10, vertical = spacing.s4),
                         contentAlignment = Alignment.Center
                     ) {
                         PMText(
@@ -154,10 +153,10 @@ private fun ReviewItemDarkPreview() {
 
 @Composable
 private fun ReviewItemPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
     Column(
-        modifier = Modifier.padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        modifier = Modifier.padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         ReviewItem(
             review = PlateReviewUiModel(

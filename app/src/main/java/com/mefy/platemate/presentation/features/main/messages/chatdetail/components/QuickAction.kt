@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.messages.chatdetail.compon
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -11,8 +10,7 @@ import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun QuickAction(
@@ -22,12 +20,13 @@ internal fun QuickAction(
     tint: Color,
     onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+        verticalArrangement = Arrangement.spacedBy(spacing.s4)
     ) {
         PMIconButton(
             imageVector = icon,
@@ -35,7 +34,7 @@ internal fun QuickAction(
             iconColor = tint,
             variant = PMIconButtonVariant.Filled,
             containerColor = bg,
-            size = dims.sizing.iconLg,
+            size = sizing.iconLg,
             onClick = onClick
         )
 

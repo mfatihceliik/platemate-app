@@ -48,9 +48,12 @@ class CityPlatesViewModel @Inject constructor(
         when (action) {
             is CityPlatesUiAction.PlateClicked -> onPlateClicked(action.plateId)
             CityPlatesUiAction.LoadMoreRequested -> loadNextPage()
-            CityPlatesUiAction.RetryClicked -> loadFirstPage()
             CityPlatesUiAction.BackClicked -> emitEffect(CityPlatesUiEffect.NavigateBack)
         }
+    }
+
+    override fun onRetry() {
+        loadFirstPage()
     }
 
     private fun loadFirstPage() {

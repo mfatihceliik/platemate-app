@@ -12,5 +12,9 @@ data class ChatMessage(
     val isRead: Boolean,
     val status: MessageStatus,
     val deliveredAt: AppDateTime?,
-    val readAt: AppDateTime?
+    val readAt: AppDateTime?,
+    val clientMessageId: String? = null,
+    val replyToMessageId: Long? = null,
+    val replyToSenderUsername: String? = null,
+    val replyToContentPreview: String? = null
 )

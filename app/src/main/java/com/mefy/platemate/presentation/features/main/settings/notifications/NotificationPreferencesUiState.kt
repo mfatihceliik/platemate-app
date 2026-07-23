@@ -15,6 +15,7 @@ data class NotificationPreferencesUiState(
     val newFollowerEnabled: Boolean = false,
     val plateReviewEnabled: Boolean = false,
     val reviewReplyEnabled: Boolean = false,
+    val followingListVisible: Boolean = true,
     val initialMessagingEnabled: Boolean = false,
     val initialOnlineVisibilityEnabled: Boolean = false,
     val initialMessageNotificationsEnabled: Boolean = false,
@@ -22,5 +23,6 @@ data class NotificationPreferencesUiState(
     val initialNewFollowerEnabled: Boolean = false,
     val initialPlateReviewEnabled: Boolean = false,
     val initialReviewReplyEnabled: Boolean = false,
+    val initialFollowingListVisible: Boolean = true,
     val hasChanges: Boolean = false
 )

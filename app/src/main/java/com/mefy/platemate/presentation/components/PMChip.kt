@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,16 +28,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMChip(
     modifier: Modifier = Modifier,
     label: String,
     style: PMChipStyle = PMChipStyle.Soft,
-    accentColor: Color = MaterialTheme.pmColors.primary,
+    accentColor: Color = PMTheme.colors.primary,
     selected: Boolean = false,
     count: Int? = null,
     leadingIcon: ImageVector? = null,
@@ -50,7 +47,12 @@ fun PMChip(
     borderColor: Color? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val stroke = PMTheme.stroke
+    val shape = PMTheme.shapes.medium
+
 
     val resolved = remember(
         accentColor, style, selected, containerColor, contentColor, borderColor
@@ -65,39 +67,38 @@ fun PMChip(
         )
     }
 
-    val shape = remember(dims.radius.r12) { RoundedCornerShape(dims.radius.r12) }
     val interactive = onClick != null && enabled
 
     var boxModifier = modifier
         .clip(shape)
         .background(resolved.container)
-        .border(dims.stroke.st1, resolved.border, shape)
-    if (!dense) boxModifier = boxModifier.heightIn(min = dims.sizing.chipHeight)
+        .border(stroke.st1, resolved.border, shape)
+    if (!dense) boxModifier = boxModifier.heightIn(min = sizing.chipHeight)
     if (interactive) boxModifier = boxModifier.debouncedClickable(onClick = onClick)
     boxModifier = if (dense) {
-        boxModifier.padding(horizontal = dims.spacing.s8, vertical = dims.spacing.s4)
+        boxModifier.padding(horizontal = spacing.s8, vertical = spacing.s4)
     } else {
-        boxModifier.padding(horizontal = if (interactive) dims.spacing.s16 else dims.spacing.s8)
+        boxModifier.padding(horizontal = if (interactive) spacing.s16 else spacing.s8)
     }
 
-    val fontSize = if (dense) dims.fontSize.sm else dims.fontSize.md
+    val textFontSize = if (dense) fontSize.sm else fontSize.md
 
     Box(modifier = boxModifier, contentAlignment = Alignment.Center) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (leadingIcon != null) {
                 PMIcon(
                     imageVector = leadingIcon,
                     tint = resolved.content,
-                    size = dims.sizing.iconSm
+                    size = sizing.iconSm
                 )
             }
             PMText(
                 text = label,
                 style = if (dense) PMTextStyle.Caption else PMTextStyle.Body,
-                fontSize = fontSize,
+                fontSize = textFontSize,
                 fontWeight = FontWeight.SemiBold,
                 color = resolved.content,
                 maxLines = 1,
@@ -106,7 +107,7 @@ fun PMChip(
             if (count != null) {
                 PMText(
                     text = count.toString(),
-                    fontSize = fontSize,
+                    fontSize = textFontSize,
                     color = resolved.content.copy(alpha = 0.7f),
                     maxLines = 1
                 )
@@ -185,15 +186,15 @@ private fun PMChipDarkPreview() {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PMChipPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     var selected by remember { mutableStateOf(setOf(0, 2)) }
     val tags = listOf("Nazik", "Yol verdi", "Saygılı", "Sabırlı")
 
     FlowRow(
-        modifier = Modifier.padding(dims.spacing.s16),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        modifier = Modifier.padding(spacing.s16),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         // Soft display badge with count
         PMChip(label = "Nazik", count = 42, style = PMChipStyle.Soft)

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,9 +23,8 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlin.math.abs
 
 @Composable
@@ -34,7 +32,7 @@ fun PMAvatar(
     displayName: String,
     modifier: Modifier = Modifier,
     imageUrl: String? = null,
-    size: Dp = MaterialTheme.pmDimensions.sizing.avatarXl,
+    size: Dp = PMTheme.sizing.avatarXl,
     isEditable: Boolean = false,
     showOnlineStatus: Boolean = false,
     isOnline: Boolean = false,
@@ -42,9 +40,10 @@ fun PMAvatar(
     onClick: (() -> Unit)? = null,
     onEditClick: (() -> Unit)? = null
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val primary = colors.primary
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     val colorSets = remember(colors) {
         listOf(
@@ -84,7 +83,7 @@ fun PMAvatar(
                 .size(size)
                 .clip(CircleShape)
                 .background(bgColor)
-                .border(dims.stroke.st1, fgColor.copy(alpha = 0.2f), CircleShape),
+                .border(stroke.st1, fgColor.copy(alpha = 0.2f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             // TODO: If imageUrl is not null, load Image with Coil here.
@@ -104,7 +103,7 @@ fun PMAvatar(
                     .size(size * 0.2f) // Relative size to the avatar
                     .clip(CircleShape)
                     .background(colors.success)
-                    .border(dims.stroke.st2, colors.background, CircleShape)
+                    .border(stroke.st2, colors.background, CircleShape)
             )
         }
 
@@ -112,11 +111,11 @@ fun PMAvatar(
         if (isEditable || overlayIcon != null) {
             Box(
                 modifier = Modifier
-                    .size(dims.sizing.iconLg)
-                    .shadow(elevation = dims.spacing.s4, shape = CircleShape, spotColor = primary.copy(alpha = 0.45f))
+                    .size(sizing.iconLg)
+                    .shadow(elevation = spacing.s4, shape = CircleShape, spotColor = colors.primary.copy(alpha = 0.45f))
                     .clip(CircleShape)
-                    .background(primary)
-                    .border(dims.stroke.st1, colors.surface, CircleShape)
+                    .background(colors.primary)
+                    .border(stroke.st1, colors.surface, CircleShape)
                     .let {
                         if (onEditClick != null) it.debouncedClickable(onClick = onEditClick)
                         else it

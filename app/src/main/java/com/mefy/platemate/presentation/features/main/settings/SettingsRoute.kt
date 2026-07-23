@@ -12,14 +12,13 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SettingsRoute(
     viewModel: SettingsViewModel,
-    onBackClick: (() -> Unit)? = null,
     onNavigateToChangePassword: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
     onNavigateToPremium: () -> Unit,
@@ -53,12 +52,9 @@ fun SettingsRoute(
         else -> ScreenStatus.Content
     }
 
-    // Stable, hoisted callbacks: rows/buttons skip recomposition while data is unchanged.
-    val onRetry = remember(onAction) { { onAction(SettingsUiAction.RetryClicked) } }
-
     PMBaseScreen(
+        viewModel = viewModel,
         status = status,
-        onRetry = onRetry,
         loading = { innerPadding ->
             PMCircularProgressIndicator(
                 fillMaxSize = true,
@@ -66,8 +62,8 @@ fun SettingsRoute(
             )
         },
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.profile_settings_title),
-            onBackClick = onBackClick,
+            title = stringResource(R.string.main_tab_settings),
+            showBackButton = false,
             alignment = PMTopBarAlignment.Start
         ),
     ) { innerPadding ->

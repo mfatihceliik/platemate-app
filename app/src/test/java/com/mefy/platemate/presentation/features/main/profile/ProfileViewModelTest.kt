@@ -5,22 +5,17 @@ import com.mefy.platemate.core.common.pagination.ReviewStatusTotals
 import com.mefy.platemate.core.error.AppError
 import com.mefy.platemate.domain.model.auth.AuthSession
 import com.mefy.platemate.domain.model.profile.ProfileFriendRequest
+import com.mefy.platemate.domain.model.profile.ProfilePage
 import com.mefy.platemate.domain.model.profile.SocialMediaLink
 import com.mefy.platemate.domain.model.profile.UserProfile
 import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.settings.UserSettings
-import com.mefy.platemate.domain.model.social.Friendship
-import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.repository.AuthRepository
 import com.mefy.platemate.domain.repository.ProfileRepository
-import com.mefy.platemate.domain.repository.SocialLinkRepository
-import com.mefy.platemate.domain.repository.SocialRepository
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
-import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
+import com.mefy.platemate.domain.usecase.profile.GetProfilePageUseCase
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.domain.usecase.social.GetPendingFriendRequestsUseCase
-import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
 import com.mefy.platemate.presentation.common.global.DefaultGlobalUiEventBus
 import com.mefy.platemate.presentation.features.main.profile.mapper.DefaultProfileUiMapper
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
@@ -84,9 +79,7 @@ class ProfileViewModelTest {
         profileRepository: FakeProfileRepository
     ): ProfileViewModel = ProfileViewModel(
         observeSessionUseCase = ObserveSessionUseCase(authRepository),
-        getProfileUseCase = GetProfileUseCase(profileRepository),
-        getSocialPlatformsUseCase = GetSocialPlatformsUseCase(FakeSocialLinkRepository()),
-        getPendingFriendRequestsUseCase = GetPendingFriendRequestsUseCase(FakeSocialRepository()),
+        getProfilePageUseCase = GetProfilePageUseCase(profileRepository),
         profileUiMapper = DefaultProfileUiMapper(
             formatTurkishPlateInputUseCase = FormatTurkishPlateInputUseCase(),
             validateTurkishPlateUseCase = ValidateTurkishPlateUseCase()
@@ -114,27 +107,12 @@ class ProfileViewModelTest {
         }
     }
 
-    private class FakeSocialLinkRepository : SocialLinkRepository {
-        override suspend fun addSocialLink(platform: String, url: String): AppResult<Unit> = AppResult.Success(Unit)
-        override suspend fun updateSocialLink(link: SocialMediaLink): AppResult<Unit> = AppResult.Success(Unit)
-        override suspend fun deleteSocialLink(id: Long): AppResult<Unit> = AppResult.Success(Unit)
-        override suspend fun getSocialPlatforms(): AppResult<List<SocialPlatform>> = AppResult.Success(emptyList())
-    }
-
-    private class FakeSocialRepository : SocialRepository {
-        override suspend fun sendFriendRequest(addresseeId: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
-        override suspend fun acceptFriendRequest(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
-        override suspend fun rejectFriendRequest(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
-        override suspend fun removeFriend(id: Long): AppResult<Unit> = AppResult.Error(AppError.Api("unused"))
-        override suspend fun getFriends(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
-        override suspend fun getPendingRequests(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
-        override suspend fun getSentRequests(): AppResult<List<Friendship>> = AppResult.Success(emptyList())
-    }
-
     private class FakeProfileRepository(
         private val profile: UserProfile
     ) : ProfileRepository {
         override suspend fun getProfile(userId: Long): AppResult<UserProfile> = AppResult.Success(profile)
+        override suspend fun getProfilePage(userId: Long): AppResult<ProfilePage> =
+            AppResult.Success(ProfilePage(profile = profile, pendingFriendRequests = emptyList(), socialPlatforms = emptyList()))
         override suspend fun updateProfile(
             userId: Long,
             displayName: String?,

@@ -8,6 +8,6 @@ sealed interface NotificationPreferencesUiAction {
     data class NewFollowerChanged(val enabled: Boolean) : NotificationPreferencesUiAction
     data class PlateReviewChanged(val enabled: Boolean) : NotificationPreferencesUiAction
     data class ReviewReplyChanged(val enabled: Boolean) : NotificationPreferencesUiAction
+    data class FollowingListVisibleChanged(val enabled: Boolean) : NotificationPreferencesUiAction
     data object SaveClicked : NotificationPreferencesUiAction
-    data object RetryClicked : NotificationPreferencesUiAction
 }

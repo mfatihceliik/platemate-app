@@ -1,12 +1,10 @@
 package com.mefy.platemate.presentation.features.main.settings.themecolor
 
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,8 +19,8 @@ import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.features.main.settings.themecolor.components.AccentColorGrid
 import com.mefy.platemate.presentation.features.main.settings.themecolor.components.AppearanceSelector
 import com.mefy.platemate.presentation.features.main.settings.themecolor.components.ThemePreviewCard
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun ThemeColorScreen(
@@ -31,7 +29,7 @@ fun ThemeColorScreen(
     onAction: (ThemeColorUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     val onColorSelected = remember(onAction) { { c: Color -> onAction(ThemeColorUiAction.ColorSelected(c)) } }
     val onModeSelected = remember(onAction) { { m: AppThemeMode -> onAction(ThemeColorUiAction.ThemeModeSelected(m)) } }
@@ -42,7 +40,7 @@ fun ThemeColorScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(spacing.s16)
     ) {
         item {
             PMSectionLabel(text = stringResource(R.string.profile_theme_preview))
@@ -84,7 +82,7 @@ fun ThemeColorScreen(
                 loading = state.isSaving,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = dims.spacing.s16)
+                    .padding(vertical = spacing.s16)
             )
         }
     }

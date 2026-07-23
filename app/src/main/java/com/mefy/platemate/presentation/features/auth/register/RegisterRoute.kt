@@ -5,6 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -13,9 +15,9 @@ fun RegisterRoute(
     prefillIdentifier: String?,
     onNavigateAfterRegister: () -> Unit,
     onNavigateToLoginClick: (String?) -> Unit,
-    onBackClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(prefillIdentifier) {
@@ -35,7 +37,7 @@ fun RegisterRoute(
         onNavigateToLoginClick = {
             onNavigateToLoginClick(state.email.takeIf { it.isNotBlank() })
         },
-        onBackClick = onBackClick,
+        onBackClick = { navController.navigateUp() },
         modifier = modifier
     )
 }

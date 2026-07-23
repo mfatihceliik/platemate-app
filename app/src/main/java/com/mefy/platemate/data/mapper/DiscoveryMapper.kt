@@ -11,6 +11,7 @@ import com.mefy.platemate.data.remote.dto.DiscoveryForYouDto
 import com.mefy.platemate.data.remote.dto.DiscoveryHomeResponseDto
 import com.mefy.platemate.data.remote.dto.DiscoveryPremiumStatsDto
 import com.mefy.platemate.data.remote.dto.DiscoveryReportTypeCountDto
+import com.mefy.platemate.data.remote.dto.DiscoveryTabOptionDto
 import com.mefy.platemate.data.remote.dto.DiscoveryTabsDto
 import com.mefy.platemate.data.remote.dto.RecentActivityDto
 import com.mefy.platemate.data.remote.dto.plate.PlateDetailDto
@@ -24,6 +25,7 @@ import com.mefy.platemate.domain.model.discovery.DiscoveryFeedType
 import com.mefy.platemate.domain.model.discovery.DiscoveryForYou
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryPremiumStats
+import com.mefy.platemate.domain.model.discovery.DiscoveryTabOption
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabPage
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.discovery.RecentActivity
@@ -50,7 +52,8 @@ class DiscoveryMapper @Inject constructor() : Mapper<DiscoveryHomeResponseDto, D
             recentActivities = input.recentActivities?.map { mapRecentActivity(it) } ?: emptyList(),
             feedType = DiscoveryFeedType.fromString(input.feedType),
             extendedStats = input.extendedStats?.let { mapExtendedStats(it) },
-            forYou = input.forYou?.let { mapForYou(it) }
+            forYou = input.forYou?.let { mapForYou(it) },
+            tabOptions = input.tabOptions?.let { mapTabOptions(it) } ?: emptyList()
         )
     }
 
@@ -145,6 +148,13 @@ class DiscoveryMapper @Inject constructor() : Mapper<DiscoveryHomeResponseDto, D
             weight = dto.weight ?: 0,
             sortOrder = dto.sortOrder ?: 0
         )
+    }
+
+    fun mapTabOptions(dto: List<DiscoveryTabOptionDto>): List<DiscoveryTabOption> {
+        return dto
+            .filter { !it.code.isNullOrBlank() }
+            .sortedBy { it.sortOrder ?: 0 }
+            .map { DiscoveryTabOption(code = it.code!!, label = it.label.orEmpty(), sortOrder = it.sortOrder ?: 0) }
     }
 
     fun mapTabPage(dto: PagedResult<PlateDetailDto>): DiscoveryTabPage {

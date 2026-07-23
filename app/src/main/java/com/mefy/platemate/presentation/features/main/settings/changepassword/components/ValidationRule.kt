@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,25 +15,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
-internal fun ValidationRule(text: String, passed: Boolean) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+internal fun ValidationRule(
+    text: String,
+    passed: Boolean
+) {
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val shapes = PMTheme.shapes
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.iconMd)
-                .clip(RoundedCornerShape(dims.radius.r6))
+                .size(sizing.iconMd)
+                .clip(shapes.medium)
                 .background(
                     if (passed) colors.primary
-                    else MaterialTheme.pmColors.starEmpty
+                    else colors.starEmpty
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -50,7 +53,7 @@ internal fun ValidationRule(text: String, passed: Boolean) {
         PMText(
             text = text,
             style = PMTextStyle.Caption,
-            color = if (passed) MaterialTheme.pmColors.textSecondary else MaterialTheme.pmColors.textLabel
+            color = if (passed) colors.textSecondary else colors.textLabel
         )
     }
 }

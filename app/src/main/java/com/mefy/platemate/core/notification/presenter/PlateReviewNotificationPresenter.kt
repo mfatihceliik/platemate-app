@@ -12,7 +12,7 @@ import javax.inject.Singleton
 /** Plaka değerlendirmesi bildirimi. */
 @Singleton
 class PlateReviewNotificationPresenter @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @ApplicationContext context: Context,
     channelRegistry: NotificationChannelRegistry
 ) : BaseNotificationPresenter(context, channelRegistry) {
 

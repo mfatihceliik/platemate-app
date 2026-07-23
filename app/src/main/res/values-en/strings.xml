@@ -6,6 +6,7 @@
     <string name="common_show">Show</string>
     <string name="common_hide">Hide</string>
     <string name="common_cancel">Cancel</string>
+    <string name="common_you">You</string>
     <string name="user_profile_unfriend_confirmation">Are you sure you want to remove this person from your friends?</string>
     <string name="common_clear">Clear</string>
     <string name="common_loading">Loading…</string>
@@ -412,6 +413,8 @@
     <string name="profile_notif_friend_add_desc">Notify when someone adds you</string>
     <string name="profile_notif_new_follower">New Follower</string>
     <string name="profile_notif_new_follower_desc">When someone follows you</string>
+    <string name="profile_notif_following_list_visible">Show Following List</string>
+    <string name="profile_notif_following_list_visible_desc">Turn off and others can\'t see who you follow. Your followers list is not affected.</string>
     <string name="profile_notif_plate_review">Plate Review</string>
     <string name="profile_notif_plate_review_desc">When your vehicle is reviewed</string>
     <string name="profile_notif_review_reply">Review Replies</string>
@@ -453,6 +456,7 @@
     <string name="user_profile_follow">Follow</string>
     <string name="user_profile_following_label">Following</string>
     <string name="user_profile_remove">Remove</string>
+    <string name="user_profile_remove_friend_button">Remove</string>
     <string name="user_profile_message">Message</string>
     <string name="user_profile_share">Share</string>
 
@@ -499,9 +503,18 @@
     <string name="messages_delete_confirm_title">Delete conversation?</string>
     <string name="messages_delete_confirm_message">This only deletes the conversation for you. If they message you again, it will reappear.</string>
     <string name="messages_mark_read">Read</string>
+    <string name="messages_search_placeholder">Search conversations…</string>
+    <string name="messages_search_no_results">No conversations match</string>
+    <string name="messages_search_section_messages">Messages</string>
     <string name="common_delete">Delete</string>
     <string name="conversation_empty_title">Start the conversation</string>
     <string name="conversation_empty_subtitle">Send your first message to begin the chat</string>
+    <string name="conversation_delete_message_title">Delete message?</string>
+    <string name="conversation_delete_message_body">This message will be deleted for everyone. This can\'t be undone.</string>
+    <string name="conversation_message_deleted">This message was deleted</string>
+    <string name="conversation_action_quote">Quote</string>
+    <string name="conversation_action_report">Report</string>
+    <string name="conversation_report_message_title">Report Message</string>
 
     <!-- Chat Detail -->
     <string name="chatdetail_title">Chat Info</string>
@@ -561,6 +574,7 @@
     <string name="review_submit_button">Share Review</string>
     <string name="review_section_overall">OVERALL RATING</string>
     <string name="review_section_tags">TAGS</string>
+    <string name="review_tags_limit_reached">You can select up to %1$d tags</string>
     <string name="review_section_experience">YOUR EXPERIENCE</string>
     <string name="review_comment_placeholder">Share your experience…</string>
     <string name="review_comment_counter">%1$d/%2$d</string>
@@ -716,8 +730,12 @@
     <string name="conversation_date_yesterday">Yesterday</string>
     <string name="scanner_hint">Place the plate inside the rectangle.</string>
     <string name="scanner_error_not_found">License plate not found. Please select a clearer photo.</string>
+    <string name="scanner_gallery_content_description">Pick from gallery</string>
     <string name="scanner_searching_plate">%1$s\nSearching…</string>
     <string name="camera_scanner_screen">Camera</string>
+    <string name="camera_permission_denied_title">Camera Permission Required</string>
+    <string name="camera_permission_denied_message">You denied camera access. To scan a plate, please allow camera access from Settings.</string>
+    <string name="camera_permission_open_settings">Open Settings</string>
     <string name="user_search_title">Search User</string>
     <string name="search_users_placeholder">Search user...</string>
     <string name="search_recent">Search History</string>
@@ -765,6 +783,11 @@
     <string name="profile_friends_remove_action">Remove</string>
     <string name="profile_friends_cancel_request_confirmation">Are you sure you want to cancel this friend request?</string>
     <string name="profile_friends_empty_global">You don\'t have any friends or requests yet.</string>
+    <string name="user_follow_list_following_tab">Following</string>
+    <string name="user_follow_list_followers_tab">Followers</string>
+    <string name="user_follow_list_empty_following">Not following anyone yet.</string>
+    <string name="user_follow_list_empty_followers">No followers yet.</string>
+    <string name="user_follow_list_hidden_following">This user has hidden their following list.</string>
     <string name="add_to_favorite">Add to Favorites</string>
     <string name="remove_from_favorite">Remove from Favorites</string>
     <string name="common_yes">Yes</string>

@@ -9,7 +9,7 @@ import com.mefy.platemate.domain.model.review.Review
 import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestNotificationItem
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.PlateReviewNotificationItem
@@ -24,7 +24,6 @@ import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
 import com.mefy.platemate.presentation.features.uimodel.toUiModel
 import com.mefy.platemate.presentation.features.uimodel.SocialPlatform as SocialPlatformUiModel
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 

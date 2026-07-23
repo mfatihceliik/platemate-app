@@ -13,24 +13,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import com.mefy.platemate.presentation.components.PMButton
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -43,7 +42,9 @@ internal fun FeaturePagerContent(
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val shape = PMTheme.shapes.medium
 
     Column(
         modifier = modifier
@@ -54,7 +55,7 @@ internal fun FeaturePagerContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = MaterialTheme.pmDimensions.spacing.s64, end = MaterialTheme.pmDimensions.spacing.s24),
+                .padding(top = spacing.s64, end = spacing.s24),
             contentAlignment = Alignment.CenterEnd
         ) {
             PMText(
@@ -79,7 +80,7 @@ internal fun FeaturePagerContent(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(top = MaterialTheme.pmDimensions.spacing.s16, start = MaterialTheme.pmDimensions.spacing.s24, end = MaterialTheme.pmDimensions.spacing.s24),
+                        .padding(top = spacing.s16, start = spacing.s24, end = spacing.s24),
                     contentAlignment = Alignment.Center
                 ) {
                     when (page) {
@@ -93,8 +94,8 @@ internal fun FeaturePagerContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = MaterialTheme.pmDimensions.spacing.s24, bottom = MaterialTheme.pmDimensions.spacing.s32, start = MaterialTheme.pmDimensions.spacing.s24, end = MaterialTheme.pmDimensions.spacing.s24),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s16)
+                        .padding(top = spacing.s24, bottom = spacing.s32, start = spacing.s24, end = spacing.s24),
+                    verticalArrangement = Arrangement.spacedBy(spacing.s16)
                 ) {
                     val titleRes = when (page) {
                         0 -> R.string.onboarding_f1_title
@@ -107,7 +108,7 @@ internal fun FeaturePagerContent(
                         else -> R.string.onboarding_f3_desc
                     }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s8)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
                         PMText(
                             text = stringResource(titleRes),
                             style = PMTextStyle.Display,
@@ -124,7 +125,7 @@ internal fun FeaturePagerContent(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = MaterialTheme.pmDimensions.spacing.s4),
+                            .padding(vertical = spacing.s4),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -132,11 +133,11 @@ internal fun FeaturePagerContent(
                             val isSelected = pagerState.currentPage == index
                             Box(
                                 modifier = Modifier
-                                    .padding(horizontal = MaterialTheme.pmDimensions.spacing.s4)
+                                    .padding(horizontal = spacing.s4)
                                     .size(width = if (isSelected) 24.dp else 7.dp, height = 7.dp)
                                     .background(
                                         color = if (isSelected) colors.primary else colors.starEmpty,
-                                        shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r4)
+                                        shape = shape
                                     )
                             )
                         }
@@ -145,14 +146,14 @@ internal fun FeaturePagerContent(
                     // Bottom Nav
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.pmDimensions.spacing.s12),
+                        horizontalArrangement = Arrangement.spacedBy(spacing.s12),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (page > 0) {
                             Box(
                                 modifier = Modifier
-                                    .size(MaterialTheme.pmDimensions.spacing.s48)
-                                    .background(colors.chipBg, RoundedCornerShape(MaterialTheme.pmDimensions.radius.r16))
+                                    .size(spacing.s48)
+                                    .background(colors.chipBg, shape)
                                     .clickable {
                                         scope.launch {
                                             pagerState.animateScrollToPage(page - 1)
@@ -185,6 +186,22 @@ internal fun FeaturePagerContent(
                 }
             }
         }
+    }
+}
+
+@Preview(name = "FeaturePagerContent Light", showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun FeaturePagerContentLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        FeaturePagerContent(onSkipClick = {}, onRegisterClick = {})
+    }
+}
+
+@Preview(name = "FeaturePagerContent Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun FeaturePagerContentDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        FeaturePagerContent(onSkipClick = {}, onRegisterClick = {})
     }
 }
 

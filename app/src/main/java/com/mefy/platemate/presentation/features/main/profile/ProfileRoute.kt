@@ -18,18 +18,18 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.features.main.profile.components.ProfileShimmerContent
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileRoute(
+    modifier: Modifier = Modifier,
     viewModel: ProfileViewModel,
     onNavigateToReviewDetail: (String, Long) -> Unit,
     onNavigateToFriends: (Int) -> Unit,
     onNavigateToUserProfile: (Long) -> Unit,
-    onNavigateToReviewList: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToReviewList: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
@@ -71,27 +71,22 @@ fun ProfileRoute(
         }
     }
 
-    val onAction = viewModel::onAction
     val status = when {
         state.isInitialLoading -> ScreenStatus.Loading
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         else -> ScreenStatus.Content
     }
 
-    val onRetry = remember(onAction) { { onAction(ProfileUiAction.RetryClicked) } }
-    val onRefresh = remember(onAction) { { onAction(ProfileUiAction.RefreshRequested) } }
-
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.main_tab_profile),
             alignment = PMTopBarAlignment.Start,
-            onBackClick = null
+            showBackButton = false
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = onRetry,
         isRefreshing = state.isRefreshing,
-        onRefresh = onRefresh,
         loading = { innerPadding ->
             ProfileShimmerContent(
                 modifier = Modifier

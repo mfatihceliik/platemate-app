@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -13,10 +12,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.padding
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
+import com.mefy.platemate.presentation.components.PMStatPill
+import com.mefy.platemate.presentation.components.variant.PMCardVariant
 import com.mefy.platemate.presentation.features.uimodel.ProfileStatusSummaryUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun ProfileStatusSummarySection(
@@ -24,38 +24,41 @@ internal fun ProfileStatusSummarySection(
     modifier: Modifier = Modifier,
     onStatusClick: (String) -> Unit = {}
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
-        padding = PaddingValues(dims.spacing.s16)
+        padding = PaddingValues(spacing.s16)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                horizontalArrangement = Arrangement.spacedBy(spacing.s8)
             ) {
-                StatusCountPill(
+                PMStatPill(
                     label = stringResource(R.string.profile_status_approved),
                     value = statusSummary.approved.toString(),
                     dotColor = colors.success,
+                    variant = PMCardVariant.Large,
                     modifier = Modifier.weight(1f),
                     onClick = { onStatusClick("APPROVED") }
                 )
-                StatusCountPill(
+                PMStatPill(
                     label = stringResource(R.string.profile_status_pending_review),
                     value = statusSummary.pendingReview.toString(),
                     dotColor = colors.warning,
+                    variant = PMCardVariant.Large,
                     modifier = Modifier.weight(1f),
                     onClick = { onStatusClick("PENDING_REVIEW") }
                 )
-                StatusCountPill(
+                PMStatPill(
                     label = stringResource(R.string.profile_status_rejected),
                     value = statusSummary.rejected.toString(),
                     dotColor = colors.error,
+                    variant = PMCardVariant.Large,
                     modifier = Modifier.weight(1f),
                     onClick = { onStatusClick("REJECTED") }
                 )
@@ -82,9 +85,9 @@ private fun ProfileStatusSummarySectionDarkPreview() {
 
 @Composable
 private fun ProfileStatusSummarySectionPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
     ProfileStatusSummarySection(
         statusSummary = ProfileStatusSummaryUiModel(approved = 124, pendingReview = 12, rejected = 6),
-        modifier = Modifier.padding(dims.spacing.s16)
+        modifier = Modifier.padding(spacing.s16)
     )
 }

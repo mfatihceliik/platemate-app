@@ -8,12 +8,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,16 +20,14 @@ import androidx.compose.foundation.border
 import androidx.compose.ui.semantics.Role
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.bounceClick
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMButton(
@@ -43,19 +38,19 @@ fun PMButton(
     enabled: Boolean = true,
     loading: Boolean = false,
     debounceMillis: Long = 600L,
-    colors: ButtonColors? = null,
+    buttonColors: ButtonColors? = null,
     contentPadding: PaddingValues? = null,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val pm = MaterialTheme.pmColors
+
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
+    val shape = PMTheme.shapes.medium
 
     val buttonModifier = modifier
         .fillMaxWidth()
-        .defaultMinSize(minHeight = dims.sizing.buttonMinHeight)
-    val shape: Shape = RoundedCornerShape(dims.radius.r10)
-
+        .defaultMinSize(minHeight = sizing.buttonMinHeight)
     val padding = contentPadding ?: when (variant) {
         PMButtonVariant.Text -> ButtonDefaults.TextButtonContentPadding
         else -> ButtonDefaults.ContentPadding
@@ -63,11 +58,11 @@ fun PMButton(
 
     val isActuallyEnabled = enabled && !loading
 
-    val resolvedColors = colors ?: when (variant) {
+    val resolvedColors = buttonColors ?: when (variant) {
         PMButtonVariant.Filled -> ButtonDefaults.buttonColors()
         PMButtonVariant.Tonal -> ButtonDefaults.buttonColors(
-            containerColor = pm.primaryContainer,
-            contentColor = pm.onPrimaryContainer
+            containerColor = colors.primaryContainer,
+            contentColor = colors.onPrimaryContainer
         )
         PMButtonVariant.Outlined -> ButtonDefaults.outlinedButtonColors()
         PMButtonVariant.Text -> ButtonDefaults.textButtonColors()
@@ -129,13 +124,14 @@ private fun PMButtonContent(
     leadingIcon: (@Composable () -> Unit)?,
     trailingIcon: (@Composable () -> Unit)?,
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     Box(contentAlignment = Alignment.Center) {
         // Text loading'de görünmez ama ölçülmeye devam eder: buton genişliği sabit kalır.
         Row(
             modifier = Modifier.alpha(if (loading) 0f else 1f),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8),
             verticalAlignment = Alignment.CenterVertically
         ) {
             leadingIcon?.invoke()
@@ -148,7 +144,7 @@ private fun PMButtonContent(
         }
         if (loading) {
             PMCircularProgressIndicator(
-                size = dims.sizing.circleProgressBarXs,
+                size = sizing.circleProgressBarXs,
                 color = LocalContentColor.current
             )
         }
@@ -174,14 +170,15 @@ private fun PMButtonDarkPreview() {
 @Composable
 private fun PMButtonPreviewContent() {
 
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.pmColors.background)
-            .padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            .background(colors.background)
+            .padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         PMButton(
             text = "Filled",

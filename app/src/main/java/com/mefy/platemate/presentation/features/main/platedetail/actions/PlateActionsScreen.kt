@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.outlined.AddAlert
 import androidx.compose.material.icons.outlined.Flag
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +22,8 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMPlateBadge
 import com.mefy.platemate.presentation.components.PMRowItem
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun PlateActionsScreen(
@@ -34,15 +32,15 @@ internal fun PlateActionsScreen(
     onAction: (PlateActionsUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
 
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s16),
     ) {
         item {
             PMCard {
@@ -67,9 +65,6 @@ internal fun PlateActionsScreen(
                 showChevron = false,
                 onClick = { onAction(PlateActionsUiAction.SaveToggled) }
             )
-        }
-
-        item {
             PMRowItem(
                 title = stringResource(
                     if (state.isAlarmed) R.string.platedetail_action_remove_alarm else R.string.platedetail_action_alarm
@@ -80,9 +75,6 @@ internal fun PlateActionsScreen(
                 showChevron = false,
                 onClick = { onAction(PlateActionsUiAction.AlarmToggled) }
             )
-        }
-
-        item {
             PMRowItem(
                 title = stringResource(R.string.platedetail_action_report),
                 leadingIcon = Icons.Outlined.Flag,

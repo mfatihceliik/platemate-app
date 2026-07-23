@@ -44,8 +44,9 @@ class UserSearchViewModel @Inject constructor(
     fun onAction(action: UserSearchUiAction) {
         when (action) {
             is UserSearchUiAction.SearchQueryChanged -> onSearchQueryChanged(action.query)
-            is UserSearchUiAction.SearchUserClicked -> onSearchUserClicked(action.userId, action.username)
-            is UserSearchUiAction.RecentSearchClicked -> onRecentSearchClicked(action.userId, action.username)
+            is UserSearchUiAction.SearchUserClicked -> onSearchUserClicked(action.userId, action.username, action.displayName, action.bio)
+            is UserSearchUiAction.RecentSearchClicked -> onRecentSearchClicked(action.userId, action.username, action.displayName, action.bio)
+            is UserSearchUiAction.RemoveRecentSearchClicked -> onRemoveRecentSearchClicked(action.userId)
             UserSearchUiAction.ClearRecentSearchesClicked -> onClearRecentSearches()
         }
     }
@@ -64,7 +65,9 @@ class UserSearchViewModel @Inject constructor(
                     val items = result.data.map {
                         UserSearchItemUiModel(
                             id = it.id,
-                            username = it.username
+                            username = it.username,
+                            displayName = it.displayName,
+                            bio = it.bio
                         )
                     }
                     _uiState.update { it.copy(searchResults = items, isSearchLoading = false) }
@@ -76,18 +79,24 @@ class UserSearchViewModel @Inject constructor(
         }
     }
 
-    private fun onSearchUserClicked(userId: Long, username: String) {
+    private fun onSearchUserClicked(userId: Long, username: String, displayName: String?, bio: String?) {
         viewModelScope.launch {
-            recentUserSearchStore.addSearchQuery(UserSearchItemUiModel(userId, username))
+            recentUserSearchStore.addSearchQuery(UserSearchItemUiModel(userId, username, displayName, bio))
             _uiEffect.emit(UserSearchUiEffect.NavigateToUserProfile(userId))
         }
     }
 
-    private fun onRecentSearchClicked(userId: Long, username: String) {
+    private fun onRecentSearchClicked(userId: Long, username: String, displayName: String?, bio: String?) {
         viewModelScope.launch {
             // Bring it to the top of recent searches
-            recentUserSearchStore.addSearchQuery(UserSearchItemUiModel(userId, username))
+            recentUserSearchStore.addSearchQuery(UserSearchItemUiModel(userId, username, displayName, bio))
             _uiEffect.emit(UserSearchUiEffect.NavigateToUserProfile(userId))
+        }
+    }
+
+    private fun onRemoveRecentSearchClicked(userId: Long) {
+        viewModelScope.launch {
+            recentUserSearchStore.removeSearch(userId)
         }
     }
 

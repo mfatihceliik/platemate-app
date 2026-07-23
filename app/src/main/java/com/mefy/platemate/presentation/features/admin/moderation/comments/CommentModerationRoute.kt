@@ -1,8 +1,6 @@
 package com.mefy.platemate.presentation.features.admin.moderation.comments
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,22 +10,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CommentModerationRoute(
     viewModel: CommentModerationViewModel,
-    onNavigateBack: () -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                CommentModerationUiEffect.NavigateBack -> onNavigateBack()
+                CommentModerationUiEffect.NavigateBack -> navController.navigateUp()
             }
         }
     }
@@ -40,13 +38,11 @@ fun CommentModerationRoute(
 
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
-            title = stringResource(R.string.admin_moderation_title),
-            onBackClick = { viewModel.onAction(CommentModerationUiAction.BackClicked) }
+            title = stringResource(R.string.admin_moderation_title)
         ),
         status = status,
         keepTopBarWhileLoading = true,
         onRetry = { viewModel.onAction(CommentModerationUiAction.RetryClicked) },
-        contentPadding = PaddingValues(MaterialTheme.pmDimensions.spacing.s16),
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         CommentModerationScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

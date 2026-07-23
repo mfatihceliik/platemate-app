@@ -1,5 +1,8 @@
 package com.mefy.platemate.di
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.data.remote.interceptor.AuthInterceptor
 import com.mefy.platemate.data.remote.interceptor.LanguageInterceptor
@@ -27,6 +30,7 @@ import com.mefy.platemate.data.remote.rest.service.UserReportApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -54,16 +58,33 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideChuckerCollector(@ApplicationContext context: Context): ChuckerCollector =
+        ChuckerCollector(context)
+
+    @Provides
+    @Singleton
+    fun provideChuckerInterceptor(
+        @ApplicationContext context: Context,
+        chuckerCollector: ChuckerCollector
+    ): ChuckerInterceptor =
+        ChuckerInterceptor.Builder(context)
+            .collector(chuckerCollector)
+            .build()
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
         languageInterceptor: LanguageInterceptor,
         authInterceptor: AuthInterceptor,
         tokenAuthenticator: TokenAuthenticator,
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(languageInterceptor)
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(chuckerInterceptor)
             .authenticator(tokenAuthenticator)
             // Tüm-çağrı süresi sınırı: sunucu ~10sn'de yanıt vermezse istek
             // SocketTimeout ile düşer -> AppError.Network -> pop-up.
@@ -79,11 +100,13 @@ object NetworkModule {
     @Named("RefreshOkHttpClient")
     fun provideRefreshOkHttpClient(
         languageInterceptor: LanguageInterceptor,
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(languageInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(chuckerInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)

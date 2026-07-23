@@ -1,4 +1,4 @@
-package com.mefy.platemate.presentation.navigation
+package com.mefy.platemate.presentation.navigation.graphs
 
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,13 +11,17 @@ import com.mefy.platemate.presentation.features.auth.login.LoginViewModel
 import com.mefy.platemate.presentation.features.auth.register.RegisterRoute
 import com.mefy.platemate.presentation.features.auth.register.RegisterViewModel
 import com.mefy.platemate.presentation.features.auth.onboarding.OnboardingRoute
+import com.mefy.platemate.presentation.navigation.AuthGraphDestination
+import com.mefy.platemate.presentation.navigation.LoginDestination
+import com.mefy.platemate.presentation.navigation.OnboardingDestination
+import com.mefy.platemate.presentation.navigation.RegisterDestination
+import com.mefy.platemate.presentation.navigation.screenComposable
 
 internal fun NavGraphBuilder.authGraph(
     onNavigateAfterLogin: () -> Unit,
     onNavigateAfterRegister: () -> Unit,
     onNavigateToRegister: (String?) -> Unit,
     onNavigateToLogin: (String?) -> Unit,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation<AuthGraphDestination>(startDestination = OnboardingDestination) {
@@ -38,7 +42,6 @@ internal fun NavGraphBuilder.authGraph(
                 prefillEmail = destination.prefillIdentifier,
                 onNavigateAfterLogin = onNavigateAfterLogin,
                 onNavigateToRegisterClick = onNavigateToRegister,
-                onBackClick = onBackClick,
                 modifier = modifier
             )
         }
@@ -52,7 +55,6 @@ internal fun NavGraphBuilder.authGraph(
                 prefillIdentifier = destination.prefillIdentifier,
                 onNavigateAfterRegister = onNavigateAfterRegister,
                 onNavigateToLoginClick = onNavigateToLogin,
-                onBackClick = onBackClick,
                 modifier = modifier
             )
         }

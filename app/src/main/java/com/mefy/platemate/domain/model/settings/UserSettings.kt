@@ -7,5 +7,6 @@ data class UserSettings(
     val friendNotificationsEnabled: Boolean,
     val plateReviewNotificationsEnabled: Boolean = false,
     val newFollowerNotificationsEnabled: Boolean = false,
-    val reviewReplyNotificationsEnabled: Boolean = false
+    val reviewReplyNotificationsEnabled: Boolean = false,
+    val followingListVisible: Boolean = true
 )

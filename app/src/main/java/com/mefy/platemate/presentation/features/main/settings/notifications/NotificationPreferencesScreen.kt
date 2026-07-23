@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,8 +17,8 @@ import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMRowPosition
 import com.mefy.platemate.presentation.components.PMSwitch
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun NotificationPreferencesScreen(
@@ -29,7 +28,8 @@ fun NotificationPreferencesScreen(
     innerPadding: PaddingValues = PaddingValues()
 ) {
 
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     val onSave = remember(onAction) { { onAction(NotificationPreferencesUiAction.SaveClicked) } }
     val onMessagingChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.MessagingChanged(v)) } }
@@ -39,11 +39,12 @@ fun NotificationPreferencesScreen(
     val onNewFollowerChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.NewFollowerChanged(v)) } }
     val onPlateReviewChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.PlateReviewChanged(v)) } }
     val onReviewReplyChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.ReviewReplyChanged(v)) } }
+    val onFollowingListVisibleChanged = remember(onAction) { { v: Boolean -> onAction(NotificationPreferencesUiAction.FollowingListVisibleChanged(v)) } }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(spacing.s16)
 
     ) {
         item {
@@ -113,11 +114,24 @@ fun NotificationPreferencesScreen(
             PMRowItem(
                 title = stringResource(R.string.profile_notif_new_follower),
                 subtitle = stringResource(R.string.profile_notif_new_follower_desc),
-                position = PMRowPosition.Bottom,
+                position = PMRowPosition.Middle,
                 trailing = {
                     PMSwitch(
                         checked = state.newFollowerEnabled,
                         onCheckedChange = onNewFollowerChanged
+                    )
+                })
+        }
+
+        item {
+            PMRowItem(
+                title = stringResource(R.string.profile_notif_following_list_visible),
+                subtitle = stringResource(R.string.profile_notif_following_list_visible_desc),
+                position = PMRowPosition.Bottom,
+                trailing = {
+                    PMSwitch(
+                        checked = state.followingListVisible,
+                        onCheckedChange = onFollowingListVisibleChanged
                     )
                 })
         }
@@ -162,7 +176,7 @@ fun NotificationPreferencesScreen(
                 loading = state.isSaving,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = dims.spacing.s16)
+                    .padding(vertical = spacing.s16)
             )
         }
     }
@@ -180,7 +194,8 @@ private fun NotifPreferencesPreview() {
                 friendNotificationsEnabled = true,
                 newFollowerEnabled = false,
                 plateReviewEnabled = true,
-                reviewReplyEnabled = false
+                reviewReplyEnabled = false,
+                followingListVisible = false
             ),
             onAction = {},
         )

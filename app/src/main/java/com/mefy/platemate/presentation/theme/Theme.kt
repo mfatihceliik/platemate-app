@@ -19,48 +19,106 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.theme.colors.DarkPMColors
+import com.mefy.platemate.presentation.theme.colors.LightPMColors
+import com.mefy.platemate.presentation.theme.colors.LocalColors
+import com.mefy.platemate.presentation.theme.colors.PMColors
+import com.mefy.platemate.presentation.theme.colors.toColorScheme
+import com.mefy.platemate.presentation.theme.colors.withAccentColor
 
 @Composable
 fun PlateMateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     accentColor: Color? = null,
     content: @Composable () -> Unit
 ) {
-    // 1. Single source of truth: PMColors
-    val basePMColors = if (darkTheme) DarkPMColors else LightPMColors
-    val pmColors = if (accentColor != null) {
-        basePMColors.withAccentColor(accentColor, darkTheme)
-    } else {
-        basePMColors
-    }
+    val baseColors = if (darkTheme) DarkPMColors else LightPMColors
+    val pmColors = accentColor?.let {
+        baseColors.withAccentColor(it, darkTheme)
+    } ?: baseColors
 
-    // 2. Derive Material3 ColorScheme for built-in components (Button, Card etc.)
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme)
+                dynamicDarkColorScheme(context)
+            else
+                dynamicLightColorScheme(context)
         }
         else -> pmColors.toColorScheme(darkTheme)
     }
 
     CompositionLocalProvider(
-        LocalPMDimensions provides DefaultPMDimensions,
-        LocalPMColors provides pmColors,
+        LocalColors provides pmColors,
+        LocalSpacing provides DefaultSpacing,
+        LocalRadius provides DefaultRadius,
+        LocalStroke provides DefaultStroke,
+        LocalSizing provides DefaultSizing,
+        LocalFontSize provides DefaultFontSize,
+        LocalShapes provides DefaultShapes,
+        LocalAnimations provides DefaultAnimations
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
-            shapes = PMShapes,
             content = content
         )
     }
 }
+
+object PMTheme {
+    val colors: PMColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalColors.current
+
+    val spacing: PMSpacing
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalSpacing.current
+
+    val radius: PMRadius
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalRadius.current
+
+    val stroke: PMStroke
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalStroke.current
+
+    val sizing: PMSizing
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalSizing.current
+
+    val fontSize: PMFontSize
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalFontSize.current
+
+    val shapes: PMShapes
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalShapes.current
+
+    val typography: androidx.compose.material3.Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.typography
+
+    val animations: PMAnimations
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAnimations.current
+}
+
 
 @Preview(name = "PlateMate Theme Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
@@ -80,15 +138,15 @@ private fun PlateMateThemeDarkPreview() {
 
 @Composable
 private fun ThemePreviewContent() {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
-            .padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            .padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         Text(
             text = "PlateMate",
@@ -98,7 +156,7 @@ private fun ThemePreviewContent() {
         Card(
             colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)
         ) {
-            Column(modifier = Modifier.padding(dims.spacing.s12)) {
+            Column(modifier = Modifier.padding(spacing.s12)) {
                 Text(
                     text = "Driver Reputation",
                     color = colors.onSurfaceVariant
@@ -109,7 +167,7 @@ private fun ThemePreviewContent() {
                 )
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(spacing.s8)) {
             Button(onClick = {}) {
                 Text("Primary CTA")
             }
@@ -123,7 +181,7 @@ private fun ThemePreviewContent() {
             Text(
                 text = "Error feedback preview",
                 color = colors.onErrorContainer,
-                modifier = Modifier.padding(dims.spacing.s12)
+                modifier = Modifier.padding(spacing.s12)
             )
         }
     }

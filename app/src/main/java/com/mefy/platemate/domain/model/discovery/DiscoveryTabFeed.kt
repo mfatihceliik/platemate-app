@@ -2,12 +2,12 @@ package com.mefy.platemate.domain.model.discovery
 
 import com.mefy.platemate.domain.model.plate.PlateDetail
 
-enum class DiscoveryTabType {
-    TREND,
-    DANGEROUS,
-    GOOD_DRIVER,
-    NEW
-}
+/** Admin-managed Discover tab chip; `code` is the value sent as the tabType path segment. */
+data class DiscoveryTabOption(
+    val code: String,
+    val label: String,
+    val sortOrder: Int
+)
 
 data class DiscoveryTabFilter(
     val cityIds: List<Int> = emptyList(),

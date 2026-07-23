@@ -17,16 +17,16 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
@@ -34,29 +34,26 @@ import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFeedFilterUi
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun DiscoverFilterRoute(
+    modifier: Modifier = Modifier,
     viewModel: DiscoverViewModel,
-    onNavigateBack: () -> Unit,
     onNavigateToCityFilter: () -> Unit,
     onNavigateToRatingFilter: () -> Unit,
     onNavigateToReportTypeFilter: () -> Unit,
     onNavigateToWindowFilter: () -> Unit,
-    onNavigateToPremiumInfo: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToPremiumInfo: () -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Taslak, filtre butonuna basildiginda (DiscoverScreen) tohumlanir; burada tekrar tohumlanmaz,
-    // aksi halde alt picker'lardan donuste (recomposition) kullanicinin secimi silinir.
     DiscoverFilterScreen(
         state = state,
         onAction = viewModel::onAction,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { navController.navigateUp() },
         onNavigateToCityFilter = onNavigateToCityFilter,
         onNavigateToRatingFilter = onNavigateToRatingFilter,
         onNavigateToReportTypeFilter = onNavigateToReportTypeFilter,
@@ -68,6 +65,7 @@ fun DiscoverFilterRoute(
 
 @Composable
 fun DiscoverFilterScreen(
+    modifier: Modifier = Modifier,
     state: DiscoverUiState,
     onAction: (DiscoverUiAction) -> Unit,
     onNavigateBack: () -> Unit,
@@ -75,10 +73,10 @@ fun DiscoverFilterScreen(
     onNavigateToRatingFilter: () -> Unit,
     onNavigateToReportTypeFilter: () -> Unit,
     onNavigateToWindowFilter: () -> Unit,
-    onNavigateToPremiumInfo: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToPremiumInfo: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     val draft = state.filterDraft
 
     PMBaseScreen(
@@ -87,7 +85,7 @@ fun DiscoverFilterScreen(
             title = stringResource(R.string.discover_filter_title),
             onBackClick = onNavigateBack
         ),
-        contentPadding = PaddingValues(dims.spacing.s16),
+        contentPadding = PaddingValues(spacing.s16),
         bottomBar = {
             DiscoverFilterActions(
                 onClear = {
@@ -106,7 +104,7 @@ fun DiscoverFilterScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(pad),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            verticalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
             // Sehir — coklu secim; detay ekranina gider.
             PMRowItem(
@@ -143,7 +141,7 @@ fun DiscoverFilterScreen(
                 PMRowItem(
                     title = stringResource(R.string.discover_filter_premium_locked),
                     leadingIcon = Icons.Filled.Lock,
-                    leadingIconTint = MaterialTheme.pmColors.primary,
+                    leadingIconTint = colors.primary,
                     onClick = onNavigateToPremiumInfo
                 )
             }
@@ -194,16 +192,16 @@ private fun DiscoverFilterActions(
     onClear: () -> Unit,
     onApply: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
             .navigationBarsPadding()
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            .padding(horizontal = spacing.s16, vertical = spacing.s12),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         PMButton(
             text = stringResource(R.string.discover_filter_clear),

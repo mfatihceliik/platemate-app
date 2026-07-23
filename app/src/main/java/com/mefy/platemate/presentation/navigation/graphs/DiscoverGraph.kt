@@ -57,7 +57,7 @@ internal fun NavGraphBuilder.discoverGraph(
             }
             DiscoverFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToCityFilter = { navController.navigateToDiscoverCityFilter() },
                 onNavigateToRatingFilter = { navController.navigateToDiscoverRatingFilter() },
                 onNavigateToReportTypeFilter = { navController.navigateToDiscoverReportTypeFilter() },
@@ -73,7 +73,7 @@ internal fun NavGraphBuilder.discoverGraph(
             }
             DiscoverCityFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -84,7 +84,7 @@ internal fun NavGraphBuilder.discoverGraph(
             }
             DiscoverRatingFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -95,7 +95,7 @@ internal fun NavGraphBuilder.discoverGraph(
             }
             DiscoverReportTypeFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -106,7 +106,7 @@ internal fun NavGraphBuilder.discoverGraph(
             }
             DiscoverWindowFilterRoute(
                 viewModel = hiltViewModel<DiscoverViewModel>(parentEntry),
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -116,7 +116,7 @@ internal fun NavGraphBuilder.discoverGraph(
         ) { viewModel ->
             CityPlatesRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToPlateDetail = onNavigateToDiscoverDetail,
                 modifier = modifier
             )
@@ -127,11 +127,11 @@ internal fun NavGraphBuilder.discoverGraph(
         ) { viewModel ->
             PlateDetailRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToReview = { navController.navigateToReview(it) },
                 onNavigateToUserProfile = { userId -> navController.navigateToUserProfile(userId.toString()) },
-                onNavigateToEditReview = { code, reviewId, rating, comment ->
-                    navController.navigateToEditReview(code, reviewId, rating, comment)
+                onNavigateToEditReview = { code, reviewId ->
+                    navController.navigateToEditReview(code, reviewId)
                 },
                 onNavigateToActions = { plateCode -> navController.navigateToPlateActions(plateCode) },
                 modifier = modifier
@@ -143,7 +143,7 @@ internal fun NavGraphBuilder.discoverGraph(
         ) { viewModel ->
             PlateActionsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToRemoval = { plateId, plateCode ->
                     navController.navigateToRemovalRequest(plateId, plateCode)
                 },
@@ -156,7 +156,7 @@ internal fun NavGraphBuilder.discoverGraph(
         ) { viewModel ->
             PlateRemovalRequestRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -166,7 +166,7 @@ internal fun NavGraphBuilder.discoverGraph(
         ) { viewModel ->
             ReviewRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onReviewSubmitted = { navController.popBackStack() },
                 modifier = modifier
             )

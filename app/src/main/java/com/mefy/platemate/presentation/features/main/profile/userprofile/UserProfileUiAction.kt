@@ -12,6 +12,8 @@ sealed interface UserProfileUiAction {
     data object RemoveFriendDismissed : UserProfileUiAction
     data object MessageClicked : UserProfileUiAction
     data object ShareClicked : UserProfileUiAction
+    data object FollowersClicked : UserProfileUiAction
+    data object FollowingClicked : UserProfileUiAction
     data object ReportMenuClicked : UserProfileUiAction
     data class ReportReasonSelected(val reason: ReportReason) : UserProfileUiAction
     data class ReportOtherReasonTextChanged(val text: String) : UserProfileUiAction

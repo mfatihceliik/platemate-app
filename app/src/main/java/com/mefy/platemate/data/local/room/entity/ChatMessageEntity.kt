@@ -35,5 +35,17 @@ data class ChatMessageEntity(
     @ColumnInfo(name = "delivered_at")
     val deliveredAt: String?,
     @ColumnInfo(name = "read_at")
-    val readAt: String?
+    val readAt: String?,
+    // Client-generated correlation id, set on locally-created PENDING/FAILED rows and echoed
+    // back by the server on ack so a temp row can be reconciled to its real server row.
+    @ColumnInfo(name = "client_message_id")
+    val clientMessageId: String? = null,
+    // Alıntı önizlemesi — flat kolonlar, backend'in ChatMessageDto şeklini birebir yansıtır.
+    // Hepsi null ise bu mesaj bir alıntı değildir.
+    @ColumnInfo(name = "reply_to_message_id")
+    val replyToMessageId: Long? = null,
+    @ColumnInfo(name = "reply_to_sender_username")
+    val replyToSenderUsername: String? = null,
+    @ColumnInfo(name = "reply_to_content_preview")
+    val replyToContentPreview: String? = null
 )

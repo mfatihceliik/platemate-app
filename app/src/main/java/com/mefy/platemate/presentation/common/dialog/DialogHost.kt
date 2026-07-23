@@ -5,20 +5,19 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.common.text.resolve
-import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun DialogHost(
     state: DialogHostState
 ) {
     val dialog = state.activeDialog ?: return
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
 
     val icon: ImageVector
     val iconTint: Color
@@ -37,7 +36,7 @@ fun DialogHost(
         DialogVariant.Info -> {
             icon = Icons.Filled.Info
             iconTint = colors.primary
-            iconContainer = colors.categoryOrangeBg //primaryContainer
+            iconContainer = colors.categoryOrangeBg
         }
     }
 

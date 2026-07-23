@@ -8,7 +8,6 @@ sealed interface EditProfileUiAction {
     data object AvatarUrlConfirmed : EditProfileUiAction
     data object AvatarDialogDismissed : EditProfileUiAction
     data object DeleteAccountClicked : EditProfileUiAction
-    data object RetryClicked : EditProfileUiAction
     data class DisplayNameChanged(val value: String) : EditProfileUiAction
     data class UsernameChanged(val value: String) : EditProfileUiAction
     data class BioChanged(val value: String) : EditProfileUiAction

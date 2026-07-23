@@ -12,7 +12,7 @@ import javax.inject.Singleton
 /** Yeni takipçi bildirimi. */
 @Singleton
 class NewFollowerNotificationPresenter @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @ApplicationContext context: Context,
     channelRegistry: NotificationChannelRegistry
 ) : BaseNotificationPresenter(context, channelRegistry) {
 

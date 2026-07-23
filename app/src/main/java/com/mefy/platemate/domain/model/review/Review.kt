@@ -11,5 +11,6 @@ data class Review(
     val userId: Long,
     val reviewerUsername: String,
     val createdAt: AppDateTime?,
-    val updatedAt: AppDateTime?
+    val updatedAt: AppDateTime?,
+    val reportTypeCodes: List<String>
 )

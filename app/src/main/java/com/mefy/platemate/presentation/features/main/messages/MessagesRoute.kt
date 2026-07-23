@@ -19,7 +19,7 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.features.main.messages.components.MessagesEmptyState
 import com.mefy.platemate.presentation.features.main.messages.components.MessagesShimmerContent
 import kotlinx.coroutines.flow.collectLatest
@@ -29,7 +29,8 @@ fun MessagesRoute(
     viewModel: MessagesViewModel,
     onNavigateToChat: (
         conversationId: String,
-        participantName: String
+        participantName: String,
+        messageId: Long?
         ) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -58,6 +59,7 @@ fun MessagesRoute(
                 is MessagesUiEffect.NavigateToChat -> onNavigateToChat(
                     effect.conversationId,
                     effect.participantName,
+                    effect.messageId,
                 )
             }
         }
@@ -77,10 +79,10 @@ fun MessagesRoute(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.main_tab_messages),
             alignment = PMTopBarAlignment.Start,
-            onBackClick = null
+            showBackButton = false
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = { onAction(MessagesUiAction.RetryClicked) },
         loading = { innerPadding ->
             MessagesShimmerContent(
                 modifier = Modifier

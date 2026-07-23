@@ -12,7 +12,7 @@ import javax.inject.Singleton
 /** Genel/sistem bildirimi (varsayılan tip). */
 @Singleton
 class SystemNotificationPresenter @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @ApplicationContext context: Context,
     channelRegistry: NotificationChannelRegistry
 ) : BaseNotificationPresenter(context, channelRegistry) {
 

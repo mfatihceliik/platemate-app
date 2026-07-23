@@ -12,5 +12,6 @@ data class PlateReviewDto(
     @SerializedName("userId") val userId: Long = 0L,
     @SerializedName("username") val username: String? = null,
     @SerializedName("createdAt") val createdAt: String? = null, // ISO 8601
-    @SerializedName("updatedAt") val updatedAt: String? = null // ISO 8601
+    @SerializedName("updatedAt") val updatedAt: String? = null, // ISO 8601
+    @SerializedName("reportTypeCodes") val reportTypeCodes: List<String>? = null
 )

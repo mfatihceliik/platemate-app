@@ -5,7 +5,6 @@ import com.mefy.platemate.domain.model.discovery.CityPlatePage
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabFilter
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabPage
-import com.mefy.platemate.domain.model.discovery.DiscoveryTabType
 
 interface DiscoveryRepository {
     suspend fun getDiscoveryHome(forceRefresh: Boolean = false): AppResult<DiscoveryHome>
@@ -13,7 +12,7 @@ interface DiscoveryRepository {
     suspend fun getCityPlates(cityId: Int, page: Int, size: Int): AppResult<CityPlatePage>
 
     suspend fun getTabFeed(
-        tab: DiscoveryTabType,
+        tab: String,
         filter: DiscoveryTabFilter,
         page: Int,
         size: Int

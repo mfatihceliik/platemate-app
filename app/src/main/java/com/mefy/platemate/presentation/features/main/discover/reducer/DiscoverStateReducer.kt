@@ -3,11 +3,11 @@ package com.mefy.platemate.presentation.features.main.discover.reducer
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.components.variant.PMPlateCardStyle
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFeedFilterUi
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverForYouUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverReportTypeOptionUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
+import com.mefy.platemate.presentation.features.uimodel.DiscoverTabOptionUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
 import javax.inject.Inject
 
@@ -45,16 +45,21 @@ class DiscoverStateReducer @Inject constructor() {
 
     fun onFilterSelected(
         state: DiscoverUiState,
-        filter: DiscoverFilterUi,
+        tabCode: String,
         plateDetails: List<PlateDetailUiModel>,
         endReached: Boolean
     ): DiscoverUiState = state.copy(
-        selectedFilter = filter,
+        selectedTabCode = tabCode,
         plateDetail = plateDetails,
         page = 0,
         endReached = endReached,
         isLoadingMore = false
     )
+
+    fun onTabOptionsLoaded(
+        state: DiscoverUiState,
+        options: List<DiscoverTabOptionUiModel>
+    ): DiscoverUiState = state.copy(tabOptions = options)
 
     /** Filtre ekrani acilisinda taslak, o an uygulanan filtrelerden tohumlanir. */
     fun onFilterDraftSeeded(state: DiscoverUiState): DiscoverUiState =

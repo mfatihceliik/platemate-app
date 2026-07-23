@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,47 +21,48 @@ import androidx.compose.ui.text.font.FontWeight
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.PMAvatar
-import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
 internal fun ChatDetailUserCard(
+    modifier: Modifier = Modifier,
     participantName: String,
     onMessageClick: () -> Unit,
     onProfileClick: () -> Unit,
-    onBlockClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onBlockClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val shape = PMTheme.shapes
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .shadow(elevation = dims.stroke.st2, shape = RoundedCornerShape(dims.radius.r18))
-            .background(colors.surface, RoundedCornerShape(dims.radius.r18))
-            .border(dims.stroke.st1, colors.outlineVariant, RoundedCornerShape(dims.radius.r18))
-            .padding(dims.spacing.s24),
+            .shadow(elevation = stroke.st2, shape = shape.medium)
+            .background(colors.surface, shape = shape.medium)
+            .border(stroke.st1, colors.outlineVariant, shape = shape.medium)
+            .padding(spacing.s24),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         Column(
             modifier = Modifier
-                .clip(RoundedCornerShape(dims.radius.r12))
+                .clip(shape.medium)
                 .debouncedClickable(onClick = onProfileClick)
-                .padding(dims.spacing.s4),
+                .padding(spacing.s4),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
 
             PMAvatar(
                 displayName = participantName,
-                size = dims.sizing.avatarLg
+                size = sizing.avatarLg
             )
 
             PMText(
@@ -75,7 +74,7 @@ internal fun ChatDetailUserCard(
         }
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+            horizontalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
             QuickAction(
                 label = stringResource(R.string.chatdetail_action_message),

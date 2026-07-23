@@ -2,11 +2,8 @@ package com.mefy.platemate.presentation.features.main.profile
 
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
-import com.mefy.platemate.domain.model.social.SocialPlatform
 import com.mefy.platemate.domain.usecase.auth.ObserveSessionUseCase
-import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
-import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
-import com.mefy.platemate.domain.usecase.social.GetPendingFriendRequestsUseCase
+import com.mefy.platemate.domain.usecase.profile.GetProfilePageUseCase
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
 import com.mefy.platemate.presentation.common.text.UiText
@@ -15,7 +12,6 @@ import com.mefy.platemate.presentation.features.main.profile.mapper.ProfileUiMap
 import com.mefy.platemate.presentation.features.main.profile.reducer.ProfileStateReducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,9 +24,7 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     observeSessionUseCase: ObserveSessionUseCase,
-    private val getProfileUseCase: GetProfileUseCase,
-    private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
-    private val getPendingFriendRequestsUseCase: GetPendingFriendRequestsUseCase,
+    private val getProfilePageUseCase: GetProfilePageUseCase,
     private val profileUiMapper: ProfileUiMapper,
     private val profileStateReducer: ProfileStateReducer,
     globalUiEventBus: GlobalUiEventBus
@@ -44,6 +38,17 @@ class ProfileViewModel @Inject constructor(
 
     private var currentUserId: Long? = null
 
+    // ProfileRoute'un ON_RESUME senkron replay'i (init'teki ilk yüklemeyle aynı anda) ve olası
+    // başka çakışan tetikleyiciler için: aynı anda tek yükleme.
+    private var isLoadInFlight = false
+
+    // Bottom bar'da başka bir tab'a gidip Profile'a her dönüşte ON_RESUME tekrar tetiklenir
+    // (NavBackStackEntry saveState/restoreState ile yeniden yaratılıyor) — bu, art arda hızlı tab
+    // geçişlerinde gereksiz ağ isteğine yol açar. ChatRepositoryImpl.syncChatRooms()'daki
+    // TTL-debounce ile aynı fikir: son başarılı yüklemeden beri yeterli süre geçmediyse
+    // ON_RESUME'u sessizce yok say; RefreshRequested/RetryClicked bundan etkilenmez.
+    private var lastLoadedAtMs = 0L
+
     init {
         observeSession(observeSessionUseCase)
     }
@@ -55,11 +60,24 @@ class ProfileViewModel @Inject constructor(
             ProfileUiAction.FriendRequestActivityClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToFriends(initialTab = 1))
             is ProfileUiAction.StatusSummaryClicked -> _uiEffect.emitUiEffect(ProfileUiEffect.NavigateToReviewList(action.status))
             is ProfileUiAction.ActivityTabChanged -> _uiState.update { it.copy(selectedActivityTab = action.tabIndex) }
-            ProfileUiAction.OnResume -> loadProfile(mode = LoadMode.SILENT)
-            ProfileUiAction.RefreshRequested -> onRefreshRequested()
-            ProfileUiAction.RetryClicked -> loadProfile(mode = LoadMode.INITIAL)
+            ProfileUiAction.OnResume -> onResume()
         }
     }
+
+    override fun onRetry() {
+        loadProfile(mode = LoadMode.INITIAL)
+    }
+
+    override fun onRefresh() {
+        onRefreshRequested()
+    }
+    
+    private fun onResume() {
+        val elapsed = System.currentTimeMillis() - lastLoadedAtMs
+        if (elapsed < PROFILE_RESUME_RELOAD_MIN_INTERVAL_MS) return
+        loadProfile(mode = LoadMode.SILENT)
+    }
+
     private fun onRefreshRequested() {
         val state = _uiState.value
         if (state.isInitialLoading || state.isRefreshing) return
@@ -89,6 +107,8 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadProfile(mode: LoadMode = LoadMode.INITIAL) {
         val userId = currentUserId ?: return
+        if (isLoadInFlight) return
+        isLoadInFlight = true
         when (mode) {
             LoadMode.INITIAL -> _uiState.update(profileStateReducer::onInitialLoading)
             LoadMode.REFRESH -> _uiState.update(profileStateReducer::onRefreshing)
@@ -96,33 +116,27 @@ class ProfileViewModel @Inject constructor(
         }
         launch(
             onError = { throwable ->
+                isLoadInFlight = false
                 applyLoadError(mode, UiText.Resource(R.string.common_error_unknown))
                 handleError(throwable)
             }
         ) {
-            val platformsDeferred = async { getSocialPlatformsUseCase() }
-            val profileDeferred = async { getProfileUseCase(userId = userId) }
-            val pendingRequestsDeferred = async { getPendingFriendRequestsUseCase() }
-
-            val platforms: List<SocialPlatform> = when (val platformsResult = platformsDeferred.await()) {
-                is AppResult.Success -> platformsResult.data
-                is AppResult.Error -> emptyList()
-            }
-            // Badge count is a lenient enhancement: a failure here must not fail the whole profile load.
-            val pendingFriendRequestCount = when (val pendingResult = pendingRequestsDeferred.await()) {
-                is AppResult.Success -> pendingResult.data.size
-                is AppResult.Error -> 0
-            }
-            when (val result = profileDeferred.await()) {
-                is AppResult.Success -> {
-                    val mapped = profileUiMapper.mapProfile(result.data, platforms)
-                    _uiState.update { current ->
-                        profileStateReducer.onProfileLoaded(current, mapped)
-                            .copy(pendingFriendRequestCount = pendingFriendRequestCount)
+            try {
+                when (val result = getProfilePageUseCase(userId)) {
+                    is AppResult.Success -> {
+                        val page = result.data
+                        val mapped = profileUiMapper.mapProfile(page.profile, page.socialPlatforms)
+                        _uiState.update { current ->
+                            profileStateReducer.onProfileLoaded(current, mapped)
+                                .copy(pendingFriendRequestCount = page.pendingFriendRequests.size)
+                        }
+                        lastLoadedAtMs = System.currentTimeMillis()
                     }
-                }
 
-                is AppResult.Error -> applyLoadError(mode, result.error.toUiText())
+                    is AppResult.Error -> applyLoadError(mode, result.error.toUiText())
+                }
+            } finally {
+                isLoadInFlight = false
             }
         }
     }
@@ -143,4 +157,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     private enum class LoadMode { INITIAL, REFRESH, SILENT }
+
+    private companion object {
+        const val PROFILE_RESUME_RELOAD_MIN_INTERVAL_MS = 30_000L
+    }
 }

@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -18,7 +21,6 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -43,9 +45,8 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateReportTagUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun SearchScreen(
@@ -56,8 +57,10 @@ fun SearchScreen(
     lazyListState: LazyListState = rememberLazyListState(),
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
+    val sizing = PMTheme.sizing
 
     val onRecentClick = remember(onAction) { { code: String -> onAction(SearchUiAction.RecentItemClicked(code)) } }
     val onSavedBookmark = remember(onAction) { { norm: String -> onAction(SearchUiAction.SavedPlateBookmarkClicked(norm)) } }
@@ -73,7 +76,7 @@ fun SearchScreen(
             state = lazyListState,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(spacing.s16)
     ) {
         item {
 
@@ -114,18 +117,18 @@ fun SearchScreen(
                     )
                     PMText(
                         text = stringResource(R.string.search_recent_clear),
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.primary,
                         modifier = Modifier.debouncedClickable(onClick = onClearRecentClicked)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(dims.spacing.s8))
+                Spacer(modifier = Modifier.height(spacing.s8))
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                    verticalArrangement = Arrangement.spacedBy(spacing.s8)
                 ) {
                     state.recentSearches.forEach { item ->
                         key(item.normalizedPlateCode) {
@@ -152,7 +155,7 @@ fun SearchScreen(
                     )
                     PMText(
                         text = stringResource(R.string.search_saved_see_all),
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         fontWeight = FontWeight.SemiBold,
                         color = colors.primary,
                         modifier = Modifier.debouncedClickable { }
@@ -162,8 +165,8 @@ fun SearchScreen(
 
             item {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                    contentPadding = PaddingValues(end = dims.spacing.s16)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                    contentPadding = PaddingValues(end = spacing.s16)
                 ) {
                     items(
                         items = state.bookmarkedPlates,
@@ -193,8 +196,8 @@ fun SearchScreen(
 
             item {
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                    contentPadding = PaddingValues(end = dims.spacing.s16)
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                    contentPadding = PaddingValues(end = spacing.s16)
                 ) {
                     items(
                         items = state.alarmPlates,
@@ -217,10 +220,10 @@ fun SearchScreen(
         item {
             PMCard(
                 modifier = Modifier.fillMaxWidth(),
-                padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
+                padding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s12)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PMIcon(
@@ -228,7 +231,7 @@ fun SearchScreen(
                     )
                     PMText(
                         text = stringResource(R.string.search_safety_banner),
-                        fontSize = dims.fontSize.sm,
+                        fontSize = fontSize.sm,
                         color = colors.textSecondary
                     )
                 }
@@ -236,13 +239,15 @@ fun SearchScreen(
         }
     }
 
+    val navBottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val fabBottomPadding = sizing.bottomBarHeight + navBottomInset
     PMDraggableFab(
         onClick = onNavigateToCameraScanner,
         modifier = Modifier
             .align(Alignment.BottomEnd)
             .padding(
-                end = dims.spacing.s16,
-                bottom = innerPadding.calculateBottomPadding() + dims.spacing.s24
+                end = spacing.s16,
+                bottom = fabBottomPadding + spacing.s24
             )
     )
 }

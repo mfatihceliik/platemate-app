@@ -9,7 +9,8 @@ data object MessagesDestination : AppDestination
 data class ChatDestination(
     val conversationId: String,
     val otherUserId: Long = 0L,
-    val participantName: String = ""
+    val participantName: String = "",
+    val targetMessageId: Long? = null
 ) : AppDestination
 
 @Serializable

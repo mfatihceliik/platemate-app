@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,9 +43,8 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.settings.components.ChevronIcon
 import com.mefy.platemate.presentation.features.main.settings.components.ProBadge
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun SettingsScreen(
@@ -55,8 +53,9 @@ fun SettingsScreen(
     onAction: (SettingsUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     // Stable, hoisted callbacks: rows/buttons skip recomposition while data is unchanged.
     val onChangePassword =
@@ -120,7 +119,7 @@ fun SettingsScreen(
                     {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                         ) {
                             ProBadge()
                             ChevronIcon()
@@ -146,11 +145,11 @@ fun SettingsScreen(
                 trailing = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(dims.sizing.iconMd)
+                                .size(sizing.iconMd)
                                 .clip(CircleShape)
                                 .background(colors.primary)
                         )
@@ -170,7 +169,7 @@ fun SettingsScreen(
                     {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
                         ) {
                             ProBadge()
                             ChevronIcon()
@@ -223,10 +222,10 @@ fun SettingsScreen(
             PMButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = dims.spacing.s8),
+                    .padding(vertical = spacing.s8),
                 text = stringResource(R.string.profile_setting_sign_out),
                 onClick = onSignOut,
-                colors = ButtonColors(
+                buttonColors = ButtonColors(
                     containerColor = colors.error.copy(alpha = .40f), //.errorContainer,
                     contentColor = colors.error,
                     disabledContentColor = colors.disabled,

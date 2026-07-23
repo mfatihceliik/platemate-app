@@ -54,7 +54,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             AdminHubRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.navigateUp() },
+
                 onItemClick = { code ->
                     // Backend menü kodu → Android destination; bilinmeyen kod no-op (forward-compat).
                     val destination: AppDestination? = when (code) {
@@ -82,7 +82,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             CommentModerationRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -91,7 +91,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             CommentReportsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -100,7 +100,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PlateRemovalRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -109,7 +109,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             HiddenPlatesRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -118,7 +118,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             AdminSettingsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -127,7 +127,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             ReportTypesRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { typeId ->
                     navController.navigate(AdminReportTypeFormDestination(typeId ?: -1L))
                 },
@@ -139,7 +139,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             ReportTypeFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -148,7 +148,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             CommentReasonsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { reasonId ->
                     navController.navigate(AdminCommentReasonFormDestination(reasonId ?: -1L))
                 },
@@ -160,7 +160,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             CommentReasonFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -169,7 +169,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PlateRemovalReasonsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { reasonId ->
                     navController.navigate(AdminPlateRemovalReasonFormDestination(reasonId ?: -1L))
                 },
@@ -181,7 +181,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PlateRemovalReasonFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -190,7 +190,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             SocialPlatformsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { platformId ->
                     navController.navigate(AdminSocialPlatformFormDestination(platformId ?: -1L))
                 },
@@ -202,7 +202,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             SocialPlatformFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -211,7 +211,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PremiumPlansRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { planId ->
                     navController.navigate(AdminPremiumPlanFormDestination(planId))
                 },
@@ -223,7 +223,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PremiumPlanFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -232,7 +232,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PremiumFeaturesRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { featureId ->
                     navController.navigate(AdminPremiumFeatureFormDestination(featureId ?: -1L))
                 },
@@ -244,7 +244,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             PremiumFeatureFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
 
@@ -253,7 +253,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             AccentColorsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToForm = { colorId ->
                     navController.navigate(AdminAccentColorFormDestination(colorId ?: -1L))
                 },
@@ -265,7 +265,7 @@ internal fun NavGraphBuilder.adminGraph(
         ) { viewModel ->
             AccentColorFormRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
             )
         }
     }

@@ -42,7 +42,6 @@ class AdminSettingsViewModel @Inject constructor(
     fun onAction(action: AdminSettingsUiAction) {
         when (action) {
             AdminSettingsUiAction.BackClicked -> _uiEffect.emitUiEffect(AdminSettingsUiEffect.NavigateBack)
-            AdminSettingsUiAction.RetryClicked -> load()
             AdminSettingsUiAction.SaveClicked -> save()
             is AdminSettingsUiAction.FollowLimitChanged ->
                 _uiState.update { it.copy(followLimit = action.value.digitsOnly()) }

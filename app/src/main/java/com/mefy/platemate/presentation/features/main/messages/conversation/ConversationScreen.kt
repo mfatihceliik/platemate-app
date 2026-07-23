@@ -1,16 +1,19 @@
 package com.mefy.platemate.presentation.features.main.messages.conversation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -23,34 +26,53 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.chat.MessageStatus
-import com.mefy.platemate.presentation.common.spacedByWithFooter
+import com.mefy.platemate.presentation.common.text.resolve
+import com.mefy.platemate.presentation.components.PMBottomSheet
+import com.mefy.platemate.presentation.components.PMBottomSheetActions
+import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.DateSeparator
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.DeletedBubble
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ReceivedBubble
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.ReportMessageBottomSheet
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.ScrollToBottomButton
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.SentBubble
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.SwipeToReplyBox
+import com.mefy.platemate.presentation.features.main.messages.conversation.components.SystemInfoBubble
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.UnreadMessagesSeparator
 import com.mefy.platemate.presentation.features.main.messages.conversation.components.rememberRelativeDateLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ConversationScreen(
     modifier: Modifier = Modifier,
     state: ConversationUiState,
     onAction: (ConversationUiAction) -> Unit,
+    onMessageLongPressed: (message: ChatMessageUiModel, bounds: Rect) -> Unit = { _, _ -> },
     innerPadding: PaddingValues = PaddingValues(),
-    // Route'taki composer overlay'inin ölçülen yüksekliği: son mesaj barın arkasında
-    // kalmasın diye liste alt boşluğu ve "en alta in" butonu bu kadar yukarı itilir.
     bottomOverlayInset: Dp = 0.dp
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val stroke = PMTheme.stroke
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val radius = PMTheme.radius
+    val shape = PMTheme.shapes
+
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val showScrollDown by remember { derivedStateOf { listState.canScrollForward } }
@@ -58,11 +80,13 @@ fun ConversationScreen(
     val imeInsets = WindowInsets.ime
     val items = state.items
 
+    val bubbleCoordinates = remember { mutableMapOf<Long, androidx.compose.ui.layout.LayoutCoordinates>() }
+
     var initialScrollDone by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(items.size, state.firstUnreadIndex) {
+    LaunchedEffect(items.size, state.firstUnreadIndex, state.scrollToMessageIndex) {
         if (items.isEmpty()) return@LaunchedEffect
         if (!initialScrollDone) {
-            listState.scrollToItem(state.firstUnreadIndex ?: items.lastIndex)
+            listState.scrollToItem(state.scrollToMessageIndex ?: state.firstUnreadIndex ?: items.lastIndex)
             initialScrollDone = true
         } else {
             val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -97,12 +121,12 @@ fun ConversationScreen(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = innerPadding.calculateLeftPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
-                end = innerPadding.calculateRightPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
+                start = innerPadding.calculateLeftPadding(LocalLayoutDirection.current),
+                end = innerPadding.calculateRightPadding(LocalLayoutDirection.current),
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding() + bottomOverlayInset
             ),
-            verticalArrangement = spacedByWithFooter(dims.spacing.s16) //Arrangement.spacedBy(dims.spacing.s12)
+            verticalArrangement = Arrangement.spacedBy(spacing.s16)
         ) {
             items(
                 items = items,
@@ -111,6 +135,7 @@ fun ConversationScreen(
                         is ConversationListItem.DateHeader -> "date_${item.isoDate}"
                         is ConversationListItem.Message -> "msg_${item.model.id}"
                         is ConversationListItem.UnreadDivider -> "unread_divider"
+                        is ConversationListItem.SystemInfo -> "system_info_${item.id}"
                     }
                 },
                 contentType = { item ->
@@ -118,6 +143,7 @@ fun ConversationScreen(
                         is ConversationListItem.DateHeader -> "date"
                         is ConversationListItem.Message -> "message"
                         is ConversationListItem.UnreadDivider -> "unread_divider"
+                        is ConversationListItem.SystemInfo -> "system_info"
                     }
                 }
             ) { item ->
@@ -128,20 +154,58 @@ fun ConversationScreen(
                     is ConversationListItem.UnreadDivider ->
                         UnreadMessagesSeparator(count = item.count)
 
+                    is ConversationListItem.SystemInfo ->
+                        SystemInfoBubble(
+                            text = item.text.resolve(),
+                            modifier = Modifier.padding(horizontal = spacing.s4)
+                        )
+
                     is ConversationListItem.Message -> {
                         val msg = item.model
-                        if (msg.isMine) {
-                            SentBubble(
-                                content = msg.content,
+                        val longPressModifier = Modifier
+                            .onGloballyPositioned { coordinates -> bubbleCoordinates[msg.id] = coordinates }
+                            .combinedClickable(
+                                onClick = {},
+                                onLongClick = {
+                                    bubbleCoordinates[msg.id]?.let { coordinates ->
+                                        onMessageLongPressed(msg, coordinates.boundsInRoot())
+                                    }
+                                }
+                            )
+                        if (msg.status == MessageStatus.DELETED) {
+                            DeletedBubble(
+                                isMine = msg.isMine,
                                 time = msg.time,
-                                status = msg.status
+                                modifier = Modifier.padding(horizontal = spacing.s4)
                             )
                         } else {
-                            ReceivedBubble(
-                                senderName = state.participantName,
-                                content = msg.content,
-                                time = msg.time
-                            )
+                            SwipeToReplyBox(
+                                onReply = { onAction(ConversationUiAction.QuoteMessageClicked(msg.id)) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                if (msg.isMine) {
+                                    SentBubble(
+                                        content = msg.content,
+                                        time = msg.time,
+                                        status = msg.status,
+                                        modifier = Modifier
+                                            .padding(horizontal = spacing.s4)
+                                            .then(longPressModifier),
+                                        onRetryClicked = { onAction(ConversationUiAction.RetryMessageClicked(msg.id)) },
+                                        quotedPreview = msg.replyPreview
+                                    )
+                                } else {
+                                    ReceivedBubble(
+                                        senderName = state.participantName,
+                                        content = msg.content,
+                                        quotedPreview = msg.replyPreview,
+                                        time = msg.time,
+                                        modifier = Modifier
+                                            .padding(horizontal = spacing.s4)
+                                            .then(longPressModifier)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -153,7 +217,49 @@ fun ConversationScreen(
             onClick = { scope.launch { listState.animateScrollToItem(items.lastIndex) } },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = dims.spacing.s16, bottom = bottomOverlayInset + dims.spacing.s16)
+                .padding(end = spacing.s16, bottom = bottomOverlayInset + spacing.s16)
+        )
+    }
+
+    val deleteConfirmTargetId = state.deleteConfirmTargetId
+    if (deleteConfirmTargetId != null) {
+        PMBottomSheet(
+            onDismiss = { onAction(ConversationUiAction.DeleteConfirmDismissed) },
+            title = stringResource(R.string.conversation_delete_message_title)
+        ) {
+            PMText(
+                text = stringResource(R.string.conversation_delete_message_body),
+                style = PMTextStyle.Body,
+                color = colors.textSecondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = spacing.s24, vertical = spacing.s16)
+            )
+            PMBottomSheetActions(
+                cancelText = stringResource(R.string.common_cancel),
+                submitText = stringResource(R.string.common_delete),
+                onCancel = { onAction(ConversationUiAction.DeleteConfirmDismissed) },
+                onSubmit = {
+                    onAction(ConversationUiAction.DeleteMessageConfirmed(deleteConfirmTargetId))
+                },
+                modifier = Modifier
+                    .padding(horizontal = spacing.s24)
+                    .padding(bottom = spacing.s24)
+            )
+        }
+    }
+
+    val reportTarget = state.reportTarget
+    if (reportTarget != null) {
+        ReportMessageBottomSheet(
+            reportTarget = reportTarget,
+            selectedReason = state.selectedReportReason,
+            onReasonSelected = { onAction(ConversationUiAction.ReportReasonSelected(it)) },
+            otherReasonText = state.otherReportReasonText,
+            onOtherReasonTextChanged = { onAction(ConversationUiAction.ReportOtherReasonTextChanged(it)) },
+            isSubmitting = state.isSubmittingReport,
+            onDismiss = { onAction(ConversationUiAction.ReportDismissed) },
+            onSubmit = { onAction(ConversationUiAction.ReportSubmitClicked) }
         )
     }
 }

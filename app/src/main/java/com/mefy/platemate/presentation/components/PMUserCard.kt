@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,9 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMUserCard(
@@ -31,14 +29,14 @@ fun PMUserCard(
     modifier: Modifier = Modifier,
     username: String? = null,
     subtitle: String? = null,
-    avatarSize: Dp = MaterialTheme.pmDimensions.sizing.avatarMd,
-    containerColor: Color = MaterialTheme.pmColors.surface,
-    shape: Shape = MaterialTheme.shapes.medium,
+    avatarSize: Dp = PMTheme.sizing.avatarMd,
+    containerColor: Color = PMTheme.colors.surface,
+    shape: Shape = PMTheme.shapes.medium,
     onClick: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     val clickModifier = if (onClick != null) {
         Modifier.debouncedClickable(onClick = onClick)
@@ -52,7 +50,7 @@ fun PMUserCard(
             .clip(shape)
             .background(containerColor)
             .then(clickModifier)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
+            .padding(horizontal = spacing.s16, vertical = spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMAvatar(
@@ -60,11 +58,11 @@ fun PMUserCard(
             size = avatarSize
         )
         
-        Spacer(modifier = Modifier.width(dims.spacing.s12))
+        Spacer(modifier = Modifier.width(spacing.s12))
         
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
             PMText(
                 text = displayName,
@@ -95,7 +93,7 @@ fun PMUserCard(
         }
         
         if (trailing != null) {
-            Spacer(modifier = Modifier.width(dims.spacing.s12))
+            Spacer(modifier = Modifier.width(spacing.s12))
             trailing()
         }
     }
@@ -105,8 +103,9 @@ fun PMUserCard(
 @Composable
 private fun PMUserCardLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        Column(modifier = Modifier.padding(dims.spacing.s16), verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
+        Column(modifier = Modifier.padding(spacing.s16), verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             PMUserCard(
                 displayName = "Ahmet Yılmaz",
                 username = "@ahmetyilmaz",
@@ -121,7 +120,7 @@ private fun PMUserCardLightPreview() {
                 username = "@aysekaya",
                 onClick = {},
                 trailing = {
-                    PMText(text = "Follow", color = MaterialTheme.pmColors.primary, fontWeight = FontWeight.Bold)
+                    PMText(text = "Follow", color = colors.primary, fontWeight = FontWeight.Bold)
                 }
             )
         }
@@ -132,8 +131,9 @@ private fun PMUserCardLightPreview() {
 @Composable
 private fun PMUserCardDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        Column(modifier = Modifier.padding(dims.spacing.s16), verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
+        Column(modifier = Modifier.padding(spacing.s16), verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
             PMUserCard(
                 displayName = "Ahmet Yılmaz",
                 username = "@ahmetyilmaz",
@@ -148,7 +148,7 @@ private fun PMUserCardDarkPreview() {
                 username = "@aysekaya",
                 onClick = {},
                 trailing = {
-                    PMText(text = "Follow", color = MaterialTheme.pmColors.primary, fontWeight = FontWeight.Bold)
+                    PMText(text = "Follow", color = colors.primary, fontWeight = FontWeight.Bold)
                 }
             )
         }

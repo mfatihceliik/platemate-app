@@ -57,9 +57,12 @@ class ProfileReviewListViewModel @Inject constructor(
             is ProfileReviewListUiAction.ReviewClicked -> sendEffect(
                 ProfileReviewListUiEffect.NavigateToReviewDetail(action.plateCode, action.reviewId)
             )
-            ProfileReviewListUiAction.RetryClicked -> loadFirstPage()
             ProfileReviewListUiAction.BackClicked -> sendEffect(ProfileReviewListUiEffect.NavigateBack)
         }
+    }
+
+    override fun onRetry() {
+        loadFirstPage()
     }
 
     private fun currentStatusCode(): String = REVIEW_STATUS_CODES[_uiState.value.selectedTab]

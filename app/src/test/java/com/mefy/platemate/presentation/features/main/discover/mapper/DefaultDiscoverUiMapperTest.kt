@@ -12,7 +12,6 @@ import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.report.ReportType
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -38,11 +37,10 @@ class DefaultDiscoverUiMapperTest {
     }
 
     @Test
-    fun mapTabPlates_appliesFilterAndRanksFromOne() {
-        val tabs = sampleDiscoveryHome().tabs
+    fun mapFeedPlates_appliesFilterAndRanksFromOne() {
+        val plates = sampleDiscoveryHome().tabs.attentionPlates
 
-        val careless = mapper.mapTabPlates(tabs, DiscoverFilterUi.Careless, emptySet())
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
+        val careless = mapper.mapFeedPlates(plates, "DANGEROUS", emptySet(), startRank = 1)
 
         assertEquals(1, careless.size)
         assertEquals(1, careless.first().rank)
@@ -51,36 +49,22 @@ class DefaultDiscoverUiMapperTest {
         assertEquals(4.4, careless.first().ratingAverage, 0.0)
         assertEquals(1, careless.first().reportTags.size)
         assertEquals("#FF0000", careless.first().reportTags.first().colorHex)
-        assertEquals(2, trend.size)
-        assertEquals(1, trend[0].rank)
-        assertEquals(2, trend[1].rank)
-        assertEquals(4.4, trend[0].ratingAverage, 0.0)
     }
 
     @Test
-    fun mapTabPlates_usesPlateCodeFallbackWhenCityIsMissing() {
-        val tabs = DiscoveryTabs(
-            trendPlates = listOf(samplePlate(plateCode = "34ABC123", cityName = null, score = 9.2)),
-            attentionPlates = emptyList(),
-            goodDriverPlates = emptyList(),
-            newPlates = emptyList()
-        )
+    fun mapFeedPlates_usesPlateCodeFallbackWhenCityIsMissing() {
+        val plates = listOf(samplePlate(plateCode = "34ABC123", cityName = null, score = 9.2))
 
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
+        val trend = mapper.mapFeedPlates(plates, "TREND", emptySet(), startRank = 1)
 
-        assertEquals("\u0130stanbul", trend.first().cityName)
+        assertEquals("İstanbul", trend.first().cityName)
     }
 
     @Test
-    fun mapTabPlates_preservesBackendCityWhenPresent() {
-        val tabs = DiscoveryTabs(
-            trendPlates = listOf(samplePlate(plateCode = "34ABC123", cityName = "Ankara", score = 9.2)),
-            attentionPlates = emptyList(),
-            goodDriverPlates = emptyList(),
-            newPlates = emptyList()
-        )
+    fun mapFeedPlates_preservesBackendCityWhenPresent() {
+        val plates = listOf(samplePlate(plateCode = "34ABC123", cityName = "Ankara", score = 9.2))
 
-        val trend = mapper.mapTabPlates(tabs, DiscoverFilterUi.Trend, emptySet())
+        val trend = mapper.mapFeedPlates(plates, "TREND", emptySet(), startRank = 1)
 
         assertEquals("Ankara", trend.first().cityName)
     }

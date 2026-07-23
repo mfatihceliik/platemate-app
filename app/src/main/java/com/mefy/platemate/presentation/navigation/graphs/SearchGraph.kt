@@ -81,11 +81,11 @@ internal fun NavGraphBuilder.searchGraph(
         ) { viewModel ->
             PlateDetailRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToReview = { navController.navigateToReview(it) },
                 onNavigateToUserProfile = { userId -> navController.navigateToUserProfile(userId.toString()) },
-                onNavigateToEditReview = { code, reviewId, rating, comment ->
-                    navController.navigateToEditReview(code, reviewId, rating, comment)
+                onNavigateToEditReview = { code, reviewId ->
+                    navController.navigateToEditReview(code, reviewId)
                 },
                 onNavigateToActions = { plateCode -> navController.navigateToPlateActions(plateCode) },
                 modifier = modifier
@@ -97,7 +97,7 @@ internal fun NavGraphBuilder.searchGraph(
         ) { viewModel ->
             PlateActionsRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToRemoval = { plateId, plateCode ->
                     navController.navigateToRemovalRequest(plateId, plateCode)
                 },
@@ -110,7 +110,7 @@ internal fun NavGraphBuilder.searchGraph(
         ) { viewModel ->
             PlateRemovalRequestRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 modifier = modifier
             )
         }
@@ -120,7 +120,7 @@ internal fun NavGraphBuilder.searchGraph(
         ) { viewModel ->
             ReviewRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onReviewSubmitted = { navController.popBackStack() },
                 modifier = modifier
             )
@@ -131,7 +131,7 @@ internal fun NavGraphBuilder.searchGraph(
             CameraScannerRoute(
                 modifier = modifier,
                 viewModel = hiltViewModel<ScannerViewModel>(),
-                onNavigateBack = { navController.popBackStack() },
+
                 onPlateFound = { plate ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle

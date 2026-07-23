@@ -24,6 +24,7 @@ data class UserProfileDto(
     @SerializedName("reviewCount") val reviewCount: Int = 0,
     @SerializedName("joinedAt") val joinedAt: String? = null,
     @SerializedName("premiumActive") val premiumActive: Boolean = false,
+    @SerializedName("admin") val isAdmin: Boolean = false,
     @SerializedName("premiumUntil") val premiumUntil: String? = null,
     @SerializedName("userSettings") val userSettings: UserSettingsDto? = null,
     @SerializedName("reviewStatusCounts") val reviewStatusCounts: ReviewStatusTotals = ReviewStatusTotals(),

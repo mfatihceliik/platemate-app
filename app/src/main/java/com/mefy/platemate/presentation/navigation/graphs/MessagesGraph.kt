@@ -28,11 +28,12 @@ internal fun NavGraphBuilder.messagesGraph(
         ) { viewModel ->
             MessagesRoute(
                 viewModel = viewModel,
-                onNavigateToChat = { conversationId, participantName ->
+                onNavigateToChat = { conversationId, participantName, messageId ->
                     navController.navigate(
                         ChatDestination(
                             conversationId = conversationId,
                             participantName = participantName,
+                            targetMessageId = messageId,
                         )
                     )
                 },
@@ -45,7 +46,7 @@ internal fun NavGraphBuilder.messagesGraph(
         ) { viewModel ->
             ConversationRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToChatDetail = { conversationId, participantName ->
                     navController.navigate(
                         ChatDetailDestination(
@@ -63,7 +64,7 @@ internal fun NavGraphBuilder.messagesGraph(
         ) { viewModel ->
             ChatDetailRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.navigateUp() },
+
                 onNavigateToUserProfile = { userId ->
                     navController.navigateToUserProfile(userId.toString())
                 },

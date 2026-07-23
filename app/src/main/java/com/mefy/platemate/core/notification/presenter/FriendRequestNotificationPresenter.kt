@@ -12,7 +12,7 @@ import javax.inject.Singleton
 /** Arkadaşlık isteği bildirimi. */
 @Singleton
 class FriendRequestNotificationPresenter @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @ApplicationContext context: Context,
     channelRegistry: NotificationChannelRegistry
 ) : BaseNotificationPresenter(context, channelRegistry) {
 

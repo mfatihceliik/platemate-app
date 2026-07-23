@@ -37,3 +37,6 @@ data class UserProfileDestination(val userId: String) : AppDestination
 
 @Serializable
 data class ProfileReviewListDestination(val initialStatus: String) : AppDestination
+
+@Serializable
+data class UserFollowListDestination(val userId: String, val initialTab: Int = 0) : AppDestination

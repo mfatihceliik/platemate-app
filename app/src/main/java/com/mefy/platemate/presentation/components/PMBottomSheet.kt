@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -24,9 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,15 +35,18 @@ fun PMBottomSheet(
     skipPartiallyExpanded: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val radius = PMTheme.radius
+    val colors = PMTheme.colors
+    val columnShape = RoundedCornerShape(topStart = radius.r10, topEnd = radius.r10)
+    val bottomSheetShape = RoundedCornerShape(topStart = radius.r12, topEnd = radius.r12)
 
     if (LocalInspectionMode.current) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = dims.radius.r10, topEnd = dims.radius.r10))
-                .background(colors.surface)
+                .clip(columnShape)
+                .background(colors.background)
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -64,7 +65,7 @@ fun PMBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = colors.surface,
-        shape = RoundedCornerShape(topStart = dims.radius.r16, topEnd = dims.radius.r16),
+        shape = bottomSheetShape,
         modifier = modifier
     ) {
         PMBottomSheetContent(title = title, content = content)
@@ -77,8 +78,8 @@ private fun PMBottomSheetContent(
     title: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     Column(modifier = modifier.fillMaxWidth()) {
         if (title != null) {
@@ -89,7 +90,7 @@ private fun PMBottomSheetContent(
                 color = colors.textPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
+                    .padding(horizontal = spacing.s16, vertical = spacing.s16)
             )
             HorizontalDivider(color = colors.surfaceVariant)
         }
@@ -106,13 +107,11 @@ fun PMBottomSheetActions(
     modifier: Modifier = Modifier,
     submitEnabled: Boolean = true
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val ctaShape = MaterialTheme.shapes.small
+    val spacing = PMTheme.spacing
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s10)
     ) {
 
         PMButton(
@@ -152,8 +151,8 @@ private fun PMBottomSheetDarkPreview() {
 
 @Composable
 private fun PMBottomSheetPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     PMBottomSheet(onDismiss = {}, title = "Başlık") {
         PMText(
@@ -162,7 +161,7 @@ private fun PMBottomSheetPreviewContent() {
             color = colors.textSecondary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dims.spacing.s24, vertical = dims.spacing.s16)
+                .padding(horizontal = spacing.s24, vertical = spacing.s16)
         )
         PMBottomSheetActions(
             cancelText = "İptal",
@@ -170,8 +169,8 @@ private fun PMBottomSheetPreviewContent() {
             onCancel = {},
             onSubmit = {},
             modifier = Modifier
-                .padding(horizontal = dims.spacing.s24)
-                .padding(bottom = dims.spacing.s24)
+                .padding(horizontal = spacing.s24)
+                .padding(bottom = spacing.s24)
         )
     }
 }

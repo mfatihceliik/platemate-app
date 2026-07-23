@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,20 +17,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPlateBadge(
-    plate: String,
     modifier: Modifier = Modifier,
-    size: Dp = MaterialTheme.pmDimensions.sizing.plateBadgeMd
+    plate: String,
+    size: Dp = PMTheme.sizing.plateBadgeMd
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r8)
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
+    val stroke = PMTheme.stroke
+    val colors = PMTheme.colors
+    val shape = PMTheme.shapes.medium
     val bandWidth = size * 0.45f
 
     Row(
@@ -40,7 +38,8 @@ fun PMPlateBadge(
             .height(size)
             .clip(shape)
             .background(colors.surface)
-            .border(dims.stroke.st1, colors.surfaceVariant, shape)
+            .border(stroke.st1, colors.surfaceVariant, shape)
+
     ) {
         Box(
             modifier = Modifier
@@ -52,22 +51,22 @@ fun PMPlateBadge(
             PMText(
                 text = "TR",
                 color = colors.textWhite,
-                fontSize = dims.fontSize.xs,
+                fontSize = fontSize.xs,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
-                modifier = Modifier.padding(top = dims.spacing.s8)
+                modifier = Modifier.padding(top = spacing.s8)
             )
         }
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = dims.spacing.s8),
+                .padding(horizontal = spacing.s8),
             contentAlignment = Alignment.Center
         ) {
             PMText(
                 text = plate,
                 color = colors.textPrimary,
-                fontSize = dims.fontSize.lg,
+                fontSize = fontSize.lg,
                 fontWeight = FontWeight.ExtraBold,
                 maxLines = 1,
             )
@@ -79,19 +78,25 @@ fun PMPlateBadge(
 @Composable
 private fun PMPlateBadgeSizesPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
+
+        val spacing = PMTheme.spacing
+        val sizing = PMTheme.sizing
+        val fontSize = PMTheme.fontSize
+        val colors = PMTheme.colors
+
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PMPlateBadge(plate = "34", size = 32.dp)
-                PMPlateBadge(plate = "34", size = 48.dp)
+                PMPlateBadge(plate = "34", size = sizing.plateBadgeSm)
+                PMPlateBadge(plate = "34", size = sizing.plateBadgeMd)
             }
-            PMPlateBadge(plate = "34 EK 0682", size = 32.dp)
-            PMPlateBadge(plate = "34 EK 0682", size = 48.dp)
+            PMPlateBadge(plate = "34 EK 0682", size = sizing.plateBadgeLg)
+            PMPlateBadge(plate = "34 EK 0682", size = sizing.plateBadgeXl)
         }
     }
 }
@@ -99,14 +104,15 @@ private fun PMPlateBadgeSizesPreview() {
 @Preview(name = "PMPlateBadge Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun PMPlateBadgeDarkPreview() {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
         Column(
-            modifier = Modifier.padding(dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            modifier = Modifier.padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
-            PMPlateBadge(plate = "06", size = 48.dp)
-            PMPlateBadge(plate = "06 ABC 123", size = 48.dp)
+            PMPlateBadge(plate = "06", size = sizing.plateBadgeSm)
+            PMPlateBadge(plate = "06 ABC 123", size = sizing.plateBadgeMd)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.mefy.platemate.presentation.features.admin.moderation.comments
 
+import android.util.Log
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.admin.PendingComment
@@ -41,6 +42,14 @@ class CommentModerationViewModel @Inject constructor(
 
     init {
         loadFirstPage()
+    }
+
+    // Geçici teşhis logu — 2. üst üste onaylamada Chucker'ın IOException: Canceled gösterdiği bug
+    // için: VM bu iki tıklama arasında yeniden mi yaratılıyor (onCleared araya mı giriyor) kontrolü.
+    // Kök neden doğrulanınca kaldırılacak.
+    override fun onCleared() {
+        Log.d(TAG, "onCleared instance=${System.identityHashCode(this)}")
+        super.onCleared()
     }
 
     fun onAction(action: CommentModerationUiAction) {
@@ -133,23 +142,30 @@ class CommentModerationViewModel @Inject constructor(
     ) {
         if (_uiState.value.actioningId != null) return
         _uiState.update { it.copy(actioningId = commentId) }
-        launch(onError = { error ->
-            _uiState.update { it.copy(actioningId = null) }
-            handleError(error)
-        }) {
-            when (val result = block()) {
-                is AppResult.Success -> {
-                    _uiState.update {
-                        it.copy(actioningId = null, items = it.items.filterNot { item -> item.id == commentId })
+        Log.d(TAG, "runModeration start id=$commentId instance=${System.identityHashCode(this)}")
+        launch(onError = { error -> handleError(error) }) {
+            // finally: success/error/cancellation üçünde de actioningId serbest bırakılır.
+            // Öncesinde sadece success/error dallarında sıfırlanıyordu — coroutine iptal
+            // edilirse (ör. IOException: Canceled'e yol açan Job iptali) actioningId sonsuza
+            // kadar takılı kalıp listedeki TÜM aksiyonları kilitliyordu.
+            try {
+                when (val result = block()) {
+                    is AppResult.Success -> {
+                        _uiState.update {
+                            it.copy(items = it.items.filterNot { item -> item.id == commentId })
+                        }
+                        showSuccess(UiText.Resource(successMessageRes))
                     }
-                    showSuccess(UiText.Resource(successMessageRes))
+                    is AppResult.Error -> showError(result.error.toUiText())
                 }
-                is AppResult.Error -> {
-                    _uiState.update { it.copy(actioningId = null) }
-                    showError(result.error.toUiText())
-                }
+            } finally {
+                _uiState.update { it.copy(actioningId = null) }
             }
         }
+    }
+
+    private companion object {
+        const val TAG = "CommentModeration"
     }
 }
 

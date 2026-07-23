@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,25 +21,26 @@ import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.features.main.messages.MessagesScreen
 import com.mefy.platemate.presentation.features.main.messages.MessagesUiState
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun MessagesEmptyState(
     modifier: Modifier = Modifier
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val fontSize = PMTheme.fontSize
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     Column(
-        modifier = modifier.padding(dims.spacing.s32),
+        modifier = modifier.padding(spacing.s32),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeMd)
+                .size(sizing.plateBadgeMd)
                 .clip(CircleShape)
                 .background(colors.surfaceVariant),
             contentAlignment = Alignment.Center
@@ -49,21 +49,21 @@ internal fun MessagesEmptyState(
                 imageVector = Icons.Outlined.ChatBubbleOutline,
                 contentDescription = null,
                 tint = colors.textLabel,
-                size = dims.sizing.iconXl,
+                size = sizing.iconXl,
             )
         }
 
         PMText(
             text = stringResource(R.string.messages_empty_title),
-            fontSize = dims.fontSize.md,
+            fontSize = fontSize.md,
             color = colors.textPrimary,
-            modifier = Modifier.padding(top = dims.spacing.s12)
+            modifier = Modifier.padding(top = spacing.s12)
         )
         PMText(
             text = stringResource(R.string.messages_empty_subtitle),
-            fontSize = dims.fontSize.md,
+            fontSize = fontSize.md,
             color = colors.textTertiary,
-            modifier = Modifier.padding(top = dims.spacing.s4)
+            modifier = Modifier.padding(top = spacing.s4)
         )
     }
 }

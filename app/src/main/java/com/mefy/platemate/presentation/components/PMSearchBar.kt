@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,9 +43,8 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.components.variant.PMTextFieldVariant
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMSearchBar(
@@ -62,15 +61,18 @@ fun PMSearchBar(
     isError: Boolean = false,
     isSuccess: Boolean = false,
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val radius = PMTheme.radius
+    val stroke = PMTheme.stroke
+    val colors = PMTheme.colors
 
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     val shouldShowError = isError || errorText != null
     val supportingOrError = errorText ?: supportingText
-    val containerShape = RoundedCornerShape(dims.radius.r16)
+    val containerShape = RoundedCornerShape(radius.r16)
 
     // Focus halkası input + dock'lu butonu birlikte sarar; focus success'ten önce gelir.
     val borderColor by animateColorAsState(
@@ -120,10 +122,10 @@ fun PMSearchBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dims.sizing.searchBarHeight)
+                .height(sizing.searchBarHeight)
                 .clip(containerShape)
                 .background(colors.searchFieldBg)
-                .border(dims.stroke.st2, borderColor, containerShape),
+                .border(stroke.st2, borderColor, containerShape),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMTextField(
@@ -154,9 +156,8 @@ fun PMSearchBar(
                 },
                 trailingIcon = {
                     if (isLoading && onSearch == null) {
-                        // Dock'lu buton yoksa spinner input içinde gösterilir.
                         PMCircularProgressIndicator(
-                            size = dims.sizing.circleProgressBarXs
+                            size = sizing.circleProgressBarXs
                         )
                     } else {
                         AnimatedVisibility(
@@ -193,23 +194,22 @@ fun PMSearchBar(
                     else -> colors.textLabel
                 },
                 modifier = Modifier.padding(
-                    start = dims.spacing.s4,
-                    top = dims.spacing.s4
+                    start = spacing.s4,
+                    top = spacing.s4
                 )
             )
         }
     }
 }
 
-/** Sağ kenara tam yükseklik dock'lanmış arama aksiyonu; aktifken tonal'dan primary'ye canlanır. */
 @Composable
 private fun DockedSearchButton(
     isActive: Boolean,
     isLoading: Boolean,
     onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     val backgroundColor by animateColorAsState(
         targetValue = if (isActive && !isLoading) colors.primary else colors.surfaceVariant,
@@ -218,7 +218,7 @@ private fun DockedSearchButton(
 
     Box(
         modifier = Modifier
-            .width(dims.sizing.searchBarHeight)
+            .width(sizing.searchBarHeight)
             .fillMaxHeight()
             .background(backgroundColor)
             .debouncedClickable(enabled = isActive && !isLoading, onClick = onClick),
@@ -226,7 +226,7 @@ private fun DockedSearchButton(
     ) {
         if (isLoading) {
             PMCircularProgressIndicator(
-                size = dims.sizing.circleProgressBarXs
+                size = sizing.circleProgressBarXs
             )
         } else {
             PMIcon(
@@ -242,14 +242,14 @@ private fun DockedSearchButton(
 @Composable
 private fun PMSearchBarPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        val colors = MaterialTheme.pmColors
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(colors.background)
-                .padding(dims.spacing.s16),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(dims.spacing.s12)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             var query by remember { mutableStateOf("") }
             PMSearchBar(
@@ -283,7 +283,6 @@ private fun PMSearchBarPreview() {
                 enabled = false,
                 modifier = Modifier.fillMaxWidth()
             )
-            // Dock'lu butonsuz (ör. LanguageScreen filtresi)
             PMSearchBar(
                 query = "",
                 onQueryChange = {},
@@ -298,14 +297,14 @@ private fun PMSearchBarPreview() {
 @Composable
 private fun PMSearchBarDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
-        val colors = MaterialTheme.pmColors
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(colors.background)
-                .padding(dims.spacing.s16),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(dims.spacing.s12)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             PMSearchBar(
                 query = "",

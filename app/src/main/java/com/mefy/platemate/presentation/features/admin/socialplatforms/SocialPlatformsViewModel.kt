@@ -35,11 +35,14 @@ class SocialPlatformsViewModel @Inject constructor(
     fun onAction(action: SocialPlatformsUiAction) {
         when (action) {
             SocialPlatformsUiAction.BackClicked -> _uiEffect.emitUiEffect(SocialPlatformsUiEffect.NavigateBack)
-            SocialPlatformsUiAction.RetryClicked -> refresh()
             SocialPlatformsUiAction.AddClicked -> _uiEffect.emitUiEffect(SocialPlatformsUiEffect.NavigateToForm(null))
             is SocialPlatformsUiAction.EditClicked -> _uiEffect.emitUiEffect(SocialPlatformsUiEffect.NavigateToForm(action.id))
             is SocialPlatformsUiAction.ActiveToggled -> toggleActive(action.id, action.active)
         }
+    }
+
+    override fun onRetry() {
+        refresh()
     }
 
     fun refresh() {

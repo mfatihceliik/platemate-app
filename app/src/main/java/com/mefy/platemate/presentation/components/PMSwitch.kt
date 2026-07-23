@@ -1,12 +1,11 @@
 package com.mefy.platemate.presentation.components
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun PMSwitch(
@@ -14,7 +13,7 @@ fun PMSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
     Switch(
         modifier = modifier,
         checked = checked,

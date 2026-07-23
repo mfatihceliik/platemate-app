@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,34 +15,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMBadge(
-    count: Int = 0,
     modifier: Modifier = Modifier,
+    count: Int = 0,
     showCount: Boolean = true,
     minSize: Dp = 20.dp,
     dotSize: Dp = 8.dp,
-    containerColor: Color = MaterialTheme.pmColors.primary,
-    contentColor: Color = MaterialTheme.pmColors.onPrimary
+    containerColor: Color = PMTheme.colors.primary,
+    contentColor: Color = PMTheme.colors.onPrimary
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val fontSize = PMTheme.fontSize
+    val spacing = PMTheme.spacing
+
     if (showCount) {
         Box(
             modifier = modifier
                 .sizeIn(minWidth = minSize, minHeight = minSize)
                 .clip(CircleShape)
                 .background(containerColor)
-                .padding(horizontal = dims.spacing.s4),
+                .padding(horizontal = spacing.s4),
             contentAlignment = Alignment.Center
         ) {
             PMText(
                 text = if (count > 99) "99+" else count.toString(),
                 color = contentColor,
-                fontSize = dims.fontSize.xs,
+                fontSize = fontSize.xs,
                 fontWeight = FontWeight.Bold
             )
         }

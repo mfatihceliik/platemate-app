@@ -12,5 +12,6 @@ data class DiscoveryHomeResponseDto(
     @SerializedName("recentActivities") val recentActivities: List<RecentActivityDto>?,
     @SerializedName("feedType") val feedType: String? = null,
     @SerializedName("extendedStats") val extendedStats: DiscoveryExtendedStatsDto? = null,
-    @SerializedName("forYou") val forYou: DiscoveryForYouDto? = null
+    @SerializedName("forYou") val forYou: DiscoveryForYouDto? = null,
+    @SerializedName("tabOptions") val tabOptions: List<DiscoveryTabOptionDto>? = null
 )

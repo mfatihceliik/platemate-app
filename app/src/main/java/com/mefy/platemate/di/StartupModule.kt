@@ -4,6 +4,7 @@ import com.mefy.platemate.core.startup.AppCoordinator
 import com.mefy.platemate.core.startup.FcmRegistrationCoordinator
 import com.mefy.platemate.core.startup.InAppNotificationCoordinator
 import com.mefy.platemate.core.startup.LiveMessageCacheCoordinator
+import com.mefy.platemate.core.startup.PendingMessageRecoveryCoordinator
 import com.mefy.platemate.core.startup.SocketLifecycleCoordinator
 import com.mefy.platemate.core.startup.SocketReconnectCoordinator
 import dagger.Binds
@@ -36,4 +37,8 @@ abstract class StartupModule {
     @Binds
     @IntoSet
     abstract fun bindInAppNotificationCoordinator(impl: InAppNotificationCoordinator): AppCoordinator
+
+    @Binds
+    @IntoSet
+    abstract fun bindPendingMessageRecoveryCoordinator(impl: PendingMessageRecoveryCoordinator): AppCoordinator
 }

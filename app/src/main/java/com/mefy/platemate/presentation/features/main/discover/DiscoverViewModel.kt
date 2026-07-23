@@ -3,7 +3,6 @@ package com.mefy.platemate.presentation.features.main.discover
 import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.domain.model.discovery.DiscoveryHome
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabFilter
-import com.mefy.platemate.domain.model.discovery.DiscoveryTabType
 import com.mefy.platemate.domain.model.discovery.DiscoveryTabs
 import com.mefy.platemate.domain.model.plate.PlateDetail
 import com.mefy.platemate.domain.model.settings.PlateCardStyle
@@ -23,8 +22,8 @@ import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverUiMapper
 import com.mefy.platemate.presentation.features.main.discover.reducer.DiscoverStateReducer
 import com.mefy.platemate.presentation.features.uimodel.DiscoverFeedFilterUi
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverReportTypeOptionUi
+import com.mefy.platemate.presentation.features.uimodel.DiscoverTabOptionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -66,14 +65,8 @@ class DiscoverViewModel @Inject constructor(
     private var latestBookmarkedCodes: Set<String> = emptySet()
     private var latestCardStyle: PlateCardStyle = PlateCardStyle.CLASSIC
 
-    /** Ekranda listelenen feed'in domain karsiligi; bookmark toggle ve sayfa ekleme buradan beslenir. */
     private var currentFeedPlates: List<PlateDetail> = emptyList()
 
-    /**
-     * Home payload'i sekme basina HOME_TAB_LIMIT kayit tasir; feed endpoint'i PAGE_SIZE'lik sayfalar doner.
-     * Home'dan tohumlanan listede ilk load-more, sayfa kaymasi olmamasi icin server'in 0. sayfasini
-     * komple cekip listeyi degistirir; sonrasi normal append'dir.
-     */
     private var seededFromHome: Boolean = false
 
     init {
@@ -83,10 +76,17 @@ class DiscoverViewModel @Inject constructor(
         loadDiscoveryHome(forceRefresh = false)
     }
 
-    /**
-     * Premium durumunun tek dogru kaynagi canli oturumdur (feed yaniti degil).
-     * Feed onbellegi bayat kalsa bile premium kilidi/kart stili dogru cizilir.
-     */
+    private fun applyTabOptions(home: DiscoveryHome) {
+        val options = home.tabOptions.map {
+            DiscoverTabOptionUiModel(code = it.code, label = it.label)
+        }
+        if (options.isEmpty()) return
+        _uiState.update { discoverStateReducer.onTabOptionsLoaded(it, options) }
+        val currentCode = _uiState.value.selectedTabCode
+        if (options.none { it.code == currentCode }) {
+            onFilterSelected(options.first().code)
+        }
+    }
     private fun observeSession() {
         launch {
             observeSessionUseCase().collectLatest { session ->
@@ -106,7 +106,6 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    /** Premium olmayan kullanici stil secemez; feed daima Classic ile cizilir. */
     private fun applyCardStyle() {
         val effectiveStyle = if (_uiState.value.isPremium) latestCardStyle.toUiStyle() else PMPlateCardStyle.Classic
         _uiState.update { discoverStateReducer.onCardStyleChanged(it, effectiveStyle) }
@@ -125,7 +124,7 @@ class DiscoverViewModel @Inject constructor(
                 if (currentFeedPlates.isNotEmpty()) {
                     val plateDetails = discoverUiMapper.mapFeedPlates(
                         plates = currentFeedPlates,
-                        filter = _uiState.value.selectedFilter,
+                        filter = _uiState.value.selectedTabCode,
                         bookmarkedCodes = codes,
                         startRank = 1
                     )
@@ -153,7 +152,9 @@ class DiscoverViewModel @Inject constructor(
                     val mappedHome = discoverUiMapper.mapHome(result.data, latestBookmarkedCodes)
                     currentHome = result.data
                     currentTabs = mappedHome.tabs
-                    seedFeedFromHome(_uiState.value.selectedFilter) { plateDetails, endReached ->
+                    applyTabOptions(result.data)
+                    val tabCode = _uiState.value.selectedTabCode
+                    val seeded = seedFeedFromHome(tabCode) { plateDetails, endReached ->
                         _uiState.update { current ->
                             discoverStateReducer.onContentLoaded(
                                 state = current,
@@ -163,13 +164,22 @@ class DiscoverViewModel @Inject constructor(
                             )
                         }
                     }
-                    // Premium durumu icerikle geldi; kart stilini yeniden degerlendir.
+                    if (!seeded) {
+                        _uiState.update { current ->
+                            discoverStateReducer.onContentLoaded(
+                                state = current,
+                                mappedHome = mappedHome,
+                                plateDetails = emptyList(),
+                                endReached = false
+                            )
+                        }
+                        fetchFeedPage(page = 0, replace = true)
+                    }
                     applyCardStyle()
                 }
                 is AppResult.Error -> {
                     val message = result.error.toUiText()
                     if (refreshing) {
-                        // İçerik zaten var; yenileme hatası snackbar ile bildirilir.
                         _uiState.update { it.copy(isRefreshing = false) }
                         showError(message)
                     } else {
@@ -182,7 +192,7 @@ class DiscoverViewModel @Inject constructor(
 
     fun onAction(action: DiscoverUiAction) {
         when (action) {
-            is DiscoverUiAction.FilterSelected -> onFilterSelected(action.filter)
+            is DiscoverUiAction.FilterSelected -> onFilterSelected(action.tabCode)
             is DiscoverUiAction.TrendPlateClicked -> onTrendPlateClicked(action.trendId)
             is DiscoverUiAction.TrendPlateBookmarkClicked -> onTrendPlateBookmarkClicked(action.trendId)
             is DiscoverUiAction.CityStatClicked -> onCityStatClicked(action.cityId, action.cityName)
@@ -195,17 +205,25 @@ class DiscoverViewModel @Inject constructor(
             DiscoverUiAction.FiltersApplied -> onFiltersApplied()
             DiscoverUiAction.FiltersCleared -> onFiltersCleared()
             DiscoverUiAction.LoadMoreRequested -> onLoadMoreRequested()
-            DiscoverUiAction.RefreshRequested -> onRefreshRequested()
-            DiscoverUiAction.RetryClicked -> loadDiscoveryHome(forceRefresh = false)
         }
     }
 
-    private fun onFilterSelected(filter: DiscoverFilterUi) {
+    override fun onRetry() {
+        loadDiscoveryHome(forceRefresh = false)
+    }
+
+    override fun onRefresh() {
+        val state = _uiState.value
+        if (state.isInitialLoading || state.isRefreshing) return
+        loadDiscoveryHome(forceRefresh = true)
+    }
+
+    private fun onFilterSelected(tabCode: String) {
         if (_uiState.value.activeFilters.hasActiveFilters) {
             _uiState.update { current ->
                 discoverStateReducer.onFilterSelected(
                     state = current,
-                    filter = filter,
+                    tabCode = tabCode,
                     plateDetails = emptyList(),
                     endReached = false
                 )
@@ -214,20 +232,30 @@ class DiscoverViewModel @Inject constructor(
             return
         }
 
-        seedFeedFromHome(filter) { plateDetails, endReached ->
+        val seeded = seedFeedFromHome(tabCode) { plateDetails, endReached ->
             _uiState.update { current ->
                 discoverStateReducer.onFilterSelected(
                     state = current,
-                    filter = filter,
+                    tabCode = tabCode,
                     plateDetails = plateDetails,
                     endReached = endReached
                 )
             }
         }
+        if (!seeded) {
+            _uiState.update { current ->
+                discoverStateReducer.onFilterSelected(
+                    state = current,
+                    tabCode = tabCode,
+                    plateDetails = emptyList(),
+                    endReached = false
+                )
+            }
+            fetchFeedPage(page = 0, replace = true)
+        }
     }
 
     private fun onFilterScreenOpened() {
-        // Taslak, o an uygulanan filtrelerden tohumlanir; ekran bunun uzerinde duzenleme yapar.
         _uiState.update { discoverStateReducer.onFilterDraftSeeded(it) }
         val state = _uiState.value
         if (state.isPremium && state.availableReportTypes.isEmpty()) {
@@ -253,7 +281,6 @@ class DiscoverViewModel @Inject constructor(
                     _uiState.update { discoverStateReducer.onReportTypeOptionsLoaded(it, options) }
                 }
                 is AppResult.Error -> {
-                    // Rapor tipleri yuklenemezse premium filtre listesi bos kalir; sheet yine kullanilabilir.
                 }
             }
         }
@@ -261,7 +288,6 @@ class DiscoverViewModel @Inject constructor(
 
     private fun onFiltersApplied() {
         val draft = _uiState.value.filterDraft
-        // Bos taslak = filtre yok; ana ekrandaki max-8 tohuma geri don.
         if (!draft.hasActiveFilters) {
             onFiltersCleared()
             return
@@ -272,26 +298,33 @@ class DiscoverViewModel @Inject constructor(
 
     private fun onFiltersCleared() {
         _uiState.update { discoverStateReducer.onFiltersApplied(it, DiscoverFeedFilterUi()) }
-        val filter = _uiState.value.selectedFilter
-        seedFeedFromHome(filter) { plateDetails, endReached ->
+        val tabCode = _uiState.value.selectedTabCode
+        val seeded = seedFeedFromHome(tabCode) { plateDetails, endReached ->
             _uiState.update { current ->
                 discoverStateReducer.onFilterSelected(
                     state = current,
-                    filter = filter,
+                    tabCode = tabCode,
                     plateDetails = plateDetails,
                     endReached = endReached
                 )
             }
         }
+        if (!seeded) {
+            _uiState.update { current ->
+                discoverStateReducer.onFilterSelected(
+                    state = current,
+                    tabCode = tabCode,
+                    plateDetails = emptyList(),
+                    endReached = false
+                )
+            }
+            fetchFeedPage(page = 0, replace = true)
+        }
     }
 
     private fun onLoadMoreRequested() {
         val state = _uiState.value
-        // Filtresiz ana ekran her sekmede en fazla HOME_TAB_LIMIT (8) plaka onizler; sonsuz scroll yok.
-        // Sayfalama yalnizca aktif bir filtre uygulandiginda calisir.
         if (!state.activeFilters.hasActiveFilters) return
-        // Bos liste (basarisiz veya sonucsuz filtre) load-more'u tetiklemesin; aksi halde
-        // shouldLoadMore surekli true kalir, fetch/hata donguye girer (ekran flicker + tekrar eden hata).
         if (state.plateDetail.isEmpty()) return
         if (state.isInitialLoading || state.isRefreshing || state.isLoadingMore || state.endReached) return
 
@@ -303,32 +336,29 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Aktif filtre yokken secili sekmeyi home payload'indaki listeden tohumlar.
-     * Home listesi limitin altindaysa server'da devami yok demektir.
-     */
     private fun seedFeedFromHome(
-        filter: DiscoverFilterUi,
+        tabCode: String,
         onSeeded: (List<com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel>, Boolean) -> Unit
-    ) {
-        val tabs = currentTabs ?: return
-        val tabPlates = tabPlatesFor(tabs, filter)
+    ): Boolean {
+        val tabs = currentTabs ?: return false
+        val tabPlates = tabPlatesFor(tabs, tabCode) ?: return false
         currentFeedPlates = tabPlates
         seededFromHome = true
         val plateDetails = discoverUiMapper.mapFeedPlates(
             plates = tabPlates,
-            filter = filter,
+            filter = tabCode,
             bookmarkedCodes = latestBookmarkedCodes,
             startRank = 1
         )
         onSeeded(plateDetails, tabPlates.size < HOME_TAB_LIMIT)
+        return true
     }
 
     private fun fetchFeedPage(page: Int, replace: Boolean) {
         launch {
             val state = _uiState.value
             val result = getDiscoveryTabFeedUseCase(
-                tab = state.selectedFilter.toTabType(),
+                tab = state.selectedTabCode,
                 filter = state.activeFilters.toDomainFilter(),
                 page = page,
                 size = PAGE_SIZE
@@ -344,7 +374,7 @@ class DiscoverViewModel @Inject constructor(
                     seededFromHome = false
                     val plateDetails = discoverUiMapper.mapFeedPlates(
                         plates = mergedPlates,
-                        filter = _uiState.value.selectedFilter,
+                        filter = _uiState.value.selectedTabCode,
                         bookmarkedCodes = latestBookmarkedCodes,
                         startRank = 1
                     )
@@ -416,11 +446,7 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    private fun onRefreshRequested() {
-        val state = _uiState.value
-        if (state.isInitialLoading || state.isRefreshing) return
-        loadDiscoveryHome(forceRefresh = true)
-    }
+
 
     private fun shouldShowRefreshingState(
         current: DiscoverUiState,
@@ -430,20 +456,14 @@ class DiscoverViewModel @Inject constructor(
         return currentTabs != null || current.metrics.isNotEmpty() || current.plateDetail.isNotEmpty()
     }
 
-    private fun tabPlatesFor(tabs: DiscoveryTabs, filter: DiscoverFilterUi): List<PlateDetail> =
-        when (filter) {
-            DiscoverFilterUi.Trend -> tabs.trendPlates
-            DiscoverFilterUi.Careless -> tabs.attentionPlates
-            DiscoverFilterUi.GoodDriver -> tabs.goodDriverPlates
-            DiscoverFilterUi.Newest -> tabs.newPlates
+    private fun tabPlatesFor(tabs: DiscoveryTabs, tabCode: String): List<PlateDetail>? =
+        when (tabCode) {
+            "TREND" -> tabs.trendPlates
+            "DANGEROUS" -> tabs.attentionPlates
+            "GOOD_DRIVER" -> tabs.goodDriverPlates
+            "NEW" -> tabs.newPlates
+            else -> null
         }
-
-    private fun DiscoverFilterUi.toTabType(): DiscoveryTabType = when (this) {
-        DiscoverFilterUi.Trend -> DiscoveryTabType.TREND
-        DiscoverFilterUi.Careless -> DiscoveryTabType.DANGEROUS
-        DiscoverFilterUi.GoodDriver -> DiscoveryTabType.GOOD_DRIVER
-        DiscoverFilterUi.Newest -> DiscoveryTabType.NEW
-    }
 
     private fun DiscoverFeedFilterUi.toDomainFilter(): DiscoveryTabFilter =
         DiscoveryTabFilter(

@@ -3,14 +3,12 @@ package com.mefy.platemate.presentation.features.main.messages.chatdetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PhotoLibrary
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,9 +18,8 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMSwitch
 import com.mefy.platemate.presentation.features.main.messages.chatdetail.components.ChatDetailUserCard
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun ChatDetailScreen(
@@ -31,8 +28,8 @@ fun ChatDetailScreen(
     onAction: (ChatDetailUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     val onMessageClicked = remember(onAction) { { onAction(ChatDetailUiAction.MessageClicked) } }
     val onProfileClicked = remember(onAction) { { onAction(ChatDetailUiAction.ProfileClicked) } }
@@ -43,7 +40,7 @@ fun ChatDetailScreen(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
         item(key = "user_card") {
             ChatDetailUserCard(

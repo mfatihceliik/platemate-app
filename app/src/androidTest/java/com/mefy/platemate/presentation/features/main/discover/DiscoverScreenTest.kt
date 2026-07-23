@@ -16,7 +16,6 @@ import com.mefy.platemate.R
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
 import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
@@ -90,7 +89,7 @@ class DiscoverScreenTest {
 
         composeRule.runOnIdle {
             assertEquals(
-                DiscoverUiAction.FilterSelected(DiscoverFilterUi.Careless),
+                DiscoverUiAction.FilterSelected("DANGEROUS"),
                 emittedActions.lastOrNull()
             )
         }
@@ -154,7 +153,7 @@ class DiscoverScreenTest {
     private fun sampleState(isInitialLoading: Boolean): DiscoverUiState {
         return DiscoverUiState(
             isInitialLoading = isInitialLoading,
-            selectedFilter = DiscoverFilterUi.Trend,
+            selectedTabCode = "TREND",
             metrics = listOf(
                 DiscoverMetricUiModel(
                     type = DiscoverMetricUiType.Search,

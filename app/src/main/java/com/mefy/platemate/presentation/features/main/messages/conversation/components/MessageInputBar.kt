@@ -1,7 +1,13 @@
 package com.mefy.platemate.presentation.features.main.messages.conversation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,76 +21,125 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.common.text.UiText
+import com.mefy.platemate.presentation.common.text.resolve
 import com.mefy.platemate.presentation.components.PMIconButton
+import com.mefy.platemate.presentation.components.PMQuotedMessageCard
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.variant.PMTextFieldVariant
+import com.mefy.platemate.presentation.features.main.messages.conversation.ReplyPreviewUiModel
 import com.mefy.platemate.presentation.theme.PlateMateTheme
 import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun MessageInputBar(
+    modifier: Modifier = Modifier,
     text: String,
     onTextChange: (String) -> Unit,
     onSend: () -> Unit,
-    modifier: Modifier = Modifier
+    replyTarget: ReplyPreviewUiModel? = null,
+    onCancelReply: () -> Unit = {}
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
     val imeVisible = WindowInsets.isImeVisible
 
-    Row(
+    // Exit animasyonu sırasında içerik kalsın diye son gösterileni hatırla.
+    var shownReplyTarget by remember { mutableStateOf<ReplyPreviewUiModel?>(null) }
+    LaunchedEffect(replyTarget) {
+        if (replyTarget != null) shownReplyTarget = replyTarget
+    }
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(colors.background.copy(alpha = 0.82f))
+            .background(colors.surface)
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(
-                start = dims.spacing.s12,
-                end = dims.spacing.s12,
-                top = dims.spacing.s10,
-                bottom = dims.spacing.s10 + if (imeVisible) dims.spacing.s12 else dims.spacing.s0
-            ),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s10),
-        verticalAlignment = Alignment.Bottom
     ) {
+        AnimatedVisibility(
+            modifier = Modifier
+                .padding(horizontal = spacing.s12),
+            visible = replyTarget != null,
+            enter = slideInVertically { it } + fadeIn(),
+            exit = slideOutVertically { it } + fadeOut()
+        ) {
+            shownReplyTarget?.let { target ->
+                PMQuotedMessageCard(
+                    senderLabel = target.senderLabel.resolve(),
+                    contentPreview = target.contentPreview,
+                    accentColor = colors.primary,
+                    backgroundColor = colors.surface,
+                    textColor = colors.textSecondary,
+                    trailing = {
+                        PMIconButton(
+                            imageVector = Icons.Default.Close,
+                            onClick = onCancelReply,
+                            variant = PMIconButtonVariant.Ghost,
+                        )
+                    },
+                )
+            }
+        }
 
-        PMIconButton(
-            imageVector = Icons.Default.Add,
-            onClick = {},
-            variant = PMIconButtonVariant.Tonal,
-            size = dims.sizing.iconLg
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = spacing.s12,
+                    end = spacing.s12,
+                    top = spacing.s10,
+                    bottom = spacing.s10 + if (imeVisible) spacing.s12 else spacing.s0
+                ),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+            verticalAlignment = Alignment.Bottom
+        ) {
 
-        PMTextField(
-            value = text,
-            onValueChange = onTextChange,
-            modifier = Modifier.weight(1f),
-            variant = PMTextFieldVariant.Chat,
-            maxLines = 5,
-            placeholder = stringResource(R.string.conversation_input_placeholder),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { onSend() })
-        )
+            PMIconButton(
+                imageVector = Icons.Default.Add,
+                onClick = {},
+                variant = PMIconButtonVariant.Tonal,
+                size = sizing.iconLg
+            )
 
-        PMIconButton(
-            imageVector = Icons.AutoMirrored.Filled.Send,
-            enabled = text.isNotBlank(),
-            onClick = onSend,
-            variant = PMIconButtonVariant.Tonal,
-            size = dims.sizing.iconLg
-        )
+            PMTextField(
+                value = text,
+                onValueChange = onTextChange,
+                modifier = Modifier.weight(1f),
+                variant = PMTextFieldVariant.Chat,
+                maxLines = 5,
+                placeholder = stringResource(R.string.conversation_input_placeholder),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { onSend() })
+            )
+
+            PMIconButton(
+                imageVector = Icons.AutoMirrored.Filled.Send,
+                enabled = text.isNotBlank(),
+                onClick = onSend,
+                variant = PMIconButtonVariant.Tonal,
+                size = sizing.iconLg
+            )
+        }
     }
 }
+
+
 
 @Preview(name = "MessageInputBar Empty Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
@@ -127,6 +182,40 @@ private fun MessageInputBarMultilineLightPreview() {
                 "sonrasında içeride kaydırılır. Gönder butonu altta sabit kalır.",
             onTextChange = {},
             onSend = {}
+        )
+    }
+}
+
+private val messageInputBarPreviewReplyTarget = ReplyPreviewUiModel(
+    messageId = 1L,
+    senderLabel = UiText.Dynamic("Ayşe Yılmaz"),
+    contentPreview = "Yarın saat 5'te müsait misin, buluşabilir miyiz?"
+)
+
+@Preview(name = "MessageInputBar Reply Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun MessageInputBarReplyLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        MessageInputBar(
+            text = "",
+            onTextChange = {},
+            onSend = {},
+            replyTarget = messageInputBarPreviewReplyTarget,
+            onCancelReply = {}
+        )
+    }
+}
+
+@Preview(name = "MessageInputBar Reply Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun MessageInputBarReplyDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        MessageInputBar(
+            text = "",
+            onTextChange = {},
+            onSend = {},
+            replyTarget = messageInputBarPreviewReplyTarget,
+            onCancelReply = {}
         )
     }
 }

@@ -7,6 +7,4 @@ sealed interface ProfileUiAction {
     data class StatusSummaryClicked(val status: String) : ProfileUiAction
     data class ActivityTabChanged(val tabIndex: Int) : ProfileUiAction
     data object OnResume : ProfileUiAction
-    data object RefreshRequested : ProfileUiAction
-    data object RetryClicked : ProfileUiAction
 }

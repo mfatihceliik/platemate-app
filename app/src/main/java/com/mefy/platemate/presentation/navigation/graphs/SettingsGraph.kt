@@ -32,7 +32,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             SettingsRoute(
                 viewModel = viewModel,
-                onBackClick = null,
+
                 onNavigateToChangePassword = { navController.navigateToProfileChangePassword() },
                 onNavigateToEditProfile = { navController.navigateToEditProfile() },
                 onNavigateToPremium = { navController.navigateToProfilePremiumInfo() },
@@ -49,7 +49,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             EditProfileRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onShowSnackbar = onShowSnackbar,
             )
         }
@@ -59,7 +59,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             ChangePasswordRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
                 onShowSnackbar = onShowSnackbar,
             )
         }
@@ -69,7 +69,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             ThemeColorRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
             )
         }
 
@@ -78,7 +78,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             CardStyleRoute(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() },
+
                 onNavigateToPremiumInfo = { navController.navigateToProfilePremiumInfo() },
             )
         }
@@ -88,7 +88,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             LanguageRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
             )
         }
 
@@ -97,7 +97,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             NotificationPreferencesRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
                 onShowSnackbar = onShowSnackbar,
             )
         }
@@ -107,7 +107,7 @@ internal fun NavGraphBuilder.settingsGraph(
         ) { viewModel ->
             PremiumInfoRoute(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+
             )
         }
     }

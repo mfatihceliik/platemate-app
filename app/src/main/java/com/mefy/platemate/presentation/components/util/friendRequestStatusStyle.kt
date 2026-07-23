@@ -3,7 +3,7 @@ package com.mefy.platemate.presentation.components.util
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.uimodel.FriendRequestStatusUi
 import com.mefy.platemate.presentation.features.uimodel.StatusPillStyle
-import com.mefy.platemate.presentation.theme.PMColors
+import com.mefy.platemate.presentation.theme.colors.PMColors
 
 internal fun friendRequestStatusStyle(
     status: FriendRequestStatusUi,

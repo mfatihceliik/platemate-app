@@ -3,6 +3,7 @@ package com.mefy.platemate.data.remote.websocket.datasource
 import android.util.Log
 import com.mefy.platemate.BuildConfig
 import com.mefy.platemate.domain.model.chat.ChatMessage
+import com.mefy.platemate.domain.model.chat.MessageDeletedSignal
 import com.mefy.platemate.domain.model.chat.MessageStatus
 import com.mefy.platemate.domain.model.chat.MessageStatusSignal
 import com.mefy.platemate.domain.model.chat.UserPresence
@@ -19,12 +20,32 @@ class SocketMessagingDataSourceImpl @Inject constructor(
     private val connectionManager: SocketConnectionManager
 ) : SocketMessagingDataSource {
 
-    override suspend fun sendMessage(chatRoomId: Long, content: String) {
+    override suspend fun sendMessage(
+        chatRoomId: Long,
+        content: String,
+        clientMessageId: String,
+        replyToMessageId: Long?
+    ): SendMessageAckResult {
         val payload = JSONObject().apply {
             put("chatRoomId", chatRoomId)
             put("content", content)
+            put("clientMessageId", clientMessageId)
+            if (replyToMessageId != null) put("replyToMessageId", replyToMessageId)
         }
-        connectionManager.emit(eventName = EVENT_SEND_MESSAGE, payload = payload)
+        val ack = connectionManager.emitWithAck(eventName = EVENT_SEND_MESSAGE, payload = payload)
+            ?: return SendMessageAckResult.TimedOut
+
+        // Reuses the {success, message, data} DataResult shape every REST endpoint already
+        // returns — same envelope the socket ack now carries for success/business-error/exception.
+        val success = ack.optBoolean("success", false)
+        if (!success) {
+            return SendMessageAckResult.ServerError(
+                ack.optNullableString("message") ?: "Mesaj gönderilemedi"
+            )
+        }
+        val message = ack.optJSONObject("data")?.toChatMessageOrNull()
+            ?: return SendMessageAckResult.ServerError("Mesaj gönderilemedi")
+        return SendMessageAckResult.Success(message)
     }
 
     // Backend join_room listener expects the raw roomId (Long), not a JSON object.
@@ -47,6 +68,10 @@ class SocketMessagingDataSourceImpl @Inject constructor(
     override fun observeMessageRead(): Flow<MessageStatusSignal> =
         connectionManager.observeEvent(eventName = EVENT_MESSAGE_READ)
             .mapNotNull { payload -> payload.toStatusSignalOrNull(MessageStatus.READ) }
+
+    override fun observeMessageDeleted(): Flow<MessageDeletedSignal> =
+        connectionManager.observeEvent(eventName = EVENT_MESSAGE_DELETED)
+            .mapNotNull { payload -> payload.toMessageDeletedOrNull() }
 
     // Backend emits a Result/ErrorResult payload ({ message, success, ... }) on business-rule
     // failures (limit reached, messaging disabled, blocked, declined).
@@ -79,8 +104,18 @@ class SocketMessagingDataSourceImpl @Inject constructor(
             isRead = optBoolean("read", false),
             status = MessageStatus.fromString(optNullableString("status")),
             deliveredAt = optNullableString("deliveredAt").toAppDateTimeOrNull(),
-            readAt = optNullableString("readAt").toAppDateTimeOrNull()
+            readAt = optNullableString("readAt").toAppDateTimeOrNull(),
+            clientMessageId = optNullableString("clientMessageId"),
+            replyToMessageId = optLongOrNull("replyToMessageId"),
+            replyToSenderUsername = optNullableString("replyToSenderUsername"),
+            replyToContentPreview = optNullableString("replyToContentPreview")
         )
+    }.getOrNull()
+
+    private fun JSONObject.toMessageDeletedOrNull(): MessageDeletedSignal? = runCatching {
+        val roomId = optLongOrNull("chatRoomId") ?: return null
+        val messageId = optLongOrNull("messageId") ?: return null
+        MessageDeletedSignal(roomId = roomId, messageId = messageId)
     }.getOrNull()
 
     private fun JSONObject.toStatusSignalOrNull(fallbackStatus: MessageStatus): MessageStatusSignal? = runCatching {
@@ -108,6 +143,7 @@ class SocketMessagingDataSourceImpl @Inject constructor(
         const val EVENT_NEW_MESSAGE = "new_message"
         const val EVENT_MESSAGE_DELIVERED = "message_delivered"
         const val EVENT_MESSAGE_READ = "message_read"
+        const val EVENT_MESSAGE_DELETED = "message_deleted"
         const val EVENT_ERROR = "error"
         const val EVENT_PRESENCE_ONLINE = "presence_online"
         const val EVENT_PRESENCE_OFFLINE = "presence_offline"

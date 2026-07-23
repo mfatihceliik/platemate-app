@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,9 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMSectionLabel
 import com.mefy.platemate.presentation.components.PMText
@@ -37,9 +37,8 @@ import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiAction
 import com.mefy.platemate.presentation.features.main.discover.DiscoverViewModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 const val MAX_CUSTOM_WINDOW_DAYS = 365
 
@@ -58,10 +57,10 @@ private val PRESET_DAYS: Set<Int> = WINDOW_PRESETS.mapNotNull { it.first }.toSet
 
 @Composable
 fun DiscoverWindowFilterRoute(
-    viewModel: DiscoverViewModel,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: DiscoverViewModel
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     DiscoverWindowFilterScreen(
@@ -69,7 +68,7 @@ fun DiscoverWindowFilterRoute(
         onWindowChanged = { days ->
             viewModel.onAction(DiscoverUiAction.DraftWindowChanged(days))
         },
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = { navController.navigateUp() },
         modifier = modifier
     )
 }
@@ -81,8 +80,8 @@ fun DiscoverWindowFilterScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
 
     // Preset olmayan (ozel) bir deger varsa alan onunla baslar.
     var customText by remember {
@@ -97,7 +96,7 @@ fun DiscoverWindowFilterScreen(
             title = stringResource(R.string.discover_filter_window_label),
             onBackClick = onNavigateBack
         ),
-        contentPadding = PaddingValues(bottom = dims.spacing.s16)
+        contentPadding = PaddingValues(bottom = spacing.s16)
     ) { pad ->
         Column(
             modifier = Modifier
@@ -119,10 +118,10 @@ fun DiscoverWindowFilterScreen(
 
             Column(
                 modifier = Modifier.padding(
-                    horizontal = dims.spacing.s16,
-                    vertical = dims.spacing.s12
+                    horizontal = spacing.s16,
+                    vertical = spacing.s12
                 ),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                verticalArrangement = Arrangement.spacedBy(spacing.s8)
             ) {
                 PMSectionLabel(text = stringResource(R.string.discover_filter_window_custom_label))
                 PMTextField(
@@ -151,14 +150,15 @@ private fun WindowOptionRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .debouncedClickable(onClick = onClick)
-            .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12),
+            .padding(horizontal = spacing.s16, vertical = spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMText(
@@ -171,7 +171,7 @@ private fun WindowOptionRow(
         if (selected) {
             PMIcon(
                 imageVector = Icons.Filled.Check,
-                size = dims.sizing.iconSm,
+                size = sizing.iconSm,
                 tint = colors.primary
             )
         }

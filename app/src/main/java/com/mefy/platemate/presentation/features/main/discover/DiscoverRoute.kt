@@ -1,14 +1,11 @@
 package com.mefy.platemate.presentation.features.main.discover
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,9 +13,9 @@ import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.features.main.discover.components.DiscoverShimmerContent
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -46,36 +43,30 @@ fun DiscoverRoute(
         }
     }
 
-    val onAction = viewModel::onAction
-
-    val onRetry = remember(onAction) { { onAction(DiscoverUiAction.RetryClicked) } }
-    val onRefresh = remember(onAction) { { onAction(DiscoverUiAction.RefreshRequested) } }
-
     val status = when {
         state.isInitialLoading -> ScreenStatus.Loading
         state.errorMessage != null -> ScreenStatus.Error(state.errorMessage!!)
         else -> ScreenStatus.Content
     }
 
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     PMBaseScreen(
         modifier = modifier,
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.main_tab_discover),
             alignment = PMTopBarAlignment.Start,
-            onBackClick = null
+            showBackButton = false
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = onRetry,
         isRefreshing = state.isRefreshing,
-        onRefresh = onRefresh,
         loading = { innerPadding ->
             DiscoverShimmerContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s16)
+                    .padding(horizontal = spacing.s16, vertical = spacing.s16)
             )
         }) { innerPadding ->
         DiscoverScreen(

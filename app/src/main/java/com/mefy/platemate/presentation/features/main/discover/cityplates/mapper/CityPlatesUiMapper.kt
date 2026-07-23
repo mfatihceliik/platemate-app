@@ -2,7 +2,7 @@ package com.mefy.platemate.presentation.features.main.discover.cityplates.mapper
 
 import com.mefy.platemate.domain.model.discovery.CityPlateActivity
 import com.mefy.platemate.domain.usecase.search.FormatTurkishPlateInputUseCase
-import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
 import com.mefy.platemate.presentation.features.main.discover.cityplates.CityPlateUiModel
 import javax.inject.Inject
 import javax.inject.Singleton

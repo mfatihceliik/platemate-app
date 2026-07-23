@@ -46,7 +46,8 @@ class SettingsRepositoryImpl @Inject constructor(
                             friendNotificationsEnabled = settings.friendNotificationsEnabled,
                             plateReviewNotificationsEnabled = settings.plateReviewNotificationsEnabled,
                             newFollowerNotificationsEnabled = settings.newFollowerNotificationsEnabled,
-                            reviewReplyNotificationsEnabled = settings.reviewReplyNotificationsEnabled
+                            reviewReplyNotificationsEnabled = settings.reviewReplyNotificationsEnabled,
+                            followingListVisible = settings.followingListVisible
                         )
                     )
                 }

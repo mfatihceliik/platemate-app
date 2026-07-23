@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Gavel
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import com.mefy.platemate.presentation.components.PMPopup
@@ -28,19 +26,18 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.moderation.comments.components.PendingCommentCard
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun CommentModerationScreen(
+    modifier: Modifier = Modifier,
     state: CommentModerationUiState,
     onAction: (CommentModerationUiAction) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     val onReasonChanged =
         remember(onAction) { { v: String -> onAction(CommentModerationUiAction.ReasonChanged(v)) } }
@@ -91,7 +88,7 @@ internal fun CommentModerationScreen(
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             itemsIndexed(items = state.items, key = { _, item -> item.id }) { index, item ->
                 if (index >= state.items.lastIndex) {
@@ -108,7 +105,7 @@ internal fun CommentModerationScreen(
 
             if (state.isLoadingMore) {
                 item {
-                    Box(modifier = Modifier.fillMaxWidth().padding(dims.spacing.s12), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(spacing.s12), contentAlignment = Alignment.Center) {
                         PMCircularProgressIndicator()
                     }
                 }
@@ -147,7 +144,10 @@ private val commentModerationPreviewState = CommentModerationUiState(
 @Composable
 private fun CommentModerationScreenLightPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        CommentModerationScreen(state = commentModerationPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        CommentModerationScreen(
+            state = commentModerationPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -155,7 +155,10 @@ private fun CommentModerationScreenLightPreview() {
 @Composable
 private fun CommentModerationScreenDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        CommentModerationScreen(state = commentModerationPreviewState, onAction = {}, contentPadding = PaddingValues(0.dp))
+        CommentModerationScreen(
+            state = commentModerationPreviewState,
+            onAction = {}
+        )
     }
 }
 
@@ -163,6 +166,9 @@ private fun CommentModerationScreenDarkPreview() {
 @Composable
 private fun CommentModerationScreenEmptyPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        CommentModerationScreen(state = CommentModerationUiState(isLoading = false), onAction = {}, contentPadding = PaddingValues(0.dp))
+        CommentModerationScreen(
+            state = CommentModerationUiState(isLoading = false),
+            onAction = {}
+        )
     }
 }

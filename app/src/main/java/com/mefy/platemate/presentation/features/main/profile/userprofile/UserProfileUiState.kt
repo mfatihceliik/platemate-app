@@ -2,6 +2,7 @@ package com.mefy.platemate.presentation.features.main.profile.userprofile
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.mefy.platemate.domain.model.profile.ProfileFriendshipStatus
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
 import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
@@ -15,7 +16,7 @@ data class UserProfileUiState(
     val bio: String = "",
     val isVerified: Boolean = false,
     val isOnline: Boolean = false,
-    val friendshipStatus: String = "NONE",
+    val friendshipStatus: ProfileFriendshipStatus = ProfileFriendshipStatus.NONE,
     val friendshipId: Long? = null,
     val showRemoveFriendPopup: Boolean = false,
     val reviewCount: Int = 0,

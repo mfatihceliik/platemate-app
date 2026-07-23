@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,12 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.components.variant.PMPlateCardStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPlateCard(
@@ -103,31 +101,33 @@ private fun ClassicPlateCard(
     bookmarkClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
 
     PMCard(
         modifier = modifier,
         onClick = cardClick,
-        padding = PaddingValues(dims.spacing.s12)
+        padding = PaddingValues(spacing.s12)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RankBadge(rank = rank)
 
             PMPlateBadge(
                 plate = plateNumber,
-                size = dims.sizing.plateBadgeMd
+                size = sizing.plateBadgeMd
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PlateMetric(
                     icon = Icons.Filled.Star,
@@ -135,7 +135,7 @@ private fun ClassicPlateCard(
                     iconTint = colors.iconStar
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PlateMetric(
@@ -170,9 +170,12 @@ private fun SpotlightPlateCard(
     bookmarkClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r16)
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val stroke = PMTheme.stroke
+    val colors = PMTheme.colors
+    val shape = PMTheme.shapes.medium
+
 
     Box(
         modifier = modifier
@@ -185,27 +188,27 @@ private fun SpotlightPlateCard(
                     )
                 )
             )
-            .border(dims.stroke.st1, colors.primary.copy(alpha = 0.35f), shape)
+            .border(stroke.st1, colors.primary.copy(alpha = 0.35f), shape)
             .debouncedClickable(onClick = cardClick)
-            .padding(dims.spacing.s16)
+            .padding(spacing.s16)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s12),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RankBadge(rank = rank)
 
             PMPlateBadge(
                 plate = plateNumber,
-                size = dims.sizing.plateBadgeLg
+                size = sizing.plateBadgeLg
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                verticalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 PlateMetric(
                     icon = Icons.Filled.Star,
@@ -214,7 +217,7 @@ private fun SpotlightPlateCard(
                     valueColor = colors.primary
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s8),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PlateMetric(
@@ -248,29 +251,31 @@ private fun MinimalPlateCard(
     bookmarkClick: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r12)
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
+    val shape = PMTheme.shapes.medium
 
     Row(
         modifier = modifier
             .clip(shape)
             .background(colors.surface)
             .debouncedClickable(onClick = cardClick)
-            .padding(horizontal = dims.spacing.s12, vertical = dims.spacing.s8),
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12),
+            .padding(horizontal = spacing.s12, vertical = spacing.s8),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMText(
             text = "#$rank",
-            fontSize = dims.fontSize.sm,
+            fontSize = fontSize.sm,
             fontWeight = FontWeight.SemiBold,
             color = colors.textTertiary
         )
 
         PMPlateBadge(
             plate = plateNumber,
-            size = dims.sizing.plateBadgeSm
+            size = sizing.plateBadgeSm
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -292,21 +297,23 @@ private fun MinimalPlateCard(
 
 @Composable
 private fun RankBadge(rank: Int) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
+    val radius = PMTheme.radius
     val isFirst = rank == 1
 
     Box(
         modifier = Modifier
-            .size(dims.sizing.rankBadgeSize)
-            .clip(RoundedCornerShape(dims.radius.r8))
+            .size(sizing.rankBadgeSize)
+            .clip(RoundedCornerShape(radius.r8))
             .background(if (isFirst) colors.rankFirstBg else colors.rankOtherBg),
         contentAlignment = Alignment.Center
     ) {
         PMText(
             text = rank.toString(),
             color = if (isFirst) colors.rankFirstFg else colors.rankOtherFg,
-            fontSize = dims.fontSize.md,
+            fontSize = fontSize.md,
             fontWeight = FontWeight.ExtraBold
         )
     }
@@ -315,13 +322,14 @@ private fun RankBadge(rank: Int) {
 @Composable
 private fun BookmarkButton(isBookmarked: Boolean, bookmarkClick: (() -> Unit)?) {
     if (bookmarkClick == null) return
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     PMIconButton(
         imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
         onClick = bookmarkClick,
-        size = dims.sizing.iconSm,
+        size = sizing.iconSm,
         iconColor = if (isBookmarked) colors.primary else colors.iconDefault
     )
 }
@@ -331,21 +339,23 @@ private fun PlateMetric(
     icon: ImageVector,
     value: String,
     iconTint: Color,
-    valueColor: Color = MaterialTheme.pmColors.textSecondary
+    valueColor: Color = PMTheme.colors.textSecondary
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
     Row(
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s4),
         verticalAlignment = Alignment.CenterVertically
     ) {
         PMIcon(
             imageVector = icon,
-            size = dims.sizing.iconXs,
+            size = sizing.iconXs,
             tint = iconTint
         )
         PMText(
             text = value,
-            fontSize = dims.fontSize.sm,
+            fontSize = fontSize.sm,
             fontWeight = FontWeight.SemiBold,
             color = valueColor
         )
@@ -356,13 +366,14 @@ private fun PlateMetric(
 @Composable
 private fun PMPlateCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.pmColors.background)
-                .padding(dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+                .background(colors.background)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             PMPlateCard(id = "1", rank = 1, plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, modifier = Modifier.fillMaxWidth())
             PMPlateCard(id = "2", rank = 2, plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, modifier = Modifier.fillMaxWidth(), isBookmarked = true, onBookmarkClick = {})
@@ -375,13 +386,14 @@ private fun PMPlateCardPreview() {
 @Composable
 private fun PMPlateCardStylesPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.pmColors.background)
-                .padding(dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+                .background(colors.background)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             PMPlateCard(id = "1", rank = 1, plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, style = PMPlateCardStyle.Classic, isBookmarked = true, onBookmarkClick = {}, modifier = Modifier.fillMaxWidth())
             PMPlateCard(id = "2", rank = 2, plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, style = PMPlateCardStyle.Spotlight, onBookmarkClick = {}, modifier = Modifier.fillMaxWidth())
@@ -394,13 +406,14 @@ private fun PMPlateCardStylesPreview() {
 @Composable
 private fun PMPlateCardStylesDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        val dims = MaterialTheme.pmDimensions
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.pmColors.background)
-                .padding(dims.spacing.s16),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+                .background(colors.background)
+                .padding(spacing.s16),
+            verticalArrangement = Arrangement.spacedBy(spacing.s12)
         ) {
             PMPlateCard(id = "1", rank = 1, plateNumber = "34 EK 0682", rating = "4.8", commentCount = 12, searchCount = 1240, onClick = {}, style = PMPlateCardStyle.Spotlight, isBookmarked = true, onBookmarkClick = {}, modifier = Modifier.fillMaxWidth())
             PMPlateCard(id = "2", rank = 2, plateNumber = "06 ABC 123", rating = "4.6", commentCount = 9, searchCount = 910, onClick = {}, style = PMPlateCardStyle.Minimal, onBookmarkClick = {}, modifier = Modifier.fillMaxWidth())

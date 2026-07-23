@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,15 +15,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.features.main.settings.premium.components.PricingSection
 import com.mefy.platemate.presentation.features.main.settings.premium.components.HeroSection
+import com.mefy.platemate.presentation.features.main.settings.premium.components.PremiumFeatureRow
 import com.mefy.platemate.domain.model.premium.PremiumFeature
 import com.mefy.platemate.domain.model.premium.PremiumPeriod
 import com.mefy.platemate.domain.model.premium.PremiumPlan
 import com.mefy.platemate.presentation.common.spacedByWithFooter
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMIcon
-import com.mefy.platemate.presentation.components.PMRowItem
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PremiumInfoScreen(
@@ -32,23 +31,23 @@ fun PremiumInfoScreen(
     state: PremiumInfoUiState,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val colors = MaterialTheme.colorScheme
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement =spacedByWithFooter(dims.spacing.s0)
+        verticalArrangement =spacedByWithFooter(spacing.s0)
     ) {
         item {
-            HeroSection(modifier = Modifier.padding(bottom = dims.spacing.s16))
+            HeroSection(modifier = Modifier.padding(bottom = spacing.s16))
         }
 
         item {
             PricingSection(
                 monthly = state.plans.firstOrNull { it.period == PremiumPeriod.MONTHLY },
                 yearly = state.plans.firstOrNull { it.period == PremiumPeriod.YEARLY },
-                modifier = Modifier.padding(bottom = dims.spacing.s16)
+                modifier = Modifier.padding(bottom = spacing.s16)
             )
         }
 
@@ -56,13 +55,7 @@ fun PremiumInfoScreen(
             items = state.features,
             key = { it.id }
         ) { feature ->
-            PMRowItem(
-                title = feature.title,
-                subtitle = feature.subtitle,
-                leadingIcon = premiumFeatureIcon(feature.iconKey),
-                leadingIconTint = colors.primary,
-                leadingContainerColor = colors.primaryContainer,
-            )
+            PremiumFeatureRow(feature = feature)
         }
 
         item {
@@ -73,12 +66,12 @@ fun PremiumInfoScreen(
                     PMIcon(
                         imageVector = Icons.Filled.Star,
                         tint = Color.White,
-                        size = dims.sizing.iconMd,
+                        size = sizing.iconMd,
                     )
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(vertical = dims.spacing.s16)
+                    .padding(vertical = spacing.s16)
             )
         }
     }

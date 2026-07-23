@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.debouncedClickable
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 enum class PMRowPosition {
     Single,
@@ -68,15 +66,17 @@ fun PMRowItem(
     trailing: (@Composable () -> Unit)? = null,
     content: (@Composable () -> Unit)? = null
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val stroke = PMTheme.stroke
+    val radius = PMTheme.radius
+    val colors = PMTheme.colors
     val resolvedChevron = showChevron ?: (onClick != null)
 
-    val r = dims.radius.r12
+    val r = radius.r10
     val shape = when (position) {
         PMRowPosition.Single -> RoundedCornerShape(r)
         PMRowPosition.Top -> RoundedCornerShape(topStart = r, topEnd = r)
-        PMRowPosition.Middle -> RoundedCornerShape(dims.spacing.s0)
+        PMRowPosition.Middle -> RoundedCornerShape(spacing.s0)
         PMRowPosition.Bottom -> RoundedCornerShape(bottomStart = r, bottomEnd = r)
     }
 
@@ -91,10 +91,10 @@ fun PMRowItem(
             .fillMaxWidth()
             .clip(shape)
             .background(colors.surface)
-            .border(BorderStroke(dims.stroke.st1, colors.outlineVariant), shape)
+            .border(BorderStroke(stroke.st1, colors.outlineVariant), shape)
             .then(clickModifier)
             .padding(
-                horizontal = dims.spacing.s16, vertical = dims.spacing.s12
+                horizontal = spacing.s16, vertical = spacing.s12
             )
     ) {
         PMRowItemBody(
@@ -127,8 +127,8 @@ private fun PMRowItemBody(
     trailing: (@Composable () -> Unit)?,
     content: (@Composable () -> Unit)?
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     val titleColor = if (enabled) colors.textPrimary else colors.disabled
 
     Row(
@@ -148,21 +148,21 @@ private fun PMRowItemBody(
                     tint = leadingIconTint ?: Color.Unspecified,
                     containerColor = leadingContainerColor ?: colors.primaryContainer
                 )
-                Spacer(modifier = Modifier.width(dims.spacing.s12))
+                Spacer(modifier = Modifier.width(spacing.s12))
             } else if (leadingIcon != null) {
                 PMIconContainer(
                     imageVector = leadingIcon,
                     tint = leadingIconTint,
                     containerColor = leadingContainerColor ?: colors.primaryContainer
                 )
-                Spacer(modifier = Modifier.width(dims.spacing.s12))
+                Spacer(modifier = Modifier.width(spacing.s12))
             }
 
             if (content != null) {
                 content()
             } else {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                    verticalArrangement = Arrangement.spacedBy(spacing.s4)
                 ) {
                     PMText(
                         text = title,
@@ -187,10 +187,10 @@ private fun PMRowItemBody(
 
         // ── Trailing ─────────────────────────────────────
         if (trailing != null) {
-            Spacer(modifier = Modifier.width(dims.spacing.s12))
+            Spacer(modifier = Modifier.width(spacing.s12))
             trailing()
         } else if (trailingText != null || resolvedChevron) {
-            Spacer(modifier = Modifier.width(dims.spacing.s12))
+            Spacer(modifier = Modifier.width(spacing.s12))
             TrailingDefault(
                 text = trailingText, showChevron = resolvedChevron
             )
@@ -203,12 +203,13 @@ private fun TrailingDefault(
     text: String?,
     showChevron: Boolean,
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s4)
     ) {
         if (text != null) {
             PMText(
@@ -223,7 +224,7 @@ private fun TrailingDefault(
             PMIcon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                size = dims.sizing.iconLg,
+                size = sizing.iconLg,
                 tint = colors.primary
             )
         }
@@ -259,8 +260,8 @@ private data class PreviewRow(
 
 @Composable
 private fun PMRowItemPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
 
     val group = listOf(
         PreviewRow("Account", "Manage your profile", Icons.Filled.Person, true),
@@ -275,7 +276,7 @@ private fun PMRowItemPreviewContent() {
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
-            .padding(dims.spacing.s16)
+            .padding(spacing.s16)
     ) {
         // Grouped card — one PMRowItem per data item, positioned by index.
         itemsIndexed(group) { index, row ->
@@ -288,7 +289,7 @@ private fun PMRowItemPreviewContent() {
                 onClick = {})
         }
 
-        item { Spacer(modifier = Modifier.height(dims.spacing.s16)) }
+        item { Spacer(modifier = Modifier.height(spacing.s16)) }
 
         // Standalone (Single) variants.
         item {
@@ -298,14 +299,14 @@ private fun PMRowItemPreviewContent() {
                 trailingText = "English",
                 onClick = {})
         }
-        item { Spacer(modifier = Modifier.height(dims.spacing.s12)) }
+        item { Spacer(modifier = Modifier.height(spacing.s12)) }
         item {
             PMRowItem(
                 title = "Push notifications",
                 subtitle = "Receive updates instantly",
                 trailing = { PMSwitch(checked = true, onCheckedChange = {}) })
         }
-        item { Spacer(modifier = Modifier.height(dims.spacing.s12)) }
+        item { Spacer(modifier = Modifier.height(spacing.s12)) }
         item {
             PMRowItem(
                 title = "Disabled row",

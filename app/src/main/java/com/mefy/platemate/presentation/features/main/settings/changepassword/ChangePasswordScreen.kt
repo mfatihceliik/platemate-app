@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,8 +16,8 @@ import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.components.PMPasswordField
 import com.mefy.platemate.presentation.features.main.settings.changepassword.components.ValidationChecklist
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun ChangePasswordScreen(
@@ -27,7 +26,8 @@ fun ChangePasswordScreen(
     onAction: (ChangePasswordUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
     val onSubmit = remember(onAction) { { onAction(ChangePasswordUiAction.SubmitClicked) } }
     val onCurrentChange = remember(onAction) { { v: String -> onAction(ChangePasswordUiAction.CurrentPasswordChanged(v)) } }
     val onNewChange = remember(onAction) { { v: String -> onAction(ChangePasswordUiAction.NewPasswordChanged(v)) } }
@@ -38,7 +38,7 @@ fun ChangePasswordScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),
-        verticalArrangement = spacedByWithFooter(dims.spacing.s8)
+        verticalArrangement = spacedByWithFooter(spacing.s8)
     ) {
         item {
             PMSectionLabel(text = stringResource(R.string.profile_change_password_desc))
@@ -87,7 +87,7 @@ fun ChangePasswordScreen(
                 onClick = onSubmit,
                 enabled = state.isSubmitEnabled,
                 loading = state.isSubmitting,
-                modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+                modifier = Modifier.fillMaxWidth().padding(vertical = spacing.s16)
             )
         }
     }

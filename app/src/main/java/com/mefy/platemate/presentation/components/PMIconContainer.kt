@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,20 +24,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.mefy.platemate.presentation.components.model.PMTextStyle
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMIconContainer(
     imageVector: ImageVector,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    iconSize: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
-    containerSize: Dp = MaterialTheme.pmDimensions.sizing.iconContainer,
+    iconSize: Dp = PMTheme.sizing.iconMd,
+    containerSize: Dp = PMTheme.sizing.iconContainer,
     tint: Color? = null,
-    containerColor: Color = MaterialTheme.pmColors.primaryContainer,
-    shape: Shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r10),
+    containerColor: Color = PMTheme.colors.primaryContainer,
+    shape: Shape = PMTheme.shapes.medium,
 ) {
     Box(
         modifier = modifier
@@ -62,11 +59,11 @@ fun PMIconContainer(
     painter: Painter,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    iconSize: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
-    containerSize: Dp = MaterialTheme.pmDimensions.sizing.iconContainer,
+    iconSize: Dp = PMTheme.sizing.iconMd,
+    containerSize: Dp = PMTheme.sizing.iconContainer,
     tint: Color = Color.Unspecified,
-    containerColor: Color = MaterialTheme.pmColors.primaryContainer,
-    shape: Shape = RoundedCornerShape(MaterialTheme.pmDimensions.radius.r10),
+    containerColor: Color = PMTheme.colors.primaryContainer,
+    shape: Shape = PMTheme.shapes.medium,
 ) {
     Box(
         modifier = modifier
@@ -102,15 +99,16 @@ private fun PMIconContainerDarkPreview() {
 
 @Composable
 private fun PMIconContainerPreviewContent() {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
-            .padding(dims.spacing.s24),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
+            .padding(spacing.s24),
+        verticalArrangement = Arrangement.spacedBy(spacing.s24)
     ) {
 
         PMText(
@@ -120,7 +118,7 @@ private fun PMIconContainerPreviewContent() {
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s16),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMIconContainer(
@@ -147,7 +145,7 @@ private fun PMIconContainerPreviewContent() {
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s16),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMIconContainer(
@@ -182,31 +180,31 @@ private fun PMIconContainerPreviewContent() {
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s16),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMIconContainer(
                 imageVector = Icons.Default.Home,
-                containerSize = dims.sizing.iconContainer,
-                iconSize = dims.sizing.iconSm
+                containerSize = sizing.iconContainer,
+                iconSize = sizing.iconSm
             )
 
             PMIconContainer(
                 imageVector = Icons.Default.Home,
-                containerSize = dims.sizing.iconContainer,
-                iconSize = dims.sizing.iconMd
+                containerSize = sizing.iconContainer,
+                iconSize = sizing.iconMd
             )
 
             PMIconContainer(
                 imageVector = Icons.Default.Home,
-                containerSize = dims.sizing.iconContainer,
-                iconSize = dims.sizing.iconLg
+                containerSize = sizing.iconContainer,
+                iconSize = sizing.iconLg
             )
 
             PMIconContainer(
                 imageVector = Icons.Default.Home,
-                containerSize = dims.sizing.iconContainer,
-                iconSize = dims.sizing.iconXl
+                containerSize = sizing.iconContainer,
+                iconSize = sizing.iconXl
             )
         }
     }

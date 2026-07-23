@@ -2,7 +2,6 @@ package com.mefy.platemate.presentation.features.main.discover.reducer
 
 import com.mefy.platemate.domain.model.discovery.RecentActivityActionType
 import com.mefy.platemate.presentation.common.text.UiText
-import com.mefy.platemate.presentation.features.uimodel.DiscoverFilterUi
 import com.mefy.platemate.presentation.features.main.discover.DiscoverUiState
 import com.mefy.platemate.presentation.features.main.discover.mapper.DiscoverHomeUiData
 import com.mefy.platemate.presentation.features.uimodel.DiscoverCityStatUiModel
@@ -98,13 +97,13 @@ class DiscoverStateReducerTest {
         )
 
         val state = reducer.onFilterSelected(
-            state = DiscoverUiState(selectedFilter = DiscoverFilterUi.Trend),
-            filter = DiscoverFilterUi.Careless,
+            state = DiscoverUiState(selectedTabCode = "TREND"),
+            tabCode = "DANGEROUS",
             plateDetails = plates,
             endReached = true
         )
 
-        assertEquals(DiscoverFilterUi.Careless, state.selectedFilter)
+        assertEquals("DANGEROUS", state.selectedTabCode)
         assertEquals(1, state.plateDetail.size)
         assertEquals("35DNG111", state.plateDetail.first().plateCode)
     }

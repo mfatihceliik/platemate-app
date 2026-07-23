@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,25 +21,25 @@ import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiModel
 import com.mefy.platemate.presentation.features.uimodel.DiscoverMetricUiType
 import com.mefy.platemate.presentation.features.uimodel.DiscoverRecentActivityUiModel
 import com.mefy.platemate.presentation.features.uimodel.PlateDetailUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun DiscoverForYouSection(
+    modifier: Modifier = Modifier,
     forYou: DiscoverForYouUiModel,
     onPlateClick: (String) -> Unit,
     onBookmarkClick: (String) -> Unit,
     onActivityPlateClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
     cardStyle: PMPlateCardStyle = PMPlateCardStyle.Classic
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         PMSectionLabel(text = stringResource(R.string.discover_for_you_title))
 
@@ -52,7 +50,7 @@ internal fun DiscoverForYouSection(
         if (!forYou.hasContent) {
             PMText(
                 text = stringResource(R.string.discover_for_you_empty),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textTertiary
             )
             return@Column
@@ -61,7 +59,7 @@ internal fun DiscoverForYouSection(
         if (forYou.followedPlates.isNotEmpty()) {
             PMText(
                 text = stringResource(R.string.discover_for_you_followed),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textSecondary
             )
             ForYouPlateRow(
@@ -75,7 +73,7 @@ internal fun DiscoverForYouSection(
         if (forYou.savedPlates.isNotEmpty()) {
             PMText(
                 text = stringResource(R.string.discover_for_you_saved),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textSecondary
             )
             ForYouPlateRow(
@@ -89,10 +87,10 @@ internal fun DiscoverForYouSection(
         if (forYou.activities.isNotEmpty()) {
             PMText(
                 text = stringResource(R.string.discover_for_you_activity),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textSecondary
             )
-            Column(verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)) {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing.s8)) {
                 forYou.activities.forEach { activity ->
                     DiscoverRecentActivityRow(
                         activity = activity,
@@ -112,10 +110,10 @@ private fun ForYouPlateRow(
     onPlateClick: (String) -> Unit,
     onBookmarkClick: (String) -> Unit
 ) {
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
 
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+        horizontalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         itemsIndexed(items = plates, key = { index, it -> "${it.id}_$index" }, contentType = { _, _ -> "for_you_plate" }) { _, plate ->
             PMPlateCard(

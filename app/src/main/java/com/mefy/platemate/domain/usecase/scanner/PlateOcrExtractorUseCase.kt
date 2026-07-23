@@ -10,9 +10,11 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.mefy.platemate.domain.usecase.search.ValidateTurkishPlateUseCase
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class PlateOcrExtractorUseCase @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val validateTurkishPlateUseCase: ValidateTurkishPlateUseCase
 ) {
 
@@ -23,7 +25,7 @@ class PlateOcrExtractorUseCase @Inject constructor(
     // Ekstra boşluklar olabilir.
     private val plateRegex = Regex("""(0[1-9]|[1-7][0-9]|8[0-1])[^a-zA-Z0-9]*[A-Z]{1,3}[^a-zA-Z0-9]*\d{2,4}""")
 
-    suspend fun extractPlateFromUri(context: Context, uri: Uri): String? {
+    suspend fun extractPlateFromUri(uri: Uri): String? {
         return try {
             val image = InputImage.fromFilePath(context, uri)
             val result = recognizer.process(image).await()
@@ -45,10 +47,10 @@ class PlateOcrExtractorUseCase @Inject constructor(
             null
         }
     }
-    
+
+    @androidx.annotation.OptIn(ExperimentalGetImage::class)
     suspend fun extractPlateFromImageProxy(imageProxy: ImageProxy): String? {
         return try {
-            @OptIn(ExperimentalGetImage::class)
             val mediaImage = imageProxy.image ?: return null
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
             val result = recognizer.process(image).await()
@@ -68,5 +70,9 @@ class PlateOcrExtractorUseCase @Inject constructor(
         } finally {
             imageProxy.close()
         }
+    }
+
+    fun release() {
+        recognizer.close()
     }
 }

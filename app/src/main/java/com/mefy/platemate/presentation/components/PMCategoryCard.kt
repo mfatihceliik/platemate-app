@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,11 +15,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMCategoryCard(
@@ -34,42 +28,44 @@ fun PMCategoryCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val pmColors = MaterialTheme.pmColors
-    val shape = RoundedCornerShape(dims.radius.r16)
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
+    val fontSize = PMTheme.fontSize
+    val shape = PMTheme.shapes.medium
 
     Column(
         modifier = modifier
             .clip(shape)
             .background(backgroundColor)
-            .padding(dims.spacing.s16),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s12)
+            .padding(spacing.s16),
+        verticalArrangement = Arrangement.spacedBy(spacing.s12)
     ) {
         Box(
             modifier = Modifier
                 //.size(dims.sizing.categoryIconContainer)
-                .shadow(elevation = dims.spacing.s0, RoundedCornerShape(dims.radius.r12))
-                .clip(RoundedCornerShape(dims.radius.r12))
-                .background(pmColors.background)
-                .padding(dims.spacing.s12)
+                .shadow(elevation = spacing.s0, shape)
+                .clip(shape)
+                .background(colors.background)
+                .padding(spacing.s12)
         ) {
             Box(
                 modifier = Modifier
-                    .size(dims.sizing.categoryIconDot)
-                    .clip(RoundedCornerShape(dims.radius.r4))
+                    .size(sizing.categoryIconDot)
+                    .clip(shape)
                     .background(iconColor)
             )
         }
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+            verticalArrangement = Arrangement.spacedBy(spacing.s4)
         ) {
             PMText(
                 text = title,
                 color = foregroundColor,
                 fontWeight = FontWeight.Bold,
-                fontSize = dims.fontSize.lg
+                fontSize = fontSize.lg
             )
             PMText(
                 text = count,
@@ -82,12 +78,13 @@ fun PMCategoryCard(
 @Composable
 private fun PMCategoryCardPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val colors = MaterialTheme.pmColors
+        val spacing = PMTheme.spacing
+        val colors = PMTheme.colors
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(spacing.s16),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             PMCategoryCard(
                 title = "En Nazik",

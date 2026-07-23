@@ -5,19 +5,19 @@ import com.mefy.platemate.core.common.result.AppResult
 import com.mefy.platemate.core.common.result.map
 import com.mefy.platemate.core.coroutine.AppDispatchers
 import com.mefy.platemate.core.mapper.mapList
-import com.mefy.platemate.data.mapper.AdminMenuItemMapper
 import com.mefy.platemate.data.mapper.AppSettingsMapper
-import com.mefy.platemate.data.mapper.CommentReportMapper
-import com.mefy.platemate.data.mapper.CommentReportReasonAdminMapper
-import com.mefy.platemate.data.mapper.HiddenPlateMapper
 import com.mefy.platemate.data.mapper.PendingCommentMapper
-import com.mefy.platemate.data.mapper.PlateRemovalRequestMapper
 import com.mefy.platemate.data.mapper.PlateRemovalReasonAdminMapper
-import com.mefy.platemate.data.mapper.AccentColorAdminMapper
-import com.mefy.platemate.data.mapper.PremiumFeatureAdminMapper
-import com.mefy.platemate.data.mapper.PremiumPlanAdminMapper
-import com.mefy.platemate.data.mapper.ReportTypeAdminMapper
-import com.mefy.platemate.data.mapper.SocialPlatformAdminMapper
+import com.mefy.platemate.data.mapper.admin.AccentColorAdminMapper
+import com.mefy.platemate.data.mapper.admin.AdminMenuItemMapper
+import com.mefy.platemate.data.mapper.admin.CommentReportMapper
+import com.mefy.platemate.data.mapper.admin.CommentReportReasonAdminMapper
+import com.mefy.platemate.data.mapper.admin.HiddenPlateMapper
+import com.mefy.platemate.data.mapper.admin.PlateRemovalRequestMapper
+import com.mefy.platemate.data.mapper.admin.PremiumFeatureAdminMapper
+import com.mefy.platemate.data.mapper.admin.PremiumPlanAdminMapper
+import com.mefy.platemate.data.mapper.admin.ReportTypeAdminMapper
+import com.mefy.platemate.data.mapper.admin.SocialPlatformAdminMapper
 import com.mefy.platemate.data.remote.dto.admin.AdminCommentModerationRequest
 import com.mefy.platemate.data.remote.dto.admin.AdminReviewRequest
 import com.mefy.platemate.data.remote.dto.admin.CommentReportReasonRequest
@@ -76,7 +76,7 @@ class AdminRepositoryImpl @Inject constructor(
     private val premiumFeatureAdminMapper: PremiumFeatureAdminMapper,
     private val accentColorAdminMapper: AccentColorAdminMapper,
     private val appDispatchers: AppDispatchers
-) : AdminRepository {
+): AdminRepository {
 
     override suspend fun getAdminMenu(): AppResult<List<AdminMenuItem>> =
         withContext(appDispatchers.io) {

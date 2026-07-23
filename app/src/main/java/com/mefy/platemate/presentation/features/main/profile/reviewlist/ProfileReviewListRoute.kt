@@ -9,26 +9,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarAlignment
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileReviewListRoute(
+    modifier: Modifier = Modifier,
     viewModel: ProfileReviewListViewModel,
-    onBackClick: () -> Unit,
-    onNavigateToReviewDetail: (String, Long) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToReviewDetail: (String, Long) -> Unit
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                ProfileReviewListUiEffect.NavigateBack -> onBackClick()
+                ProfileReviewListUiEffect.NavigateBack -> navController.navigateUp()
                 is ProfileReviewListUiEffect.NavigateToReviewDetail ->
                     onNavigateToReviewDetail(effect.plateCode, effect.reviewId)
             }
@@ -36,7 +37,6 @@ fun ProfileReviewListRoute(
     }
 
     val onAction = viewModel::onAction
-    val onRetry = remember(onAction) { { onAction(ProfileReviewListUiAction.RetryClicked) } }
     val onBack = remember(onAction) { { onAction(ProfileReviewListUiAction.BackClicked) } }
 
     val status = when {
@@ -52,8 +52,8 @@ fun ProfileReviewListRoute(
             alignment = PMTopBarAlignment.Start,
             onBackClick = onBack
         ),
-        status = status,
-        onRetry = onRetry
+        viewModel = viewModel,
+        status = status
     ) { innerPadding ->
         ProfileReviewListScreen(
             state = state,

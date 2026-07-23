@@ -26,9 +26,11 @@ import kotlinx.coroutines.flow.callbackFlow
  */
 @Singleton
 class AndroidNetworkMonitor @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @ApplicationContext context: Context,
     appDispatchers: AppDispatchers
 ) : NetworkMonitor {
+
+    private val ctx = context
 
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager =
@@ -82,7 +84,7 @@ class AndroidNetworkMonitor @Inject constructor(
 
     override fun isCurrentlyOnline(): Boolean {
         val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager?
+            ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager?
                 ?: return false
         return connectivityManager.isCurrentlyOnline()
     }

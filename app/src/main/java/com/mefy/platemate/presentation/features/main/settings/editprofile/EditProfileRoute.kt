@@ -11,22 +11,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun EditProfileRoute(
     viewModel: EditProfileViewModel,
-    onNavigateBack: () -> Unit,
     onShowSnackbar: (String) -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                EditProfileUiEffect.NavigateBack -> onNavigateBack()
+                EditProfileUiEffect.NavigateBack -> navController.navigateUp()
                 is EditProfileUiEffect.ShowSnackbar -> onShowSnackbar(effect.message)
             }
         }
@@ -40,17 +41,13 @@ fun EditProfileRoute(
         else -> ScreenStatus.Content
     }
 
-    // Stable, hoisted callbacks: fields/buttons skip recomposition while their data is unchanged.
-    val onBack = remember(onAction) { { onAction(EditProfileUiAction.BackClicked) } }
-    val onRetry = remember(onAction) { { onAction(EditProfileUiAction.RetryClicked) } }
-
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.edit_profile_title),
-            onBackClick = onBack
+            onBackClick = { onAction(EditProfileUiAction.BackClicked) }
         ),
+        viewModel = viewModel,
         status = status,
-        onRetry = onRetry,
         loading = { innerPadding ->
             PMCircularProgressIndicator(
                 fillMaxSize = true,

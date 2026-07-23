@@ -7,8 +7,8 @@ import androidx.compose.runtime.Immutable
 data class DiscoverMetricUiModel(
     val type: DiscoverMetricUiType,
     val valueText: String,
-    @StringRes val labelResId: Int,
-    @StringRes val periodResId: Int,
+    @param:StringRes val labelResId: Int,
+    @param:StringRes val periodResId: Int,
     val deltaText: String? = null,
     val deltaPositive: Boolean? = null
 )

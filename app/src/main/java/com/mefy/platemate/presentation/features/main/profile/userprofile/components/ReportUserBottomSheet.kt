@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,9 +20,8 @@ import com.mefy.platemate.presentation.components.PMRowItem
 import com.mefy.platemate.presentation.components.PMUserCard
 import com.mefy.platemate.presentation.components.pmRowPositionOf
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun ReportUserBottomSheet(
@@ -38,8 +36,9 @@ internal fun ReportUserBottomSheet(
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
     val reasons = ReportReason.entries.toList()
 
     PMBottomSheet(
@@ -50,15 +49,15 @@ internal fun ReportUserBottomSheet(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = dims.spacing.s32)
+            contentPadding = PaddingValues(bottom = spacing.s32)
         ) {
             item(key = "user_card") {
                 PMUserCard(
                     displayName = participantName,
                     username = username,
-                    avatarSize = dims.sizing.plateBadgeSm,
+                    avatarSize = sizing.plateBadgeSm,
                     containerColor = colors.surfaceSecondary,
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s8)
+                    modifier = Modifier.padding(horizontal = spacing.s16, vertical = spacing.s8)
                 )
             }
 
@@ -67,7 +66,7 @@ internal fun ReportUserBottomSheet(
             }
 
             item(key = "spacer_top") {
-                Spacer(modifier = Modifier.padding(top = dims.spacing.s16))
+                Spacer(modifier = Modifier.padding(top = spacing.s16))
             }
 
             itemsIndexed(reasons, key = { _, reason -> "reason_${reason.name}" }) { index, reason ->
@@ -84,7 +83,7 @@ internal fun ReportUserBottomSheet(
                         )
                     },
                     onClick = { onReasonSelected(reason) },
-                    modifier = Modifier.padding(horizontal = dims.spacing.s16)
+                    modifier = Modifier.padding(horizontal = spacing.s16)
                 )
             }
 
@@ -96,8 +95,8 @@ internal fun ReportUserBottomSheet(
                         maxLength = commentMaxLength,
                         placeholder = stringResource(R.string.report_reason_other_desc),
                         modifier = Modifier
-                            .padding(horizontal = dims.spacing.s16)
-                            .padding(top = dims.spacing.s16)
+                            .padding(horizontal = spacing.s16)
+                            .padding(top = spacing.s16)
                     )
                 }
             }
@@ -109,8 +108,8 @@ internal fun ReportUserBottomSheet(
                     onCancel = onDismiss,
                     onSubmit = onSubmit,
                     modifier = Modifier
-                        .padding(horizontal = dims.spacing.s16)
-                        .padding(top = dims.spacing.s24)
+                        .padding(horizontal = spacing.s16)
+                        .padding(top = spacing.s24)
                 )
             }
         }

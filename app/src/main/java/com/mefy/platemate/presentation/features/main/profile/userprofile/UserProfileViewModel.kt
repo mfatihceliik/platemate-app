@@ -4,25 +4,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.mefy.platemate.R
 import com.mefy.platemate.core.common.result.AppResult
-import com.mefy.platemate.domain.model.profile.UserProfile
-import com.mefy.platemate.domain.model.review.Review
+import com.mefy.platemate.data.local.RecentUserSearchStore
+import com.mefy.platemate.domain.model.profile.ProfileFriendshipStatus
 import com.mefy.platemate.domain.repository.SocialRepository
 import com.mefy.platemate.domain.usecase.profile.GetProfileUseCase
 import com.mefy.platemate.domain.usecase.report.ReportUserUseCase
 import com.mefy.platemate.domain.usecase.sociallink.GetSocialPlatformsUseCase
-import com.mefy.platemate.presentation.common.avatar.AvatarPalette
 import com.mefy.platemate.presentation.common.text.UiText
 import com.mefy.platemate.presentation.common.error.toUiText
 import com.mefy.platemate.presentation.common.global.GlobalUiEventBus
-import com.mefy.platemate.presentation.common.text.CityNameResolver
-import com.mefy.platemate.presentation.common.text.NumberFormatter
 import com.mefy.platemate.presentation.common.viewmodel.BaseViewModel
-import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.features.main.profile.userprofile.mapper.UserProfileMappingInput
+import com.mefy.platemate.presentation.features.main.profile.userprofile.mapper.UserProfileUiMapper
 import com.mefy.platemate.presentation.features.uimodel.ReportReason
-import com.mefy.platemate.presentation.features.uimodel.UserProfileReviewUiModel
-import com.mefy.platemate.presentation.features.uimodel.SocialPlatform
-import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackBg
-import com.mefy.platemate.presentation.features.uimodel.SocialPlatformFallbackTint
 import com.mefy.platemate.presentation.features.uimodel.toUiModel
 import com.mefy.platemate.presentation.navigation.UserProfileDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +36,8 @@ class UserProfileViewModel @Inject constructor(
     private val getSocialPlatformsUseCase: GetSocialPlatformsUseCase,
     private val socialRepository: SocialRepository,
     private val reportUserUseCase: ReportUserUseCase,
+    private val recentUserSearchStore: RecentUserSearchStore,
+    private val userProfileUiMapper: UserProfileUiMapper,
     globalUiEventBus: GlobalUiEventBus
 ) : BaseViewModel(globalUiEventBus) {
 
@@ -71,17 +67,23 @@ class UserProfileViewModel @Inject constructor(
 
             UserProfileUiAction.AcceptRequestClicked -> onAcceptRequestClicked()
 
-            UserProfileUiAction.RemoveFriendClicked -> 
+            UserProfileUiAction.RemoveFriendClicked ->
                 _uiState.update { it.copy(showRemoveFriendPopup = true) }
 
             UserProfileUiAction.RemoveFriendConfirmed -> onRemoveFriendClicked()
 
-            UserProfileUiAction.RemoveFriendDismissed -> 
+            UserProfileUiAction.RemoveFriendDismissed ->
                 _uiState.update { it.copy(showRemoveFriendPopup = false) }
 
             UserProfileUiAction.MessageClicked -> onMessageClicked()
 
             UserProfileUiAction.ShareClicked -> Unit
+
+            UserProfileUiAction.FollowersClicked ->
+                _uiEffect.emitUiEffect(UserProfileUiEffect.NavigateToFollowList(route.userId, 0))
+
+            UserProfileUiAction.FollowingClicked ->
+                _uiEffect.emitUiEffect(UserProfileUiEffect.NavigateToFollowList(route.userId, 1))
 
             UserProfileUiAction.ReportMenuClicked ->
                 _uiState.update { it.copy(showReportSheet = true) }
@@ -107,7 +109,27 @@ class UserProfileViewModel @Inject constructor(
                 is AppResult.Error -> emptyList()
             }
             when (val result = getProfileUseCase(userId)) {
-                is AppResult.Success -> _uiState.update { it.applyProfile(result.data, platforms) }
+                is AppResult.Success -> {
+                    val uiData = userProfileUiMapper.map(UserProfileMappingInput(result.data, platforms))
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            displayName = uiData.displayName,
+                            username = uiData.username,
+                            bio = uiData.bio,
+                            isVerified = uiData.isVerified,
+                            isOnline = uiData.isOnline,
+                            friendshipStatus = uiData.friendshipStatus,
+                            friendshipId = uiData.friendshipId,
+                            reviewCount = uiData.reviewCount,
+                            followerCount = uiData.followerCount,
+                            followingCount = uiData.followingCount,
+                            socialLinks = uiData.socialLinks,
+                            approvedReviews = uiData.approvedReviews
+                        )
+                    }
+                    recentUserSearchStore.updateCachedProfile(userId, result.data.displayName, result.data.bio)
+                }
                 is AppResult.Error -> {
                     _uiState.update { it.copy(isLoading = false) }
                     showError(result.error.toUiText())
@@ -129,7 +151,7 @@ class UserProfileViewModel @Inject constructor(
 
     private fun onAddFriendClicked() {
         val prevState = _uiState.value.friendshipStatus
-        _uiState.update { it.copy(friendshipStatus = "PENDING_SENT") }
+        _uiState.update { it.copy(friendshipStatus = ProfileFriendshipStatus.PENDING_SENT) }
         launch(onError = {
             _uiState.update { state -> state.copy(friendshipStatus = prevState) }
             handleError(it)
@@ -148,7 +170,7 @@ class UserProfileViewModel @Inject constructor(
     private fun onAcceptRequestClicked() {
         val friendshipId = _uiState.value.friendshipId ?: return
         val prevState = _uiState.value.friendshipStatus
-        _uiState.update { it.copy(friendshipStatus = "FRIENDS") }
+        _uiState.update { it.copy(friendshipStatus = ProfileFriendshipStatus.FRIENDS) }
         launch(onError = {
             _uiState.update { state -> state.copy(friendshipStatus = prevState) }
             handleError(it)
@@ -164,7 +186,7 @@ class UserProfileViewModel @Inject constructor(
     private fun onRemoveFriendClicked() {
         val friendshipId = _uiState.value.friendshipId ?: return
         val prevState = _uiState.value.friendshipStatus
-        _uiState.update { it.copy(friendshipStatus = "NONE", showRemoveFriendPopup = false) }
+        _uiState.update { it.copy(friendshipStatus = ProfileFriendshipStatus.NONE, showRemoveFriendPopup = false) }
         launch(onError = {
             _uiState.update { state -> state.copy(friendshipStatus = prevState) }
             handleError(it)
@@ -201,47 +223,4 @@ class UserProfileViewModel @Inject constructor(
             }
         }
     }
-
-    private fun UserProfileUiState.applyProfile(
-        profile: UserProfile,
-        platforms: List<SocialPlatform>
-    ): UserProfileUiState {
-        val display = profile.displayName?.takeIf { it.isNotBlank() } ?: profile.username
-        return copy(
-            isLoading = false,
-            displayName = display,
-            username = "@${profile.username}",
-            bio = profile.bio.orEmpty(),
-            isVerified = profile.verified,
-            isOnline = false,
-            friendshipStatus = profile.friendshipStatus,
-            friendshipId = profile.friendshipId,
-            reviewCount = profile.reviewCount,
-            followerCount = NumberFormatter.formatCompact(profile.followerCount.toLong()),
-            followingCount = profile.followingCount,
-            socialLinks = profile.socialMediaLinks.map { link ->
-                val platform = platforms.find { it.code.equals(link.platform, ignoreCase = true) }
-                ProfileSocialLinkUiModel(
-                    id = link.id,
-                    platform = link.platform,
-                    url = link.url,
-                    iconUrl = platform?.iconUrl,
-                    backgroundColor = platform?.backgroundColor ?: SocialPlatformFallbackBg,
-                    iconTint = platform?.iconTint ?: SocialPlatformFallbackTint
-                )
-            },
-            approvedReviews = profile.plateReviews.map { it.toReviewUiModel() }
-        )
-    }
-
-    private fun Review.toReviewUiModel(): UserProfileReviewUiModel = UserProfileReviewUiModel(
-        id = id,
-        plateCode = plateCode.take(2),
-        plateNumber = plateCode,
-        city = CityNameResolver.resolveCityName(cityName = null, plateCode = plateCode).orEmpty(),
-        date = createdAt?.iso8601?.substringBefore("T").orEmpty(),
-        rating = rating.toFloat(),
-        tags = emptyList(),
-        comment = comment
-    )
 }

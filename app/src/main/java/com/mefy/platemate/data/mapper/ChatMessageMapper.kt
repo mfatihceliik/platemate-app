@@ -18,7 +18,11 @@ class ChatMessageMapper @Inject constructor() : Mapper<ChatMessageDto, ChatMessa
         isRead = input.read,
         status = MessageStatus.fromString(input.status),
         deliveredAt = input.deliveredAt.toAppDateTimeOrNull(),
-        readAt = input.readAt.toAppDateTimeOrNull()
+        readAt = input.readAt.toAppDateTimeOrNull(),
+        clientMessageId = input.clientMessageId,
+        replyToMessageId = input.replyToMessageId,
+        replyToSenderUsername = input.replyToSenderUsername,
+        replyToContentPreview = input.replyToContentPreview
     )
 
     private fun String?.toAppDateTimeOrNull(): AppDateTime? =

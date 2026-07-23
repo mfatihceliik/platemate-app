@@ -12,5 +12,9 @@ data class ChatMessageDto(
     @SerializedName("read") val read: Boolean,
     @SerializedName("status") val status: String?,
     @SerializedName("deliveredAt") val deliveredAt: String?,
-    @SerializedName("readAt") val readAt: String?
+    @SerializedName("readAt") val readAt: String?,
+    @SerializedName("clientMessageId") val clientMessageId: String? = null,
+    @SerializedName("replyToMessageId") val replyToMessageId: Long? = null,
+    @SerializedName("replyToSenderUsername") val replyToSenderUsername: String? = null,
+    @SerializedName("replyToContentPreview") val replyToContentPreview: String? = null
 )

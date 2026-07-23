@@ -7,8 +7,6 @@ sealed interface PlateDetailUiEffect {
     data class NavigateToActions(val plateCode: String) : PlateDetailUiEffect
     data class NavigateToEditReview(
         val plateCode: String,
-        val reviewId: Long,
-        val rating: Int,
-        val comment: String
+        val reviewId: Long
     ) : PlateDetailUiEffect
 }

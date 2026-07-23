@@ -11,20 +11,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-/**
- * Resolves a `yyyy-MM-dd` day (as stored on each message's `sentAt`) into a localized,
- * view-time-relative separator label:
- *
- * - today → "Today" / "Bugün"
- * - yesterday → "Yesterday" / "Dün"
- * - 2–6 days ago → weekday name ("Tuesday" / "Salı")
- * - 7–13 days ago → "Last <weekday>" / "Geçen <gün>"
- * - older → localized long date ("July 3, 2026" / "3 Temmuz 2026")
- *
- * Computed on the client (not the backend) because the label is relative to *now* and
- * locale-dependent — a "Today" row must become "Yesterday" the next day. `java.util.Calendar`
- * is used (not `java.time`) so the code is safe on minSdk 24 without core-library desugaring.
- */
 @Composable
 fun rememberRelativeDateLabel(isoDate: String): String {
     val locale: Locale = LocalConfiguration.current.locales[0]

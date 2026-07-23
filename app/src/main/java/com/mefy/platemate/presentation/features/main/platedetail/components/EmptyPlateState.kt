@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.RateReview
 import androidx.compose.material.icons.outlined.Sell
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,25 +24,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMIcon
 import com.mefy.platemate.presentation.components.PMText
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun EmptyPlateState() {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val spacing = PMTheme.spacing
+    val fontSize = PMTheme.fontSize
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = dims.spacing.s16),
+            .padding(vertical = spacing.s16),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s16)
+        verticalArrangement = Arrangement.spacedBy(spacing.s16)
     ) {
         Box(
             modifier = Modifier
-                .size(dims.sizing.plateBadgeLg)
+                .size(sizing.plateBadgeLg)
                 .clip(CircleShape)
                 .background(colors.searchFieldBg),
             contentAlignment = Alignment.Center
@@ -56,23 +57,23 @@ internal fun EmptyPlateState() {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             PMText(
                 text = stringResource(R.string.platedetail_empty_reviews_title),
-                fontSize = dims.fontSize.md,
+                fontSize = fontSize.md,
                 color = colors.textPrimary,
                 textAlign = TextAlign.Center
             )
             PMText(
                 text = stringResource(R.string.platedetail_empty_reviews_subtitle),
-                fontSize = dims.fontSize.sm,
+                fontSize = fontSize.sm,
                 color = colors.textTertiary,
                 textAlign = TextAlign.Center
             )
         }
 
-        Spacer(modifier = Modifier.height(dims.spacing.s8))
+        Spacer(modifier = Modifier.height(spacing.s8))
 
         EmptyInfoRow(
             icon = Icons.Filled.Star,

@@ -1,6 +1,7 @@
 package com.mefy.platemate.presentation.theme
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
@@ -14,3 +15,7 @@ data class PMFontSize(
     val xxl: TextUnit = 26.sp,
     val huge: TextUnit = 36.sp
 )
+
+val LocalFontSize = staticCompositionLocalOf<PMFontSize> {
+    error("No Font Size Provided")
+}

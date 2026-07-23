@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,18 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.mefy.platemate.presentation.components.variant.PMButtonVariant
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
-/**
- * Ortalı modal popup: ikon dairesi + başlık + mesaj + 1-2 buton.
- * Başarı/hata/bilgi gibi tüm sonuç ekranları için yeniden kullanılır;
- * renk ve ikonlar parametre olarak verilir (variant'a göre çağıran belirler).
- *
- * [primaryButtonColors] null ise birincil buton tema primary'sini kullanır
- * (hata varyantında kırmızı vermek için override edilir).
- */
 @Composable
 fun PMPopup(
     modifier: Modifier = Modifier,
@@ -53,8 +42,11 @@ fun PMPopup(
     primaryButtonColors: ButtonColors? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
+    val shape = PMTheme.shapes.medium
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -62,31 +54,31 @@ fun PMPopup(
     ) {
         Column(
             modifier = modifier
-                .widthIn(max = dims.sizing.popupSize)
+                .widthIn(max = sizing.popupSize)
                 .fillMaxWidth()
-                .padding(horizontal = dims.spacing.s24)
-                .background(colors.surface, RoundedCornerShape(dims.radius.r24))
-                .padding(horizontal = dims.spacing.s24, vertical = dims.spacing.s32),
+                .padding(horizontal = spacing.s24)
+                .background(colors.surface, shape)
+                .padding(horizontal = spacing.s24, vertical = spacing.s32),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
+            verticalArrangement = Arrangement.spacedBy(spacing.s24)
         ) {
             if (icon != null) {
                 PMIconContainer(
                     imageVector = icon,
                     tint = iconTint,
-                    iconSize = dims.sizing.iconLg,
-                    containerSize = dims.sizing.iconContainer,
+                    iconSize = sizing.iconLg,
+                    containerSize = sizing.iconContainer,
                     containerColor = iconContainerColor
                 )
             }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                verticalArrangement = Arrangement.spacedBy(spacing.s8)
             ) {
                 PMText(
                     text = title,
-                    fontSize = dims.fontSize.lg,
+                    fontSize = fontSize.lg,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary,
                     textAlign = TextAlign.Center
@@ -94,7 +86,7 @@ fun PMPopup(
                 if (!message.isNullOrBlank()) {
                     PMText(
                         text = message,
-                        fontSize = dims.fontSize.sm,
+                        fontSize = fontSize.sm,
                         color = colors.textSecondary,
                         textAlign = TextAlign.Center
                     )
@@ -106,12 +98,12 @@ fun PMPopup(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                verticalArrangement = Arrangement.spacedBy(spacing.s8)
             ) {
                 PMButton(
                     text = primaryText,
                     onClick = onPrimaryClick,
-                    colors = primaryButtonColors,
+                    buttonColors = primaryButtonColors,
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (secondaryText != null && onSecondaryClick != null) {
@@ -133,7 +125,7 @@ fun PMPopup(
 @Composable
 private fun PMPopupSuccessPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val colors = MaterialTheme.pmColors
+        val colors = PMTheme.colors
         PMPopup(
             title = "Başarıyla Paylaşıldı!",
             message = "Değerlendirmen toplulukla paylaşıldı. Teşekkürler!",
@@ -153,7 +145,7 @@ private fun PMPopupSuccessPreview() {
 @Composable
 private fun PMPopupErrorPreview() {
     PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        val colors = MaterialTheme.pmColors
+        val colors = PMTheme.colors
         PMPopup(
             title = "Yayınlanamadı",
             message = "İnternet bağlantınızı kontrol edip lütfen tekrar deneyin.",

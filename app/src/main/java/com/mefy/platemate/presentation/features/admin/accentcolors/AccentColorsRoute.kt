@@ -3,8 +3,6 @@ package com.mefy.platemate.presentation.features.admin.accentcolors
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,18 +15,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.common.state.ScreenStatus
 import com.mefy.platemate.presentation.common.topbar.PMTopBarConfig
-import com.mefy.platemate.presentation.components.PMBaseScreen
+import com.mefy.platemate.presentation.common.basescreen.PMBaseScreen
 import com.mefy.platemate.presentation.components.PMCircularProgressIndicator
+import com.mefy.platemate.presentation.app.providers.LocalNavController
 import com.mefy.platemate.presentation.components.PMIconButton
-import com.mefy.platemate.presentation.theme.pmDimensions
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AccentColorsRoute(
     viewModel: AccentColorsViewModel,
-    onNavigateBack: () -> Unit,
     onNavigateToForm: (colorId: Long?) -> Unit,
 ) {
+    val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
@@ -36,7 +34,7 @@ fun AccentColorsRoute(
     LaunchedEffect(viewModel) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
-                AccentColorsUiEffect.NavigateBack -> onNavigateBack()
+                AccentColorsUiEffect.NavigateBack -> navController.navigateUp()
                 is AccentColorsUiEffect.NavigateToForm -> onNavigateToForm(effect.colorId)
             }
         }
@@ -57,7 +55,6 @@ fun AccentColorsRoute(
     PMBaseScreen(
         topBarConfig = PMTopBarConfig.Standard(
             title = stringResource(R.string.admin_theme_colors_title),
-            onBackClick = onBackClicked,
             actions = {
                 PMIconButton(
                     onClick = onAddClicked,
@@ -69,7 +66,6 @@ fun AccentColorsRoute(
         status = status,
         keepTopBarWhileLoading = true,
         onRetry = onRetryClicked,
-        contentPadding = PaddingValues(MaterialTheme.pmDimensions.spacing.s16),
         loading = { p -> PMCircularProgressIndicator(fillMaxSize = true, modifier = Modifier.padding(p)) }
     ) { contentPadding ->
         AccentColorsScreen(state = state, onAction = viewModel::onAction, contentPadding = contentPadding)

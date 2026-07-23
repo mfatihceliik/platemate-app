@@ -12,7 +12,7 @@ import javax.inject.Singleton
 /** Sohbet mesajı: başlık gönderenin adı, metin genişletilebilir mesaj içeriği. */
 @Singleton
 class MessageNotificationPresenter @Inject constructor(
-    @param:ApplicationContext context: Context,
+    @ApplicationContext context: Context,
     channelRegistry: NotificationChannelRegistry
 ) : BaseNotificationPresenter(context, channelRegistry) {
 

@@ -111,12 +111,12 @@ class PlateReviewRepositoryImpl @Inject constructor(
             safeApiCall { api.getMyReviews(status, query, page, size) }.map(plateReviewPageMapper::map)
         }
 
-    override suspend fun updateReview(id: Long, rating: Int, comment: String?): AppResult<Unit> =
+    override suspend fun updateReview(id: Long, rating: Int, comment: String?, reportTypeCodes: List<String>?): AppResult<Unit> =
         withContext(appDispatchers.io) {
             safeResultCall {
                 api.updateReview(
                     id,
-                    UpdatePlateReviewRequest(rating = rating, comment = comment.orEmpty())
+                    UpdatePlateReviewRequest(rating = rating, comment = comment.orEmpty(), reportTypeCodes = reportTypeCodes)
                 )
             }
         }

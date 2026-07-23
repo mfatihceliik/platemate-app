@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,22 +46,20 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.PMTextField
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.auth.components.AuthHeroHeader
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier = Modifier,
     state: LoginScreenUiState,
     onAction: (LoginUiAction) -> Unit,
     onNavigateToRegisterClick: () -> Unit,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onBackClick: () -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-    val spacing = dims.spacing
-    val stroke = dims.stroke
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
+    val stroke = PMTheme.stroke
     val isSubmitLoading = state.isLoading
 
     val showEmailValidationError = !state.isEmailFormatValid && (state.hasSubmittedOnce || state.email.isNotBlank())
@@ -199,7 +196,7 @@ fun LoginScreen(
             PMButton(
                 text = stringResource(R.string.auth_login_apple_continue),
                 onClick = { /* Apple Sign In */ },
-                colors = ButtonDefaults.buttonColors(
+                buttonColors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF0B0F17),
                     contentColor = Color.White
                 ),

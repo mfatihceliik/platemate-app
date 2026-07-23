@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.R
 import com.mefy.platemate.presentation.components.PMButton
 import com.mefy.platemate.presentation.features.admin.components.AddLanguageRow
@@ -20,8 +20,8 @@ import com.mefy.platemate.presentation.components.PMText
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.features.admin.reporttypes.components.FormField
 import com.mefy.platemate.presentation.components.PMSectionLabel
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 
 @Composable
 internal fun PremiumPlanFormScreen(
@@ -30,8 +30,8 @@ internal fun PremiumPlanFormScreen(
     onAction: (PremiumPlanFormUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues(),
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val spacing = PMTheme.spacing
     val onSaveClicked = remember(onAction) { { onAction(PremiumPlanFormUiAction.SaveClicked) } }
 
     Column(
@@ -41,7 +41,7 @@ internal fun PremiumPlanFormScreen(
     ) {
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             item {
                 PMText(
@@ -92,8 +92,8 @@ internal fun PremiumPlanFormScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dims.spacing.s8),
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                .padding(spacing.s8),
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             if (!state.isLoading) {
                 PMButton(
@@ -105,5 +105,38 @@ internal fun PremiumPlanFormScreen(
                 )
             }
         }
+    }
+}
+
+private val premiumPlanFormPreviewState = PremiumPlanFormUiState(
+    isLoading = false,
+    period = "YEARLY",
+    titles = mapOf("tr" to "Yıllık Premium", "en" to "Yearly Premium"),
+    descriptions = mapOf("tr" to "En avantajlı plan", "en" to "Best value plan"),
+    amount = "399.90",
+    currency = "TRY",
+    discountPercent = "30",
+    sortOrder = "2"
+)
+
+@Preview(name = "PremiumPlanForm Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
+@Composable
+private fun PremiumPlanFormScreenLightPreview() {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        PremiumPlanFormScreen(
+            state = premiumPlanFormPreviewState,
+            onAction = {}
+        )
+    }
+}
+
+@Preview(name = "PremiumPlanForm Dark", showBackground = true, backgroundColor = 0xFF0F172A)
+@Composable
+private fun PremiumPlanFormScreenDarkPreview() {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        PremiumPlanFormScreen(
+            state = premiumPlanFormPreviewState,
+            onAction = {}
+        )
     }
 }

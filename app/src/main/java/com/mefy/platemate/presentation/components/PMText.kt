@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,12 +14,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 import androidx.compose.ui.unit.TextUnit
 import com.mefy.platemate.presentation.components.model.PMTextStyle
 import com.mefy.platemate.presentation.components.util.resolve
 import androidx.compose.ui.platform.LocalLocale
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 fun PMText(
@@ -28,13 +26,14 @@ fun PMText(
     text: String,
     style: PMTextStyle = PMTextStyle.Body,
     fontWeight: FontWeight? = null,
-    fontSize: TextUnit = MaterialTheme.pmDimensions.fontSize.sm,
-    color: Color = MaterialTheme.pmColors.onSurface,
+    fontSize: TextUnit = PMTheme.fontSize.sm,
+    color: Color = PMTheme.colors.onSurface,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
     textAlign: TextAlign? = null
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val typography = PMTheme.typography
     val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
         colors.textPrimary
     } else {
@@ -49,7 +48,7 @@ fun PMText(
     Text(
         text = resolvedText,
         modifier = modifier,
-        style = style.resolve(MaterialTheme.typography),
+        style = style.resolve(typography),
         fontWeight = fontWeight,
         fontSize = fontSize,
         color = resolvedColor,
@@ -65,13 +64,14 @@ fun PMText(
     text: AnnotatedString,
     style: PMTextStyle = PMTextStyle.Body,
     fontWeight: FontWeight? = null,
-    fontSize: TextUnit = MaterialTheme.pmDimensions.fontSize.sm,
-    color: Color = MaterialTheme.pmColors.onSurface,
+    fontSize: TextUnit = PMTheme.fontSize.sm,
+    color: Color = PMTheme.colors.onSurface,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
     textAlign: TextAlign? = null
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
+    val typography = PMTheme.typography
     val resolvedColor = if (style == PMTextStyle.SectionLabel && color == colors.onSurface) {
         colors.textPrimary
     } else {
@@ -90,7 +90,7 @@ fun PMText(
     Text(
         modifier = modifier,
         text = resolvedText,
-        style = style.resolve(MaterialTheme.typography),
+        style = style.resolve(typography),
         fontWeight = fontWeight,
         fontSize = fontSize,
         color = resolvedColor,
@@ -118,11 +118,15 @@ private fun PMTextDarkPreview() {
 
 @Composable
 private fun PMTextPreviewContent() {
+
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.pmColors.background)
-            .padding(MaterialTheme.pmDimensions.spacing.s16)
+            .background(colors.background)
+            .padding(spacing.s16)
     ) {
         PMText(text = "PlateMate", style = PMTextStyle.Display)
         PMText(text = "Driver network and trust", style = PMTextStyle.Headline)

@@ -33,6 +33,9 @@ class ChatLiveSyncImpl @Inject constructor(
             .map { },
         socketMessagingDataSource.observeMessageRead()
             .onEach { chatRepository.cacheMessageStatus(it) }
+            .map { },
+        socketMessagingDataSource.observeMessageDeleted()
+            .onEach { chatRepository.cacheMessageDeletion(it) }
             .map { }
     )
 }

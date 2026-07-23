@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,9 +17,8 @@ import com.mefy.platemate.presentation.components.PMCard
 import com.mefy.platemate.presentation.components.PMIconButton
 import com.mefy.platemate.presentation.components.variant.PMIconButtonVariant
 import com.mefy.platemate.presentation.features.uimodel.ProfileSocialLinkUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 internal fun UserProfileSocialLinks(
@@ -29,23 +27,25 @@ internal fun UserProfileSocialLinks(
     onLinkClick: (ProfileSocialLinkUiModel) -> Unit,
 ) {
     if (links.isEmpty()) return
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
 
 
     PMCard(
         modifier = modifier.fillMaxWidth(),
-        padding = PaddingValues(horizontal = dims.spacing.s16, vertical = dims.spacing.s16),
+        padding = PaddingValues(horizontal = spacing.s16, vertical = spacing.s16),
     ) {
         LazyRow(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(
-                dims.spacing.s8, Alignment.CenterHorizontally
+                spacing.s8, Alignment.CenterHorizontally
             ), verticalAlignment = Alignment.CenterVertically
         ) {
             items(items = links, key = { it.id ?: it.platform }) { link ->
                 PMIconButton(
                     onClick = { onLinkClick(link) },
                     variant = PMIconButtonVariant.Tonal,
-                    size = dims.sizing.iconLg,
+                    size = sizing.iconLg,
                     iconColor = link.iconTint,
                     containerColor = link.backgroundColor,
                     painter = rememberAsyncImagePainter(
@@ -96,7 +96,6 @@ private fun UserProfileSocialLinksLightPreview() {
 @Composable
 private fun UserProfileSocialLinksDarkPreview() {
     PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        MaterialTheme.pmColors
         UserProfileSocialLinks(
             links = listOf(
                 ProfileSocialLinkUiModel(

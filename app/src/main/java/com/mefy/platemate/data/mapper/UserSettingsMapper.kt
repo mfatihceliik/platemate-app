@@ -13,7 +13,8 @@ class UserSettingsMapper @Inject constructor() : Mapper<UserSettingsDto, UserSet
         friendNotificationsEnabled = input.friendNotificationsEnabled,
         plateReviewNotificationsEnabled = input.plateReviewNotificationsEnabled,
         newFollowerNotificationsEnabled = input.newFollowerNotificationsEnabled,
-        reviewReplyNotificationsEnabled = input.reviewReplyNotificationsEnabled
+        reviewReplyNotificationsEnabled = input.reviewReplyNotificationsEnabled,
+        followingListVisible = input.followingListVisible
     )
 }
 

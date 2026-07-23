@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -15,9 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMRadioButton(
@@ -26,8 +24,9 @@ fun PMRadioButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val stroke = PMTheme.stroke
+    val colors = PMTheme.colors
     
     val borderColor = when {
         !enabled -> colors.disabled
@@ -43,9 +42,9 @@ fun PMRadioButton(
 
     Box(
         modifier = modifier
-            .size(dims.spacing.s24)
+            .size(spacing.s24)
             .clip(CircleShape)
-            .border(dims.stroke.st2, borderColor, CircleShape)
+            .border(stroke.st2, borderColor, CircleShape)
             .background(backgroundColor)
             .then(
                 if (onClick != null && enabled) {
@@ -61,7 +60,7 @@ fun PMRadioButton(
         if (selected) {
             Box(
                 modifier = Modifier
-                    .size(dims.spacing.s8)
+                    .size(spacing.s8)
                     .clip(CircleShape)
                     .background(if (enabled) Color.White else colors.disabled)
             )

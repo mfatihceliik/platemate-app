@@ -17,7 +17,8 @@ class PlateReviewMapper @Inject constructor() : Mapper<PlateReviewDto, Review> {
         userId = input.userId,
         reviewerUsername = input.username.orEmpty(),
         createdAt = input.createdAt.toAppDateTimeOrNull(),
-        updatedAt = input.updatedAt.toAppDateTimeOrNull()
+        updatedAt = input.updatedAt.toAppDateTimeOrNull(),
+        reportTypeCodes = input.reportTypeCodes.orEmpty()
     )
 
     private fun String?.toAppDateTimeOrNull(): AppDateTime? =

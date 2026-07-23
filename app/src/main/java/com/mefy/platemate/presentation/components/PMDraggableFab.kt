@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -33,7 +32,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.mefy.platemate.presentation.components.util.debouncedClickable
-import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.PMTheme
+import com.mefy.platemate.presentation.theme.PlateMateTheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -41,10 +41,10 @@ fun PMDraggableFab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.Add,
-    containerColor: Color = MaterialTheme.pmColors.primary,
-    contentColor: Color = MaterialTheme.pmColors.onPrimary,
+    containerColor: Color = PMTheme.colors.primary,
+    contentColor: Color = PMTheme.colors.onPrimary,
     shape: Shape = CircleShape,
-    size: Dp = 56.dp,
+    size: Dp = PMTheme.sizing.draggableFabSize,
     elevation: Dp = 6.dp
 ) {
     var offsetX by rememberSaveable { mutableFloatStateOf(0f) }
@@ -97,8 +97,9 @@ fun PMDraggableFab(
 @Preview(name = "Draggable FAB Light", showBackground = true, backgroundColor = 0xFFF6F8FB)
 @Composable
 private fun PMDraggableFabPreview() {
-    com.mefy.platemate.presentation.theme.PlateMateTheme(darkTheme = false, dynamicColor = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
+    PlateMateTheme(darkTheme = false, dynamicColor = false) {
+        val spacing = PMTheme.spacing
+        Box(modifier = Modifier.padding(spacing.s16)) {
             PMDraggableFab(onClick = {})
         }
     }
@@ -107,8 +108,9 @@ private fun PMDraggableFabPreview() {
 @Preview(name = "Draggable FAB Dark", showBackground = true, backgroundColor = 0xFF0F172A)
 @Composable
 private fun PMDraggableFabDarkPreview() {
-    com.mefy.platemate.presentation.theme.PlateMateTheme(darkTheme = true, dynamicColor = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
+    PlateMateTheme(darkTheme = true, dynamicColor = false) {
+        val spacing = PMTheme.spacing
+        Box(modifier = Modifier.padding(spacing.s16)) {
             PMDraggableFab(onClick = {})
         }
     }

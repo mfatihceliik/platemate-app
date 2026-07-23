@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,12 +37,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import com.mefy.platemate.presentation.navigation.TopLevelDestination
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
-
-
-private const val IndicatorAnimMs = 350
 
 @Composable
 fun MainBottomBar(
@@ -53,9 +47,12 @@ fun MainBottomBar(
     modifier: Modifier = Modifier
 ) {
 
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
-    val pillShape = RoundedCornerShape(dims.radius.rFull)
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
+    val sizing = PMTheme.sizing
+    val stroke = PMTheme.stroke
+    val animationSpeed = PMTheme.animations
+    val shapes = PMTheme.shapes
 
     val selectedState = remember { mutableStateOf(selectedDestination) }
     var selected by selectedState
@@ -80,25 +77,24 @@ fun MainBottomBar(
             .windowInsetsPadding(WindowInsets.navigationBars),
         contentAlignment = Alignment.BottomCenter
     ) {
-        // 1) Yüzen hap bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dims.spacing.s16, vertical = dims.spacing.s12)
-                .height(dims.sizing.bottomBarContentHeight)
+                .padding(horizontal = spacing.s16, vertical = spacing.s12)
+                .height(sizing.bottomBarContentHeight)
                 .shadow(
-                    elevation = dims.spacing.s16,
-                    shape = pillShape,
+                    elevation = spacing.s16,
+                    shape = shapes.full,
                     spotColor = colors.cardShadow,
                     ambientColor = colors.cardShadow
                 )
-                .clip(pillShape)
+                .clip(shapes.full)
                 .background(colors.surface)
-                .border(dims.stroke.st1, colors.outlineVariant, pillShape)
+                .border(stroke.st1, colors.outlineVariant, shapes.full)
         ) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val slotWidth = maxWidth / TopLevelDestination.entries.size
-                val indicatorSize = dims.sizing.iconLg + dims.spacing.s10 * 2
+                val indicatorSize = sizing.iconLg + spacing.s10 * 2
                 val targetX = slotWidth * selected.ordinal + (slotWidth - indicatorSize) / 2
                 val indicatorX by animateDpAsState(
                     targetValue = targetX,
@@ -111,7 +107,7 @@ fun MainBottomBar(
 
                 val circleAlpha by animateFloatAsState(
                     targetValue = if (selected == TopLevelDestination.Messages) 0f else 1f,
-                    animationSpec = tween(durationMillis = IndicatorAnimMs, easing = FastOutSlowInEasing),
+                    animationSpec = tween(durationMillis = animationSpeed.normal, easing = FastOutSlowInEasing),
                     label = "indicatorAlpha"
                 )
 
@@ -127,7 +123,7 @@ fun MainBottomBar(
 
                 Row(
                     modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Bottom //.CenterVertically
                 ) {
                     TopLevelDestination.entries.forEach { destination ->
                         if (destination == TopLevelDestination.Messages) {
@@ -149,7 +145,7 @@ fun MainBottomBar(
             onClick = clickHandlers.getValue(TopLevelDestination.Messages),
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = -dims.spacing.s8)
+                .offset(y = -spacing.s8)
         )
     }
 }

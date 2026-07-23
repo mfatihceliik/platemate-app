@@ -5,7 +5,6 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.mefy.platemate.R
@@ -13,14 +12,14 @@ import com.mefy.platemate.presentation.common.text.resolve
 import com.mefy.platemate.presentation.components.PMPopup
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewSubmitResult
 import com.mefy.platemate.presentation.features.main.platedetail.review.ReviewUiAction
-import com.mefy.platemate.presentation.theme.pmColors
+import com.mefy.platemate.presentation.theme.PMTheme
 
 @Composable
 internal fun ReviewResultPopup(
     result: ReviewSubmitResult,
     onAction: (ReviewUiAction) -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
+    val colors = PMTheme.colors
 
     when (result) {
         ReviewSubmitResult.Success -> PMPopup(

@@ -11,7 +11,7 @@ import com.mefy.platemate.domain.model.theme.AppThemeMode
 
 enum class AppearanceMode(
     val appThemeMode: AppThemeMode,
-    @StringRes val labelRes: Int,
+    @param:StringRes val labelRes: Int,
     val icon: ImageVector
 ) {
     LIGHT(AppThemeMode.LIGHT, R.string.profile_theme_light, Icons.Outlined.LightMode),

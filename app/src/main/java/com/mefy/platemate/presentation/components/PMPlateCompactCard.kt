@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,13 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.mefy.platemate.presentation.common.text.NumberFormatter
+import com.mefy.platemate.presentation.common.formatter.NumberFormatter
 import com.mefy.platemate.presentation.components.util.debouncedClickable
 import com.mefy.platemate.presentation.features.uimodel.SearchRecentUiModel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmColors
-import com.mefy.platemate.presentation.theme.pmDimensions
 
 @Composable
 fun PMPlateCompactCard(
@@ -36,38 +33,43 @@ fun PMPlateCompactCard(
     onClick: (String) -> Unit,
     onTrailingIconClick: (String) -> Unit
 ) {
-    val colors = MaterialTheme.pmColors
-    val dims = MaterialTheme.pmDimensions
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val fontSize = PMTheme.fontSize
+    val colors = PMTheme.colors
+
+    val onItemClick = remember(item.plateCode, onClick) { { onClick(item.plateCode) } }
+    val onTrailingIconClick = remember(item.normalizedPlateCode, onTrailingIconClick) { { onTrailingIconClick(item.normalizedPlateCode) } }
 
     PMCard(
         modifier = modifier.wrapContentSize(),
-        padding = PaddingValues(dims.spacing.s12)
+        padding = PaddingValues(spacing.s12)
     ) {
         Column(
             modifier = Modifier
                 .wrapContentSize()
-                .debouncedClickable { onClick(item.plateCode) },
-            verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
+                .debouncedClickable { onItemClick() },
+            verticalArrangement = Arrangement.spacedBy(spacing.s8)
         ) {
             Row(
                 modifier = Modifier.wrapContentSize(),
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4),
+                horizontalArrangement = Arrangement.spacedBy(spacing.s4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 PMPlateBadge(
                     plate = item.plateCode,
-                    size = dims.sizing.plateBadgeSm
+                    size = sizing.plateBadgeSm
                 )
                 PMIconButton(
                     imageVector = trailingIcon,
                     iconColor = trailingIconTint,
-                    onClick = { onTrailingIconClick(item.normalizedPlateCode) }
+                    onClick = onTrailingIconClick
                 )
             }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dims.spacing.s4)
+                horizontalArrangement = Arrangement.spacedBy(spacing.s4)
             ) {
                 if (item.ratingAverage > 0) {
                     val ratingText = remember(item.ratingAverage) {
@@ -79,7 +81,7 @@ fun PMPlateCompactCard(
                     )
                     PMText(
                         text = ratingText,
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         maxLines = 1,
                         color = colors.textPrimary
                     )
@@ -87,7 +89,7 @@ fun PMPlateCompactCard(
                 if (item.cityName != null) {
                     PMText(
                         text = "· ${item.cityName}",
-                        fontSize = dims.fontSize.md,
+                        fontSize = fontSize.md,
                         color = colors.textPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -116,12 +118,12 @@ private fun PMPlateCompactCardDarkPreview() {
 
 @Composable
 private fun PMPlateCompactCardPreviewContent() {
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val colors = PMTheme.colors
     Row(
-        modifier = Modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.padding(spacing.s16),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s8)
     ) {
-        // Saved (bookmark) varyantı
         PMPlateCompactCard(
             item = previewItem(),
             trailingIcon = Icons.Filled.Bookmark,
@@ -129,7 +131,6 @@ private fun PMPlateCompactCardPreviewContent() {
             onClick = {},
             onTrailingIconClick = {}
         )
-        // Alarm varyantı
         PMPlateCompactCard(
             item = previewItem().copy(
                 normalizedPlateCode = "06ABC123",

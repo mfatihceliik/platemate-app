@@ -34,6 +34,9 @@ open class BaseViewModel(
         extraBufferCapacity = 1
     )
     val uiMessages: SharedFlow<UiMessage> = _uiMessages.asSharedFlow()
+    
+    open fun onRetry() {}
+    open fun onRefresh() {}
 
     /**
      * Tek hata giriş noktası. UX, hatanın türünden belirlenir:

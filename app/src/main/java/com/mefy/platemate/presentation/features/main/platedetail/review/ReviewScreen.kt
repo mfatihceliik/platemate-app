@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,8 +22,10 @@ import com.mefy.platemate.presentation.features.main.platedetail.review.componen
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.PlateInfoCard
 import com.mefy.platemate.presentation.features.main.platedetail.review.components.ReviewResultPopup
 import com.mefy.platemate.presentation.components.PMSectionLabel
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
+
+import com.mefy.platemate.presentation.features.main.platedetail.review.components.ReviewShimmerContent
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -34,12 +35,21 @@ fun ReviewScreen(
     onAction: (ReviewUiAction) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
-    val dims = MaterialTheme.pmDimensions
+    if (state.isLoading) {
+        ReviewShimmerContent(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
+        return
+    }
+
+    val spacing = PMTheme.spacing
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = innerPadding,
-        verticalArrangement = spacedByWithFooter(dims.spacing.s16)
+        verticalArrangement = spacedByWithFooter(spacing.s16)
     ) {
         item {
             PlateInfoCard(state = state)
@@ -58,25 +68,23 @@ fun ReviewScreen(
                 onRatingChange = { onAction(ReviewUiAction.OverallRatingChanged(it)) })
         }
 
-        if (!state.isEditMode) {
-            item {
-                PMSectionLabel(
-                    text = stringResource(R.string.review_section_tags)
-                )
-            }
+        item {
+            PMSectionLabel(
+                text = stringResource(R.string.review_section_tags)
+            )
+        }
 
-            item {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(dims.spacing.s8),
-                    verticalArrangement = Arrangement.spacedBy(dims.spacing.s8)
-                ) {
-                    state.tags.forEach { tag ->
-                        PMChip(
-                            label = tag.label,
-                            selected = tag.isSelected,
-                            onClick = { onAction(ReviewUiAction.TagToggled(tag.code)) }
-                        )
-                    }
+        item {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(spacing.s8),
+                verticalArrangement = Arrangement.spacedBy(spacing.s8)
+            ) {
+                state.tags.forEach { tag ->
+                    PMChip(
+                        label = tag.label,
+                        selected = tag.isSelected,
+                        onClick = { onAction(ReviewUiAction.TagToggled(tag.code)) }
+                    )
                 }
             }
         }
@@ -101,7 +109,7 @@ fun ReviewScreen(
                 text = stringResource(if (state.isEditMode) R.string.review_edit_submit else R.string.review_submit_button),
                 onClick = { onAction(ReviewUiAction.SubmitClicked) },
                 enabled = state.isSubmitEnabled,
-                modifier = Modifier.fillMaxWidth().padding(vertical = dims.spacing.s16)
+                modifier = Modifier.fillMaxWidth().padding(vertical = spacing.s16)
             )
         }
     }

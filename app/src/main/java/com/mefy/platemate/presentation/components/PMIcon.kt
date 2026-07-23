@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,22 +21,21 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import com.mefy.platemate.presentation.theme.PMTheme
 import com.mefy.platemate.presentation.theme.PlateMateTheme
-import com.mefy.platemate.presentation.theme.pmDimensions
-import com.mefy.platemate.presentation.theme.pmColors
 
 @Composable
 fun PMIcon(
     modifier: Modifier = Modifier,
     imageVector: ImageVector,
     contentDescription: String? = null,
-    size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
+    size: Dp = PMTheme.sizing.iconMd,
     tint: Color? = null,
 ) {
     Icon(
         imageVector = imageVector,
         contentDescription = contentDescription,
-        tint = tint ?: MaterialTheme.pmColors.primary,
+        tint = tint ?: PMTheme.colors.primary,
         modifier = modifier.size(size)
     )
 }
@@ -47,7 +45,7 @@ fun PMIcon(
     modifier: Modifier = Modifier,
     painter: Painter,
     contentDescription: String? = null,
-    size: Dp = MaterialTheme.pmDimensions.sizing.iconMd,
+    size: Dp = PMTheme.sizing.iconMd,
     tint: Color = Color.Unspecified,
 ) {
     Icon(
@@ -76,27 +74,28 @@ private fun PMIconDarkPreview() {
 
 @Composable
 private fun PMIconPreviewContent() {
-    val dims = MaterialTheme.pmDimensions
-    val colors = MaterialTheme.pmColors
+    val spacing = PMTheme.spacing
+    val sizing = PMTheme.sizing
+    val colors = PMTheme.colors
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(colors.background)
-            .padding(dims.spacing.s24),
-        verticalArrangement = Arrangement.spacedBy(dims.spacing.s24)
+            .padding(spacing.s24),
+        verticalArrangement = Arrangement.spacedBy(spacing.s24)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s24),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s24),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = dims.sizing.iconSm, tint = colors.onBackground)
-            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = dims.sizing.iconMd, tint = colors.onBackground)
-            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = dims.sizing.iconLg, tint = colors.onBackground)
-            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = dims.sizing.iconXl, tint = colors.onBackground)
+            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = sizing.iconSm, tint = colors.onBackground)
+            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = sizing.iconMd, tint = colors.onBackground)
+            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = sizing.iconLg, tint = colors.onBackground)
+            PMIcon(imageVector = Icons.Filled.Home, contentDescription = null, size = sizing.iconXl, tint = colors.onBackground)
         }
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dims.spacing.s24),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s24),
             verticalAlignment = Alignment.CenterVertically
         ) {
             PMIcon(imageVector = Icons.Filled.Search, contentDescription = null, tint = colors.primary)

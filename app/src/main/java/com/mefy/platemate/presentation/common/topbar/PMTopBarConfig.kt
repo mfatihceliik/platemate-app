@@ -8,6 +8,7 @@ sealed interface PMTopBarConfig {
     data object Hidden : PMTopBarConfig
     data class Standard(
         val title: String,
+        val showBackButton: Boolean = true,
         val onBackClick: (() -> Unit)? = null,
         val alignment: PMTopBarAlignment = PMTopBarAlignment.Center,
         val actions: (@Composable RowScope.() -> Unit)? = null,
@@ -17,6 +18,7 @@ sealed interface PMTopBarConfig {
     ) : PMTopBarConfig
     data class Transparent(
         val title: String? = null,
+        val showBackButton: Boolean = true,
         val onBackClick: (() -> Unit)? = null,
         val actions: (@Composable RowScope.() -> Unit)? = null,
         val hideOnScroll: Boolean = true
